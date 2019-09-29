@@ -36,7 +36,15 @@ public class StatusManager_Dummy : StatusManagerBase, IHittable, IRage
         {
             CharacterAttackInfo HitAttack = (CharacterAttackInfo)Attack;
             CurrentHP -= HitAttack.Damage;
-            
+
+            if (HitAttack.Right)
+            {
+                DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 1);
+            }
+            else
+            {
+                DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 1);
+            }
             DamageText.GetComponent<Text>().text = HitAttack.Damage.ToString();
             DamageText.transform.parent = HPFill.transform.parent;
 

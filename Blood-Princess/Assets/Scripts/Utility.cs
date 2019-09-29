@@ -50,4 +50,9 @@ public class Utility
     {
         return Input.GetKeyDown(KeyCode.X);
     }
+
+    public static bool InputDrain()
+    {
+        return Input.GetKeyDown(KeyCode.Q);
+    }
 }

@@ -36,6 +36,7 @@ public class CharacterData : MonoBehaviour
     public int HeavyAttackBaseDamage;
     public int HeavyAttackMaxDamage;
     public int HeavyAttackMaxDamageBonus;
+    public int DrainBonus;
     public Vector2 HeavyAttackOffset;
     public Vector2 HeavyAttackHitBoxSize;
 

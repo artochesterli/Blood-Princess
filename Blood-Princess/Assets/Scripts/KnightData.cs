@@ -6,9 +6,11 @@ public class KnightData : MonoBehaviour
 {
     public int MaxHP;
     public int RageHP;
+    public int RageNumber;
 
     public float MoveSpeed;
     public float DashSpeed;
+    public float RageDashSpeed;
     public float NormalDashDistance;
     public float RageDashDistance;
     public int Damage;
@@ -21,6 +23,7 @@ public class KnightData : MonoBehaviour
 
     public float GetHitTime;
     public float GetHitSpeed;
+    public float GetHitMoveTime;
 
     // Start is called before the first frame update
     void Start()

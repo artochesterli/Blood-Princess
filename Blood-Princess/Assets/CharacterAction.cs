@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public abstract class AttackInfo { }
+public abstract class AttackInfo
+{
+    public GameObject Source;
+}
 
 public class CharacterAttackInfo : AttackInfo
 {
@@ -12,13 +15,16 @@ public class CharacterAttackInfo : AttackInfo
     public int Damage;
     public Vector2 HitBoxOffset;
     public Vector2 HitBoxSize;
-    public CharacterAttackInfo(CharacterAttackType type, bool right, int damage, Vector2 offset, Vector2 size)
+    public bool Drain;
+    public CharacterAttackInfo(GameObject source, CharacterAttackType type, bool right, int damage, Vector2 offset, Vector2 size,bool drain)
     {
+        Source = source;
         Type = type;
         Right = right;
         Damage = damage;
         HitBoxOffset = offset;
         HitBoxSize = size;
+        Drain = drain;
     }
 }
 
@@ -28,8 +34,9 @@ public class EnemyAttackInfo : AttackInfo
     public int Damage;
     public Vector2 HitBoxOffset;
     public Vector2 HitBoxSize;
-    public EnemyAttackInfo(bool right,int damage,Vector2 offset,Vector2 size)
+    public EnemyAttackInfo(GameObject source, bool right,int damage,Vector2 offset,Vector2 size)
     {
+        Source = source;
         Right = right;
         Damage = damage;
         HitBoxOffset = offset;
@@ -80,6 +87,9 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
     protected float AnticipationTime;
     protected float AttackTime;
     protected float RecoveryTime;
+    protected CharacterAttackInfo Attack;
+    protected GameObject SlashImage;
+    protected List<Sprite> CurrentSpriteSeries;
 
     public override void Init()
     {
@@ -97,6 +107,8 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
     {
         base.Update();
         Entity.GetComponent<SpeedManager>().SelfSpeed.y -= CurrentGravity * Time.deltaTime * 10;
+        SetCharacterSprite();
+        CheckDrainInput();
     }
 
     protected bool CheckWallHitting()
@@ -127,6 +139,27 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         }
     }
 
+    protected void SetCharacterSprite()
+    {
+        var Status = Entity.GetComponent<StatusManager_Character>();
+        if (Status.CurrentEnergy >= 10)
+        {
+            Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[3];
+        }
+        else if(Status.CurrentEnergy >= 6)
+        {
+            Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[2];
+        }
+        else if(Status.CurrentEnergy > 0)
+        {
+            Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[1];
+        }
+        else
+        {
+            Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[0];
+        }
+    }
+
     protected bool AttackHitEnemy(CharacterAttackInfo Attack)
     {
         int Mask = 1 << LayerMask.NameToLayer("Enemy");
@@ -143,8 +176,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             int Count = 0;
             for(int i = 0; i < AllHits.Length; i++)
             {
-                AllHits[i].collider.gameObject.GetComponent<IHittable>().OnHit(Attack);
-                if (AllHits[i].collider.gameObject.GetComponent<IRage>().Rage)
+                if (AllHits[i].collider.gameObject.GetComponent<IHittable>().OnHit(Attack))
                 {
                     Count++;
                 }
@@ -154,16 +186,42 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             {
                 case CharacterAttackType.Light:
                     Status.CurrentEnergy += Data.LightAttackEnergyGain;
+                    if (Status.CurrentEnergy > Data.MaxEnergy)
+                    {
+                        Status.CurrentEnergy = Data.MaxEnergy;
+                    }
                     break;
                 case CharacterAttackType.Heavy:
+
+                    float Drained = 0;
+
                     while (Count>0)
                     {
                         if (Status.CurrentEnergyOrb < Data.MaxEnergyOrb)
                         {
+                            if (Attack.Drain)
+                            {
+                                int Value= Mathf.RoundToInt(Attack.Damage / 5.0f);
+                                if (Value > Data.MaxHP - Status.CurrentHP)
+                                {
+                                    Value = Data.MaxHP - Status.CurrentHP;
+                                }
+                                Status.CurrentHP += Value;
+                                Drained += Value;
+                            }
+                                                            
                             Status.CurrentEnergyOrb++;
                             Status.EnergyOrbs.transform.GetChild(Status.CurrentEnergyOrb - 1).GetComponent<Image>().sprite = Status.EnergyOrbFilledSprite;
                         }
                         Count--;
+                    }
+                    if (Attack.Drain)
+                    {
+                        GameObject DamageText = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/DamageText"), Entity.transform.position, Quaternion.Euler(0, 0, 0));
+                        DamageText.GetComponent<DamageText>().TravelVector = Vector2.up;
+                        DamageText.GetComponent<Text>().color = Color.green;
+                        DamageText.transform.parent = Status.Canvas.transform;
+                        DamageText.GetComponent<Text>().text = Drained.ToString();
                     }
                     break;
             }
@@ -173,6 +231,18 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         else
         {
             return false;
+        }
+    }
+
+    protected void CheckDrainInput()
+    {
+        var Status = Entity.GetComponent<StatusManager_Character>();
+        if (Utility.InputDrain()&&Status.CurrentEnergyOrb>0)
+        {
+            Status.EnergyOrbs.transform.GetChild(Status.CurrentEnergyOrb - 1).GetComponent<Image>().sprite = Status.EnergyOrbEmptySprite;
+            Status.CurrentEnergyOrb--;
+            Status.Drain = true;
+            Status.DrainMark.GetComponent<Image>().enabled = true;
         }
     }
 
@@ -190,15 +260,25 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             damage = Mathf.RoundToInt((Data.HeavyAttackMaxDamage - Data.HeavyAttackBaseDamage) * (float)Status.CurrentEnergy / Data.MaxEnergy) + Data.HeavyAttackBaseDamage;
         }
 
+        if (Status.Drain)
+        {
+            damage += Data.DrainBonus;
+            Status.DrainMark.GetComponent<Image>().enabled = false;
+            
+        }
+
+        CharacterAttackInfo Attack= new CharacterAttackInfo(Entity, CharacterAttackType.Heavy, Entity.transform.right.x > 0, damage, Data.HeavyAttackOffset, Data.HeavyAttackHitBoxSize, Status.Drain);
 
 
-        return new CharacterAttackInfo(CharacterAttackType.Heavy, Entity.transform.right.x > 0, damage, Data.HeavyAttackOffset, Data.HeavyAttackHitBoxSize);
+        Status.Drain = false;
+
+        return Attack;
     }
 
     protected CharacterAttackInfo GetLightAttackInfo()
     {
         var Data = Entity.GetComponent<CharacterData>();
-        return new CharacterAttackInfo(CharacterAttackType.Light, Entity.transform.right.x > 0, Data.LightAttackDamage, Data.LightAttackOffset, Data.LightAttackHitBoxSize);
+        return new CharacterAttackInfo(Entity, CharacterAttackType.Light, Entity.transform.right.x > 0, Data.LightAttackDamage, Data.LightAttackOffset, Data.LightAttackHitBoxSize,false);
     }
 
     protected void GetLightAttackTime()
@@ -227,6 +307,37 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         }
     }
 
+    protected void GenerateSlashImage(CharacterAttackType Type)
+    {
+        float EulerAngle = 0;
+
+        if (!Attack.Right)
+        {
+            EulerAngle = 180;
+        }
+
+        if (Type == CharacterAttackType.Light)
+        {
+            Vector2 Offset = Entity.GetComponent<CharacterData>().LightAttackOffset;
+            if (!Attack.Right)
+            {
+                Offset.x = -Offset.x;
+            }
+
+            SlashImage = (GameObject)Object.Instantiate(Resources.Load("Prefabs/LightSlash"), (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
+        }
+        else
+        {
+            Vector2 Offset = Entity.GetComponent<CharacterData>().HeavyAttackOffset;
+            if (!Attack.Right)
+            {
+                Offset.x = -Offset.x;
+            }
+
+            SlashImage = (GameObject)Object.Instantiate(Resources.Load("Prefabs/HeavySlash"), (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
+        }
+    }
+
     protected void CheckAttackTimeCount<EndStayState,EndMoveState>(float AnticipationTime,float AttackTime,float RecoveryTime) where EndStayState : CharacterActionState where EndMoveState : CharacterActionState
     {
         AttackTimeCount += Time.deltaTime;
@@ -237,6 +348,31 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
                 {
                     CurrentAttackState = AttackState.Attack;
                     AttackTimeCount = 0;
+
+                    GenerateSlashImage(Attack.Type);
+
+                    if (Attack.Type == CharacterAttackType.Light)
+                    {
+
+                        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+                        CurrentSpriteSeries = SpriteData.LightRecoverySeries;
+
+                        Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[0];
+                        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightRecoveryOffset, SpriteData.LightRecoverySize);
+                    }
+                    else
+                    {
+                        
+                        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+                        CurrentSpriteSeries = SpriteData.HeavyRecoverySeries;
+
+                        Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[0];
+                        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyRecoveryOffset, SpriteData.HeavyRecoverySize);
+                    }
+
+                    SlashImage.transform.parent = Entity.transform;
+
+                    
                 }
                 break;
             case AttackState.Attack:
@@ -244,6 +380,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
                 {
                     CurrentAttackState = AttackState.Recovery;
                     AttackTimeCount = 0;
+                    GameObject.Destroy(SlashImage);
                 }
                 break;
             case AttackState.Recovery:
@@ -466,6 +603,12 @@ public class Stand : CharacterActionState
         base.OnEnter();
         CurrentGravity = Entity.GetComponent<CharacterData>().NormalGravity;
         WallHitted = false;
+
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.IdleSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
     }
 
     public override void Update()
@@ -516,6 +659,12 @@ public class GroundMove : CharacterActionState
         base.OnEnter();
         CurrentGravity = Entity.GetComponent<CharacterData>().NormalGravity;
         WallHitted = false;
+
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.IdleSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
     }
 
     public override void Update()
@@ -565,6 +714,12 @@ public class JumpHoldingStay : CharacterActionState
         JumpHoldingTimeCount = 0;
         CurrentGravity = 0;
         Entity.GetComponent<SpeedManager>().SelfSpeed.y = Entity.GetComponent<CharacterData>().JumpSpeed;
+
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.IdleSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
     }
 
     public override void Update()
@@ -635,6 +790,12 @@ public class JumpHoldingMove : CharacterActionState
         JumpHoldingTimeCount = 0;
         CurrentGravity = 0;
         Entity.GetComponent<SpeedManager>().SelfSpeed.y = Entity.GetComponent<CharacterData>().JumpSpeed;
+
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.IdleSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
     }
 
     public override void Update()
@@ -704,6 +865,12 @@ public class AirStay : CharacterActionState
     {
         base.OnEnter();
         CurrentGravity = Entity.GetComponent<CharacterData>().NormalGravity;
+
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.IdleSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
     }
 
     public override void Update()
@@ -745,6 +912,12 @@ public class AirMove : CharacterActionState
     {
         base.OnEnter();
         CurrentGravity = Entity.GetComponent<CharacterData>().NormalGravity;
+
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.IdleSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
     }
 
     public override void Update()
@@ -816,8 +989,6 @@ public class WallHitting : CharacterActionState
 
 public class GroundLightAttack : CharacterActionState
 {
-    private CharacterAttackInfo Attack;
-
     public override void OnEnter()
     {
         base.OnEnter();
@@ -827,6 +998,12 @@ public class GroundLightAttack : CharacterActionState
 
         Attack = GetLightAttackInfo();
         GetLightAttackTime();
+
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.LightAnticipationSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightAnticipationOffset, SpriteData.LightAnticipationSize);
     }
 
     public override void Update()
@@ -859,8 +1036,6 @@ public class GroundLightAttack : CharacterActionState
 
 public class AirLightAttack : CharacterActionState
 {
-    private CharacterAttackInfo Attack;
-
     public override void OnEnter()
     {
         base.OnEnter();
@@ -871,6 +1046,12 @@ public class AirLightAttack : CharacterActionState
 
         Attack = GetLightAttackInfo();
         GetLightAttackTime();
+
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.LightAnticipationSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightAnticipationOffset, SpriteData.LightAnticipationSize);
     }
 
     public override void Update()
@@ -904,7 +1085,6 @@ public class AirLightAttack : CharacterActionState
 
 public class GroundHeavyAttack : CharacterActionState
 {
-    private CharacterAttackInfo Attack;
     private int EnergyStored;
 
     public override void OnEnter()
@@ -918,6 +1098,12 @@ public class GroundHeavyAttack : CharacterActionState
 
         Attack = GetHeavyAttackInfo();
         GetHeavyAttackTime();
+
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.HeavyAnticipationSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyAnticipationOffset, SpriteData.HeavyAnticipationSize);
     }
 
     public override void Update()
@@ -958,7 +1144,6 @@ public class GroundHeavyAttack : CharacterActionState
 
 public class AirHeavyAttack : CharacterActionState
 {
-    private CharacterAttackInfo Attack;
     private int EnergyStored;
 
     public override void OnEnter()
@@ -973,6 +1158,12 @@ public class AirHeavyAttack : CharacterActionState
 
         Attack = GetHeavyAttackInfo();
         GetHeavyAttackTime();
+
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.HeavyAnticipationSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyAnticipationOffset, SpriteData.HeavyAnticipationSize);
     }
 
     public override void Update()
@@ -1042,6 +1233,14 @@ public class GetHit : CharacterActionState
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
         Entity.GetComponent<SpeedManager>().ForcedSpeed.x = HitSpeed;
         GetHitTimeCount = 0;
+
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.HitSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HitOffset, SpriteData.HitSize);
+
+        GameObject.Destroy(SlashImage);
     }
 
     public override void Update()

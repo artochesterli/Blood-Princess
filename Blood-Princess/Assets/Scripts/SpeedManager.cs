@@ -106,7 +106,7 @@ public class SpeedManager : MonoBehaviour
             float TrueTopDis = TopDis;
             if (Top && Top.GetComponent<SpeedManager>())
             {
-                TrueTopDis -= Top.GetComponent<SpeedManager>().SelfSpeed.y + Top.GetComponent<SpeedManager>().ForcedSpeed.y;
+                TrueTopDis -= (Top.GetComponent<SpeedManager>().SelfSpeed.y + Top.GetComponent<SpeedManager>().ForcedSpeed.y)*Time.deltaTime;
             }
 
             if (TrueTopDis < temp.y * Time.deltaTime)
@@ -122,7 +122,7 @@ public class SpeedManager : MonoBehaviour
             float TrueGroundDis = GroundDis;
             if (Ground && Ground.GetComponent<SpeedManager>())
             {
-                TrueGroundDis -= Ground.GetComponent<SpeedManager>().SelfSpeed.y + Ground.GetComponent<SpeedManager>().ForcedSpeed.y;
+                TrueGroundDis -= (Ground.GetComponent<SpeedManager>().SelfSpeed.y + Ground.GetComponent<SpeedManager>().ForcedSpeed.y)*Time.deltaTime;
             }
 
             if (TrueGroundDis < -temp.y * Time.deltaTime)
@@ -138,11 +138,12 @@ public class SpeedManager : MonoBehaviour
             float TrueLeftDis = LeftDis;
             if (Left && Left.GetComponent<SpeedManager>())
             {
-                TrueLeftDis -= Left.GetComponent<SpeedManager>().SelfSpeed.y + Left.GetComponent<SpeedManager>().ForcedSpeed.y;
+                TrueLeftDis -= (Left.GetComponent<SpeedManager>().SelfSpeed.x + Left.GetComponent<SpeedManager>().ForcedSpeed.x)*Time.deltaTime;
             }
 
             if (TrueLeftDis < -temp.x * Time.deltaTime)
             {
+                
                 temp.x = -TrueLeftDis / Time.deltaTime;
                 SelfSpeed.x = 0;
                 ForcedSpeed.x = 0;
@@ -154,7 +155,7 @@ public class SpeedManager : MonoBehaviour
             float TrueRightDis = RightDis;
             if (Right && Right.GetComponent<SpeedManager>())
             {
-                TrueRightDis -= Right.GetComponent<SpeedManager>().SelfSpeed.y + Right.GetComponent<SpeedManager>().ForcedSpeed.y;
+                TrueRightDis -= (Right.GetComponent<SpeedManager>().SelfSpeed.x + Right.GetComponent<SpeedManager>().ForcedSpeed.x)*Time.deltaTime;
             }
             if (TrueRightDis < temp.x * Time.deltaTime)
             {

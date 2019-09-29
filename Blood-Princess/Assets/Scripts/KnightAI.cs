@@ -33,6 +33,7 @@ public abstract class KnightBehavior : FSM<KnightAI>.State
     protected float AttackTime;
     protected float RecoveryTime;
     protected bool PatronRight;
+    protected GameObject SlashImage;
 
     protected Vector2 OriPos;
 
@@ -58,6 +59,8 @@ public abstract class KnightBehavior : FSM<KnightAI>.State
 
     protected void SetBackToPatron()
     {
+        Context.Player = null;
+
         var Data = Entity.GetComponent<PatronData>();
         Vector2 TruePos = Entity.GetComponent<SpeedManager>().GetTruePos();
 
@@ -185,6 +188,11 @@ public class KnightPatron : KnightBehavior
     public override void Update()
     {
         base.Update();
+
+        if (CheckGetHit())
+        {
+            return;
+        }
         Patron();
         if (DetectPlayer())
         {
@@ -278,6 +286,10 @@ public class KnightAttack : KnightBehavior
     public override void Update()
     {
         base.Update();
+        if (CheckGetHit())
+        {
+            return;
+        }
         CheckAttackTimeCount(AnticipationTime, AttackTime, RecoveryTime);
         CheckHit();
     }
@@ -289,7 +301,7 @@ public class KnightAttack : KnightBehavior
         AttackTime = KnightData.AttackTime;
         RecoveryTime = KnightData.AttackRecovery;
 
-        Attack = new EnemyAttackInfo(Entity.transform.right.x > 0, KnightData.Damage, KnightData.AttackOffset, KnightData.AttackHitBoxSize);
+        Attack = new EnemyAttackInfo(Entity, Entity.transform.right.x > 0, KnightData.Damage, KnightData.AttackOffset, KnightData.AttackHitBoxSize);
     }
 
     private void CheckHit()
@@ -319,7 +331,10 @@ public class KnightAttack : KnightBehavior
         {
             for (int i = 0; i < AllHits.Length; i++)
             {
-                AllHits[i].collider.gameObject.GetComponent<IHittable>().OnHit(Attack);
+                if (!AllHits[i].collider.gameObject.GetComponent<IHittable>().hit)
+                {
+                    AllHits[i].collider.gameObject.GetComponent<IHittable>().OnHit(Attack);
+                }
             }
             return true;
         }
@@ -327,6 +342,37 @@ public class KnightAttack : KnightBehavior
         {
             return false;
         }
+    }
+
+    private void GenerateSlashImage()
+    {
+        float EulerAngle = 0;
+
+        if (!Attack.Right)
+        {
+            EulerAngle = 180;
+        }
+
+        Vector2 Offset = Entity.GetComponent<KnightData>().AttackOffset;
+        if (!Attack.Right)
+        {
+            Offset.x = -Offset.x;
+        }
+
+        SlashImage = (GameObject)Object.Instantiate(Resources.Load("Prefabs/KnightSlash"), (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
+    }
+
+    private void TransferToAttack()
+    {
+        GenerateSlashImage();
+        CurrentAttackState = AttackState.Attack;
+        AttackTimeCount = 0;
+        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+
+        var KnightSpriteData = Entity.GetComponent<KnightSpriteData>();
+        SetKnight(KnightSpriteData.Recovery, KnightSpriteData.RecoveryOffset, KnightSpriteData.RecoverySize);
+
+        OriPos = Context.InitPosition + Entity.GetComponent<SpeedManager>().OriPos;
     }
 
     private void CheckAttackTimeCount(float AnticipationTime, float AttackTime, float RecoveryTime)
@@ -352,31 +398,39 @@ public class KnightAttack : KnightBehavior
                     if (PlayerX - SelfX > 0 && DashTraveled<MaxDashDis)
                     {
                         float DashSpeed = Entity.GetComponent<KnightData>().DashSpeed;
+                        if (Entity.GetComponent<IRage>().Rage)
+                        {
+                            DashSpeed = Entity.GetComponent<KnightData>().RageDashSpeed;
+                        }
+                        
 
                         float DashDis =  DashSpeed* Time.deltaTime;
+
+                        bool Transfer = false;
+
                         if(DashDis > PlayerX - SelfX)
                         {
                             DashSpeed = (PlayerX - SelfX) / Time.deltaTime;
+                            Transfer = true;
                         }
 
                         if (DashDis + DashTraveled > MaxDashDis)
                         {
                             DashDis = MaxDashDis - DashTraveled;
+                            Transfer = true;
                         }
 
                         Entity.GetComponent<SpeedManager>().SelfSpeed.x = DashSpeed;
                         DashTraveled += DashSpeed * Time.deltaTime;
+
+                        if (Transfer)
+                        {
+                            TransferToAttack();
+                        }
                     }
                     else
                     {
-                        CurrentAttackState = AttackState.Attack;
-                        AttackTimeCount = 0;
-                        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
-
-                        var KnightSpriteData = Entity.GetComponent<KnightSpriteData>();
-                        SetKnight(KnightSpriteData.Recovery, KnightSpriteData.RecoveryOffset, KnightSpriteData.RecoverySize);
-
-                        OriPos = Context.InitPosition + Entity.GetComponent<SpeedManager>().OriPos;
+                        TransferToAttack();
                     }
                 }
                 else
@@ -385,32 +439,38 @@ public class KnightAttack : KnightBehavior
                     if (SelfX - PlayerX > 0 && DashTraveled < MaxDashDis)
                     {
                         float DashSpeed = Entity.GetComponent<KnightData>().DashSpeed;
+                        if (Entity.GetComponent<IRage>().Rage)
+                        {
+                            DashSpeed = Entity.GetComponent<KnightData>().RageDashSpeed;
+                        }
 
                         float DashDis = DashSpeed * Time.deltaTime;
+
+                        bool Transfer = false;
+
                         if (DashDis > SelfX-PlayerX)
                         {
                             DashSpeed = (SelfX-PlayerX) / Time.deltaTime;
+                            Transfer = true;
                         }
 
                         if (DashDis + DashTraveled > MaxDashDis)
                         {
                             DashDis = MaxDashDis - DashTraveled;
+                            Transfer = true;
                         }
 
                         Entity.GetComponent<SpeedManager>().SelfSpeed.x = -DashSpeed;
                         DashTraveled += DashSpeed * Time.deltaTime;
-                        Debug.Log("ggg");
+
+                        if (Transfer)
+                        {
+                            TransferToAttack();
+                        }
                     }
                     else
                     {
-                        CurrentAttackState = AttackState.Attack;
-                        AttackTimeCount = 0;
-                        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
-
-                        var KnightSpriteData = Entity.GetComponent<KnightSpriteData>();
-                        SetKnight(KnightSpriteData.Recovery, KnightSpriteData.RecoveryOffset, KnightSpriteData.RecoverySize);
-
-                        OriPos = Context.InitPosition + Entity.GetComponent<SpeedManager>().OriPos;
+                        TransferToAttack();
                     }
                 }
                 break;
@@ -419,6 +479,7 @@ public class KnightAttack : KnightBehavior
                 {
                     CurrentAttackState = AttackState.Recovery;
                     AttackTimeCount = 0;
+                    GameObject.Destroy(SlashImage);
                 }
                 break;
             case AttackState.Recovery:
@@ -450,6 +511,16 @@ public class KnightAttackCoolDown : KnightBehavior
     public override void Update()
     {
         base.Update();
+
+        if (CheckGetHit())
+        {
+            return;
+        }
+        CheckCoolDown();
+    }
+
+    private void CheckCoolDown()
+    {
         TimeCount += Time.deltaTime;
         if (TimeCount > Entity.GetComponent<KnightData>().AttackCoolDown)
         {
@@ -491,6 +562,10 @@ public class KnightChase : KnightBehavior
     public override void Update()
     {
         base.Update();
+        if (CheckGetHit())
+        {
+            return;
+        }
         ChasePlayer();
     }
 
@@ -553,29 +628,58 @@ public class KnightChase : KnightBehavior
 public class KnightGetHit : KnightBehavior
 {
     private float GetHitTimeCount;
+    private GameObject Source;
 
     public override void OnEnter()
     {
         base.OnEnter();
         CharacterAttackInfo Temp = (CharacterAttackInfo)Entity.GetComponent<IHittable>().HitAttack;
-        Entity.GetComponent<SpeedManager>().ForcedSpeed.x = -Entity.GetComponent<KnightData>().GetHitSpeed;
+
+        if (Temp.Right)
+        {
+            Entity.GetComponent<SpeedManager>().ForcedSpeed.x = Entity.GetComponent<KnightData>().GetHitSpeed;
+        }
+        else
+        {
+            Entity.GetComponent<SpeedManager>().ForcedSpeed.x = -Entity.GetComponent<KnightData>().GetHitSpeed;
+        }
+        
         GetHitTimeCount = 0;
 
         var KnightSpriteData = Entity.GetComponent<KnightSpriteData>();
         SetKnight(KnightSpriteData.Hit, KnightSpriteData.HitOffset, KnightSpriteData.HitSize);
 
         OriPos = Context.InitPosition + Entity.GetComponent<SpeedManager>().OriPos;
+
+        Source = Temp.Source;
+
+        GameObject.Destroy(SlashImage);
     }
 
     public override void Update()
     {
         base.Update();
+        if (CheckGetHit())
+        {
+            return;
+        }
+        CheckTimeCount();
+    }
+
+    private void CheckTimeCount()
+    {
         GetHitTimeCount += Time.deltaTime;
         if (GetHitTimeCount >= Entity.GetComponent<KnightData>().GetHitTime)
         {
-            
+            Context.Player = Source;
+            TransitionTo<KnightChase>();
+        }
+        else if (GetHitTimeCount >= Entity.GetComponent<KnightData>().GetHitMoveTime)
+        {
+            Entity.GetComponent<SpeedManager>().ForcedSpeed.x = 0;
         }
     }
+
 
     public override void OnExit()
     {
