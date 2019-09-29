@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class SpeedManager : MonoBehaviour
 {
+    public string SelfLayer;
+
     public Vector2 SelfSpeed;
     public Vector2 ForcedSpeed;
 
@@ -32,10 +34,11 @@ public class SpeedManager : MonoBehaviour
 
     private const float DetectDis = 1;
     private const float HitMargin = 0.01f;
+    private const float CastBoxThickness = 0.01f;
     // Start is called before the first frame update
     void Start()
     {
-        layermask = 1 << LayerMask.NameToLayer("Player") | 1<< LayerMask.NameToLayer("Zone");
+        layermask = 1 << LayerMask.NameToLayer(SelfLayer) | 1<< LayerMask.NameToLayer("Zone");
         layermask = ~layermask;
     }
 
@@ -70,38 +73,95 @@ public class SpeedManager : MonoBehaviour
         }
     }*/
 
+    public Vector2 GetTruePos()
+    {
+        if (transform.right.x > 0)
+        {
+            return transform.position + (Vector3)OriPos;
+        }
+        else
+        {
+            Vector2 Offset = OriPos;
+            Offset.x = -Offset.x;
+            return transform.position + (Vector3)Offset;
+        }
+    }
+
+    public void SetBodyInfo(Vector2 Offset,Vector2 BodySize)
+    {
+        OriPos = Offset;
+        BodyWidth = BodySize.x;
+        BodyHeight = BodySize.y;
+        GetComponent<BoxCollider2D>().offset = Offset;
+        GetComponent<BoxCollider2D>().size = BodySize;
+    }
     
 
     public void Move()
     {
         Vector2 temp = SelfSpeed + ForcedSpeed;
 
-        if (TopDis < temp.y * Time.deltaTime)
+        if (temp.y > 0)
         {
-            temp.y = TopDis / Time.deltaTime;
-            SelfSpeed.y = 0;
-            ForcedSpeed.y = 0;
+            float TrueTopDis = TopDis;
+            if (Top && Top.GetComponent<SpeedManager>())
+            {
+                TrueTopDis -= Top.GetComponent<SpeedManager>().SelfSpeed.y + Top.GetComponent<SpeedManager>().ForcedSpeed.y;
+            }
+
+            if (TrueTopDis < temp.y * Time.deltaTime)
+            {
+                temp.y = TrueTopDis / Time.deltaTime;
+                SelfSpeed.y = 0;
+                ForcedSpeed.y = 0;
+            }
         }
 
-        if (GroundDis < -temp.y * Time.deltaTime)
+        if (temp.y < 0)
         {
-            temp.y = -GroundDis / Time.deltaTime;
-            SelfSpeed.y = 0;
-            ForcedSpeed.y = 0;
+            float TrueGroundDis = GroundDis;
+            if (Ground && Ground.GetComponent<SpeedManager>())
+            {
+                TrueGroundDis -= Ground.GetComponent<SpeedManager>().SelfSpeed.y + Ground.GetComponent<SpeedManager>().ForcedSpeed.y;
+            }
+
+            if (TrueGroundDis < -temp.y * Time.deltaTime)
+            {
+                temp.y = -TrueGroundDis / Time.deltaTime;
+                SelfSpeed.y = 0;
+                ForcedSpeed.y = 0;
+            }
         }
 
-        if (LeftDis<-temp.x * Time.deltaTime)
+        if (temp.x < 0)
         {
-            temp.x = -LeftDis / Time.deltaTime;
-            SelfSpeed = Vector2.zero;
-            ForcedSpeed.x = 0;
+            float TrueLeftDis = LeftDis;
+            if (Left && Left.GetComponent<SpeedManager>())
+            {
+                TrueLeftDis -= Left.GetComponent<SpeedManager>().SelfSpeed.y + Left.GetComponent<SpeedManager>().ForcedSpeed.y;
+            }
+
+            if (TrueLeftDis < -temp.x * Time.deltaTime)
+            {
+                temp.x = -TrueLeftDis / Time.deltaTime;
+                SelfSpeed.x = 0;
+                ForcedSpeed.x = 0;
+            }
         }
 
-        if (RightDis < temp.x * Time.deltaTime)
+        if (temp.x > 0)
         {
-            temp.x = RightDis / Time.deltaTime;
-            SelfSpeed = Vector2.zero;
-            ForcedSpeed.x = 0;
+            float TrueRightDis = RightDis;
+            if (Right && Right.GetComponent<SpeedManager>())
+            {
+                TrueRightDis -= Right.GetComponent<SpeedManager>().SelfSpeed.y + Right.GetComponent<SpeedManager>().ForcedSpeed.y;
+            }
+            if (TrueRightDis < temp.x * Time.deltaTime)
+            {
+                temp.x = TrueRightDis / Time.deltaTime;
+                SelfSpeed.x = 0;
+                ForcedSpeed.x = 0;
+            }
         }
 
         transform.position += (Vector3)temp* Time.deltaTime;
@@ -109,13 +169,13 @@ public class SpeedManager : MonoBehaviour
 
     public void CheckGroundDis()
     {
-        Vector3 OriPoint = transform.position + (Vector3)OriPos;
-        RaycastHit2D hit = Physics2D.BoxCast(OriPoint, new Vector2(BodyWidth - 2 * HitMargin, 0.01f), 0, Vector2.down, DetectDis, layermask);
+        //RaycastHit2D hit = Physics2D.BoxCast(GetTruePos(), new Vector2(BodyWidth - 2 * HitMargin, CastBoxThickness), 0, Vector2.down, DetectDis, layermask);
 
+        RaycastHit2D hit = Physics2D.BoxCast(GetTruePos() + (BodyHeight/2 + CastBoxThickness/2) *Vector2.down, new Vector2(BodyWidth - 2 * HitMargin, CastBoxThickness), 0, Vector2.down, DetectDis, layermask);
 
         if (hit)
         {
-            GroundDis = Mathf.Abs(hit.point.y - OriPoint.y) - BodyHeight / 2;
+            GroundDis = Mathf.Abs(hit.point.y - GetTruePos().y + CastBoxThickness / 2) - BodyHeight / 2;
             Ground = hit.collider.gameObject;
         }
         else
@@ -141,12 +201,11 @@ public class SpeedManager : MonoBehaviour
 
     public void CheckTopDis()
     {
-        Vector3 OriPoint = transform.position + (Vector3)OriPos;
-        RaycastHit2D hit = Physics2D.BoxCast(OriPoint, new Vector2(BodyWidth- 2 * HitMargin , 0), 0, Vector2.up, DetectDis, layermask);
+        RaycastHit2D hit = Physics2D.BoxCast(GetTruePos() + (BodyHeight / 2 + CastBoxThickness / 2) * Vector2.up, new Vector2(BodyWidth- 2 * HitMargin , CastBoxThickness), 0, Vector2.up, DetectDis, layermask);
 
         if (hit)
         {
-            TopDis = Mathf.Abs(hit.point.y - OriPoint.y) - BodyHeight/2;
+            TopDis = Mathf.Abs(hit.point.y - GetTruePos().y - CastBoxThickness / 2) - BodyHeight/2;
             Top = hit.collider.gameObject;
         }
         else
@@ -171,13 +230,12 @@ public class SpeedManager : MonoBehaviour
 
     public void CheckLeftWallDis()
     {
-        Vector3 OriPoint = transform.position + (Vector3)OriPos;
 
-        RaycastHit2D hit = Physics2D.BoxCast(OriPoint, new Vector2(0, BodyHeight - 2 * HitMargin), 0, Vector2.left, DetectDis, layermask);
+        RaycastHit2D hit = Physics2D.BoxCast(GetTruePos() + (BodyWidth / 2 + CastBoxThickness / 2) * Vector2.left, new Vector2(CastBoxThickness, BodyHeight - 2 * HitMargin), 0, Vector2.left, DetectDis, layermask);
 
         if (hit)
         {
-            LeftDis = Mathf.Abs(hit.point.x - OriPoint.x) - BodyWidth / 2;
+            LeftDis = Mathf.Abs(hit.point.x - GetTruePos().x + CastBoxThickness / 2) - BodyWidth / 2;
             Left = hit.collider.gameObject;
         }
         else
@@ -202,13 +260,12 @@ public class SpeedManager : MonoBehaviour
 
     public void CheckRightWallDis()
     {
-        Vector3 OriPoint = transform.position + (Vector3)OriPos;
 
-        RaycastHit2D hit = Physics2D.BoxCast(OriPoint, new Vector2(0, BodyHeight - 2 * HitMargin),0,Vector2.right, DetectDis, layermask);
+        RaycastHit2D hit = Physics2D.BoxCast(GetTruePos() + (BodyWidth / 2 + CastBoxThickness / 2) * Vector2.right, new Vector2(CastBoxThickness, BodyHeight - 2 * HitMargin),0,Vector2.right, DetectDis, layermask);
 
         if (hit)
         {
-            RightDis = Mathf.Abs(hit.point.x - OriPoint.x) - BodyWidth / 2;
+            RightDis = Mathf.Abs(hit.point.x - GetTruePos().x - CastBoxThickness / 2) - BodyWidth / 2;
             Right = hit.collider.gameObject;
         }
         else

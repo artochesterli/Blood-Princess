@@ -20,4 +20,34 @@ public class Utility
 
         return Ans;
     }
+
+    public static bool InputRight()
+    {
+        return Input.GetKey(KeyCode.RightArrow);
+    }
+
+    public static bool InputLeft()
+    {
+        return Input.GetKey(KeyCode.LeftArrow);
+    }
+
+    public static bool InputJump()
+    {
+        return Input.GetKeyDown(KeyCode.Space);
+    }
+
+    public static bool InputJumpHold()
+    {
+        return Input.GetKey(KeyCode.Space);
+    }
+
+    public static bool InputLightAttack()
+    {
+        return Input.GetKeyDown(KeyCode.Z);
+    }
+
+    public static bool InputHeavyAttack()
+    {
+        return Input.GetKeyDown(KeyCode.X);
+    }
 }
