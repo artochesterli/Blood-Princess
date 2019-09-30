@@ -311,10 +311,11 @@ MonoBehaviour:
   MoveSpeed: 3
   DashSpeed: 10
   RageDashSpeed: 20
-  NormalDashDistance: 1
+  NormalDashDistance: 0.3
   RageDashDistance: 4
   Damage: 5
   AttackCoolDown: 0.8
+  RageAttackCoolDown: 0.5
   AttackAnticipation: 0.5
   AttackTime: 0.05
   AttackRecovery: 0.5

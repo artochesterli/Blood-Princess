@@ -59,11 +59,22 @@ public class CameraManager : MonoBehaviour
         switch (cameraState)
         {
             case CameraState.Follow:
-                Vector3 Target= new Vector3(Character.transform.position.x, Character.transform.position.y, transform.position.z);
-                Target.x = Utility.GetConstraintValue(Target.x, MinX + CameraViewWidth/2, MaxX-CameraViewWidth/2);
-                Target.y = Utility.GetConstraintValue(Target.y, MinY + CameraViewHeight/2, MaxY-CameraViewHeight/2);
+
+                Vector3 Target = new Vector3(Character.transform.position.x, Character.transform.position.y, transform.position.z);
+                if (!CharacterOutofCamera())
+                {
+                    Target.x = Utility.GetConstraintValue(Target.x, MinX + CameraViewWidth / 2, MaxX - CameraViewWidth / 2);
+                    Target.y = Utility.GetConstraintValue(Target.y, MinY + CameraViewHeight / 2, MaxY - CameraViewHeight / 2);
+                }
                 transform.position = Target;
+
                 break;
         }
+    }
+
+    private bool CharacterOutofCamera()
+    {
+        return Character.transform.position.x > transform.position.x + CameraViewWidth / 2 || Character.transform.position.x < transform.position.x - CameraViewWidth / 2
+            || Character.transform.position.y > transform.position.y + CameraViewHeight / 2 || Character.transform.position.y < transform.position.y - CameraViewHeight / 2;
     }
 }

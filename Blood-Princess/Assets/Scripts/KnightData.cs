@@ -15,6 +15,7 @@ public class KnightData : MonoBehaviour
     public float RageDashDistance;
     public int Damage;
     public float AttackCoolDown;
+    public float RageAttackCoolDown;
     public float AttackAnticipation;
     public float AttackTime;
     public float AttackRecovery;

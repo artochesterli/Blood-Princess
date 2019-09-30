@@ -185,7 +185,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             switch (Attack.Type)
             {
                 case CharacterAttackType.Light:
-                    Status.CurrentEnergy += Data.LightAttackEnergyGain;
+                    Status.CurrentEnergy += Data.LightAttackEnergyGain * AllHits.Length;
                     if (Status.CurrentEnergy > Data.MaxEnergy)
                     {
                         Status.CurrentEnergy = Data.MaxEnergy;
@@ -193,35 +193,28 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
                     break;
                 case CharacterAttackType.Heavy:
 
-                    float Drained = 0;
-
-                    while (Count>0)
-                    {
-                        if (Status.CurrentEnergyOrb < Data.MaxEnergyOrb)
-                        {
-                            if (Attack.Drain)
-                            {
-                                int Value= Mathf.RoundToInt(Attack.Damage / 5.0f);
-                                if (Value > Data.MaxHP - Status.CurrentHP)
-                                {
-                                    Value = Data.MaxHP - Status.CurrentHP;
-                                }
-                                Status.CurrentHP += Value;
-                                Drained += Value;
-                            }
-                                                            
-                            Status.CurrentEnergyOrb++;
-                            Status.EnergyOrbs.transform.GetChild(Status.CurrentEnergyOrb - 1).GetComponent<Image>().sprite = Status.EnergyOrbFilledSprite;
-                        }
-                        Count--;
-                    }
                     if (Attack.Drain)
                     {
+                        float Drained = Mathf.RoundToInt(Attack.Damage / 5.0f) * AllHits.Length;
+                        if (Drained > Data.MaxHP - Status.CurrentHP)
+                        {
+                            Drained = Data.MaxHP - Status.CurrentHP;
+                        }
                         GameObject DamageText = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/DamageText"), Entity.transform.position, Quaternion.Euler(0, 0, 0));
                         DamageText.GetComponent<DamageText>().TravelVector = Vector2.up;
                         DamageText.GetComponent<Text>().color = Color.green;
                         DamageText.transform.parent = Status.Canvas.transform;
                         DamageText.GetComponent<Text>().text = Drained.ToString();
+                    }
+
+                    while (Count>0)
+                    {
+                        if (Status.CurrentEnergyOrb < Data.MaxEnergyOrb)
+                        {                          
+                            Status.CurrentEnergyOrb++;
+                            Status.EnergyOrbs.transform.GetChild(Status.CurrentEnergyOrb - 1).GetComponent<Image>().sprite = Status.EnergyOrbFilledSprite;
+                        }
+                        Count--;
                     }
                     break;
             }
@@ -264,7 +257,6 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         {
             damage += Data.DrainBonus;
             Status.DrainMark.GetComponent<Image>().enabled = false;
-            
         }
 
         CharacterAttackInfo Attack= new CharacterAttackInfo(Entity, CharacterAttackType.Heavy, Entity.transform.right.x > 0, damage, Data.HeavyAttackOffset, Data.HeavyAttackHitBoxSize, Status.Drain);

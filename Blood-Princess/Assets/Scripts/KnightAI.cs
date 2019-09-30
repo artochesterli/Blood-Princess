@@ -496,6 +496,7 @@ public class KnightAttack : KnightBehavior
 public class KnightAttackCoolDown : KnightBehavior
 {
     private float TimeCount;
+    private float CoolDown;
 
     public override void OnEnter()
     {
@@ -506,6 +507,15 @@ public class KnightAttackCoolDown : KnightBehavior
         SetKnight(KnightSpriteData.Idle, KnightSpriteData.IdleOffset, KnightSpriteData.IdleSize);
 
         OriPos = Context.InitPosition + Entity.GetComponent<SpeedManager>().OriPos;
+
+        if (Entity.GetComponent<IRage>().Rage)
+        {
+            CoolDown = Entity.GetComponent<KnightData>().RageAttackCoolDown;
+        }
+        else
+        {
+            CoolDown = Entity.GetComponent<KnightData>().AttackCoolDown;
+        }
     }
 
     public override void Update()
@@ -522,7 +532,7 @@ public class KnightAttackCoolDown : KnightBehavior
     private void CheckCoolDown()
     {
         TimeCount += Time.deltaTime;
-        if (TimeCount > Entity.GetComponent<KnightData>().AttackCoolDown)
+        if (TimeCount > CoolDown)
         {
             TransitionTo<KnightChase>();
         }
