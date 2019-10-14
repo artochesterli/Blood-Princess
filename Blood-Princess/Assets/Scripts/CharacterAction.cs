@@ -141,18 +141,15 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
 
     protected void SetCharacterSprite()
     {
+        var Data = Entity.GetComponent<CharacterData>();
         var Status = Entity.GetComponent<StatusManager_Character>();
-        if (Status.CurrentEnergy >= 10)
+        if (Status.CurrentEnergy >= Data.Lv3HeavyAttackEnergyThreshold)
         {
             Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[3];
         }
-        else if(Status.CurrentEnergy >= 6)
+        else if(Status.CurrentEnergy >= Data.Lv2HeavyAttackEnergyThreshold)
         {
             Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[2];
-        }
-        else if(Status.CurrentEnergy > 0)
-        {
-            Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[1];
         }
         else
         {
@@ -244,18 +241,19 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         var Data = Entity.GetComponent<CharacterData>();
         var Status = Entity.GetComponent<StatusManager_Character>();
         int damage = Data.HeavyAttackBaseDamage;
-        if (Status.CurrentEnergy == Data.MaxEnergy)
+
+        if(Status.CurrentEnergy >= Data.Lv3HeavyAttackEnergyThreshold)
         {
-            damage = Data.HeavyAttackMaxDamage + Data.HeavyAttackMaxDamageBonus;
+            damage = Data.HeavyAttackDamage_Lv3;
         }
-        else
+        else if(Status.CurrentEnergy >= Data.Lv2HeavyAttackEnergyThreshold)
         {
-            damage = Mathf.RoundToInt((Data.HeavyAttackMaxDamage - Data.HeavyAttackBaseDamage) * (float)Status.CurrentEnergy / Data.MaxEnergy) + Data.HeavyAttackBaseDamage;
+            damage = Data.HeavyAttackDamage_Lv2;
         }
 
         if (Status.Drain)
         {
-            damage += Data.DrainBonus;
+            //damage += Data.DrainBonus;
             Status.DrainMark.GetComponent<Image>().enabled = false;
         }
 
@@ -742,11 +740,6 @@ public class JumpHoldingStay : CharacterActionState
             return;
         }
 
-        if (CheckCharacterHeavyAttack<AirHeavyAttack>())
-        {
-            return;
-        }
-
         if (CheckCharacterMove<JumpHoldingStay>(false,false))
         {
             TransitionTo<JumpHoldingMove>();
@@ -823,11 +816,6 @@ public class JumpHoldingMove : CharacterActionState
             return;
         }
 
-        if (CheckCharacterHeavyAttack<AirHeavyAttack>())
-        {
-            return;
-        }
-
         CheckCharacterMove<JumpHoldingStay>(false,true);
     }
 
@@ -889,11 +877,6 @@ public class AirStay : CharacterActionState
             return;
         }
 
-        if (CheckCharacterHeavyAttack<AirHeavyAttack>())
-        {
-            return;
-        }
-
         CheckCharacterMove<AirStay>(false,false);
     }
 }
@@ -937,11 +920,6 @@ public class AirMove : CharacterActionState
 
 
         if (CheckCharacterLightAttack<AirLightAttack>())
-        {
-            return;
-        }
-
-        if (CheckCharacterHeavyAttack<AirHeavyAttack>())
         {
             return;
         }

@@ -34,6 +34,10 @@ public class CharacterData : MonoBehaviour
     public float HeavyAttackShortRecovery;
     public float HeavyAttackTime;
     public int HeavyAttackBaseDamage;
+    public int Lv2HeavyAttackEnergyThreshold;
+    public int Lv3HeavyAttackEnergyThreshold;
+    public int HeavyAttackDamage_Lv2;
+    public int HeavyAttackDamage_Lv3;
     public int HeavyAttackMaxDamage;
     public int HeavyAttackMaxDamageBonus;
     public int DrainBonus;

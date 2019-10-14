@@ -56,6 +56,15 @@ public class StatusManager_Dummy : StatusManagerBase, IHittable, IRage
                 GetComponent<SpriteRenderer>().color = RageColor;
             }
 
+            if (Rage)
+            {
+                if( HitAttack.Type==CharacterAttackType.Heavy)
+                {
+                    GetComponent<SpriteRenderer>().color = NormalColor;
+                    Rage = false;
+                }
+            }
+
             if (CurrentHP <= 0)
             {
                 return true;
