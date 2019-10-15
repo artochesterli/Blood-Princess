@@ -33,8 +33,8 @@ public class SpeedManager : MonoBehaviour
     public Vector2 OriPos;
 
     private const float DetectDis = 1;
-    private const float HitMargin = 0.01f;
-    private const float CastBoxThickness = 0.01f;
+    private const float HitMargin = 0.02f;
+    private const float CastBoxThickness = 0.02f;
     // Start is called before the first frame update
     void Start()
     {

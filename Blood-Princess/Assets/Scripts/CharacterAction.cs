@@ -15,8 +15,8 @@ public class CharacterAttackInfo : AttackInfo
     public int Damage;
     public Vector2 HitBoxOffset;
     public Vector2 HitBoxSize;
-    public bool Drain;
-    public CharacterAttackInfo(GameObject source, CharacterAttackType type, bool right, int damage, Vector2 offset, Vector2 size,bool drain)
+    public int Level;
+    public CharacterAttackInfo(GameObject source, CharacterAttackType type, bool right, int damage, Vector2 offset, Vector2 size,int level = 0)
     {
         Source = source;
         Type = type;
@@ -24,7 +24,7 @@ public class CharacterAttackInfo : AttackInfo
         Damage = damage;
         HitBoxOffset = offset;
         HitBoxSize = size;
-        Drain = drain;
+        Level = level;
     }
 }
 
@@ -108,7 +108,6 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         base.Update();
         Entity.GetComponent<SpeedManager>().SelfSpeed.y -= CurrentGravity * Time.deltaTime * 10;
         SetCharacterSprite();
-        CheckDrainInput();
     }
 
     protected bool CheckWallHitting()
@@ -126,11 +125,10 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         }
     }
 
-    protected bool CheckGetHit()
+    protected bool CheckGetInterrupted()
     {
-        if (Entity.GetComponent<IHittable>().hit)
+        if (Entity.GetComponent<IHittable>().Interrupted)
         {
-            TransitionTo<GetHit>();
             return true;
         }
         else
@@ -143,11 +141,12 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
     {
         var Data = Entity.GetComponent<CharacterData>();
         var Status = Entity.GetComponent<StatusManager_Character>();
-        if (Status.CurrentEnergy >= Data.Lv3HeavyAttackEnergyThreshold)
+
+        if(Status.CurrentEnergy >= 2)
         {
             Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[3];
         }
-        else if(Status.CurrentEnergy >= Data.Lv2HeavyAttackEnergyThreshold)
+        else if(Status.CurrentEnergy >= 1)
         {
             Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[2];
         }
@@ -190,9 +189,9 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
                     break;
                 case CharacterAttackType.Heavy:
 
-                    if (Attack.Drain)
+                    if(Attack.Level == 2)
                     {
-                        float Drained = Mathf.RoundToInt(Attack.Damage / 5.0f) * AllHits.Length;
+                        int Drained = Mathf.RoundToInt(Attack.Damage / 5.0f) * AllHits.Length;
                         if (Drained > Data.MaxHP - Status.CurrentHP)
                         {
                             Drained = Data.MaxHP - Status.CurrentHP;
@@ -202,17 +201,9 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
                         DamageText.GetComponent<Text>().color = Color.green;
                         DamageText.transform.parent = Status.Canvas.transform;
                         DamageText.GetComponent<Text>().text = Drained.ToString();
+                        Status.CurrentHP += Drained;
                     }
-
-                    while (Count>0)
-                    {
-                        if (Status.CurrentEnergyOrb < Data.MaxEnergyOrb)
-                        {                          
-                            Status.CurrentEnergyOrb++;
-                            Status.EnergyOrbs.transform.GetChild(Status.CurrentEnergyOrb - 1).GetComponent<Image>().sprite = Status.EnergyOrbFilledSprite;
-                        }
-                        Count--;
-                    }
+                   
                     break;
             }
 
@@ -224,43 +215,21 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         }
     }
 
-    protected void CheckDrainInput()
-    {
-        var Status = Entity.GetComponent<StatusManager_Character>();
-        if (Utility.InputDrain()&&Status.CurrentEnergyOrb>0)
-        {
-            Status.EnergyOrbs.transform.GetChild(Status.CurrentEnergyOrb - 1).GetComponent<Image>().sprite = Status.EnergyOrbEmptySprite;
-            Status.CurrentEnergyOrb--;
-            Status.Drain = true;
-            Status.DrainMark.GetComponent<Image>().enabled = true;
-        }
-    }
-
     protected CharacterAttackInfo GetHeavyAttackInfo()
     {
         var Data = Entity.GetComponent<CharacterData>();
         var Status = Entity.GetComponent<StatusManager_Character>();
-        int damage = Data.HeavyAttackBaseDamage;
 
-        if(Status.CurrentEnergy >= Data.Lv3HeavyAttackEnergyThreshold)
-        {
-            damage = Data.HeavyAttackDamage_Lv3;
-        }
-        else if(Status.CurrentEnergy >= Data.Lv2HeavyAttackEnergyThreshold)
-        {
-            damage = Data.HeavyAttackDamage_Lv2;
-        }
+        int damage = Data.Lv1HeavyAttackDamage;
+        int level = 1;
 
-        if (Status.Drain)
+        if(Status.CurrentEnergy >= 2)
         {
-            //damage += Data.DrainBonus;
-            Status.DrainMark.GetComponent<Image>().enabled = false;
+            damage = Data.Lv2HeavyAttackDamage;
+            level = 2;
         }
 
-        CharacterAttackInfo Attack= new CharacterAttackInfo(Entity, CharacterAttackType.Heavy, Entity.transform.right.x > 0, damage, Data.HeavyAttackOffset, Data.HeavyAttackHitBoxSize, Status.Drain);
-
-
-        Status.Drain = false;
+        CharacterAttackInfo Attack= new CharacterAttackInfo(Entity, CharacterAttackType.Heavy, Entity.transform.right.x > 0, damage, Data.HeavyAttackOffset, Data.HeavyAttackHitBoxSize, level);
 
         return Attack;
     }
@@ -268,7 +237,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
     protected CharacterAttackInfo GetLightAttackInfo()
     {
         var Data = Entity.GetComponent<CharacterData>();
-        return new CharacterAttackInfo(Entity, CharacterAttackType.Light, Entity.transform.right.x > 0, Data.LightAttackDamage, Data.LightAttackOffset, Data.LightAttackHitBoxSize,false);
+        return new CharacterAttackInfo(Entity, CharacterAttackType.Light, Entity.transform.right.x > 0, Data.LightAttackDamage, Data.LightAttackOffset, Data.LightAttackHitBoxSize);
     }
 
     protected void GetLightAttackTime()
@@ -283,17 +252,17 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
     {
         var Data = Entity.GetComponent<CharacterData>();
 
-        if (Entity.GetComponent<StatusManager_Character>().CurrentEnergy < Data.MaxEnergy)
+        if (Entity.GetComponent<StatusManager_Character>().CurrentEnergy >= 2)
         {
-            AnticipationTime = Data.HeavyAttackLongAnticipation;
-            AttackTime = Data.HeavyAttackTime;
-            RecoveryTime = Data.HeavyAttackLongRecovery;
+            AnticipationTime = Data.Lv2HeavyAttackAnticipation;
+            AttackTime = Data.Lv2HeavyAttackTime;
+            RecoveryTime = Data.Lv2HeavyAttackRecovery;
         }
         else
         {
-            AnticipationTime = Data.HeavyAttackShortAnticipation;
-            AttackTime = Data.HeavyAttackTime;
-            RecoveryTime = Data.HeavyAttackShortRecovery;
+            AnticipationTime = Data.Lv1HeavyAttackAnticipation;
+            AttackTime = Data.Lv1HeavyAttackTime;
+            RecoveryTime = Data.Lv1HeavyAttackRecovery;
         }
     }
 
@@ -336,6 +305,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             case AttackState.Anticipation:
                 if (AttackTimeCount > AnticipationTime)
                 {
+
                     CurrentAttackState = AttackState.Attack;
                     AttackTimeCount = 0;
 
@@ -352,7 +322,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
                     }
                     else
                     {
-                        
+                        Attack = GetHeavyAttackInfo();
                         var SpriteData = Entity.GetComponent<CharacterSpriteData>();
                         CurrentSpriteSeries = SpriteData.HeavyRecoverySeries;
 
@@ -433,7 +403,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
 
     protected bool CheckCharacterHeavyAttack<AttackState>() where AttackState : CharacterActionState
     {
-        if (Utility.InputHeavyAttack())
+        if (Utility.InputHeavyAttack()&&Entity.GetComponent<StatusManager_Character>().CurrentEnergy>0)
         {
             TransitionTo<AttackState>();
             return true;
@@ -610,8 +580,15 @@ public class Stand : CharacterActionState
 
     private void RunCheck()
     {
-        if (CheckGetHit())
+        if (CheckGetInterrupted())
         {
+            TransitionTo<GetInterrupted>();
+            return;
+        }
+
+        if (Utility.InputBlock())
+        {
+            TransitionTo<Block>();
             return;
         }
 
@@ -665,8 +642,15 @@ public class GroundMove : CharacterActionState
 
     private void RunCheck()
     {
-        if (CheckGetHit())
+        if (CheckGetInterrupted())
         {
+            TransitionTo<GetInterrupted>();
+            return;
+        }
+
+        if (Utility.InputBlock())
+        {
+            TransitionTo<Block>();
             return;
         }
 
@@ -720,8 +704,9 @@ public class JumpHoldingStay : CharacterActionState
 
     private void RunCheck()
     {
-        if (CheckGetHit())
+        if (CheckGetInterrupted())
         {
+            TransitionTo<GetInterrupted>();
             return;
         }
 
@@ -791,8 +776,9 @@ public class JumpHoldingMove : CharacterActionState
 
     private void RunCheck()
     {
-        if (CheckGetHit())
+        if (CheckGetInterrupted())
         {
+            TransitionTo<GetInterrupted>();
             return;
         }
 
@@ -861,8 +847,9 @@ public class AirStay : CharacterActionState
 
     private void RunCheck()
     {
-        if (CheckGetHit())
+        if (CheckGetInterrupted())
         {
+            TransitionTo<GetInterrupted>();
             return;
         }
 
@@ -903,8 +890,9 @@ public class AirMove : CharacterActionState
 
     private void RunCheck()
     {
-        if (CheckGetHit())
+        if (CheckGetInterrupted())
         {
+            TransitionTo<GetInterrupted>();
             return;
         }
 
@@ -979,8 +967,9 @@ public class GroundLightAttack : CharacterActionState
     public override void Update()
     {
         base.Update();
-        if (CurrentAttackState!=AttackState.Attack && CheckGetHit())
+        if (CurrentAttackState!=AttackState.Attack && CheckGetInterrupted())
         {
+            TransitionTo<GetInterrupted>();
             return;
         }
         CheckCharacterMove<Stand>(true, false);
@@ -1027,8 +1016,9 @@ public class AirLightAttack : CharacterActionState
     public override void Update()
     {
         base.Update();
-        if (CurrentAttackState != AttackState.Attack && CheckGetHit())
+        if (CurrentAttackState != AttackState.Attack && CheckGetInterrupted())
         {
+            TransitionTo<GetInterrupted>();
             return;
         }
         CheckCharacterMove<AirStay>(true, false);
@@ -1079,8 +1069,9 @@ public class GroundHeavyAttack : CharacterActionState
     public override void Update()
     {
         base.Update();
-        if (CurrentAttackState != AttackState.Attack && CheckGetHit())
+        if (CurrentAttackState != AttackState.Attack && CheckGetInterrupted())
         {
+            TransitionTo<GetInterrupted>();
             return;
         }
         CheckAttackTimeCount<Stand, GroundMove>(AnticipationTime, AttackTime, RecoveryTime);
@@ -1090,11 +1081,7 @@ public class GroundHeavyAttack : CharacterActionState
 
     private void CostEnergy()
     {
-        if (CurrentAttackState == AttackState.Anticipation)
-        {
-            Entity.GetComponent<StatusManager_Character>().CurrentEnergy = Mathf.RoundToInt(EnergyStored * (1 - AttackTimeCount / AnticipationTime));
-        }
-        else
+        if (CurrentAttackState != AttackState.Anticipation)
         {
             Entity.GetComponent<StatusManager_Character>().CurrentEnergy = 0;
         }
@@ -1139,8 +1126,9 @@ public class AirHeavyAttack : CharacterActionState
     public override void Update()
     {
         base.Update();
-        if (CurrentAttackState != AttackState.Attack && CheckGetHit())
+        if (CurrentAttackState != AttackState.Attack && CheckGetInterrupted())
         {
+            TransitionTo<GetInterrupted>();
             return;
         }
         CheckAttackTimeCount<AirStay, AirMove>(AnticipationTime, AttackTime, RecoveryTime);
@@ -1161,12 +1149,7 @@ public class AirHeavyAttack : CharacterActionState
 
     private void CostEnergy()
     {
-        if (CurrentAttackState == AttackState.Anticipation)
-        {
-            Entity.GetComponent<StatusManager_Character>().CurrentEnergy = Mathf.RoundToInt(EnergyStored * (1 - AttackTimeCount / AnticipationTime));
-            
-        }
-        else
+        if (CurrentAttackState != AttackState.Anticipation)
         {
             Entity.GetComponent<StatusManager_Character>().CurrentEnergy = 0;
         }
@@ -1179,15 +1162,93 @@ public class AirHeavyAttack : CharacterActionState
     }
 }
 
-public class GetHit : CharacterActionState
+public class Block : CharacterActionState
 {
+    private float TimeCount;
 
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        TimeCount = 0;
+        var Status = Entity.GetComponent<StatusManager_Character>();
+        if (Status.CurrentEnergy > 0)
+        {
+            Status.CurrentEnergy--;
+            Status.Invulnerable = true;
+            Status.InvulnerableMark.SetActive(true);
+        }
+
+        Status.Blocking = true;
+
+        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.LightAnticipationSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HitOffset, SpriteData.HitSize);
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        if (!Utility.InputBlock())
+        {
+            TransitionTo<Stand>();
+            return;
+        }
+
+        if (CheckGetInterrupted())
+        {
+            TransitionTo<GetInterrupted>();
+            return;
+        }
+
+        if (Utility.InputLeft() && !Utility.InputRight())
+        {
+            Entity.transform.rotation = Quaternion.Euler(0, 180, 0);
+        }
+        else if(!Utility.InputLeft() && Utility.InputRight())
+        {
+            Entity.transform.rotation = Quaternion.Euler(0, 0, 0);
+        }
+
+        CheckBlockTime();
+    }
+
+    public override void OnExit()
+    {
+        base.OnExit();
+        var Status = Entity.GetComponent<StatusManager_Character>();
+        Status.Blocking = false;
+        Status.Invulnerable = false;
+        Status.InvulnerableMark.SetActive(false);
+    }
+
+    private void CheckBlockTime()
+    {
+        TimeCount += Time.deltaTime;
+        var Status = Entity.GetComponent<StatusManager_Character>();
+        var Data = Entity.GetComponent<CharacterData>();
+        if (TimeCount >= Data.BlockInvulnerableTime)
+        {
+            Status.Invulnerable = false;
+            Status.InvulnerableMark.SetActive(false);
+        }
+    }
+}
+
+public class GetInterrupted : CharacterActionState
+{
     private float GetHitTimeCount;
     private bool FinishOnGround;
 
     public override void OnEnter()
     {
         base.OnEnter();
+
+        Entity.GetComponent<StatusManager_Character>().CurrentEnergy = 0;
+
         EnemyAttackInfo Temp = (EnemyAttackInfo)Entity.GetComponent<IHittable>().HitAttack;
 
         float HitSpeed;
@@ -1238,7 +1299,7 @@ public class GetHit : CharacterActionState
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = Entity.GetComponent<SpeedManager>().ForcedSpeed.x;
         }
         Entity.GetComponent<SpeedManager>().ForcedSpeed.x = 0;
-        Entity.GetComponent<IHittable>().hit = false;
+        Entity.GetComponent<IHittable>().Interrupted = false;
     }
 }
 

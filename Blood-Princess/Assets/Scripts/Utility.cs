@@ -51,8 +51,8 @@ public class Utility
         return Input.GetKeyDown(KeyCode.X);
     }
 
-    public static bool InputDrain()
+    public static bool InputBlock()
     {
-        return Input.GetKeyDown(KeyCode.Q);
+        return Input.GetKey(KeyCode.LeftControl);
     }
 }

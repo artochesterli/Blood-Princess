@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StatusManager_Dummy : StatusManagerBase, IHittable, IRage
+public class StatusManager_Dummy : StatusManagerBase, IHittable, IShield
 {
-    public bool Rage { get; set; }
-    public int RageCount { get; set; }
+    public int CurrentShield { get; set; }
+
     public GameObject HPFill;
+    public GameObject ShieldFill;
+    public GameObject Canvas;
 
     public Color NormalColor;
-    public Color RageColor;
     public Color DeadColor;
 
     private float RecoveryTimeCount;
@@ -19,6 +20,7 @@ public class StatusManager_Dummy : StatusManagerBase, IHittable, IRage
     {
         var Data = GetComponent<DummyData>();
         CurrentHP = Data.MaxHP;
+        CurrentShield = Data.MaxShield;
     }
 
     // Update is called once per frame
@@ -32,10 +34,35 @@ public class StatusManager_Dummy : StatusManagerBase, IHittable, IRage
     {
         base.OnHit(Attack);
         GameObject DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
+        DamageText.transform.parent = Canvas.transform;
         if (CurrentHP > 0)
         {
             CharacterAttackInfo HitAttack = (CharacterAttackInfo)Attack;
-            CurrentHP -= HitAttack.Damage;
+
+            var Data = GetComponent<DummyData>();
+
+            if (HitAttack.Type == CharacterAttackType.Heavy)
+            {
+                CurrentHP -= HitAttack.Damage;
+                Interrupted = true;
+            }
+            else
+            {
+                if (CurrentShield > 0)
+                {
+                    CurrentShield -= HitAttack.Damage;
+                    if (CurrentShield < 0)
+                    {
+                        CurrentShield = 0;
+                    }
+                    Interrupted = false;
+                }
+                else
+                {
+                    CurrentHP -= HitAttack.Damage;
+                    Interrupted = true;
+                }
+            }
 
             if (HitAttack.Right)
             {
@@ -46,23 +73,13 @@ public class StatusManager_Dummy : StatusManagerBase, IHittable, IRage
                 DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 1);
             }
             DamageText.GetComponent<Text>().text = HitAttack.Damage.ToString();
-            DamageText.transform.parent = HPFill.transform.parent;
-
-            var Data = GetComponent<DummyData>();
-            if (CurrentHP <= Data.RageHP&&RageCount<Data.RageNumber)
+            if (Interrupted)
             {
-                Rage = true;
-                RageCount++;
-                GetComponent<SpriteRenderer>().color = RageColor;
+                DamageText.GetComponent<Text>().color = Color.red;
             }
-
-            if (Rage)
+            else
             {
-                if( HitAttack.Type==CharacterAttackType.Heavy)
-                {
-                    GetComponent<SpriteRenderer>().color = NormalColor;
-                    Rage = false;
-                }
+                DamageText.GetComponent<Text>().color = Color.white;
             }
 
             if (CurrentHP <= 0)
@@ -88,18 +105,31 @@ public class StatusManager_Dummy : StatusManagerBase, IHittable, IRage
             var Data = GetComponent<DummyData>();
             if (RecoveryTimeCount > Data.RecoveryTime)
             {
+                RecoverShield();
                 CurrentHP = Data.MaxHP;
                 RecoveryTimeCount = 0;
-                Rage = false;
-                RageCount = 0;
                 GetComponent<SpriteRenderer>().color = NormalColor;
             }
         }
+    }
+
+    public void RecoverShield()
+    {
+        CurrentShield = GetComponent<DummyData>().MaxShield;
     }
 
     private void SetFill()
     {
         var Data = GetComponent<DummyData>();
         HPFill.GetComponent<Image>().fillAmount = (float)CurrentHP / Data.MaxHP;
+        if (Data.MaxShield > 0)
+        {
+            ShieldFill.GetComponent<Image>().fillAmount = (float)CurrentShield / Data.MaxShield;
+        }
+        else
+        {
+            ShieldFill.GetComponent<Image>().enabled = false;
+            ShieldFill.transform.parent.GetComponent<Image>().enabled = false;
+        }
     }
 }

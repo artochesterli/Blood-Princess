@@ -5,26 +5,27 @@ using UnityEngine;
 public class KnightData : MonoBehaviour
 {
     public int MaxHP;
-    public int RageHP;
-    public int RageNumber;
+    public int MaxShield;
 
     public float MoveSpeed;
     public float DashSpeed;
-    public float RageDashSpeed;
-    public float NormalDashDistance;
-    public float RageDashDistance;
+    public float DashDistance;
     public int Damage;
     public float AttackCoolDown;
-    public float RageAttackCoolDown;
     public float AttackAnticipation;
     public float AttackTime;
     public float AttackRecovery;
     public Vector2 AttackOffset;
     public Vector2 AttackHitBoxSize;
 
-    public float GetHitTime;
-    public float GetHitSpeed;
-    public float GetHitMoveTime;
+    public float InterruptedTime;
+    public float InterruptedSpeed;
+    public float InterruptedMoveTime;
+    public float StepBackTime;
+    public float StepBackSpeed;
+    public float StepBackMoveTime;
+
+
 
     // Start is called before the first frame update
     void Start()

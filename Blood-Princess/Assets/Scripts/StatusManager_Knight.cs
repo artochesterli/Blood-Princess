@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StatusManager_Knight : StatusManagerBase , IHittable, IRage
+public class StatusManager_Knight : StatusManagerBase , IHittable, IShield
 {
-    public bool Rage { get; set; }
-    public int RageCount { get; set; }
+    public int CurrentShield { get; set; }
 
     public GameObject Canvas;
     public GameObject SharedCanvas;
     public GameObject HPFill;
+    public GameObject ShieldFill;
 
     public Color NormalColor;
     public Color RageColor;
@@ -21,6 +21,7 @@ public class StatusManager_Knight : StatusManagerBase , IHittable, IRage
     {
         var Data = GetComponent<KnightData>();
         CurrentHP = Data.MaxHP;
+        CurrentShield = Data.MaxShield;
     }
 
     // Update is called once per frame
@@ -35,7 +36,34 @@ public class StatusManager_Knight : StatusManagerBase , IHittable, IRage
         DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
 
         CharacterAttackInfo HitAttack = (CharacterAttackInfo)Attack;
+
+        var Data = GetComponent<KnightData>();
+
         CurrentHP -= HitAttack.Damage;
+
+        if (HitAttack.Type == CharacterAttackType.Heavy)
+        {
+            Interrupted = true;
+        }
+        else
+        {
+            Interrupted = false;
+            /*if (CurrentShield > 0)
+            {
+                CurrentShield -= HitAttack.Damage;
+                if (CurrentShield < 0)
+                {
+                    CurrentShield = 0;
+                }
+                Interrupted = false;
+            }
+            else
+            {
+                CurrentHP -= HitAttack.Damage;
+                Interrupted = true;
+            }*/
+        }
+
 
         if (HitAttack.Right)
         {
@@ -47,30 +75,16 @@ public class StatusManager_Knight : StatusManagerBase , IHittable, IRage
         }
         DamageText.GetComponent<Text>().text = HitAttack.Damage.ToString();
         DamageText.transform.parent = Canvas.transform;
-
-        bool Knocked = true;
-        if (Rage)
+        if (HitAttack.Type==CharacterAttackType.Heavy)
         {
-            if (HitAttack.Type == CharacterAttackType.Light)
-            {
-                Knocked = false;
-            }
-            else
-            {
-                GetComponent<SpriteRenderer>().color = NormalColor;
-                Rage = false;
-            }
+            DamageText.GetComponent<Text>().color = Color.red;
+        }
+        else
+        {
+            DamageText.GetComponent<Text>().color = Color.white;
         }
 
-        var Data = GetComponent<KnightData>();
-        if(CurrentHP<=Data.RageHP && RageCount < Data.RageNumber)
-        {
-            Rage = true;
-            RageCount++;
-            GetComponent<SpriteRenderer>().color = RageColor;
-        }
 
-        hit = Knocked;
         if (CurrentHP <= 0)
         {
             DamageText.transform.parent = SharedCanvas.transform;
@@ -83,10 +97,29 @@ public class StatusManager_Knight : StatusManagerBase , IHittable, IRage
         }
     }
 
+    public void RecoverShield()
+    {
+        if(CurrentShield <= 0)
+        {
+            CurrentShield = GetComponent<KnightData>().MaxShield;
+        }
+    }
+
     private void SetFill()
     {
         Canvas.GetComponent<RectTransform>().eulerAngles = Vector3.zero;
         var Data = GetComponent<KnightData>();
         HPFill.GetComponent<Image>().fillAmount = (float)CurrentHP / Data.MaxHP;
+        if (Data.MaxShield > 0)
+        {
+            ShieldFill.GetComponent<Image>().fillAmount = (float)CurrentShield / Data.MaxShield;
+        }
+        else
+        {
+            ShieldFill.GetComponent<Image>().enabled = false;
+            ShieldFill.transform.parent.GetComponent<Image>().enabled = false;
+        }
     }
+
+
 }

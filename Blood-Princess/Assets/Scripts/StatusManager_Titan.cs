@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StatusManager_Titan : StatusManagerBase, IHittable, IRage
+public class StatusManager_Titan : StatusManagerBase, IHittable
 {
-    public bool Rage { get; set; }
-    public int RageCount { get; set; }
 
     public GameObject Canvas;
     public GameObject SharedCanvas;
@@ -49,30 +47,8 @@ public class StatusManager_Titan : StatusManagerBase, IHittable, IRage
         DamageText.GetComponent<Text>().text = HitAttack.Damage.ToString();
         DamageText.transform.parent = Canvas.transform;
 
-        bool Knocked = true;
-        if (Rage)
-        {
-            if (HitAttack.Type == CharacterAttackType.Light)
-            {
-                Knocked = false;
-            }
-            else
-            {
-                GetComponent<SpriteRenderer>().color = NormalColor;
-                Rage = false;
-            }
-        }
-        else
-        {
-            if (HitAttack.Type == CharacterAttackType.Light)
-            {
-                Rage = true;
-                GetComponent<SpriteRenderer>().color = RageColor;
-            }
-        }
 
-
-        hit = Knocked;
+        //hit = HitAttack.Type == CharacterAttackType.Heavy;
         if (CurrentHP <= 0)
         {
             DamageText.transform.parent = SharedCanvas.transform;

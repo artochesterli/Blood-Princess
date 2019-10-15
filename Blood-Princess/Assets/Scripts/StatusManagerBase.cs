@@ -4,23 +4,24 @@ using UnityEngine;
 
 interface IHittable
 {
-    bool hit { get; set; }
+    bool Interrupted { get; set; }
     AttackInfo HitAttack { get; set; }
 
     bool OnHit(AttackInfo Attack);
 }
 
-interface IRage
+interface IShield
 {
-    bool Rage { get; set; }
-    int RageCount { get; set; }
+    int CurrentShield { get; set; }
+
+    void RecoverShield();
 }
 
 public class StatusManagerBase : MonoBehaviour, IHittable
 {
     public int CurrentHP;
     public AttackInfo HitAttack { get; set; }
-    public bool hit { get; set; }
+    public bool Interrupted { get; set; }
     // Start is called before the first frame update
     void Start()
     {
@@ -35,7 +36,6 @@ public class StatusManagerBase : MonoBehaviour, IHittable
 
     public virtual bool OnHit(AttackInfo Attack)
     {
-        hit = true;
         HitAttack = Attack;
         return CurrentHP <= 0;
     }

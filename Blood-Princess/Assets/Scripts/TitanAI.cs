@@ -139,11 +139,10 @@ public abstract class TitanBehavior : FSM<TitanAI>.State
         return hit;
     }
 
-    protected bool CheckGetHit()
+    protected bool CheckGetInterrupted()
     {
-        if (Entity.GetComponent<IHittable>().hit)
+        if (Entity.GetComponent<IHittable>().Interrupted)
         {
-            TransitionTo<TitanGetHit>();
             return true;
         }
         else
@@ -189,8 +188,9 @@ public class TitanPatron : TitanBehavior
     {
         base.Update();
 
-        if (CheckGetHit())
+        if (CheckGetInterrupted())
         {
+            TransitionTo<TitanGetInterrupted>();
             return;
         }
         Patron();
@@ -273,21 +273,14 @@ public class TitanAttack : TitanBehavior
 
         OriPos = Context.InitPosition + Entity.GetComponent<SpeedManager>().OriPos;
 
-        if (Entity.GetComponent<IRage>().Rage)
-        {
-            MaxDashDis = TitanData.RageDashDistance;
-        }
-        else
-        {
-            MaxDashDis = TitanData.NormalDashDistance;
-        }
     }
 
     public override void Update()
     {
         base.Update();
-        if (CheckGetHit())
+        if (CheckGetInterrupted())
         {
+            TransitionTo<TitanGetInterrupted>();
             return;
         }
         CheckAttackTimeCount(AnticipationTime, AttackTime, RecoveryTime);
@@ -331,7 +324,7 @@ public class TitanAttack : TitanBehavior
         {
             for (int i = 0; i < AllHits.Length; i++)
             {
-                if (!AllHits[i].collider.gameObject.GetComponent<IHittable>().hit)
+                if (!AllHits[i].collider.gameObject.GetComponent<IHittable>().Interrupted)
                 {
                     AllHits[i].collider.gameObject.GetComponent<IHittable>().OnHit(Attack);
                 }
@@ -380,11 +373,6 @@ public class TitanAttack : TitanBehavior
                     if (PlayerX - SelfX > 0 && DashTraveled < MaxDashDis)
                     {
                         float DashSpeed = Entity.GetComponent<TitanData>().DashSpeed;
-                        if (Entity.GetComponent<IRage>().Rage)
-                        {
-                            DashSpeed = Entity.GetComponent<TitanData>().RageDashSpeed;
-                        }
-
 
                         float DashDis = DashSpeed * Time.deltaTime;
 
@@ -421,10 +409,6 @@ public class TitanAttack : TitanBehavior
                     if (SelfX - PlayerX > 0 && DashTraveled < MaxDashDis)
                     {
                         float DashSpeed = Entity.GetComponent<TitanData>().DashSpeed;
-                        if (Entity.GetComponent<IRage>().Rage)
-                        {
-                            DashSpeed = Entity.GetComponent<TitanData>().RageDashSpeed;
-                        }
 
                         float DashDis = DashSpeed * Time.deltaTime;
 
@@ -488,23 +472,15 @@ public class TitanAttackCoolDown : TitanBehavior
         SetTitan(TitanSpriteData.Idle, TitanSpriteData.IdleOffset, TitanSpriteData.IdleSize);
 
         OriPos = Context.InitPosition + Entity.GetComponent<SpeedManager>().OriPos;
-
-        if (Entity.GetComponent<IRage>().Rage)
-        {
-            CoolDown = Entity.GetComponent<TitanData>().RageAttackCoolDown;
-        }
-        else
-        {
-            CoolDown = Entity.GetComponent<TitanData>().AttackCoolDown;
-        }
     }
 
     public override void Update()
     {
         base.Update();
 
-        if (CheckGetHit())
+        if (CheckGetInterrupted())
         {
+            TransitionTo<TitanGetInterrupted>();
             return;
         }
         CheckCoolDown();
@@ -532,15 +508,6 @@ public class TitanChase : TitanBehavior
         base.OnEnter();
         var TitanData = Entity.GetComponent<TitanData>();
 
-        if (Entity.GetComponent<IRage>().Rage)
-        {
-            DetectDis = TitanData.RageDashDistance;
-        }
-        else
-        {
-            DetectDis = TitanData.NormalDashDistance;
-        }
-
         Offset = TitanData.AttackOffset;
         Height = TitanData.AttackHitBoxSize.y;
 
@@ -553,8 +520,9 @@ public class TitanChase : TitanBehavior
     public override void Update()
     {
         base.Update();
-        if (CheckGetHit())
+        if (CheckGetInterrupted())
         {
+            TransitionTo<TitanGetInterrupted>();
             return;
         }
         ChasePlayer();
@@ -616,7 +584,7 @@ public class TitanChase : TitanBehavior
     }
 }
 
-public class TitanGetHit : TitanBehavior
+public class TitanGetInterrupted : TitanBehavior
 {
     private float GetHitTimeCount;
     private GameObject Source;
@@ -649,8 +617,9 @@ public class TitanGetHit : TitanBehavior
     public override void Update()
     {
         base.Update();
-        if (CheckGetHit())
+        if (CheckGetInterrupted())
         {
+            OnEnter();
             return;
         }
         CheckTimeCount();
@@ -675,7 +644,7 @@ public class TitanGetHit : TitanBehavior
     {
         base.OnExit();
         Entity.GetComponent<SpeedManager>().ForcedSpeed.x = 0;
-        Entity.GetComponent<IHittable>().hit = false;
+        Entity.GetComponent<IHittable>().Interrupted= false;
     }
 }
 

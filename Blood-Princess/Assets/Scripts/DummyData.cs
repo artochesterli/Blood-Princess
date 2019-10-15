@@ -5,8 +5,8 @@ using UnityEngine;
 public class DummyData : MonoBehaviour
 {
     public int MaxHP;
-    public int RageHP;
-    public int RageNumber;
+    public int MaxShield;
+
     public float RecoveryTime;
     // Start is called before the first frame update
     void Start()

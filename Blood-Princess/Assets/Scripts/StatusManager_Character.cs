@@ -8,25 +8,23 @@ using UnityEngine.SceneManagement;
 public class StatusManager_Character : StatusManagerBase, IHittable
 {
     public int CurrentEnergy;
-    public int CurrentEnergyOrb;
-    public bool Drain;
+
+    public bool Invulnerable;
+    public bool Blocking;
+    public GameObject InvulnerableMark;
 
     public Vector2 BarDefaultSize;
     public Vector2 BarInflateSize;
 
     public GameObject Canvas;
     public GameObject HPFill;
-    public GameObject EnergyFill;
-    public GameObject EnergyOrbs;
-    public GameObject DrainMark;
+    public GameObject EnergyMarks;
 
     public Sprite EnergyOrbEmptySprite;
     public Sprite EnergyOrbFilledSprite;
 
     private GameObject DamageText;
-    private bool NearDeath;
 
-    private bool BarInflating;
     private float TimeCount;
 
     // Start is called before the first frame update
@@ -35,37 +33,11 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Data = GetComponent<CharacterData>();
         CurrentHP = Data.MaxHP;
         CurrentEnergy = 0;
-        CurrentEnergyOrb = 0;
     }
 
     // Update is called once per frame
     void Update()
     {
-        NearDeath = CurrentHP - CurrentEnergy <= 0;
-        if (NearDeath)
-        {
-            TimeCount += Time.deltaTime;
-            if (BarInflating)
-            {
-                HPFill.transform.parent.GetComponent<RectTransform>().sizeDelta = Vector2.Lerp(BarDefaultSize, BarInflateSize, TimeCount / 0.1f);
-                EnergyFill.transform.parent.GetComponent<RectTransform>().sizeDelta = Vector2.Lerp(BarDefaultSize, BarInflateSize, TimeCount / 0.1f);
-            }
-            else
-            {
-                HPFill.transform.parent.GetComponent<RectTransform>().sizeDelta = Vector2.Lerp(BarInflateSize, BarDefaultSize,  TimeCount / 0.1f);
-                EnergyFill.transform.parent.GetComponent<RectTransform>().sizeDelta = Vector2.Lerp(BarInflateSize, BarDefaultSize, TimeCount / 0.1f);
-            }
-            if (TimeCount >= 0.1f)
-            {
-                TimeCount = 0;
-                BarInflating = !BarInflating;
-            }
-
-        }
-        else
-        {
-            HPFill.transform.parent.GetComponent<RectTransform>().sizeDelta = BarDefaultSize;
-        }
 
         SetFill();
     }
@@ -75,7 +47,23 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         Canvas.GetComponent<RectTransform>().eulerAngles = Vector3.zero;
         var Data = GetComponent<CharacterData>();
         HPFill.GetComponent<Image>().fillAmount = (float)CurrentHP / Data.MaxHP;
-        EnergyFill.GetComponent<Image>().fillAmount = (float)CurrentEnergy / Data.MaxEnergy;
+
+        int count = 0;
+
+        foreach(Transform child in EnergyMarks.transform)
+        {
+            if (CurrentEnergy > count)
+            {
+                child.GetComponent<Image>().enabled = true;
+            }
+            else
+            {
+                child.GetComponent<Image>().enabled = false;
+            }
+            count++;
+        }
+
+        //EnergyFill.GetComponent<Image>().fillAmount = (float)CurrentEnergy / Data.MaxEnergy;
     }
 
     public override bool OnHit(AttackInfo Attack)
@@ -84,7 +72,36 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
 
         EnemyAttackInfo HitAttack = (EnemyAttackInfo)Attack;
-        CurrentHP -= HitAttack.Damage;
+
+        int Damage = HitAttack.Damage;
+
+        if (Invulnerable)
+        {
+            Damage = 0;
+            Interrupted = false;
+            CurrentEnergy++;
+        }
+        else if (Blocking)
+        {
+            if(HitAttack.Right && transform.right.x < 0 || !HitAttack.Right && transform.right.x > 0)
+            {
+                Damage = Mathf.RoundToInt((1 - GetComponent<CharacterData>().BlockDamageDeduction) * Damage);
+                Interrupted = false;
+            }
+            else
+            {
+                CurrentEnergy = 0;
+                Interrupted = true;
+            }
+        }
+        else
+        {
+            CurrentEnergy = 0;
+            Interrupted = true;
+        }
+
+
+        CurrentHP -= Damage;
 
         if (HitAttack.Right)
         {
@@ -94,10 +111,11 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         {
             DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 1);
         }
-        DamageText.GetComponent<Text>().text = HitAttack.Damage.ToString();
+        DamageText.GetComponent<Text>().text = Damage.ToString();
         DamageText.transform.parent = Canvas.transform;
 
-        if (NearDeath)
+
+        if(CurrentHP <= 0)
         {
             SceneManager.LoadScene(0);
             return true;

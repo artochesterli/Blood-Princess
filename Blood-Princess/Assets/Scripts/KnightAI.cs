@@ -48,7 +48,7 @@ public abstract class KnightBehavior : FSM<KnightAI>.State
     public override void OnEnter()
     {
         base.OnEnter();
-        Debug.Log(this.GetType().Name);
+        //Debug.Log(this.GetType().Name);
     }
 
     protected void SetKnight(Sprite S,Vector2 Offset,Vector2 Size)
@@ -139,11 +139,10 @@ public abstract class KnightBehavior : FSM<KnightAI>.State
         return hit;
     }
 
-    protected bool CheckGetHit()
+    protected bool CheckGetInterrupted()
     {
-        if (Entity.GetComponent<IHittable>().hit)
+        if (Entity.GetComponent<IHittable>().Interrupted)
         {
-            TransitionTo<KnightGetHit>();
             return true;
         }
         else
@@ -189,8 +188,9 @@ public class KnightPatron : KnightBehavior
     {
         base.Update();
 
-        if (CheckGetHit())
+        if (CheckGetInterrupted())
         {
+            TransitionTo<KnightGetInterrupted>();
             return;
         }
         Patron();
@@ -271,23 +271,17 @@ public class KnightAttack : KnightBehavior
         var KnightSpriteData = Entity.GetComponent<KnightSpriteData>();
         SetKnight(KnightSpriteData.Anticipation, KnightSpriteData.AnticipationOffset, KnightSpriteData.AnticipationSize);
 
-        OriPos = Context.InitPosition + Entity.GetComponent<SpeedManager>().OriPos;
+        MaxDashDis = KnightData.DashDistance;
 
-        if (Entity.GetComponent<IRage>().Rage)
-        {
-            MaxDashDis = KnightData.RageDashDistance;
-        }
-        else
-        {
-            MaxDashDis = KnightData.NormalDashDistance;
-        }
+        OriPos = Context.InitPosition + Entity.GetComponent<SpeedManager>().OriPos;
     }
 
     public override void Update()
     {
         base.Update();
-        if (CheckGetHit())
+        if (CheckGetInterrupted())
         {
+            TransitionTo<KnightGetInterrupted>();
             return;
         }
         CheckAttackTimeCount(AnticipationTime, AttackTime, RecoveryTime);
@@ -331,7 +325,7 @@ public class KnightAttack : KnightBehavior
         {
             for (int i = 0; i < AllHits.Length; i++)
             {
-                if (!AllHits[i].collider.gameObject.GetComponent<IHittable>().hit)
+                if (!AllHits[i].collider.gameObject.GetComponent<IHittable>().Interrupted)
                 {
                     AllHits[i].collider.gameObject.GetComponent<IHittable>().OnHit(Attack);
                 }
@@ -398,10 +392,6 @@ public class KnightAttack : KnightBehavior
                     if (PlayerX - SelfX > 0 && DashTraveled<MaxDashDis)
                     {
                         float DashSpeed = Entity.GetComponent<KnightData>().DashSpeed;
-                        if (Entity.GetComponent<IRage>().Rage)
-                        {
-                            DashSpeed = Entity.GetComponent<KnightData>().RageDashSpeed;
-                        }
                         
 
                         float DashDis =  DashSpeed* Time.deltaTime;
@@ -439,10 +429,6 @@ public class KnightAttack : KnightBehavior
                     if (SelfX - PlayerX > 0 && DashTraveled < MaxDashDis)
                     {
                         float DashSpeed = Entity.GetComponent<KnightData>().DashSpeed;
-                        if (Entity.GetComponent<IRage>().Rage)
-                        {
-                            DashSpeed = Entity.GetComponent<KnightData>().RageDashSpeed;
-                        }
 
                         float DashDis = DashSpeed * Time.deltaTime;
 
@@ -503,27 +489,21 @@ public class KnightAttackCoolDown : KnightBehavior
         base.OnEnter();
         TimeCount = 0;
 
+        CoolDown = Entity.GetComponent<KnightData>().AttackCoolDown;
+
         var KnightSpriteData = Entity.GetComponent<KnightSpriteData>();
         SetKnight(KnightSpriteData.Idle, KnightSpriteData.IdleOffset, KnightSpriteData.IdleSize);
 
         OriPos = Context.InitPosition + Entity.GetComponent<SpeedManager>().OriPos;
-
-        if (Entity.GetComponent<IRage>().Rage)
-        {
-            CoolDown = Entity.GetComponent<KnightData>().RageAttackCoolDown;
-        }
-        else
-        {
-            CoolDown = Entity.GetComponent<KnightData>().AttackCoolDown;
-        }
     }
 
     public override void Update()
     {
         base.Update();
 
-        if (CheckGetHit())
+        if (CheckGetInterrupted())
         {
+            TransitionTo<KnightGetInterrupted>();
             return;
         }
         CheckCoolDown();
@@ -550,18 +530,11 @@ public class KnightChase : KnightBehavior
     {
         base.OnEnter();
         var KnightData = Entity.GetComponent<KnightData>();
-        
-        if (Entity.GetComponent<IRage>().Rage)
-        {
-            DetectDis = KnightData.RageDashDistance;
-        }
-        else
-        {
-            DetectDis = KnightData.NormalDashDistance;
-        }
 
         Offset = KnightData.AttackOffset;
         Height = KnightData.AttackHitBoxSize.y;
+
+        DetectDis = KnightData.DashDistance;
 
         var KnightSpriteData = Entity.GetComponent<KnightSpriteData>();
         SetKnight(KnightSpriteData.Idle, KnightSpriteData.IdleOffset, KnightSpriteData.IdleSize);
@@ -572,8 +545,9 @@ public class KnightChase : KnightBehavior
     public override void Update()
     {
         base.Update();
-        if (CheckGetHit())
+        if (CheckGetInterrupted())
         {
+            TransitionTo<KnightGetInterrupted>();
             return;
         }
         ChasePlayer();
@@ -635,33 +609,87 @@ public class KnightChase : KnightBehavior
     }
 }
 
-public class KnightGetHit : KnightBehavior
+public class KnightStepBack: KnightBehavior
 {
-    private float GetHitTimeCount;
+
+}
+
+public class KnightGetInterrupted : KnightBehavior
+{
+    private float TimeCount;
+    private float MoveTime;
+    private float TotalTime;
     private GameObject Source;
 
     public override void OnEnter()
     {
         base.OnEnter();
+        Interrupted();
+    }
+
+    private void Interrupted()
+    {
         CharacterAttackInfo Temp = (CharacterAttackInfo)Entity.GetComponent<IHittable>().HitAttack;
 
-        if (Temp.Right)
+        var KnightData = Entity.GetComponent<KnightData>();
+
+        float Speed;
+
+        Speed = KnightData.InterruptedSpeed;
+
+        /*if (StepBack)
         {
-            Entity.GetComponent<SpeedManager>().ForcedSpeed.x = Entity.GetComponent<KnightData>().GetHitSpeed;
+            Speed = KnightData.StepBackSpeed;
         }
         else
         {
-            Entity.GetComponent<SpeedManager>().ForcedSpeed.x = -Entity.GetComponent<KnightData>().GetHitSpeed;
+            
+        }*/
+
+        if (Temp.Right)
+        {
+            Entity.GetComponent<SpeedManager>().ForcedSpeed.x = Speed;
         }
-        
-        GetHitTimeCount = 0;
+        else
+        {
+            Entity.GetComponent<SpeedManager>().ForcedSpeed.x = -Speed;
+        }
+
+        TimeCount = 0;
+
+        TotalTime = KnightData.InterruptedTime;
+        MoveTime = KnightData.InterruptedMoveTime;
+
+        /*if (StepBack)
+        {
+            TotalTime = KnightData.StepBackTime;
+            MoveTime = KnightData.StepBackMoveTime;
+        }
+        else
+        {
+            
+        }*/
+
 
         var KnightSpriteData = Entity.GetComponent<KnightSpriteData>();
+
         SetKnight(KnightSpriteData.Hit, KnightSpriteData.HitOffset, KnightSpriteData.HitSize);
+
+        /*if (StepBack)
+        {
+            SetKnight(KnightSpriteData.Idle, KnightSpriteData.IdleOffset, KnightSpriteData.IdleSize);
+        }
+        else
+        {
+            SetKnight(KnightSpriteData.Hit, KnightSpriteData.HitOffset, KnightSpriteData.HitSize);
+        }*/
+
 
         OriPos = Context.InitPosition + Entity.GetComponent<SpeedManager>().OriPos;
 
         Source = Temp.Source;
+
+        Entity.GetComponent<IHittable>().Interrupted = false;
 
         GameObject.Destroy(SlashImage);
     }
@@ -669,8 +697,9 @@ public class KnightGetHit : KnightBehavior
     public override void Update()
     {
         base.Update();
-        if (CheckGetHit())
+        if (CheckGetInterrupted())
         {
+            Interrupted();
             return;
         }
         CheckTimeCount();
@@ -678,13 +707,14 @@ public class KnightGetHit : KnightBehavior
 
     private void CheckTimeCount()
     {
-        GetHitTimeCount += Time.deltaTime;
-        if (GetHitTimeCount >= Entity.GetComponent<KnightData>().GetHitTime)
+        TimeCount += Time.deltaTime;
+        if (TimeCount >= TotalTime)
         {
             Context.Player = Source;
-            TransitionTo<KnightChase>();
+            //TransitionTo<KnightChase>();
+            TransitionTo<KnightAttackCoolDown>();
         }
-        else if (GetHitTimeCount >= Entity.GetComponent<KnightData>().GetHitMoveTime)
+        else if (TimeCount >= MoveTime)
         {
             Entity.GetComponent<SpeedManager>().ForcedSpeed.x = 0;
         }
@@ -695,7 +725,10 @@ public class KnightGetHit : KnightBehavior
     {
         base.OnExit();
         Entity.GetComponent<SpeedManager>().ForcedSpeed.x = 0;
-        Entity.GetComponent<IHittable>().hit = false;
+
+
+        Entity.GetComponent<StatusManager_Knight>().RecoverShield();
+
     }
 }
 
