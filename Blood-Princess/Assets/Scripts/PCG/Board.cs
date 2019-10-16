@@ -32,9 +32,9 @@ namespace PCG
             _height = height;
             _board = new int[width, height];
             _currentCriticalPathPosition = new IntVector2();
-
             _setupBoard();
             _fillUpBoard();
+            // _fillAroundBoard();
         }
 
         /// <summary>
@@ -153,10 +153,35 @@ namespace PCG
             {
                 for (int j = 0; j < _width; j++)
                 {
-                    Room rm = new Room(new IntVector2(j, i), _seed, _board[j, i]);
+                    Room rm = new Room(new IntVector2(j, i), new IntVector2(_width, _height), _seed, _board[j, i]);
+                    // BoardDimensions.x += rm.RoomDimension.x;
+                    // BoardDimensions.y += rm.RoomDimension.y;
                 }
-
             }
+            // BoardDimensions.x /= _width;
+            // BoardDimensions.y /= _height;
+
+            // _roomDimensions.x = BoardDimensions.x / _width;
+            // _roomDimensions.y = BoardDimensions.y / _height;
+        }
+
+        /// <summary>
+        /// Fill the Edge of the Board with BlockTiles
+        /// </summary>
+        private void _fillAroundBoard()
+        {
+            // Debug.Assert(BoardDimensions != Vector2.zero, "Board Dimension cannot be zero");
+            // Sprite sampleTileSprite = (Resources.Load("BlockTile0", typeof(GameObject)) as GameObject).GetComponent<SpriteRenderer>().sprite;
+            // Debug.Assert(sampleTileSprite != null, "Sample Tile Sprite Not Found");
+            // float halfX = sampleTileSprite.bounds.extents.x;
+            // float halfY = sampleTileSprite.bounds.extents.y;
+            // float x = 2f * halfX;
+            // float y = 2f * halfY;
+            // float _leftX = 0f - _roomDimensions.x / 2f;
+            // // LeftDown Corner
+
+            // GameObject tile = GameObject.Instantiate(Resources.Load("BlockTile2", typeof(GameObject))) as GameObject;
+            // tile.transform.position = new Vector2(_leftX, 0f);
         }
 
         public void Print()
