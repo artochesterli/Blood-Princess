@@ -46,20 +46,16 @@ public class EnemyAttackInfo : AttackInfo
 
 public enum CharacterAttackType
 {
-    Light,
-    Heavy
-}
-
-public enum AttackState
-{
-    Anticipation,
-    Charge,
-    Attack,
-    Recovery
+    NormalSlash,
+    BloodSlash,
+    DeadSlash
 }
 
 public class CharacterAction : MonoBehaviour
 {
+    public LayerMask EnemyLayers;
+    public bool InRecovery;
+
     private FSM<CharacterAction> CharacterActionFSM; 
     // Start is called before the first frame update
     void Start()
@@ -79,14 +75,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
 {
     protected GameObject Entity;
     protected float CurrentGravity;
-    protected bool WallHitted;
     protected float JumpHoldingTimeCount;
-    protected float AttackTimeCount;
-    protected AttackState CurrentAttackState;
-    protected bool AttackHit;
-    protected float AnticipationTime;
-    protected float AttackTime;
-    protected float RecoveryTime;
     protected CharacterAttackInfo Attack;
     protected GameObject SlashImage;
     protected List<Sprite> CurrentSpriteSeries;
@@ -110,21 +99,6 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         SetCharacterSprite();
     }
 
-    protected bool CheckWallHitting()
-    {
-        var SpeedManager = Entity.GetComponent<SpeedManager>();
-        if(!WallHitted&& SpeedManager.SelfSpeed.y>0 && (SpeedManager.HitLeft && Utility.InputLeft() || SpeedManager.HitRight && Utility.InputRight()))
-        {
-            //TransitionTo<WallHitting>();
-            //return true;
-            return false;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
     protected bool CheckGetInterrupted()
     {
         if (Entity.GetComponent<IHittable>().Interrupted)
@@ -142,11 +116,11 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         var Data = Entity.GetComponent<CharacterData>();
         var Status = Entity.GetComponent<StatusManager_Character>();
 
-        if(Status.CurrentEnergy >= 2)
+        if(Status.CurrentEnergy == 2)
         {
             Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[3];
         }
-        else if(Status.CurrentEnergy >= 1)
+        else if(Status.CurrentEnergy == 1)
         {
             Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[2];
         }
@@ -156,46 +130,49 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         }
     }
 
-    protected bool AttackHitEnemy(CharacterAttackInfo Attack)
+    protected bool HitEnemy(CharacterAttackInfo Attack, List<GameObject> EnemyHit)
     {
-        int Mask = 1 << LayerMask.NameToLayer("Enemy");
         var Data = Entity.GetComponent<CharacterData>();
         var Status = Entity.GetComponent<StatusManager_Character>();
 
         Vector2 Offset = Attack.HitBoxOffset;
         Offset.x = Entity.transform.right.x * Offset.x;
 
-        RaycastHit2D[] AllHits = Physics2D.BoxCastAll(Entity.transform.position + (Vector3)Offset, Attack.HitBoxSize, 0, Entity.transform.right,0, Mask);
+        RaycastHit2D[] AllHits = Physics2D.BoxCastAll(Entity.transform.position + (Vector3)Offset, Attack.HitBoxSize, 0, Entity.transform.right, 0, Context.EnemyLayers);
         if (AllHits.Length > 0)
         {
+            int AvailableCount = 0;
 
-            int Count = 0;
             for(int i = 0; i < AllHits.Length; i++)
             {
-                if (AllHits[i].collider.gameObject.GetComponent<IHittable>().OnHit(Attack))
+                if (!EnemyHit.Contains(AllHits[i].collider.gameObject))
                 {
-                    Count++;
+                    AllHits[i].collider.gameObject.GetComponent<IHittable>().OnHit(Attack);
+                    EnemyHit.Add(AllHits[i].collider.gameObject);
+                    AvailableCount++;
                 }
             }
 
             switch (Attack.Type)
             {
-                case CharacterAttackType.Light:
-                    Status.CurrentEnergy += Data.LightAttackEnergyGain * AllHits.Length;
+                case CharacterAttackType.NormalSlash:
+                    Status.CurrentEnergy += AvailableCount;
                     if (Status.CurrentEnergy > Data.MaxEnergy)
                     {
                         Status.CurrentEnergy = Data.MaxEnergy;
                     }
                     break;
-                case CharacterAttackType.Heavy:
-
-                    if(Attack.Level == 2)
+                case CharacterAttackType.BloodSlash:
+                    break;
+                case CharacterAttackType.DeadSlash:
+                    int Drained = Data.DeadSlashHeal * AvailableCount;
+                    if (Drained > Data.MaxHP - Status.CurrentHP)
                     {
-                        int Drained = Mathf.RoundToInt(Attack.Damage / 5.0f) * AllHits.Length;
-                        if (Drained > Data.MaxHP - Status.CurrentHP)
-                        {
-                            Drained = Data.MaxHP - Status.CurrentHP;
-                        }
+                        Drained = Data.MaxHP - Status.CurrentHP;
+                    }
+
+                    if (Drained > 0)
+                    {
                         GameObject DamageText = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/DamageText"), Entity.transform.position, Quaternion.Euler(0, 0, 0));
                         DamageText.GetComponent<DamageText>().TravelVector = Vector2.up;
                         DamageText.GetComponent<Text>().color = Color.green;
@@ -203,7 +180,6 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
                         DamageText.GetComponent<Text>().text = Drained.ToString();
                         Status.CurrentHP += Drained;
                     }
-                   
                     break;
             }
 
@@ -213,60 +189,10 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         {
             return false;
         }
+
     }
 
-    protected CharacterAttackInfo GetHeavyAttackInfo()
-    {
-        var Data = Entity.GetComponent<CharacterData>();
-        var Status = Entity.GetComponent<StatusManager_Character>();
-
-        int damage = Data.Lv1HeavyAttackDamage;
-        int level = 1;
-
-        if(Status.CurrentEnergy >= 2)
-        {
-            damage = Data.Lv2HeavyAttackDamage;
-            level = 2;
-        }
-
-        CharacterAttackInfo Attack= new CharacterAttackInfo(Entity, CharacterAttackType.Heavy, Entity.transform.right.x > 0, damage, Data.HeavyAttackOffset, Data.HeavyAttackHitBoxSize, level);
-
-        return Attack;
-    }
-
-    protected CharacterAttackInfo GetLightAttackInfo()
-    {
-        var Data = Entity.GetComponent<CharacterData>();
-        return new CharacterAttackInfo(Entity, CharacterAttackType.Light, Entity.transform.right.x > 0, Data.LightAttackDamage, Data.LightAttackOffset, Data.LightAttackHitBoxSize);
-    }
-
-    protected void GetLightAttackTime()
-    {
-        var Data = Entity.GetComponent<CharacterData>();
-        AnticipationTime = Data.LightAttackAnticipation;
-        AttackTime = Data.LightAttackTime;
-        RecoveryTime = Data.LightAttackRecovery;
-    }
-
-    protected void GetHeavyAttackTime()
-    {
-        var Data = Entity.GetComponent<CharacterData>();
-
-        if (Entity.GetComponent<StatusManager_Character>().CurrentEnergy >= 2)
-        {
-            AnticipationTime = Data.Lv2HeavyAttackAnticipation;
-            AttackTime = Data.Lv2HeavyAttackTime;
-            RecoveryTime = Data.Lv2HeavyAttackRecovery;
-        }
-        else
-        {
-            AnticipationTime = Data.Lv1HeavyAttackAnticipation;
-            AttackTime = Data.Lv1HeavyAttackTime;
-            RecoveryTime = Data.Lv1HeavyAttackRecovery;
-        }
-    }
-
-    protected void GenerateSlashImage(CharacterAttackType Type)
+    protected void GenerateSlashImage(CharacterAttackType Type,CharacterAttackInfo Attack)
     {
         float EulerAngle = 0;
 
@@ -275,98 +201,46 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             EulerAngle = 180;
         }
 
-        if (Type == CharacterAttackType.Light)
-        {
-            Vector2 Offset = Entity.GetComponent<CharacterData>().LightAttackOffset;
-            if (!Attack.Right)
-            {
-                Offset.x = -Offset.x;
-            }
+        var Data = Entity.GetComponent<CharacterData>();
 
-            SlashImage = (GameObject)Object.Instantiate(Resources.Load("Prefabs/LightSlash"), (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
-        }
-        else
-        {
-            Vector2 Offset = Entity.GetComponent<CharacterData>().HeavyAttackOffset;
-            if (!Attack.Right)
-            {
-                Offset.x = -Offset.x;
-            }
+        Vector2 Offset;
 
-            SlashImage = (GameObject)Object.Instantiate(Resources.Load("Prefabs/HeavySlash"), (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
+        switch (Type)
+        {
+            case CharacterAttackType.NormalSlash:
+                Offset = Data.NormalSlashOffset;
+                if (!Attack.Right)
+                {
+                    Offset.x = -Offset.x;
+                }
+                SlashImage = (GameObject)Object.Instantiate(Resources.Load("Prefabs/NormalSlash"), (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
+                break;
+            case CharacterAttackType.BloodSlash:
+                Offset = Data.BloodSlashOffset;
+                if (!Attack.Right)
+                {
+                    Offset.x = -Offset.x;
+                }
+                SlashImage = (GameObject)Object.Instantiate(Resources.Load("Prefabs/BloodSlash"), (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
+                break;
+            case CharacterAttackType.DeadSlash:
+                Offset = Data.DeadSlashOffset;
+                if (!Attack.Right)
+                {
+                    Offset.x = -Offset.x;
+                }
+                SlashImage = (GameObject)Object.Instantiate(Resources.Load("Prefabs/DeadSlash"), (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
+                break;
         }
+        SlashImage.transform.parent = Entity.transform;
     }
 
-    protected void CheckAttackTimeCount<EndStayState,EndMoveState>(float AnticipationTime,float AttackTime,float RecoveryTime) where EndStayState : CharacterActionState where EndMoveState : CharacterActionState
-    {
-        AttackTimeCount += Time.deltaTime;
-        switch (CurrentAttackState)
-        {
-            case AttackState.Anticipation:
-                if (AttackTimeCount > AnticipationTime)
-                {
-
-                    CurrentAttackState = AttackState.Attack;
-                    AttackTimeCount = 0;
-
-                    GenerateSlashImage(Attack.Type);
-
-                    if (Attack.Type == CharacterAttackType.Light)
-                    {
-
-                        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
-                        CurrentSpriteSeries = SpriteData.LightRecoverySeries;
-
-                        Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[0];
-                        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightRecoveryOffset, SpriteData.LightRecoverySize);
-                    }
-                    else
-                    {
-                        Attack = GetHeavyAttackInfo();
-                        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
-                        CurrentSpriteSeries = SpriteData.HeavyRecoverySeries;
-
-                        Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[0];
-                        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyRecoveryOffset, SpriteData.HeavyRecoverySize);
-                    }
-
-                    SlashImage.transform.parent = Entity.transform;
-
-                    
-                }
-                break;
-            case AttackState.Attack:
-                if (AttackTimeCount > AttackTime)
-                {
-                    CurrentAttackState = AttackState.Recovery;
-                    AttackTimeCount = 0;
-                    GameObject.Destroy(SlashImage);
-                }
-                break;
-            case AttackState.Recovery:
-                if (AttackTimeCount > RecoveryTime)
-                {
-                    if (CheckCharacterMove<EndStayState>(true, false))
-                    {
-                        TransitionTo<EndMoveState>();
-                    }
-                    else
-                    {
-                        TransitionTo<EndStayState>();
-                    }
-                }
-                break;
-        }
-
-    }
-
-    protected bool CheckGrounded<GroundState>() where GroundState: CharacterActionState 
+    protected bool CheckGrounded() 
     {
         var SpeedManager = Entity.GetComponent<SpeedManager>();
 
         if (SpeedManager.HitGround && SpeedManager.SelfSpeed.y+SpeedManager.ForcedSpeed.y<=0)
         {
-            TransitionTo<GroundState>();
             return true;
         }
         else
@@ -375,41 +249,25 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         }
     }
 
-    protected bool CheckAir<AirState>() where AirState : CharacterActionState
+    protected bool CheckCharacterNormalSlash()
     {
-        var SpeedManager = Entity.GetComponent<SpeedManager>();
-
-        if (SpeedManager.HitGround && SpeedManager.SelfSpeed.y + SpeedManager.ForcedSpeed.y <= 0)
-        {
-            return false;
-        }
-        else
-        {
-            TransitionTo<AirState>();
-            return true;
-        }
+        return Utility.InputNormalSlash();
     }
 
-    protected bool CheckCharacterLightAttack<AttackState>() where AttackState : CharacterActionState
+    protected bool CheckCharacterBloodSlash()
     {
-        if (Utility.InputLightAttack())
-        {
-            TransitionTo<AttackState>();
-            return true;
-        }
+        var Data = Entity.GetComponent<CharacterData>();
+        var Status = Entity.GetComponent<StatusManager_Character>();
 
-        return false;
+        return Utility.InputBloodSlash() && Status.CurrentEnergy >= Data.BloodSlashEnergyCost;
     }
 
-    protected bool CheckCharacterHeavyAttack<AttackState>() where AttackState : CharacterActionState
+    protected bool CheckCharacterDeadSlash()
     {
-        if (Utility.InputHeavyAttack()&&Entity.GetComponent<StatusManager_Character>().CurrentEnergy>0)
-        {
-            TransitionTo<AttackState>();
-            return true;
-        }
+        var Data = Entity.GetComponent<CharacterData>();
+        var Status = Entity.GetComponent<StatusManager_Character>();
 
-        return false;
+        return Utility.InputDeadSlash() && Status.CurrentEnergy >= Data.DeadSlashEnergyCost;
     }
 
     protected bool CheckCharacterJump<JumpState>() where JumpState : CharacterActionState
@@ -562,7 +420,6 @@ public class Stand : CharacterActionState
     {
         base.OnEnter();
         CurrentGravity = Entity.GetComponent<CharacterData>().NormalGravity;
-        WallHitted = false;
 
         var SpriteData = Entity.GetComponent<CharacterSpriteData>();
         CurrentSpriteSeries = SpriteData.IdleSeries;
@@ -597,24 +454,34 @@ public class Stand : CharacterActionState
             return;
         }
 
-        if (CheckCharacterLightAttack<GroundLightAttack>())
+        if (CheckCharacterNormalSlash())
         {
+            TransitionTo<NormalSlashAnticipation>();
             return;
         }
 
-        if (CheckCharacterHeavyAttack<GroundHeavyAttack>())
+        if (CheckCharacterBloodSlash())
         {
+            TransitionTo<BloodSlashAnticipation>();
             return;
         }
 
-        if (CheckAir<AirStay>())
+        if (CheckCharacterDeadSlash())
         {
+            TransitionTo<DeadSlashAnticipation>();
+            return;
+        }
+
+        if (!CheckGrounded())
+        {
+            TransitionTo<AirStay>();
             return;
         }
 
         if (CheckCharacterMove<Stand>(true,false))
         {
             TransitionTo<GroundMove>();
+            return;
         }
     }
 }
@@ -625,7 +492,6 @@ public class GroundMove : CharacterActionState
     {
         base.OnEnter();
         CurrentGravity = Entity.GetComponent<CharacterData>().NormalGravity;
-        WallHitted = false;
 
         var SpriteData = Entity.GetComponent<CharacterSpriteData>();
         CurrentSpriteSeries = SpriteData.IdleSeries;
@@ -659,18 +525,27 @@ public class GroundMove : CharacterActionState
             return;
         }
 
-        if (CheckCharacterLightAttack<GroundLightAttack>())
+        if (CheckCharacterNormalSlash())
         {
+            TransitionTo<NormalSlashAnticipation>();
             return;
         }
 
-        if (CheckCharacterHeavyAttack<GroundHeavyAttack>())
+        if (CheckCharacterBloodSlash())
         {
+            TransitionTo<BloodSlashAnticipation>();
             return;
         }
 
-        if (CheckAir<AirMove>())
+        if (CheckCharacterDeadSlash())
         {
+            TransitionTo<DeadSlashAnticipation>();
+            return;
+        }
+
+        if (!CheckGrounded())
+        {
+            TransitionTo<AirMove>();
             return;
         }
 
@@ -715,13 +590,21 @@ public class JumpHoldingStay : CharacterActionState
             return;
         }
 
-        if (CheckGrounded<Stand>())
+        if (CheckGrounded())
         {
+            TransitionTo<Stand>();
             return;
         }
 
-        if (CheckCharacterLightAttack<AirLightAttack>())
+        if (CheckCharacterNormalSlash())
         {
+            TransitionTo<NormalSlashAnticipation>();
+            return;
+        }
+
+        if (CheckCharacterBloodSlash())
+        {
+            TransitionTo<BloodSlashAnticipation>();
             return;
         }
 
@@ -782,23 +665,26 @@ public class JumpHoldingMove : CharacterActionState
             return;
         }
 
-        if (CheckWallHitting())
-        {
-            return;
-        }
-
         if (CheckHolding())
         {
             return;
         }
-        if (CheckGrounded<GroundMove>())
+        if (CheckGrounded())
         {
+            TransitionTo<GroundMove>();
             return;
         }
 
 
-        if (CheckCharacterLightAttack<AirLightAttack>())
+        if (CheckCharacterNormalSlash())
         {
+            TransitionTo<NormalSlashAnticipation>();
+            return;
+        }
+
+        if (CheckCharacterBloodSlash())
+        {
+            TransitionTo<BloodSlashAnticipation>();
             return;
         }
 
@@ -853,14 +739,22 @@ public class AirStay : CharacterActionState
             return;
         }
 
-        if (CheckGrounded<Stand>())
+        if (CheckGrounded())
         {
+            TransitionTo<Stand>();
             return;
         }
 
 
-        if (CheckCharacterLightAttack<AirLightAttack>())
+        if (CheckCharacterNormalSlash())
         {
+            TransitionTo<NormalSlashAnticipation>();
+            return;
+        }
+
+        if (CheckCharacterBloodSlash())
+        {
+            TransitionTo<BloodSlashAnticipation>();
             return;
         }
 
@@ -896,19 +790,21 @@ public class AirMove : CharacterActionState
             return;
         }
 
-        if (CheckWallHitting())
+        if (CheckGrounded())
         {
+            TransitionTo<GroundMove>();
             return;
         }
 
-        if (CheckGrounded<GroundMove>())
+        if (CheckCharacterNormalSlash())
         {
+            TransitionTo<NormalSlashAnticipation>();
             return;
         }
 
-
-        if (CheckCharacterLightAttack<AirLightAttack>())
+        if (CheckCharacterBloodSlash())
         {
+            TransitionTo<BloodSlashAnticipation>();
             return;
         }
 
@@ -916,47 +812,48 @@ public class AirMove : CharacterActionState
     }
 }
 
-public class WallHitting : CharacterActionState
+public class NormalSlashAnticipation : CharacterActionState
 {
-    private float HittingTimeCount;
+    private float StateTime;
+    private float TimeCount;
 
     public override void OnEnter()
     {
         base.OnEnter();
-        HittingTimeCount = 0;
-        CurrentGravity = 0;
-        Entity.GetComponent<SpeedManager>().SelfSpeed.y = 0;
-        WallHitted = true;
+        SetUp();
+        SetAppearance();
+        SetSpeedInfo();
     }
 
     public override void Update()
     {
         base.Update();
-        Attached();
+        if (CheckGetInterrupted())
+        {
+            TransitionTo<GetInterrupted>();
+            return;
+        }
+        CheckTime();
     }
 
-    private void Attached()
+    private void CheckTime()
     {
-        HittingTimeCount += Time.deltaTime;
-        if (HittingTimeCount >= Entity.GetComponent<CharacterData>().WallHittingPause)
+        TimeCount += Time.deltaTime;
+        if (TimeCount >= StateTime)
         {
-            TransitionTo<AirStay>();
+            TransitionTo<NormalSlashStrike>();
+            return;
         }
     }
-}
 
-public class GroundLightAttack : CharacterActionState
-{
-    public override void OnEnter()
+    private void SetUp()
     {
-        base.OnEnter();
-        AttackTimeCount = 0;
-        AttackHit = false;
-        CurrentAttackState = AttackState.Anticipation;
+        TimeCount = 0;
+        StateTime = Entity.GetComponent<CharacterData>().NormalSlashAnticipationTime;
+    }
 
-        Attack = GetLightAttackInfo();
-        GetLightAttackTime();
-
+    private void SetAppearance()
+    {
         var SpriteData = Entity.GetComponent<CharacterSpriteData>();
         CurrentSpriteSeries = SpriteData.LightAnticipationSeries;
 
@@ -964,201 +861,603 @@ public class GroundLightAttack : CharacterActionState
         Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightAnticipationOffset, SpriteData.LightAnticipationSize);
     }
 
-    public override void Update()
+    private void SetSpeedInfo()
     {
-        base.Update();
-        if (CurrentAttackState!=AttackState.Attack && CheckGetInterrupted())
+        if (!CheckGrounded())
         {
-            TransitionTo<GetInterrupted>();
-            return;
+            CurrentGravity = 0;
+            Entity.GetComponent<SpeedManager>().SelfSpeed.y = 0;
         }
-        CheckCharacterMove<Stand>(true, false);
-        CheckAttackTimeCount<Stand, GroundMove>(AnticipationTime, AttackTime, RecoveryTime);
-        CheckHit();
-    }
-
-    private void CheckHit()
-    {
-        if (AttackHit)
-        {
-            Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
-        }
-        else if (CurrentAttackState == AttackState.Attack)
-        {
-            if (AttackHitEnemy(Attack))
-            {
-                AttackHit = true;
-            }
-        }
-    }
-}
-
-public class AirLightAttack : CharacterActionState
-{
-    public override void OnEnter()
-    {
-        base.OnEnter();
-        AttackTimeCount = 0;
-        AttackHit = false;
-        CurrentAttackState = AttackState.Anticipation;
-        CurrentGravity = Entity.GetComponent<CharacterData>().NormalGravity;
-
-        Attack = GetLightAttackInfo();
-        GetLightAttackTime();
-
-        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
-        CurrentSpriteSeries = SpriteData.LightAnticipationSeries;
-
-        SetCharacterSprite();
-        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightAnticipationOffset, SpriteData.LightAnticipationSize);
-    }
-
-    public override void Update()
-    {
-        base.Update();
-        if (CurrentAttackState != AttackState.Attack && CheckGetInterrupted())
-        {
-            TransitionTo<GetInterrupted>();
-            return;
-        }
-        CheckCharacterMove<AirStay>(true, false);
-        CheckAttackTimeCount<AirStay, AirMove>(AnticipationTime, AttackTime, RecoveryTime);
-        CheckHit();
-    }
-
-    private void CheckHit()
-    {
-        if (AttackHit)
-        {
-            Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
-        }
-        else if (CurrentAttackState == AttackState.Attack)
-        {
-            if (AttackHitEnemy(Attack))
-            {
-                AttackHit = true;
-            }
-        }
-    }
-}
-
-
-public class GroundHeavyAttack : CharacterActionState
-{
-    private int EnergyStored;
-
-    public override void OnEnter()
-    {
-        base.OnEnter();
-        AttackTimeCount = 0;
-        AttackHit = false;
-        CurrentAttackState = AttackState.Anticipation;
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
-        EnergyStored = Entity.GetComponent<StatusManager_Character>().CurrentEnergy;
-
-        Attack = GetHeavyAttackInfo();
-        GetHeavyAttackTime();
-
-        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
-        CurrentSpriteSeries = SpriteData.HeavyAnticipationSeries;
-
-        SetCharacterSprite();
-        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyAnticipationOffset, SpriteData.HeavyAnticipationSize);
-    }
-
-    public override void Update()
-    {
-        base.Update();
-        if (CurrentAttackState != AttackState.Attack && CheckGetInterrupted())
-        {
-            TransitionTo<GetInterrupted>();
-            return;
-        }
-        CheckAttackTimeCount<Stand, GroundMove>(AnticipationTime, AttackTime, RecoveryTime);
-        CheckHit();
-        CostEnergy();
-    }
-
-    private void CostEnergy()
-    {
-        if (CurrentAttackState != AttackState.Anticipation)
-        {
-            Entity.GetComponent<StatusManager_Character>().CurrentEnergy = 0;
-        }
-    }
-
-    private void CheckHit()
-    {
-        if(!AttackHit && CurrentAttackState == AttackState.Attack)
-        {
-            if (AttackHitEnemy(Attack))
-            {
-                AttackHit = true;
-            }
-        }
     }
 }
 
-public class AirHeavyAttack : CharacterActionState
+public class NormalSlashStrike : CharacterActionState
 {
-    private int EnergyStored;
+    private float StateTime;
+    private float TimeCount;
+    private CharacterAttackInfo AttackInfo;
+    private List<GameObject> EnemyHit;
+
 
     public override void OnEnter()
     {
         base.OnEnter();
-        AttackTimeCount = 0;
-        AttackHit = false;
-        CurrentAttackState= AttackState.Anticipation;
-        Entity.GetComponent<SpeedManager>().SelfSpeed = Vector2.zero;
-        CurrentGravity = 0;
-        EnergyStored = Entity.GetComponent<StatusManager_Character>().CurrentEnergy;
-
-        Attack = GetHeavyAttackInfo();
-        GetHeavyAttackTime();
-
-        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
-        CurrentSpriteSeries = SpriteData.HeavyAnticipationSeries;
-
-        SetCharacterSprite();
-        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyAnticipationOffset, SpriteData.HeavyAnticipationSize);
+        SetUp();
+        SetAppearance();
+        SetSpeedInfo();
     }
 
     public override void Update()
     {
         base.Update();
-        if (CurrentAttackState != AttackState.Attack && CheckGetInterrupted())
-        {
-            TransitionTo<GetInterrupted>();
-            return;
-        }
-        CheckAttackTimeCount<AirStay, AirMove>(AnticipationTime, AttackTime, RecoveryTime);
-        CheckHit();
-        CostEnergy();
-    }
-
-    private void CheckHit()
-    {
-        if (!AttackHit && CurrentAttackState == AttackState.Attack)
-        {
-            if (AttackHitEnemy(Attack))
-            {
-                AttackHit = true;
-            }
-        }
-    }
-
-    private void CostEnergy()
-    {
-        if (CurrentAttackState != AttackState.Anticipation)
-        {
-            Entity.GetComponent<StatusManager_Character>().CurrentEnergy = 0;
-        }
+        CheckHitEnemy();
+        CheckTime();
     }
 
     public override void OnExit()
     {
         base.OnExit();
-        CurrentGravity = Entity.GetComponent<CharacterData>().NormalGravity;
+        GameObject.Destroy(SlashImage);
+    }
+
+    private void CheckHitEnemy()
+    {
+        if (HitEnemy(AttackInfo,EnemyHit))
+        {
+            Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+        }
+    }
+
+    private void CheckTime()
+    {
+        TimeCount += Time.deltaTime;
+        if (TimeCount > StateTime)
+        {
+            TransitionTo<NormalSlashRecovery>();
+            return;
+        }
+    }
+
+    private void SetUp()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+        TimeCount = 0;
+        StateTime = Data.NormalSlashStrikeTime;
+        EnemyHit = new List<GameObject>();
+        AttackInfo = new CharacterAttackInfo(Entity, CharacterAttackType.NormalSlash, Entity.transform.right.x > 0, Data.NormalSlashDamage, Data.NormalSlashOffset, Data.NormalSlashHitBoxSize);
+        GenerateSlashImage(CharacterAttackType.NormalSlash,AttackInfo);
+    }
+
+    private void SetAppearance()
+    {
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.LightRecoverySeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightRecoveryOffset, SpriteData.LightRecoverySize);
+    }
+
+    private void SetSpeedInfo()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+        CurrentGravity = Data.NormalGravity;
+
+        if (CheckGrounded())
+        {
+            if (Entity.transform.right.x > 0 && Utility.InputRight() && !Utility.InputLeft())
+            {
+                Entity.GetComponent<SpeedManager>().SelfSpeed.x = Data.NormalSlashStepForwardSpeed;
+            }
+            else if (Entity.transform.right.x < 0 && !Utility.InputRight() && Utility.InputLeft())
+            {
+                Entity.GetComponent<SpeedManager>().SelfSpeed.x = -Data.NormalSlashStepForwardSpeed;
+            }
+            else
+            {
+                Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+            }
+        }
+        else
+        {
+            Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+        }
+    }
+    
+}
+
+public class NormalSlashRecovery : CharacterActionState
+{
+    private float StateTime;
+    private float TimeCount;
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        SetUp();
+        SetAppearance();
+        SetSpeedInfo();
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        if (CheckGetInterrupted())
+        {
+            TransitionTo<GetInterrupted>();
+            return;
+        }
+        CheckTime();
+    }
+
+    public override void OnExit()
+    {
+        base.OnExit();
+        Context.InRecovery = false;
+    }
+
+    private void CheckTime()
+    {
+        TimeCount += Time.deltaTime;
+        if (TimeCount > StateTime)
+        {
+            if (CheckGrounded())
+            {
+                TransitionTo<Stand>();
+            }
+            else
+            {
+                TransitionTo<AirStay>();
+            }
+            return;
+        }
+    }
+
+    private void SetAppearance()
+    {
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.LightRecoverySeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightRecoveryOffset, SpriteData.LightRecoverySize);
+    }
+
+    private void SetSpeedInfo()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+        CurrentGravity = Data.NormalGravity;
+        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+    }
+
+    private void SetUp()
+    {
+        TimeCount = 0;
+        var Data = Entity.GetComponent<CharacterData>();
+        StateTime = Data.NormalSlashRecoveryTime;
+        Context.InRecovery = true;
+    }
+}
+
+public class BloodSlashAnticipation : CharacterActionState
+{
+    private float StateTime;
+    private float TimeCount;
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        SetUp();
+        SetAppearance();
+        SetSpeedInfo();
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        if (CheckGetInterrupted())
+        {
+            TransitionTo<GetInterrupted>();
+            return;
+        }
+        CheckTime();
+    }
+
+    private void CheckTime()
+    {
+        TimeCount += Time.deltaTime;
+        if (TimeCount >= StateTime)
+        {
+            TransitionTo<BloodSlashStrike>();
+            return;
+        }
+    }
+
+    private void SetUp()
+    {
+        TimeCount = 0;
+        StateTime = Entity.GetComponent<CharacterData>().BloodSlashAnticipationTime;
+    }
+
+    private void SetAppearance()
+    {
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.LightAnticipationSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightAnticipationOffset, SpriteData.LightAnticipationSize);
+    }
+
+    private void SetSpeedInfo()
+    {
+        if (!CheckGrounded())
+        {
+            CurrentGravity = 0;
+            Entity.GetComponent<SpeedManager>().SelfSpeed.y = 0;
+        }
+        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+    }
+}
+
+public class BloodSlashStrike : CharacterActionState
+{
+    private float StateTime;
+    private float TimeCount;
+    private CharacterAttackInfo AttackInfo;
+    private List<GameObject> EnemyHit;
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        SetUp();
+        SetAppearance();
+        SetSpeedInfo();
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        CheckHitEnemy();
+        CheckTime();
+    }
+
+    public override void OnExit()
+    {
+        base.OnExit();
+        var Data = Entity.GetComponent<CharacterData>();
+        var Status = Entity.GetComponent<StatusManager_Character>();
+        Status.CurrentEnergy -= Data.BloodSlashEnergyCost;
+
+        GameObject.Destroy(SlashImage);
+    }
+
+    private void CheckHitEnemy()
+    {
+        if (HitEnemy(AttackInfo,EnemyHit))
+        {
+            Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+        }
+    }
+
+    private void CheckTime()
+    {
+        TimeCount += Time.deltaTime;
+        if (TimeCount > StateTime)
+        {
+            TransitionTo<BloodSlashRecovery>();
+            return;
+        }
+    }
+
+    private void SetUp()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+        TimeCount = 0;
+        StateTime = Data.BloodSlashStrikeTime;
+        EnemyHit = new List<GameObject>();
+        AttackInfo = new CharacterAttackInfo(Entity, CharacterAttackType.BloodSlash, Entity.transform.right.x > 0, Data.BloodSlashDamage, Data.BloodSlashOffset, Data.BloodSlashHitBoxSize);
+        GenerateSlashImage(CharacterAttackType.BloodSlash,AttackInfo);
+    }
+
+    private void SetAppearance()
+    {
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.LightRecoverySeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightRecoveryOffset, SpriteData.LightRecoverySize);
+    }
+
+    private void SetSpeedInfo()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+        CurrentGravity = Data.NormalGravity;
+
+        if (CheckGrounded())
+        {
+            if (Entity.transform.right.x > 0 && Utility.InputRight() && !Utility.InputLeft())
+            {
+                Entity.GetComponent<SpeedManager>().SelfSpeed.x = Data.BloodSlashStepForwardSpeed;
+            }
+            else if (Entity.transform.right.x < 0 && !Utility.InputRight() && Utility.InputLeft())
+            {
+                Entity.GetComponent<SpeedManager>().SelfSpeed.x = -Data.BloodSlashStepForwardSpeed;
+            }
+            else
+            {
+                Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+            }
+        }
+        else
+        {
+            Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+        }
+    }
+}
+
+public class BloodSlashRecovery : CharacterActionState
+{
+    private float StateTime;
+    private float TimeCount;
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        SetUp();
+        SetAppearance();
+        SetSpeedInfo();
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        if (CheckGetInterrupted())
+        {
+            TransitionTo<GetInterrupted>();
+            return;
+        }
+        CheckTime();
+    }
+    public override void OnExit()
+    {
+        base.OnExit();
+        Context.InRecovery = false;
+    }
+
+    private void CheckTime()
+    {
+        TimeCount += Time.deltaTime;
+        if (TimeCount > StateTime)
+        {
+            if (CheckGrounded())
+            {
+                TransitionTo<Stand>();
+            }
+            else
+            {
+                TransitionTo<AirStay>();
+            }
+            return;
+        }
+    }
+
+    private void SetAppearance()
+    {
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.LightRecoverySeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightRecoveryOffset, SpriteData.LightRecoverySize);
+    }
+
+    private void SetSpeedInfo()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+        CurrentGravity = Data.NormalGravity;
+        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+    }
+
+    private void SetUp()
+    {
+        TimeCount = 0;
+        var Data = Entity.GetComponent<CharacterData>();
+        StateTime = Data.BloodSlashRecoveryTime;
+        Context.InRecovery = true;
+    }
+}
+
+public class DeadSlashAnticipation : CharacterActionState
+{
+    private float StateTime;
+    private float TimeCount;
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        SetUp();
+        SetAppearance();
+        SetSpeedInfo();
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        if (CheckGetInterrupted())
+        {
+            TransitionTo<GetInterrupted>();
+            return;
+        }
+        CheckTime();
+    }
+
+    private void CheckTime()
+    {
+        TimeCount += Time.deltaTime;
+        if (TimeCount >= StateTime)
+        {
+            TransitionTo<DeadSlashStrike>();
+            return;
+        }
+    }
+
+    private void SetUp()
+    {
+        TimeCount = 0;
+        StateTime = Entity.GetComponent<CharacterData>().DeadSlashAnticipationTime;
+    }
+
+    private void SetAppearance()
+    {
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.HeavyAnticipationSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyAnticipationOffset, SpriteData.HeavyAnticipationSize);
+    }
+
+    private void SetSpeedInfo()
+    {
+        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+    }
+}
+
+public class DeadSlashStrike : CharacterActionState
+{
+    private float StateTime;
+    private float TimeCount;
+    private CharacterAttackInfo AttackInfo;
+    private List<GameObject> EnemyHit;
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        SetUp();
+        SetAppearance();
+        SetSpeedInfo();
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        CheckHitEnemy();
+        CheckTime();
+    }
+
+    public override void OnExit()
+    {
+        base.OnExit();
+        var Data = Entity.GetComponent<CharacterData>();
+        var Status = Entity.GetComponent<StatusManager_Character>();
+        Status.CurrentEnergy -= Data.DeadSlashEnergyCost;
+        GameObject.Destroy(SlashImage);
+    }
+
+    private void CheckHitEnemy()
+    {
+        if (HitEnemy(AttackInfo,EnemyHit))
+        {
+            Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+        }
+    }
+
+    private void CheckTime()
+    {
+        TimeCount += Time.deltaTime;
+        if (TimeCount > StateTime)
+        {
+            TransitionTo<DeadSlashRecovery>();
+            return;
+        }
+    }
+
+    private void SetUp()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+        TimeCount = 0;
+        StateTime = Data.DeadSlashStrikeTime;
+        EnemyHit = new List<GameObject>();
+        AttackInfo = new CharacterAttackInfo(Entity, CharacterAttackType.DeadSlash, Entity.transform.right.x > 0, Data.DeadSlashDamage, Data.DeadSlashOffset, Data.DeadSlashHitBoxSize);
+        GenerateSlashImage(CharacterAttackType.DeadSlash,AttackInfo);
+    }
+
+    private void SetAppearance()
+    {
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.HeavyRecoverySeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyRecoveryOffset, SpriteData.HeavyRecoverySize);
+    }
+
+    private void SetSpeedInfo()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+        CurrentGravity = Data.NormalGravity;
+        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+    }
+}
+
+public class DeadSlashRecovery : CharacterActionState
+{
+    private float StateTime;
+    private float TimeCount;
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        SetUp();
+        SetAppearance();
+        SetSpeedInfo();
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        if (CheckGetInterrupted())
+        {
+            TransitionTo<GetInterrupted>();
+            return;
+        }
+        CheckTime();
+    }
+
+    public override void OnExit()
+    {
+        base.OnExit();
+        Context.InRecovery = false;
+    }
+
+    private void CheckTime()
+    {
+        TimeCount += Time.deltaTime;
+        if (TimeCount > StateTime)
+        {
+            TransitionTo<Stand>();
+            return;
+        }
+    }
+
+    private void SetAppearance()
+    {
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.HeavyRecoverySeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyRecoveryOffset, SpriteData.HeavyRecoverySize);
+    }
+
+    private void SetSpeedInfo()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+        CurrentGravity = Data.NormalGravity;
+        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+    }
+
+    private void SetUp()
+    {
+        TimeCount = 0;
+        var Data = Entity.GetComponent<CharacterData>();
+        StateTime = Data.DeadSlashRecoveryTime;
+        Context.InRecovery = true;
     }
 }
 
@@ -1280,9 +1579,10 @@ public class GetInterrupted : CharacterActionState
         GetHitTimeCount += Time.deltaTime;
         if(GetHitTimeCount>= Entity.GetComponent<CharacterData>().GetHitTime)
         {
-            if (CheckGrounded<Stand>())
+            if (CheckGrounded())
             {
                 FinishOnGround = true;
+                TransitionTo<Stand>();
                 return;
             }
 
