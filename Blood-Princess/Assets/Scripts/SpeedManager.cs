@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class SpeedManager : MonoBehaviour
 {
-    public string SelfLayer;
+    public LayerMask IgnoredLayers;
 
     public Vector2 SelfSpeed;
     public Vector2 ForcedSpeed;
@@ -25,8 +25,6 @@ public class SpeedManager : MonoBehaviour
     public float GroundDis;
     public GameObject Ground;
 
-    private int layermask;
-
     public float BodyWidth;
     public float BodyHeight;
 
@@ -34,12 +32,11 @@ public class SpeedManager : MonoBehaviour
 
     private const float DetectDis = 1;
     private const float HitMargin = 0.02f;
-    private const float CastBoxThickness = 0.02f;
+    private const float CastBoxThickness = 0.1f;
     // Start is called before the first frame update
     void Start()
     {
-        layermask = 1 << LayerMask.NameToLayer(SelfLayer) | 1<< LayerMask.NameToLayer("Zone");
-        layermask = ~layermask;
+
     }
 
     // Update is called once per frame
@@ -172,11 +169,12 @@ public class SpeedManager : MonoBehaviour
     {
         //RaycastHit2D hit = Physics2D.BoxCast(GetTruePos(), new Vector2(BodyWidth - 2 * HitMargin, CastBoxThickness), 0, Vector2.down, DetectDis, layermask);
 
-        RaycastHit2D hit = Physics2D.BoxCast(GetTruePos() + (BodyHeight/2 + CastBoxThickness/2) *Vector2.down, new Vector2(BodyWidth - 2 * HitMargin, CastBoxThickness), 0, Vector2.down, DetectDis, layermask);
+        RaycastHit2D hit = Physics2D.BoxCast(GetTruePos(), new Vector2(BodyWidth - 2 * HitMargin, CastBoxThickness), 0, Vector2.down, DetectDis+ BodyHeight / 2 + CastBoxThickness / 2, ~IgnoredLayers);
 
         if (hit)
         {
-            GroundDis = Mathf.Abs(hit.point.y - GetTruePos().y + CastBoxThickness / 2) - BodyHeight / 2;
+            GroundDis = GetTruePos().y - BodyHeight / 2 - hit.point.y;
+            //GroundDis = Mathf.Abs(hit.point.y - GetTruePos().y + CastBoxThickness / 2) - BodyHeight / 2;
             Ground = hit.collider.gameObject;
         }
         else
@@ -202,11 +200,12 @@ public class SpeedManager : MonoBehaviour
 
     public void CheckTopDis()
     {
-        RaycastHit2D hit = Physics2D.BoxCast(GetTruePos() + (BodyHeight / 2 + CastBoxThickness / 2) * Vector2.up, new Vector2(BodyWidth- 2 * HitMargin , CastBoxThickness), 0, Vector2.up, DetectDis, layermask);
+        RaycastHit2D hit = Physics2D.BoxCast(GetTruePos(), new Vector2(BodyWidth- 2 * HitMargin , CastBoxThickness), 0, Vector2.up, DetectDis + BodyHeight / 2 + CastBoxThickness / 2, ~IgnoredLayers);
 
         if (hit)
         {
-            TopDis = Mathf.Abs(hit.point.y - GetTruePos().y - CastBoxThickness / 2) - BodyHeight/2;
+            TopDis = hit.point.y - GetTruePos().y - BodyHeight / 2;
+            //TopDis = Mathf.Abs(hit.point.y - GetTruePos().y - CastBoxThickness / 2) - BodyHeight/2;
             Top = hit.collider.gameObject;
         }
         else
@@ -232,11 +231,12 @@ public class SpeedManager : MonoBehaviour
     public void CheckLeftWallDis()
     {
 
-        RaycastHit2D hit = Physics2D.BoxCast(GetTruePos() + (BodyWidth / 2 + CastBoxThickness / 2) * Vector2.left, new Vector2(CastBoxThickness, BodyHeight - 2 * HitMargin), 0, Vector2.left, DetectDis, layermask);
+        RaycastHit2D hit = Physics2D.BoxCast(GetTruePos(), new Vector2(CastBoxThickness, BodyHeight - 2 * HitMargin), 0, Vector2.left, DetectDis+ BodyWidth / 2 + CastBoxThickness / 2, ~IgnoredLayers);
 
         if (hit)
         {
-            LeftDis = Mathf.Abs(hit.point.x - GetTruePos().x + CastBoxThickness / 2) - BodyWidth / 2;
+            LeftDis = GetTruePos().x - BodyWidth / 2  - hit.point.x;
+            //LeftDis = Mathf.Abs(hit.point.x - GetTruePos().x + CastBoxThickness / 2) - BodyWidth / 2;
             Left = hit.collider.gameObject;
         }
         else
@@ -262,11 +262,12 @@ public class SpeedManager : MonoBehaviour
     public void CheckRightWallDis()
     {
 
-        RaycastHit2D hit = Physics2D.BoxCast(GetTruePos() + (BodyWidth / 2 + CastBoxThickness / 2) * Vector2.right, new Vector2(CastBoxThickness, BodyHeight - 2 * HitMargin),0,Vector2.right, DetectDis, layermask);
+        RaycastHit2D hit = Physics2D.BoxCast(GetTruePos(), new Vector2(CastBoxThickness, BodyHeight - 2 * HitMargin),0,Vector2.right, DetectDis+ BodyWidth / 2 + CastBoxThickness / 2, ~IgnoredLayers);
 
         if (hit)
         {
-            RightDis = Mathf.Abs(hit.point.x - GetTruePos().x - CastBoxThickness / 2) - BodyWidth / 2;
+            RightDis = hit.point.x - GetTruePos().x - BodyWidth / 2;
+            //RightDis = Mathf.Abs(hit.point.x - GetTruePos().x - CastBoxThickness / 2) - BodyWidth / 2;
             Right = hit.collider.gameObject;
         }
         else

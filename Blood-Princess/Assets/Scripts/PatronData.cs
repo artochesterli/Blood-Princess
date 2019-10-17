@@ -5,12 +5,10 @@ using UnityEngine;
 public class PatronData : MonoBehaviour
 {
     public bool Patron;
-    public Vector2 AlertXRange;
-    public Vector2 PatronRange;
     public float PatronStayTime;
     public float DetectAngle;
     public float DetectInterval;
-    public float PatronDetectTime;
+    public float DetectPlayerShockTime;
 
 
     // Start is called before the first frame update

@@ -7,24 +7,34 @@ public class KnightData : MonoBehaviour
     public int MaxHP;
     public int MaxShield;
 
-    public float MoveSpeed;
-    public float DashSpeed;
-    public float DashDistance;
-    public int Damage;
-    public float AttackCoolDown;
-    public float AttackAnticipation;
+    public float NormalMoveSpeed;
+    public float KeepDisMoveSpeed;
+    public float AttackStepForwardSpeed;
+
+    public float SingleAttackAnticipationTime;
+    public float DoubleAttackFirstAnticipationTime;
+    public float DoubleAttackSecondAnticipationTime;
     public float AttackTime;
-    public float AttackRecovery;
+    public float AttackRecoveryTime;
+    public int Damage;
+
     public Vector2 AttackOffset;
     public Vector2 AttackHitBoxSize;
 
     public float InterruptedTime;
     public float InterruptedSpeed;
     public float InterruptedMoveTime;
-    public float StepBackTime;
-    public float StepBackSpeed;
-    public float StepBackMoveTime;
 
+    public float TacticDistance;
+    public float DangerDistance;
+    public float ChaseForAttackDistance;
+    public float TacticDecisionInterval;
+    public float ShortDisAttackDecisionChance;
+    public float LongDisAttackDecisionChance;
+    public float ShortDisSingleAttackChance;
+    public float LongDisSingleAttackChance;
+
+    public int MaxStamina;
 
 
     // Start is called before the first frame update

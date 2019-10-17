@@ -41,7 +41,7 @@ public class StatusManager_Knight : StatusManagerBase , IHittable, IShield
 
         CurrentHP -= HitAttack.Damage;
 
-        if (HitAttack.Type == CharacterAttackType.Heavy)
+        if (HitAttack.Type != CharacterAttackType.NormalSlash)
         {
             Interrupted = true;
         }
@@ -75,7 +75,7 @@ public class StatusManager_Knight : StatusManagerBase , IHittable, IShield
         }
         DamageText.GetComponent<Text>().text = HitAttack.Damage.ToString();
         DamageText.transform.parent = Canvas.transform;
-        if (HitAttack.Type==CharacterAttackType.Heavy)
+        if (HitAttack.Type==CharacterAttackType.NormalSlash)
         {
             DamageText.GetComponent<Text>().color = Color.red;
         }
@@ -83,7 +83,7 @@ public class StatusManager_Knight : StatusManagerBase , IHittable, IShield
         {
             DamageText.GetComponent<Text>().color = Color.white;
         }
-
+        DamageText.GetComponent<Text>().color = Color.white;
 
         if (CurrentHP <= 0)
         {

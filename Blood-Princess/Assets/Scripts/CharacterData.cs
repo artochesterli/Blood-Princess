@@ -23,27 +23,31 @@ public class CharacterData : MonoBehaviour
     public float BlockDamageDeduction;
     public float BlockInvulnerableTime;
 
-    public float LightAttackAnticipation;
-    public float LightAttackRecovery;
-    public float LightAttackTime;
-    public int LightAttackDamage;
-    public int LightAttackEnergyGain;
-    public Vector2 LightAttackOffset;
-    public Vector2 LightAttackHitBoxSize;
+    public float NormalSlashAnticipationTime;
+    public float NormalSlashStrikeTime;
+    public float NormalSlashRecoveryTime;
+    public float NormalSlashStepForwardSpeed;
+    public int NormalSlashDamage;
+    public Vector2 NormalSlashOffset;
+    public Vector2 NormalSlashHitBoxSize;
 
-    public float Lv1HeavyAttackAnticipation;
-    public float Lv1HeavyAttackRecovery;
-    public float Lv1HeavyAttackTime;
-    public int Lv1HeavyAttackDamage;
+    public float BloodSlashAnticipationTime;
+    public float BloodSlashStrikeTime;
+    public float BloodSlashRecoveryTime;
+    public float BloodSlashStepForwardSpeed;
+    public int BloodSlashDamage;
+    public int BloodSlashEnergyCost;
+    public Vector2 BloodSlashOffset;
+    public Vector2 BloodSlashHitBoxSize;
 
-    public float Lv2HeavyAttackAnticipation;
-    public float Lv2HeavyAttackRecovery;
-    public float Lv2HeavyAttackTime;
-    public int Lv2HeavyAttackDamage;
-
-    public Vector2 HeavyAttackOffset;
-    public Vector2 HeavyAttackHitBoxSize;
-
+    public float DeadSlashAnticipationTime;
+    public float DeadSlashStrikeTime;
+    public float DeadSlashRecoveryTime;
+    public int DeadSlashDamage;
+    public int DeadSlashHeal;
+    public int DeadSlashEnergyCost;
+    public Vector2 DeadSlashOffset;
+    public Vector2 DeadSlashHitBoxSize;
     // Start is called before the first frame update
     void Start()
     {
