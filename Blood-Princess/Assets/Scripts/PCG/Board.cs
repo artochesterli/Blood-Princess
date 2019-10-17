@@ -23,7 +23,9 @@ namespace PCG
         private int[,] _board;
         private IntVector2 _currentCriticalPathPosition;
         private IntVector2 _lastCriticalPathPosition;
+        private IntVector2 _firstRoomPosition;
         private int _lastCriticalPathDirection;
+        private GameObject _boardGameObject;
 
         public Board(int width, int height, int seed)
         {
@@ -32,9 +34,14 @@ namespace PCG
             _height = height;
             _board = new int[width, height];
             _currentCriticalPathPosition = new IntVector2();
+            _lastCriticalPathPosition = new IntVector2();
+            _firstRoomPosition = new IntVector2();
+            _boardGameObject = new GameObject("Map");
+            _boardGameObject.transform.position = Vector2.zero;
             _setupBoard();
             _fillUpBoard();
-            // _fillAroundBoard();
+
+            Print();
         }
 
         /// <summary>
@@ -50,6 +57,10 @@ namespace PCG
             // Pick the first room Position
             _currentCriticalPathPosition.x = rand.Next(0, _width - 1);
             _currentCriticalPathPosition.y = _height - 1;
+
+            // Remeber First Room Position
+            _firstRoomPosition.x = _currentCriticalPathPosition.x;
+            _firstRoomPosition.y = _currentCriticalPathPosition.y;
 
             // Set the last room position
             _lastCriticalPathPosition.x = _currentCriticalPathPosition.x;
@@ -153,51 +164,29 @@ namespace PCG
             {
                 for (int j = 0; j < _width; j++)
                 {
-                    Room rm = new Room(new IntVector2(j, i), new IntVector2(_width, _height), _seed, _board[j, i]);
-                    // BoardDimensions.x += rm.RoomDimension.x;
-                    // BoardDimensions.y += rm.RoomDimension.y;
+                    Room rm = new Room(new IntVector2(j, i), new IntVector2(_width, _height), _seed, _board[j, i], _boardGameObject);
+                    if (_firstRoomPosition.x == j && _firstRoomPosition.y == i)
+                        rm.GeneratePlayer();
                 }
             }
-            // BoardDimensions.x /= _width;
-            // BoardDimensions.y /= _height;
-
-            // _roomDimensions.x = BoardDimensions.x / _width;
-            // _roomDimensions.y = BoardDimensions.y / _height;
-        }
-
-        /// <summary>
-        /// Fill the Edge of the Board with BlockTiles
-        /// </summary>
-        private void _fillAroundBoard()
-        {
-            // Debug.Assert(BoardDimensions != Vector2.zero, "Board Dimension cannot be zero");
-            // Sprite sampleTileSprite = (Resources.Load("BlockTile0", typeof(GameObject)) as GameObject).GetComponent<SpriteRenderer>().sprite;
-            // Debug.Assert(sampleTileSprite != null, "Sample Tile Sprite Not Found");
-            // float halfX = sampleTileSprite.bounds.extents.x;
-            // float halfY = sampleTileSprite.bounds.extents.y;
-            // float x = 2f * halfX;
-            // float y = 2f * halfY;
-            // float _leftX = 0f - _roomDimensions.x / 2f;
-            // // LeftDown Corner
-
-            // GameObject tile = GameObject.Instantiate(Resources.Load("BlockTile2", typeof(GameObject))) as GameObject;
-            // tile.transform.position = new Vector2(_leftX, 0f);
         }
 
         public void Print()
         {
-            Console.WriteLine();
+            string _boardstr = "";
             for (int i = _height - 1; i >= 0; i--)
             {
                 for (int j = 0; j < _width; j++)
                 {
-                    Console.Write(_board[j, i]);
+                    _boardstr += _board[j, i];
                 }
-                Console.WriteLine();
+                _boardstr += "\n";
             }
+            Debug.Log(_boardstr);
         }
     }
 
+    [Serializable]
     public struct IntVector2
     {
         public int x;

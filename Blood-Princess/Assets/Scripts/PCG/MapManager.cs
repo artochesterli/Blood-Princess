@@ -5,10 +5,10 @@ using PCG;
 
 public class MapManager : MonoBehaviour
 {
+    public IntVector2 BoardDimension = new IntVector2(4, 4);
     // Start is called before the first frame update
     void Start()
     {
-        // Room newRoom = new Room(new IntVector2(0, 0), Random.Range(0, 10000), 1);
-        Board board = new Board(4, 4, Random.Range(0, 100000));
+        Board board = new Board(BoardDimension.x, BoardDimension.y, Random.Range(0, 100000));
     }
 }
