@@ -29,6 +29,7 @@ public class KnightAI : MonoBehaviour
     public KnightAttackMode CurrentAttackMode;
 
     public int CurrentStamina;
+    public int CurrentKeepDistance;
 
     private FSM<KnightAI> KnightAIFSM;
     // Start is called before the first frame update
@@ -70,7 +71,7 @@ public abstract class KnightBehavior : FSM<KnightAI>.State
     public override void OnEnter()
     {
         base.OnEnter();
-        Debug.Log(this.GetType().Name);
+        //Debug.Log(this.GetType().Name);
     }
 
     protected void SetKnight(Sprite S,Vector2 Offset,Vector2 Size)
@@ -206,15 +207,22 @@ public abstract class KnightBehavior : FSM<KnightAI>.State
 
         if (Context.CurrentStamina > 0)
         {
-            float DecisionNumber = Random.Range(0.0f, 1.0f);
-
-            if (DecisionNumber < Data.ShortDisAttackDecisionChance)
+            if (Context.CurrentKeepDistance >= Data.MaxKeepDistanceDecision)
             {
                 MakeAttackDecision();
             }
             else
             {
-                TransitionTo<KnightKeepDistance>();
+                float DecisionNumber = Random.Range(0.0f, 1.0f);
+
+                if (DecisionNumber < Data.ShortDisAttackDecisionChance)
+                {
+                    MakeAttackDecision();
+                }
+                else
+                {
+                    TransitionTo<KnightKeepDistance>();
+                }
             }
         }
         else
@@ -227,7 +235,7 @@ public abstract class KnightBehavior : FSM<KnightAI>.State
     {
         var KnightData = Entity.GetComponent<KnightData>();
 
-        return new EnemyAttackInfo(Entity, Entity.transform.right.x > 0, KnightData.Damage, KnightData.AttackOffset, KnightData.AttackHitBoxSize);
+        return new EnemyAttackInfo(Entity, EnemyAttackType.Strike, Entity.transform.right.x > 0, KnightData.Damage, KnightData.AttackOffset, KnightData.AttackHitBoxSize);
     }
 
 }
@@ -468,6 +476,7 @@ public class KnightKeepDistance : KnightBehavior
         {
             Context.CurrentStamina++;
         }
+        Context.CurrentKeepDistance++;
     }
 
     private void SetAppearance()
@@ -572,6 +581,8 @@ public class KnightChaseForAttack : KnightBehavior
         {
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = -Data.NormalMoveSpeed;
         }
+
+        Context.CurrentKeepDistance = 0;
     }
 
     private void CheckStop()
@@ -666,6 +677,7 @@ public class KnightAttackAnticipation : KnightBehavior
                 break;
         }
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+
     }
 }
 
@@ -766,8 +778,15 @@ public class KnightAttackStrike : KnightBehavior
 
         if (Hit)
         {
-            Hit.collider.gameObject.GetComponent<IHittable>().OnHit(Attack);
-            return true;
+            if (Hit.collider.gameObject.GetComponent<StatusManager_Character>().Invulnerable)
+            {
+                return false;
+            }
+            else
+            {
+                Hit.collider.gameObject.GetComponent<IHittable>().OnHit(Attack);
+                return true;
+            }
         }
         else
         {
@@ -839,7 +858,8 @@ public class KnightAttackRecovery : KnightBehavior
             }
             else
             {
-                TransitionTo<KnightKeepDistance>();
+                MakeTacticalDecision();
+                //TransitionTo<KnightKeepDistance>();
             }
         }
     }
@@ -871,11 +891,11 @@ public class KnightGetInterrupted : KnightBehavior
 
         if (Temp.Right)
         {
-            Entity.GetComponent<SpeedManager>().ForcedSpeed.x = Speed;
+            Entity.GetComponent<SpeedManager>().SelfSpeed.x = Speed;
         }
         else
         {
-            Entity.GetComponent<SpeedManager>().ForcedSpeed.x = -Speed;
+            Entity.GetComponent<SpeedManager>().SelfSpeed.x = -Speed;
         }
 
         TimeCount = 0;
@@ -923,7 +943,7 @@ public class KnightGetInterrupted : KnightBehavior
         }
         else if (TimeCount >= MoveTime)
         {
-            Entity.GetComponent<SpeedManager>().ForcedSpeed.x = 0;
+            Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
         }
     }
 
@@ -931,7 +951,7 @@ public class KnightGetInterrupted : KnightBehavior
     public override void OnExit()
     {
         base.OnExit();
-        Entity.GetComponent<SpeedManager>().ForcedSpeed.x = 0;
+        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
     }
 }
 

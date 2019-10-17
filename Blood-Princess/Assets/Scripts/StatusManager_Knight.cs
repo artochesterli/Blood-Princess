@@ -3,31 +3,34 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StatusManager_Knight : StatusManagerBase , IHittable, IShield
+public class StatusManager_Knight : StatusManagerBase , IHittable
 {
-    public int CurrentShield { get; set; }
 
     public GameObject Canvas;
     public GameObject SharedCanvas;
     public GameObject HPFill;
-    public GameObject ShieldFill;
+    public GameObject ShockEffect;
 
     public Color NormalColor;
     public Color RageColor;
 
     private GameObject DamageText;
+
+    private float ShockEffectTimeCount;
+    private float ShockEffectTime = 0.2f;
+    private bool ShockEffectActivate;
     // Start is called before the first frame update
     void Start()
     {
         var Data = GetComponent<KnightData>();
         CurrentHP = Data.MaxHP;
-        CurrentShield = Data.MaxShield;
     }
 
     // Update is called once per frame
     void Update()
     {
         SetFill();
+        CheckShockEffect();
     }
 
     public override bool OnHit(AttackInfo Attack)
@@ -48,20 +51,6 @@ public class StatusManager_Knight : StatusManagerBase , IHittable, IShield
         else
         {
             Interrupted = false;
-            /*if (CurrentShield > 0)
-            {
-                CurrentShield -= HitAttack.Damage;
-                if (CurrentShield < 0)
-                {
-                    CurrentShield = 0;
-                }
-                Interrupted = false;
-            }
-            else
-            {
-                CurrentHP -= HitAttack.Damage;
-                Interrupted = true;
-            }*/
         }
 
 
@@ -97,29 +86,54 @@ public class StatusManager_Knight : StatusManagerBase , IHittable, IShield
         }
     }
 
-    public void RecoverShield()
-    {
-        if(CurrentShield <= 0)
-        {
-            CurrentShield = GetComponent<KnightData>().MaxShield;
-        }
-    }
 
     private void SetFill()
     {
         Canvas.GetComponent<RectTransform>().eulerAngles = Vector3.zero;
         var Data = GetComponent<KnightData>();
         HPFill.GetComponent<Image>().fillAmount = (float)CurrentHP / Data.MaxHP;
-        if (Data.MaxShield > 0)
+    }
+
+    private void CheckShockEffect()
+    {
+        if (!ShockEffectActivate)
         {
-            ShieldFill.GetComponent<Image>().fillAmount = (float)CurrentShield / Data.MaxShield;
+            var Data = GetComponent<KnightData>();
+            var SpeedManager = GetComponent<SpeedManager>();
+            if (SpeedManager.Left && SpeedManager.Left.CompareTag("Player") && SpeedManager.HitLeft)
+            {
+                ShockPlayer(false, SpeedManager.Left);
+            }
+            else if (SpeedManager.Right && SpeedManager.Right.CompareTag("Player") && SpeedManager.HitRight)
+            {
+                ShockPlayer(true, SpeedManager.Right);
+            }
+            else if (SpeedManager.Top && SpeedManager.Top.CompareTag("Player") && SpeedManager.HitTop)
+            {
+                float XDiff = SpeedManager.Top.GetComponent<SpeedManager>().GetTruePos().x - SpeedManager.GetTruePos().x;
+                ShockPlayer(XDiff > 0, SpeedManager.Top);
+            }
         }
         else
         {
-            ShieldFill.GetComponent<Image>().enabled = false;
-            ShieldFill.transform.parent.GetComponent<Image>().enabled = false;
+            ShockEffectTimeCount += Time.deltaTime;
+            if(ShockEffectTimeCount >= ShockEffectTime)
+            {
+                ShockEffectTimeCount = 0;
+                ShockEffectActivate = false;
+                ShockEffect.GetComponent<SpriteRenderer>().enabled = false;
+            }
         }
     }
 
+    private void ShockPlayer(bool Right,GameObject Player)
+    {
+        var Data = GetComponent<KnightData>();
+
+        EnemyAttackInfo Attack = new EnemyAttackInfo(gameObject, EnemyAttackType.Shock, Right, Data.ShockDamage, Vector2.zero, Vector2.zero);
+        ShockEffect.GetComponent<SpriteRenderer>().enabled = true;
+        ShockEffectActivate = true;
+        Player.GetComponent<IHittable>().OnHit(Attack);
+    }
 
 }

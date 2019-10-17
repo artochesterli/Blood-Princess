@@ -7,7 +7,6 @@ public class SpeedManager : MonoBehaviour
     public LayerMask IgnoredLayers;
 
     public Vector2 SelfSpeed;
-    public Vector2 ForcedSpeed;
 
     public bool HitRight;
     public float RightDis;
@@ -30,6 +29,8 @@ public class SpeedManager : MonoBehaviour
 
     public Vector2 OriPos;
 
+    public bool MoveExecuted;
+
     private const float DetectDis = 1;
     private const float HitMargin = 0.02f;
     private const float CastBoxThickness = 0.1f;
@@ -42,6 +43,8 @@ public class SpeedManager : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
+        MoveExecuted = false;
+
         CheckGroundDis();
         CheckLeftWallDis();
         CheckRightWallDis();
@@ -53,7 +56,8 @@ public class SpeedManager : MonoBehaviour
 
         //RectifySpeed();
         Move();
-        
+
+        MoveExecuted = true;
     }
 
     
@@ -96,69 +100,130 @@ public class SpeedManager : MonoBehaviour
 
     public void Move()
     {
-        Vector2 temp = SelfSpeed + ForcedSpeed;
+        Vector2 temp = SelfSpeed;
+
+        if (Ground && Ground.GetComponent<SpeedManager>() && !Ground.GetComponent<SpeedManager>().MoveExecuted)
+        {
+            GroundDis -= (Ground.GetComponent<SpeedManager>().SelfSpeed.y) * Time.deltaTime;
+        }
+
+        if (Top && Top.GetComponent<SpeedManager>() && !Top.GetComponent<SpeedManager>().MoveExecuted)
+        {
+            TopDis -= (Top.GetComponent<SpeedManager>().SelfSpeed.y) * Time.deltaTime;
+        }
+
+        if (Right && Right.GetComponent<SpeedManager>() && !Right.GetComponent<SpeedManager>().MoveExecuted)
+        {
+            RightDis -= (Right.GetComponent<SpeedManager>().SelfSpeed.x) * Time.deltaTime;
+        }
+
+        if (Left && Left.GetComponent<SpeedManager>() && !Left.GetComponent<SpeedManager>().MoveExecuted)
+        {
+            LeftDis -= (Left.GetComponent<SpeedManager>().SelfSpeed.x) * Time.deltaTime;
+        }
+
 
         if (temp.y > 0)
         {
-            float TrueTopDis = TopDis;
-            if (Top && Top.GetComponent<SpeedManager>())
+            if (TopDis < temp.y * Time.deltaTime)
             {
-                TrueTopDis -= (Top.GetComponent<SpeedManager>().SelfSpeed.y + Top.GetComponent<SpeedManager>().ForcedSpeed.y)*Time.deltaTime;
-            }
-
-            if (TrueTopDis < temp.y * Time.deltaTime)
-            {
-                temp.y = TrueTopDis / Time.deltaTime;
+                temp.y = TopDis / Time.deltaTime;
                 SelfSpeed.y = 0;
-                ForcedSpeed.y = 0;
+                HitTop = true;
+                if (Top && Top.GetComponent<SpeedManager>())
+                {
+                    Top.GetComponent<SpeedManager>().HitGround = true;
+                }
+            }
+            else
+            {
+                if (Top && Top.GetComponent<SpeedManager>() && Top.GetComponent<SpeedManager>().HitGround)
+                {
+                    HitTop = true;
+                }
+                else
+                {
+                    HitTop = false;
+                }
             }
         }
 
         if (temp.y < 0)
         {
-            float TrueGroundDis = GroundDis;
-            if (Ground && Ground.GetComponent<SpeedManager>())
+            if (GroundDis < -temp.y * Time.deltaTime)
             {
-                TrueGroundDis -= (Ground.GetComponent<SpeedManager>().SelfSpeed.y + Ground.GetComponent<SpeedManager>().ForcedSpeed.y)*Time.deltaTime;
-            }
-
-            if (TrueGroundDis < -temp.y * Time.deltaTime)
-            {
-                temp.y = -TrueGroundDis / Time.deltaTime;
+                temp.y = -GroundDis / Time.deltaTime;
                 SelfSpeed.y = 0;
-                ForcedSpeed.y = 0;
+                HitGround = true;
+                if (Ground && Ground.GetComponent<SpeedManager>())
+                {
+                    Ground.GetComponent<SpeedManager>().HitTop = true;
+                }
+            }
+            else
+            {
+                if (Ground && Ground.GetComponent<SpeedManager>() && Ground.GetComponent<SpeedManager>().HitTop)
+                {
+                    HitGround = true;
+                }
+                else
+                {
+                    HitGround = false;
+                }
             }
         }
 
         if (temp.x < 0)
         {
-            float TrueLeftDis = LeftDis;
-            if (Left && Left.GetComponent<SpeedManager>())
+            if (LeftDis < -temp.x * Time.deltaTime)
             {
-                TrueLeftDis -= (Left.GetComponent<SpeedManager>().SelfSpeed.x + Left.GetComponent<SpeedManager>().ForcedSpeed.x)*Time.deltaTime;
-            }
-
-            if (TrueLeftDis < -temp.x * Time.deltaTime)
-            {
-                
-                temp.x = -TrueLeftDis / Time.deltaTime;
+                temp.x = -LeftDis / Time.deltaTime;
                 SelfSpeed.x = 0;
-                ForcedSpeed.x = 0;
+                HitLeft = true;
+
+                if (Left && Left.GetComponent<SpeedManager>())
+                {
+                    Left.GetComponent<SpeedManager>().HitRight = false;
+                }
+            }
+            else
+            {
+                if(Left && Left.GetComponent<SpeedManager>() && Left.GetComponent<SpeedManager>().HitRight)
+                {
+                    HitLeft = true;
+                }
+                else
+                {
+                    HitLeft = false;
+                }
+
             }
         }
 
         if (temp.x > 0)
         {
-            float TrueRightDis = RightDis;
-            if (Right && Right.GetComponent<SpeedManager>())
+            if (RightDis < temp.x * Time.deltaTime)
             {
-                TrueRightDis -= (Right.GetComponent<SpeedManager>().SelfSpeed.x + Right.GetComponent<SpeedManager>().ForcedSpeed.x)*Time.deltaTime;
-            }
-            if (TrueRightDis < temp.x * Time.deltaTime)
-            {
-                temp.x = TrueRightDis / Time.deltaTime;
+                temp.x = RightDis / Time.deltaTime;
                 SelfSpeed.x = 0;
-                ForcedSpeed.x = 0;
+                HitRight = true;
+
+                if(Right && Right.GetComponent<SpeedManager>())
+                {
+                    Right.GetComponent<SpeedManager>().HitLeft = true;
+                }
+            }
+            else
+            {
+                if (Right && Right.GetComponent<SpeedManager>() && Right.GetComponent<SpeedManager>().HitLeft)
+                {
+                    HitRight = true;
+                }
+                else
+                {
+                    HitRight = false;
+                }
+
             }
         }
 
@@ -188,6 +253,12 @@ public class SpeedManager : MonoBehaviour
     private void CheckGroundHitting()
     {
         float Dis = HitMargin;
+
+        if(Ground && Ground.GetComponent<SpeedManager>() && !Ground.GetComponent<SpeedManager>().MoveExecuted)
+        {
+            GroundDis -= (Ground.GetComponent<SpeedManager>().SelfSpeed.y) * Time.deltaTime;
+        }
+
         if (GroundDis <= Dis)
         {
             HitGround = true;

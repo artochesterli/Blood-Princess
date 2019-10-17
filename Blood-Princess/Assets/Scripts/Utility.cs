@@ -70,4 +70,9 @@ public class Utility
     {
         return Input.GetKey(KeyCode.LeftAlt);
     }
+
+    public static bool InputBlink()
+    {
+        return Input.GetKeyDown(KeyCode.LeftShift);
+    }
 }

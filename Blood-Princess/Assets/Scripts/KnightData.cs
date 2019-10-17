@@ -5,7 +5,6 @@ using UnityEngine;
 public class KnightData : MonoBehaviour
 {
     public int MaxHP;
-    public int MaxShield;
 
     public float NormalMoveSpeed;
     public float KeepDisMoveSpeed;
@@ -35,7 +34,9 @@ public class KnightData : MonoBehaviour
     public float LongDisSingleAttackChance;
 
     public int MaxStamina;
+    public int MaxKeepDistanceDecision;
 
+    public int ShockDamage;
 
     // Start is called before the first frame update
     void Start()

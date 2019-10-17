@@ -30,13 +30,15 @@ public class CharacterAttackInfo : AttackInfo
 
 public class EnemyAttackInfo : AttackInfo
 {
+    public EnemyAttackType Type;
     public bool Right;
     public int Damage;
     public Vector2 HitBoxOffset;
     public Vector2 HitBoxSize;
-    public EnemyAttackInfo(GameObject source, bool right,int damage,Vector2 offset,Vector2 size)
+    public EnemyAttackInfo(GameObject source, EnemyAttackType type, bool right,int damage,Vector2 offset,Vector2 size)
     {
         Source = source;
+        Type = type;
         Right = right;
         Damage = damage;
         HitBoxOffset = offset;
@@ -49,6 +51,12 @@ public enum CharacterAttackType
     NormalSlash,
     BloodSlash,
     DeadSlash
+}
+
+public enum EnemyAttackType
+{
+    Shock,
+    Strike
 }
 
 public class CharacterAction : MonoBehaviour
@@ -116,13 +124,17 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         var Data = Entity.GetComponent<CharacterData>();
         var Status = Entity.GetComponent<StatusManager_Character>();
 
-        if(Status.CurrentEnergy == 2)
+        if(Status.CurrentEnergy == 3)
         {
             Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[3];
         }
-        else if(Status.CurrentEnergy == 1)
+        else if(Status.CurrentEnergy == 2)
         {
             Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[2];
+        }
+        else if(Status.CurrentEnergy == 1)
+        {
+            Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[1];
         }
         else
         {
@@ -239,7 +251,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
     {
         var SpeedManager = Entity.GetComponent<SpeedManager>();
 
-        if (SpeedManager.HitGround && SpeedManager.SelfSpeed.y+SpeedManager.ForcedSpeed.y<=0)
+        if (SpeedManager.HitGround && SpeedManager.SelfSpeed.y<=0)
         {
             return true;
         }
@@ -268,6 +280,20 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         var Status = Entity.GetComponent<StatusManager_Character>();
 
         return Utility.InputDeadSlash() && Status.CurrentEnergy >= Data.DeadSlashEnergyCost;
+    }
+
+    protected bool CheckCharacterBlink()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+        var Status = Entity.GetComponent<StatusManager_Character>();
+        if(Status.CurrentEnergy >= Data.InvulberableEnergyCost && Utility.InputBlink())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     protected bool CheckCharacterJump<JumpState>() where JumpState : CharacterActionState
@@ -443,11 +469,17 @@ public class Stand : CharacterActionState
             return;
         }
 
-        if (Utility.InputBlock())
+        if (CheckCharacterBlink())
+        {
+            TransitionTo<BlinkAnticipation>();
+            return;
+        }
+
+        /*if (Utility.InputBlock())
         {
             TransitionTo<Block>();
             return;
-        }
+        }*/
 
         if (CheckCharacterJump<JumpHoldingStay>())
         {
@@ -514,11 +546,16 @@ public class GroundMove : CharacterActionState
             return;
         }
 
-        if (Utility.InputBlock())
+        if (CheckCharacterBlink())
+        {
+            TransitionTo<BlinkAnticipation>();
+            return;
+        }
+        /*if (Utility.InputBlock())
         {
             TransitionTo<Block>();
             return;
-        }
+        }*/
 
         if (CheckCharacterJump<JumpHoldingMove>())
         {
@@ -582,6 +619,12 @@ public class JumpHoldingStay : CharacterActionState
         if (CheckGetInterrupted())
         {
             TransitionTo<GetInterrupted>();
+            return;
+        }
+
+        if (CheckCharacterBlink())
+        {
+            TransitionTo<BlinkAnticipation>();
             return;
         }
 
@@ -665,6 +708,12 @@ public class JumpHoldingMove : CharacterActionState
             return;
         }
 
+        if (CheckCharacterBlink())
+        {
+            TransitionTo<BlinkAnticipation>();
+            return;
+        }
+
         if (CheckHolding())
         {
             return;
@@ -739,6 +788,12 @@ public class AirStay : CharacterActionState
             return;
         }
 
+        if (CheckCharacterBlink())
+        {
+            TransitionTo<BlinkAnticipation>();
+            return;
+        }
+
         if (CheckGrounded())
         {
             TransitionTo<Stand>();
@@ -787,6 +842,12 @@ public class AirMove : CharacterActionState
         if (CheckGetInterrupted())
         {
             TransitionTo<GetInterrupted>();
+            return;
+        }
+
+        if (CheckCharacterBlink())
+        {
+            TransitionTo<BlinkAnticipation>();
             return;
         }
 
@@ -1461,7 +1522,174 @@ public class DeadSlashRecovery : CharacterActionState
     }
 }
 
-public class Block : CharacterActionState
+public class BlinkAnticipation : CharacterActionState
+{
+    private float TimeCount;
+    private float StateTime;
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        SetUp();
+        SetAppearance();
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        CheckTime();
+    }
+
+    private void SetUp()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+        TimeCount = 0;
+        StateTime = Data.InvulnerableAnticipationTime;
+        CurrentGravity = 0;
+        Entity.GetComponent<SpeedManager>().SelfSpeed = Vector2.zero;
+    }
+
+    private void SetAppearance()
+    {
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.IdleSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
+    }
+
+
+    private void CheckTime()
+    {
+        TimeCount += Time.deltaTime;
+        if (TimeCount >= StateTime)
+        {
+            TransitionTo<BlinkActivated>();
+        }
+    }
+}
+
+public class BlinkActivated : CharacterActionState
+{
+    private float TimeCount;
+    private float StateTime;
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        SetUp();
+        SetAppearance();
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        if (CheckGetInterrupted())
+        {
+            TransitionTo<GetInterrupted>();
+            return;
+        }
+        CheckTime();
+    }
+
+    public override void OnExit()
+    {
+        base.OnExit();
+        Entity.GetComponent<StatusManager_Character>().Invulnerable = false;
+    }
+
+    private void SetUp()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+        TimeCount = 0;
+        StateTime = Data.InvulnerableTime;
+        CurrentGravity = 0;
+        Entity.GetComponent<StatusManager_Character>().CurrentEnergy -= Data.InvulberableEnergyCost;
+        Entity.GetComponent<StatusManager_Character>().Invulnerable = true;
+    }
+
+    private void SetAppearance()
+    {
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.IdleSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
+        Entity.GetComponent<SpriteRenderer>().enabled = false;
+        Entity.GetComponent<StatusManager_Character>().InvulnerableEffect.GetComponent<SpriteRenderer>().enabled = true;
+    }
+
+    private void CheckTime()
+    {
+        TimeCount += Time.deltaTime;
+        if (TimeCount >= StateTime)
+        {
+            TransitionTo<BlinkRecovery>();
+        }
+    }
+}
+
+public class BlinkRecovery : CharacterActionState
+{
+    private float TimeCount;
+    private float StateTime;
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        SetUp();
+        SetAppearance();
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        if (CheckGetInterrupted())
+        {
+            SetAppearance();
+            TransitionTo<GetInterrupted>();
+            return;
+        }
+        CheckTime();
+    }
+
+    private void SetUp()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+        TimeCount = 0;
+        StateTime = Data.InvulnerableRecoveryTime;
+        CurrentGravity = Data.NormalGravity;
+    }
+
+    private void SetAppearance()
+    {
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.IdleSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
+        Entity.GetComponent<SpriteRenderer>().enabled = true;
+        Entity.GetComponent<StatusManager_Character>().InvulnerableEffect.GetComponent<SpriteRenderer>().enabled = false;
+    }
+
+    private void CheckTime()
+    {
+        TimeCount += Time.deltaTime;
+        if (TimeCount >= StateTime)
+        {
+            if (CheckGrounded())
+            {
+                TransitionTo<Stand>();
+            }
+            else
+            {
+                TransitionTo<AirStay>();
+            }
+        }
+    }
+}
+
+/*public class Block : CharacterActionState
 {
     private float TimeCount;
 
@@ -1535,40 +1763,19 @@ public class Block : CharacterActionState
             Status.InvulnerableMark.SetActive(false);
         }
     }
-}
+}*/
 
 public class GetInterrupted : CharacterActionState
 {
-    private float GetHitTimeCount;
-    private bool FinishOnGround;
-
+    private float TimeCount;
+    
     public override void OnEnter()
     {
         base.OnEnter();
 
-        Entity.GetComponent<StatusManager_Character>().CurrentEnergy = 0;
+        SetUp();
 
-        EnemyAttackInfo Temp = (EnemyAttackInfo)Entity.GetComponent<IHittable>().HitAttack;
-
-        float HitSpeed;
-        if (Temp.Right)
-        {
-            HitSpeed = Entity.GetComponent<CharacterData>().GetHitSpeed;
-        }
-        else
-        {
-            HitSpeed = -Entity.GetComponent<CharacterData>().GetHitSpeed;
-        }
-
-        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
-        Entity.GetComponent<SpeedManager>().ForcedSpeed.x = HitSpeed;
-        GetHitTimeCount = 0;
-
-        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
-        CurrentSpriteSeries = SpriteData.HitSeries;
-
-        SetCharacterSprite();
-        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HitOffset, SpriteData.HitSize);
+        SetAppearance();
 
         GameObject.Destroy(SlashImage);
     }
@@ -1576,30 +1783,118 @@ public class GetInterrupted : CharacterActionState
     public override void Update()
     {
         base.Update();
-        GetHitTimeCount += Time.deltaTime;
-        if(GetHitTimeCount>= Entity.GetComponent<CharacterData>().GetHitTime)
-        {
-            if (CheckGrounded())
-            {
-                FinishOnGround = true;
-                TransitionTo<Stand>();
-                return;
-            }
 
-            FinishOnGround = false;
-            TransitionTo<AirStay>();
+        if (CheckGetInterrupted())
+        {
+            SetUp();
         }
+
+        CheckTime();
     }
 
     public override void OnExit()
     {
         base.OnExit();
-        if (!FinishOnGround)
-        {
-            Entity.GetComponent<SpeedManager>().SelfSpeed.x = Entity.GetComponent<SpeedManager>().ForcedSpeed.x;
-        }
-        Entity.GetComponent<SpeedManager>().ForcedSpeed.x = 0;
+    }
+
+    private void SetAppearance()
+    {
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.HitSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HitOffset, SpriteData.HitSize);
+    }
+
+    private void SetUp()
+    {
+        TimeCount = 0;
+
+        var Data = Entity.GetComponent<CharacterData>();
+        var SpeedManager = Entity.GetComponent<SpeedManager>();
+
+        Entity.GetComponent<StatusManager_Character>().CurrentEnergy = 0;
         Entity.GetComponent<IHittable>().Interrupted = false;
+        CurrentGravity = Data.NormalGravity;
+
+        EnemyAttackInfo Temp = (EnemyAttackInfo)Entity.GetComponent<IHittable>().HitAttack;
+        SpeedManager.SelfSpeed = Vector2.zero;
+        if (Temp.Right)
+        {
+            Entity.transform.eulerAngles = new Vector3(0, 180, 0);
+
+            /*switch (Temp.Type)
+            {
+                case EnemyAttackType.Strike:
+                    SpeedManager.SelfSpeed.x = Data.InterruptedSpeed;
+                    break;
+                case EnemyAttackType.Shock:
+                    SpeedManager.SelfSpeed.x = Data.ShockedXSpeed;
+                    break;
+            }*/
+
+            SpeedManager.SelfSpeed.x = Data.InterruptedSpeedX;
+
+            if(SpeedManager.Ground == Temp.Source || !SpeedManager.HitGround)
+            {
+                SpeedManager.SelfSpeed.y = Data.InterruptedSpeedY;
+            }
+
+
+
+        }
+        else
+        {
+            Entity.transform.eulerAngles = new Vector3(0, 0, 0);
+
+            /*switch (Temp.Type)
+            {
+                case EnemyAttackType.Strike:
+                    SpeedManager.SelfSpeed.x = -Data.InterruptedSpeed;
+                    break;
+                case EnemyAttackType.Shock:
+                    SpeedManager.SelfSpeed.x = -Data.ShockedXSpeed;
+                    break;
+            }*/
+            SpeedManager.SelfSpeed.x = -Data.InterruptedSpeedX;
+
+            if (SpeedManager.Ground == Temp.Source || !SpeedManager.HitGround)
+            {
+                SpeedManager.SelfSpeed.y = Data.InterruptedSpeedY;
+            }
+        }
+
+        if (!CheckGrounded())
+        {
+            
+        }
+    }
+
+    private void CheckTime()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+
+        TimeCount += Time.deltaTime;
+
+        Debug.Log(Entity.GetComponent<SpeedManager>().SelfSpeed);
+        if(TimeCount >= Data.InterruptedTime)
+        {
+            if (CheckGrounded())
+            {
+                TransitionTo<GroundMove>();
+            }
+            else
+            {
+                TransitionTo<AirMove>();
+            }
+        }
+        else if(TimeCount >= Data.InterruptedMoveTime)
+        {
+            if (CheckGrounded())
+            {
+                Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+            }
+        }
     }
 }
 

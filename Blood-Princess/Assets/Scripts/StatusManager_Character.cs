@@ -11,7 +11,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     public bool Invulnerable;
     public bool Blocking;
-    public GameObject InvulnerableMark;
+    public GameObject InvulnerableEffect;
 
     public Vector2 BarDefaultSize;
     public Vector2 BarInflateSize;

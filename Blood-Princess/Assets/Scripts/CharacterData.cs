@@ -12,10 +12,6 @@ public class CharacterData : MonoBehaviour
     public float NormalGravity;
     public float JumpSpeed;
     public float JumpHoldingTime;
-    public float WallHittingPause;
-
-    public float GetHitTime;
-    public float GetHitSpeed;
 
     public int MaxHP;
     public int MaxEnergy;
@@ -48,6 +44,23 @@ public class CharacterData : MonoBehaviour
     public int DeadSlashEnergyCost;
     public Vector2 DeadSlashOffset;
     public Vector2 DeadSlashHitBoxSize;
+
+    public float InvulnerableAnticipationTime;
+    public float InvulnerableTime;
+    public float InvulnerableRecoveryTime;
+    public int InvulberableEnergyCost;
+
+    public float InterruptedTime;
+    public float InterruptedMoveTime;
+    public float InterruptedSpeed;
+
+    public float InterruptedSpeedX;
+    public float InterruptedSpeedY;
+
+    public float ShockedXSpeed;
+    public float ShockedYSpeed;
+
+
     // Start is called before the first frame update
     void Start()
     {
