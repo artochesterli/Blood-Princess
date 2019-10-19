@@ -63,6 +63,8 @@ public class CharacterAction : MonoBehaviour
 {
     public LayerMask EnemyLayers;
     public bool InRecovery;
+    public float CurrentGravity;
+    public float JumpHoldingTimeCount;
 
     private FSM<CharacterAction> CharacterActionFSM; 
     // Start is called before the first frame update
@@ -82,8 +84,7 @@ public class CharacterAction : MonoBehaviour
 public abstract class CharacterActionState : FSM<CharacterAction>.State
 {
     protected GameObject Entity;
-    protected float CurrentGravity;
-    protected float JumpHoldingTimeCount;
+
     protected CharacterAttackInfo Attack;
     protected GameObject SlashImage;
     protected List<Sprite> CurrentSpriteSeries;
@@ -97,14 +98,17 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
     public override void OnEnter()
     {
         base.OnEnter();
-        //Debug.Log(this.GetType().Name);
+        Debug.Log(this.GetType().Name);
+
     }
 
     public override void Update()
     {
         base.Update();
-        Entity.GetComponent<SpeedManager>().SelfSpeed.y -= CurrentGravity * Time.deltaTime * 10;
+        Entity.GetComponent<SpeedManager>().SelfSpeed.y -= Context.CurrentGravity * Time.deltaTime * 10;
         SetCharacterSprite();
+
+        //Debug.Log(JumpHoldingTimeCount);
     }
 
     protected bool CheckGetInterrupted()
@@ -296,11 +300,10 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         }
     }
 
-    protected bool CheckCharacterJump<JumpState>() where JumpState : CharacterActionState
+    protected bool CheckCharacterJump()
     {
         if (Utility.InputJump())
         {
-            TransitionTo<JumpState>();
             return true;
         }
 
@@ -445,7 +448,7 @@ public class Stand : CharacterActionState
     public override void OnEnter()
     {
         base.OnEnter();
-        CurrentGravity = Entity.GetComponent<CharacterData>().NormalGravity;
+        Context.CurrentGravity = Entity.GetComponent<CharacterData>().NormalGravity;
 
         var SpriteData = Entity.GetComponent<CharacterSpriteData>();
         CurrentSpriteSeries = SpriteData.IdleSeries;
@@ -481,8 +484,10 @@ public class Stand : CharacterActionState
             return;
         }*/
 
-        if (CheckCharacterJump<JumpHoldingStay>())
+        if (CheckCharacterJump())
         {
+            Context.JumpHoldingTimeCount = 0;
+            TransitionTo<JumpHoldingStay>();
             return;
         }
 
@@ -523,7 +528,7 @@ public class GroundMove : CharacterActionState
     public override void OnEnter()
     {
         base.OnEnter();
-        CurrentGravity = Entity.GetComponent<CharacterData>().NormalGravity;
+        Context.CurrentGravity = Entity.GetComponent<CharacterData>().NormalGravity;
 
         var SpriteData = Entity.GetComponent<CharacterSpriteData>();
         CurrentSpriteSeries = SpriteData.IdleSeries;
@@ -557,8 +562,10 @@ public class GroundMove : CharacterActionState
             return;
         }*/
 
-        if (CheckCharacterJump<JumpHoldingMove>())
+        if (CheckCharacterJump())
         {
+            Context.JumpHoldingTimeCount = 0;
+            TransitionTo<JumpHoldingMove>();
             return;
         }
 
@@ -596,9 +603,7 @@ public class JumpHoldingStay : CharacterActionState
     public override void OnEnter()
     {
         base.OnEnter();
-
-        JumpHoldingTimeCount = 0;
-        CurrentGravity = 0;
+        Context.CurrentGravity = 0;
         Entity.GetComponent<SpeedManager>().SelfSpeed.y = Entity.GetComponent<CharacterData>().JumpSpeed;
 
         var SpriteData = Entity.GetComponent<CharacterSpriteData>();
@@ -654,6 +659,7 @@ public class JumpHoldingStay : CharacterActionState
         if (CheckCharacterMove<JumpHoldingStay>(false,false))
         {
             TransitionTo<JumpHoldingMove>();
+            return;
         }
     }
 
@@ -665,8 +671,8 @@ public class JumpHoldingStay : CharacterActionState
             return true;
         }
 
-        JumpHoldingTimeCount += Time.deltaTime;
-        if (JumpHoldingTimeCount >= Entity.GetComponent<CharacterData>().JumpHoldingTime)
+        Context.JumpHoldingTimeCount += Time.deltaTime;
+        if (Context.JumpHoldingTimeCount >= Entity.GetComponent<CharacterData>().JumpHoldingTime)
         {
             TransitionTo<AirStay>();
             return true;
@@ -682,9 +688,7 @@ public class JumpHoldingMove : CharacterActionState
     public override void OnEnter()
     {
         base.OnEnter();
-
-        JumpHoldingTimeCount = 0;
-        CurrentGravity = 0;
+        Context.CurrentGravity = 0;
         Entity.GetComponent<SpeedManager>().SelfSpeed.y = Entity.GetComponent<CharacterData>().JumpSpeed;
 
         var SpriteData = Entity.GetComponent<CharacterSpriteData>();
@@ -749,8 +753,8 @@ public class JumpHoldingMove : CharacterActionState
             return true;
         }
 
-        JumpHoldingTimeCount += Time.deltaTime;
-        if (JumpHoldingTimeCount >= Entity.GetComponent<CharacterData>().JumpHoldingTime)
+        Context.JumpHoldingTimeCount += Time.deltaTime;
+        if (Context.JumpHoldingTimeCount >= Entity.GetComponent<CharacterData>().JumpHoldingTime)
         {
             TransitionTo<AirMove>();
             return true;
@@ -765,7 +769,7 @@ public class AirStay : CharacterActionState
     public override void OnEnter()
     {
         base.OnEnter();
-        CurrentGravity = Entity.GetComponent<CharacterData>().NormalGravity;
+        Context.CurrentGravity = Entity.GetComponent<CharacterData>().NormalGravity;
 
         var SpriteData = Entity.GetComponent<CharacterSpriteData>();
         CurrentSpriteSeries = SpriteData.IdleSeries;
@@ -822,7 +826,7 @@ public class AirMove : CharacterActionState
     public override void OnEnter()
     {
         base.OnEnter();
-        CurrentGravity = Entity.GetComponent<CharacterData>().NormalGravity;
+        Context.CurrentGravity = Entity.GetComponent<CharacterData>().NormalGravity;
 
         var SpriteData = Entity.GetComponent<CharacterSpriteData>();
         CurrentSpriteSeries = SpriteData.IdleSeries;
@@ -926,7 +930,7 @@ public class NormalSlashAnticipation : CharacterActionState
     {
         if (!CheckGrounded())
         {
-            CurrentGravity = 0;
+            Context.CurrentGravity = 0;
             Entity.GetComponent<SpeedManager>().SelfSpeed.y = 0;
         }
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
@@ -1002,7 +1006,7 @@ public class NormalSlashStrike : CharacterActionState
     private void SetSpeedInfo()
     {
         var Data = Entity.GetComponent<CharacterData>();
-        CurrentGravity = Data.NormalGravity;
+        Context.CurrentGravity = Data.NormalGravity;
 
         if (CheckGrounded())
         {
@@ -1086,7 +1090,7 @@ public class NormalSlashRecovery : CharacterActionState
     private void SetSpeedInfo()
     {
         var Data = Entity.GetComponent<CharacterData>();
-        CurrentGravity = Data.NormalGravity;
+        Context.CurrentGravity = Data.NormalGravity;
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
     }
 
@@ -1152,7 +1156,7 @@ public class BloodSlashAnticipation : CharacterActionState
     {
         if (!CheckGrounded())
         {
-            CurrentGravity = 0;
+            Context.CurrentGravity = 0;
             Entity.GetComponent<SpeedManager>().SelfSpeed.y = 0;
         }
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
@@ -1231,7 +1235,7 @@ public class BloodSlashStrike : CharacterActionState
     private void SetSpeedInfo()
     {
         var Data = Entity.GetComponent<CharacterData>();
-        CurrentGravity = Data.NormalGravity;
+        Context.CurrentGravity = Data.NormalGravity;
 
         if (CheckGrounded())
         {
@@ -1313,7 +1317,7 @@ public class BloodSlashRecovery : CharacterActionState
     private void SetSpeedInfo()
     {
         var Data = Entity.GetComponent<CharacterData>();
-        CurrentGravity = Data.NormalGravity;
+        Context.CurrentGravity = Data.NormalGravity;
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
     }
 
@@ -1452,7 +1456,7 @@ public class DeadSlashStrike : CharacterActionState
     private void SetSpeedInfo()
     {
         var Data = Entity.GetComponent<CharacterData>();
-        CurrentGravity = Data.NormalGravity;
+        Context.CurrentGravity = Data.NormalGravity;
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
     }
 }
@@ -1509,7 +1513,7 @@ public class DeadSlashRecovery : CharacterActionState
     private void SetSpeedInfo()
     {
         var Data = Entity.GetComponent<CharacterData>();
-        CurrentGravity = Data.NormalGravity;
+        Context.CurrentGravity = Data.NormalGravity;
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
     }
 
@@ -1545,7 +1549,7 @@ public class BlinkAnticipation : CharacterActionState
         var Data = Entity.GetComponent<CharacterData>();
         TimeCount = 0;
         StateTime = Data.InvulnerableAnticipationTime;
-        CurrentGravity = 0;
+        Context.CurrentGravity = 0;
         Entity.GetComponent<SpeedManager>().SelfSpeed = Vector2.zero;
     }
 
@@ -1603,7 +1607,7 @@ public class BlinkActivated : CharacterActionState
         var Data = Entity.GetComponent<CharacterData>();
         TimeCount = 0;
         StateTime = Data.InvulnerableTime;
-        CurrentGravity = 0;
+        Context.CurrentGravity = 0;
         Entity.GetComponent<StatusManager_Character>().CurrentEnergy -= Data.InvulberableEnergyCost;
         Entity.GetComponent<StatusManager_Character>().Invulnerable = true;
     }
@@ -1658,7 +1662,7 @@ public class BlinkRecovery : CharacterActionState
         var Data = Entity.GetComponent<CharacterData>();
         TimeCount = 0;
         StateTime = Data.InvulnerableRecoveryTime;
-        CurrentGravity = Data.NormalGravity;
+        Context.CurrentGravity = Data.NormalGravity;
     }
 
     private void SetAppearance()
@@ -1815,7 +1819,7 @@ public class GetInterrupted : CharacterActionState
 
         Entity.GetComponent<StatusManager_Character>().CurrentEnergy = 0;
         Entity.GetComponent<IHittable>().Interrupted = false;
-        CurrentGravity = Data.NormalGravity;
+        Context.CurrentGravity = Data.NormalGravity;
 
         EnemyAttackInfo Temp = (EnemyAttackInfo)Entity.GetComponent<IHittable>().HitAttack;
         SpeedManager.SelfSpeed = Vector2.zero;
@@ -1876,7 +1880,6 @@ public class GetInterrupted : CharacterActionState
 
         TimeCount += Time.deltaTime;
 
-        Debug.Log(Entity.GetComponent<SpeedManager>().SelfSpeed);
         if(TimeCount >= Data.InterruptedTime)
         {
             if (CheckGrounded())

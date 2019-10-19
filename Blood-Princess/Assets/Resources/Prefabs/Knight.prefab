@@ -237,6 +237,7 @@ GameObject:
   - component: {fileID: 4305804637280515000}
   - component: {fileID: 4305804637280514978}
   - component: {fileID: 4305804637280514979}
+  - component: {fileID: 1292655691164374894}
   m_Layer: 10
   m_Name: Knight
   m_TagString: Untagged
@@ -386,7 +387,7 @@ MonoBehaviour:
   PatronRightX: 0
   CurrentAttackMode: 0
   CurrentStamina: 0
-  CurrentKeepDistance: 0
+  CurrentPatience: 0
 --- !u!114 &4305804637280515001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -423,7 +424,7 @@ MonoBehaviour:
   ShortDisSingleAttackChance: 0.7
   LongDisSingleAttackChance: 0.3
   MaxStamina: 2
-  MaxKeepDistanceDecision: 2
+  MaxPatience: 2
   ShockDamage: 2
 --- !u!114 &4305804637280515000
 MonoBehaviour:
@@ -456,7 +457,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IgnoredLayers:
     serializedVersion: 2
-    m_Bits: 1536
+    m_Bits: 1792
   SelfSpeed: {x: 0, y: 0}
   HitRight: 0
   RightDis: 0
@@ -498,6 +499,22 @@ MonoBehaviour:
   RecoverySize: {x: 1.201857, y: 1.083478}
   HitOffset: {x: -0.05119801, y: -0.08496404}
   HitSize: {x: 0.9847698, y: 1.189566}
+--- !u!114 &1292655691164374894
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4305804637280515003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9777945ce8308994c9d49bd53a5b2889, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LeftPassable: 0
+  RightPassable: 0
+  TopPassable: 1
+  BottomPassable: 1
 --- !u!1 &4305804638784953937
 GameObject:
   m_ObjectHideFlags: 0

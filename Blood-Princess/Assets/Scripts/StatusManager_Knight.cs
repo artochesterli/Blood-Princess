@@ -30,7 +30,7 @@ public class StatusManager_Knight : StatusManagerBase , IHittable
     void Update()
     {
         SetFill();
-        CheckShockEffect();
+        //CheckShockEffect();
     }
 
     public override bool OnHit(AttackInfo Attack)

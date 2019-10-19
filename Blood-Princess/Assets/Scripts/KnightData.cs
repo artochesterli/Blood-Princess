@@ -34,7 +34,7 @@ public class KnightData : MonoBehaviour
     public float LongDisSingleAttackChance;
 
     public int MaxStamina;
-    public int MaxKeepDistanceDecision;
+    public int MaxPatience;
 
     public int ShockDamage;
 
