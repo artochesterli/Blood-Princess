@@ -40,6 +40,8 @@ public class StatusManager_Knight : StatusManagerBase , IHittable
 
         CharacterAttackInfo HitAttack = (CharacterAttackInfo)Attack;
 
+        GetComponent<KnightAI>().Player = HitAttack.Source;
+
         var Data = GetComponent<KnightData>();
 
         CurrentHP -= HitAttack.Damage;
@@ -92,48 +94,6 @@ public class StatusManager_Knight : StatusManagerBase , IHittable
         Canvas.GetComponent<RectTransform>().eulerAngles = Vector3.zero;
         var Data = GetComponent<KnightData>();
         HPFill.GetComponent<Image>().fillAmount = (float)CurrentHP / Data.MaxHP;
-    }
-
-    private void CheckShockEffect()
-    {
-        if (!ShockEffectActivate)
-        {
-            var Data = GetComponent<KnightData>();
-            var SpeedManager = GetComponent<SpeedManager>();
-            if (SpeedManager.Left && SpeedManager.Left.CompareTag("Player") && SpeedManager.HitLeft)
-            {
-                ShockPlayer(false, SpeedManager.Left);
-            }
-            else if (SpeedManager.Right && SpeedManager.Right.CompareTag("Player") && SpeedManager.HitRight)
-            {
-                ShockPlayer(true, SpeedManager.Right);
-            }
-            else if (SpeedManager.Top && SpeedManager.Top.CompareTag("Player") && SpeedManager.HitTop)
-            {
-                float XDiff = SpeedManager.Top.GetComponent<SpeedManager>().GetTruePos().x - SpeedManager.GetTruePos().x;
-                ShockPlayer(XDiff > 0, SpeedManager.Top);
-            }
-        }
-        else
-        {
-            ShockEffectTimeCount += Time.deltaTime;
-            if(ShockEffectTimeCount >= ShockEffectTime)
-            {
-                ShockEffectTimeCount = 0;
-                ShockEffectActivate = false;
-                ShockEffect.GetComponent<SpriteRenderer>().enabled = false;
-            }
-        }
-    }
-
-    private void ShockPlayer(bool Right,GameObject Player)
-    {
-        var Data = GetComponent<KnightData>();
-
-        EnemyAttackInfo Attack = new EnemyAttackInfo(gameObject, EnemyAttackType.Shock, Right, Data.ShockDamage, Vector2.zero, Vector2.zero);
-        ShockEffect.GetComponent<SpriteRenderer>().enabled = true;
-        ShockEffectActivate = true;
-        Player.GetComponent<IHittable>().OnHit(Attack);
     }
 
 }

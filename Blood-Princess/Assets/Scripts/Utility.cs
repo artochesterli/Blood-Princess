@@ -31,6 +31,16 @@ public class Utility
         return Input.GetKey(KeyCode.LeftArrow);
     }
 
+    public static bool InputUp()
+    {
+        return Input.GetKey(KeyCode.UpArrow);
+    }
+
+    public static bool InputDown()
+    {
+        return Input.GetKey(KeyCode.DownArrow);
+    }
+
     public static bool InputJump()
     {
         return Input.GetKeyDown(KeyCode.Space);
@@ -54,16 +64,6 @@ public class Utility
     public static bool InputDeadSlash()
     {
         return Input.GetKeyDown(KeyCode.F);
-    }
-
-    public static bool InputLightAttack()
-    {
-        return Input.GetKeyDown(KeyCode.Z);
-    }
-
-    public static bool InputHeavyAttack()
-    {
-        return Input.GetKeyDown(KeyCode.X);
     }
 
     public static bool InputBlock()

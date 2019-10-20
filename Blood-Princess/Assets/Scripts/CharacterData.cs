@@ -49,16 +49,25 @@ public class CharacterData : MonoBehaviour
     public float InvulnerableTime;
     public float InvulnerableRecoveryTime;
     public int InvulberableEnergyCost;
+    public float InvulnerableExplosionStartRadius;
+    public float InvulnerableExplosionEndRadius;
+    public float InvulnerableExplosionTime;
+    public int InvulnerableExplosionDamage;
 
     public float InterruptedTime;
     public float InterruptedMoveTime;
     public float InterruptedSpeed;
-
     public float InterruptedSpeedX;
-    public float InterruptedSpeedY;
 
-    public float ShockedXSpeed;
-    public float ShockedYSpeed;
+    public float ClimbPlatformTime;
+    public float ClimbPlatformDownOffset;
+    public LayerMask PassablePlatformLayer;
+
+    public float ClimbLadderSpeed;
+    public LayerMask LadderLayer;
+
+    public LayerMask EnemyLayer;
+
 
 
     // Start is called before the first frame update
