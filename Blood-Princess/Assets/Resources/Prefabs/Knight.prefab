@@ -413,7 +413,9 @@ MonoBehaviour:
   AttackOffset: {x: 1.25, y: -0.2}
   AttackHitBoxSize: {x: 1.6, y: 0.64}
   InterruptedTime: 0.6
-  InterruptedSpeed: 8
+  InterruptedSpeed_BloodSlash: 8
+  InterruptedSpeed_DeadSlash: 8
+  InterruptedSpeed_Explosion: 20
   InterruptedMoveTime: 0.1
   TacticDistance: 3.5
   DangerDistance: 2.5

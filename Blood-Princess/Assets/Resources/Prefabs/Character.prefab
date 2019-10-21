@@ -361,7 +361,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IgnoredLayers:
     serializedVersion: 2
-    m_Bits: 768
+    m_Bits: 4864
   SelfSpeed: {x: 0, y: 0}
   HitRight: 0
   RightDis: 0
@@ -391,12 +391,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 172eb601400a15b43bd41b737ff9428a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyLayers:
-    serializedVersion: 2
-    m_Bits: 1024
   InRecovery: 0
   CurrentGravity: 0
   JumpHoldingTimeCount: 0
+  AttachedPassablePlatform: {fileID: 0}
+  AttachedLadder: {fileID: 0}
 --- !u!114 &4954734968556382944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -445,16 +444,29 @@ MonoBehaviour:
   DeadSlashOffset: {x: 1.4, y: -0.2}
   DeadSlashHitBoxSize: {x: 2, y: 0.64}
   InvulnerableAnticipationTime: 0.1
-  InvulnerableTime: 0.4
+  InvulnerableTime: 0.3
   InvulnerableRecoveryTime: 0.2
   InvulberableEnergyCost: 1
+  InvulnerableExplosionStartRadius: 1
+  InvulnerableExplosionEndRadius: 2
+  InvulnerableExplosionTime: 0.2
+  InvulnerableExplosionDamage: 5
   InterruptedTime: 0.4
   InterruptedMoveTime: 0.1
   InterruptedSpeed: 10
   InterruptedSpeedX: 10
-  InterruptedSpeedY: 5
-  ShockedXSpeed: 10
-  ShockedYSpeed: 5
+  ClimbPlatformTime: 0.3
+  ClimbPlatformDownOffset: 0
+  PassablePlatformLayer:
+    serializedVersion: 2
+    m_Bits: 2048
+  ClimbLadderSpeed: 3
+  LadderLayer:
+    serializedVersion: 2
+    m_Bits: 4096
+  EnemyLayer:
+    serializedVersion: 2
+    m_Bits: 1024
 --- !u!114 &4954734968556382945
 MonoBehaviour:
   m_ObjectHideFlags: 0
