@@ -234,11 +234,13 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
 
         float Thickness = 0.01f;
 
-        RaycastHit2D Hit = Physics2D.BoxCast(SpeedManager.GetTruePos() + (SpeedManager.BodyHeight/2 + Thickness/2)*Vector2.down, new Vector2(SpeedManager.BodyWidth, Thickness), 0, Vector2.down, 0, Data.LadderLayer);
+        RaycastHit2D DownHit = Physics2D.BoxCast(SpeedManager.GetTruePos() + (SpeedManager.BodyHeight/2 + Thickness/2)*Vector2.down, new Vector2(SpeedManager.BodyWidth, Thickness), 0, Vector2.down, 0, Data.LadderLayer);
+        RaycastHit2D TopHit = Physics2D.BoxCast(SpeedManager.GetTruePos() + (SpeedManager.BodyHeight / 2 + Thickness / 2) * Vector2.up, new Vector2(SpeedManager.BodyWidth, Thickness), 0, Vector2.up, 0, Data.LadderLayer);
 
-        if (Hit && Utility.InputDown())
+
+        if (!TopHit && DownHit && Utility.InputDown())
         {
-            Context.AttachedLadder = Hit.collider.gameObject;
+            Context.AttachedLadder = DownHit.collider.gameObject;
             return true;
         }
         else
@@ -588,6 +590,12 @@ public class Stand : CharacterActionState
             return;
         }
 
+        if (Utility.InputRoll())
+        {
+            TransitionTo<RollAnticipation>();
+            return;
+        }
+
         if (CheckCharacterBlink())
         {
             TransitionTo<BlinkAnticipation>();
@@ -685,7 +693,11 @@ public class GroundMove : CharacterActionState
             TransitionTo<BlinkAnticipation>();
             return;
         }
-
+        if (Utility.InputRoll())
+        {
+            TransitionTo<RollAnticipation>();
+            return;
+        }
 
         DetectPassablePlatform();
         if (CharacterFallPlatform())
@@ -1718,6 +1730,217 @@ public class DeadSlashRecovery : CharacterActionState
     }
 }
 
+public class RollAnticipation : CharacterActionState
+{
+    private float TimeCount;
+    private float StateTime;
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        SetUp();
+        SetAppearance();
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        if (CheckGetInterrupted())
+        {
+            TransitionTo<GetInterrupted>();
+            return;
+        }
+        CheckTime();
+    }
+
+    private void SetUp()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+        TimeCount = 0;
+        StateTime = Data.RollAnticipationTime;
+        Entity.GetComponent<SpeedManager>().SelfSpeed = Vector2.zero;
+    }
+
+    private void SetAppearance()
+    {
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.IdleSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
+    }
+
+    private void CheckTime()
+    {
+        TimeCount += Time.deltaTime;
+        if (TimeCount >= StateTime)
+        {
+            TransitionTo<Roll>();
+        }
+    }
+}
+
+public class Roll: CharacterActionState
+{
+    private float TimeCount;
+    private float StateTime;
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        SetUp();
+        SetAppearance();
+    }
+
+    public override void Update()
+    {
+        base.Update();
+
+        if (HitWall())
+        {
+            TransitionTo<RollRecovery>();
+            return;
+        }
+        if (!CheckGrounded())
+        {
+            TransitionTo<AirStay>();
+            return;
+        }
+        CheckTime();
+    }
+
+    public override void OnExit()
+    {
+        base.OnExit();
+        var Data = Entity.GetComponent<CharacterData>();
+        var SpeedManager = Entity.GetComponent<SpeedManager>();
+        Entity.GetComponent<StatusManager_Character>().InvulnerableEffect.GetComponent<SpriteRenderer>().enabled = false;
+        Entity.GetComponent<StatusManager_Character>().Invulnerable = false;
+        SpeedManager.IgnoredLayers = Data.NormalIgnoredLayers;
+        SpeedManager.SelfSpeed.x = 0;
+    }
+
+    private void SetUp()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+        var SpeedManager = Entity.GetComponent<SpeedManager>();
+
+        TimeCount = 0;
+        StateTime = Data.RollTime;
+
+        SpeedManager.IgnoredLayers = Data.RollIgnoredLayers;
+        if (Entity.transform.right.x > 0)
+        {
+            SpeedManager.SelfSpeed.x = Data.RollSpeed;
+        }
+        else
+        {
+            SpeedManager.SelfSpeed.x = -Data.RollSpeed;
+        }
+
+        Entity.GetComponent<StatusManager_Character>().Invulnerable = true;
+    }
+
+    private void SetAppearance()
+    {
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.IdleSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
+        Entity.GetComponent<StatusManager_Character>().InvulnerableEffect.GetComponent<SpriteRenderer>().enabled = true;
+        Entity.GetComponent<StatusManager_Character>().InvulnerableEffect.transform.position = Entity.GetComponent<SpeedManager>().GetTruePos();
+    }
+
+    private void CheckTime()
+    {
+        TimeCount += Time.deltaTime;
+        if (TimeCount >= StateTime)
+        {
+            TransitionTo<RollRecovery>();
+        }
+    }
+
+    private bool HitWall()
+    {
+        var SpeedManager = Entity.GetComponent<SpeedManager>();
+
+        if (Entity.transform.right.x > 0)
+        {
+            if (SpeedManager.HitRight)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (SpeedManager.HitLeft)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+    }
+}
+
+public class RollRecovery : CharacterActionState
+{
+    private float TimeCount;
+    private float StateTime;
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        SetUp();
+        SetAppearance();
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        if (CheckGetInterrupted())
+        {
+            TransitionTo<GetInterrupted>();
+            return;
+        }
+        CheckTime();
+    }
+
+
+    private void SetUp()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+        TimeCount = 0;
+        StateTime = Data.RollRecoveryTime;
+        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+    }
+
+    private void SetAppearance()
+    {
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.IdleSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
+    }
+
+    private void CheckTime()
+    {
+        TimeCount += Time.deltaTime;
+        if (TimeCount >= StateTime)
+        {
+            TransitionTo<Stand>();
+        }
+    }
+}
+
 public class BlinkAnticipation : CharacterActionState
 {
     private float TimeCount;
@@ -1733,6 +1956,12 @@ public class BlinkAnticipation : CharacterActionState
     public override void Update()
     {
         base.Update();
+
+        if (CheckGetInterrupted())
+        {
+            TransitionTo<GetInterrupted>();
+            return;
+        }
         CheckTime();
     }
 
@@ -1752,6 +1981,7 @@ public class BlinkAnticipation : CharacterActionState
 
         SetCharacterSprite();
         Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
+
     }
 
 
@@ -1780,11 +2010,6 @@ public class BlinkActivated : CharacterActionState
     public override void Update()
     {
         base.Update();
-        if (CheckGetInterrupted())
-        {
-            TransitionTo<GetInterrupted>();
-            return;
-        }
         CheckTime();
     }
 
@@ -1792,6 +2017,8 @@ public class BlinkActivated : CharacterActionState
     {
         base.OnExit();
         Entity.GetComponent<StatusManager_Character>().Invulnerable = false;
+        Entity.GetComponent<SpriteRenderer>().enabled = true;
+        Entity.GetComponent<StatusManager_Character>().InvulnerableEffect.GetComponent<SpriteRenderer>().enabled = false;
     }
 
     private void SetUp()

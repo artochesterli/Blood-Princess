@@ -78,7 +78,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         if (Invulnerable)
         {
             Damage = 0;
-            GenerateInvulnerableExplosion();
+            //GenerateInvulnerableExplosion();
 
         }
         else if (Blocking)
@@ -93,26 +93,29 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                 CurrentEnergy = 0;
                 Interrupted = true;
             }
+
+
         }
         else
         {
             CurrentEnergy = 0;
             Interrupted = true;
+            if (HitAttack.Right)
+            {
+                DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 1);
+            }
+            else
+            {
+                DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 1);
+            }
+            DamageText.GetComponent<Text>().text = Damage.ToString();
+            DamageText.transform.parent = Canvas.transform;
         }
 
 
         CurrentHP -= Damage;
 
-        if (HitAttack.Right)
-        {
-            DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 1);
-        }
-        else
-        {
-            DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 1);
-        }
-        DamageText.GetComponent<Text>().text = Damage.ToString();
-        DamageText.transform.parent = Canvas.transform;
+
 
 
         if(CurrentHP <= 0)

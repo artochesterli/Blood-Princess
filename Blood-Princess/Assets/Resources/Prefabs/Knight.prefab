@@ -404,8 +404,8 @@ MonoBehaviour:
   NormalMoveSpeed: 3.5
   KeepDisMoveSpeed: 2
   AttackStepForwardSpeed: 8
-  SingleAttackAnticipationTime: 0.7
-  DoubleAttackFirstAnticipationTime: 1
+  SingleAttackAnticipationTime: 0.6
+  DoubleAttackFirstAnticipationTime: 0.8
   DoubleAttackSecondAnticipationTime: 0.3
   AttackTime: 0.1
   AttackRecoveryTime: 0.5

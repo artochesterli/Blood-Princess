@@ -59,6 +59,14 @@ public class CharacterData : MonoBehaviour
     public float InterruptedSpeed;
     public float InterruptedSpeedX;
 
+    public float RollAnticipationTime;
+    public float RollTime;
+    public float RollRecoveryTime;
+    public float RollSpeed;
+
+    public LayerMask NormalIgnoredLayers;
+    public LayerMask RollIgnoredLayers;
+
     public float ClimbPlatformTime;
     public float ClimbPlatformDownOffset;
     public LayerMask PassablePlatformLayer;

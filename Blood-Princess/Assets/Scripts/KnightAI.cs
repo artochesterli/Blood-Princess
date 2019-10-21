@@ -855,6 +855,7 @@ public class KnightAttackRecovery : KnightBehavior
         TimeCount += Time.deltaTime;
         if (TimeCount >= StateTime)
         {
+            RectifyDirection();
             if (Context.CurrentAttackMode == KnightAttackMode.DoubleFirst)
             {
                 if (GetXDiff()>0)
@@ -873,6 +874,18 @@ public class KnightAttackRecovery : KnightBehavior
                 MakeTacticalDecision();
                 //TransitionTo<KnightKeepDistance>();
             }
+        }
+    }
+
+    private void RectifyDirection()
+    {
+        if (GetXDiff() > 0)
+        {
+            Entity.transform.eulerAngles = new Vector3(0, 0, 0);
+        }
+        else
+        {
+            Entity.transform.eulerAngles = new Vector3(0, 180, 0);
         }
     }
 

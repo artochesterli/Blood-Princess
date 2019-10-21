@@ -10574,6 +10574,7 @@ GameObject:
   - component: {fileID: 1143667520}
   - component: {fileID: 1143667519}
   - component: {fileID: 1143667516}
+  - component: {fileID: 1143667521}
   m_Layer: 10
   m_Name: Dummy
   m_TagString: Untagged
@@ -10704,6 +10705,22 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &1143667521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1143667515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9777945ce8308994c9d49bd53a5b2889, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  LeftPassable: 0
+  RightPassable: 0
+  TopPassable: 1
+  BottomPassable: 1
 --- !u!1001 &1146302370
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19643,6 +19660,46 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 963194227}
+    - target: {fileID: 4954734968556382944, guid: 2ec4490577490ea4390628fcb5b094d0,
+        type: 3}
+      propertyPath: RollAnticipationTime
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4954734968556382944, guid: 2ec4490577490ea4390628fcb5b094d0,
+        type: 3}
+      propertyPath: RollTime
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4954734968556382944, guid: 2ec4490577490ea4390628fcb5b094d0,
+        type: 3}
+      propertyPath: RollRecoveryTime
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4954734968556382944, guid: 2ec4490577490ea4390628fcb5b094d0,
+        type: 3}
+      propertyPath: RollSpeed
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 4954734968556382944, guid: 2ec4490577490ea4390628fcb5b094d0,
+        type: 3}
+      propertyPath: NormalIgnoredLayers.m_Bits
+      value: 4864
+      objectReference: {fileID: 0}
+    - target: {fileID: 4954734968556382944, guid: 2ec4490577490ea4390628fcb5b094d0,
+        type: 3}
+      propertyPath: RollIgnoredLayers.m_Bits
+      value: 5888
+      objectReference: {fileID: 0}
+    - target: {fileID: 4954734968556382944, guid: 2ec4490577490ea4390628fcb5b094d0,
+        type: 3}
+      propertyPath: BloodSlashAnticipationTime
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4954734968556382944, guid: 2ec4490577490ea4390628fcb5b094d0,
+        type: 3}
+      propertyPath: NormalSlashAnticipationTime
+      value: 0.1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2ec4490577490ea4390628fcb5b094d0, type: 3}
 --- !u!1001 &5340953038254878744
