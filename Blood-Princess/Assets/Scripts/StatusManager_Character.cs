@@ -75,6 +75,8 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         int Damage = HitAttack.Damage;
 
+        Damage = 0;
+
         if (Invulnerable)
         {
             Damage = 0;

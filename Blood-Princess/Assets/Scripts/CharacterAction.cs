@@ -94,7 +94,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
     public override void OnEnter()
     {
         base.OnEnter();
-        Debug.Log(this.GetType().Name);
+        //Debug.Log(this.GetType().Name);
 
     }
 
@@ -1256,6 +1256,12 @@ public class NormalSlashRecovery : CharacterActionState
             TransitionTo<GetInterrupted>();
             return;
         }
+
+        if (Utility.InputRoll() && CheckGrounded())
+        {
+            TransitionTo<RollAnticipation>();
+            return;
+        }
         CheckTime();
     }
 
@@ -1814,8 +1820,8 @@ public class Roll: CharacterActionState
         base.OnExit();
         var Data = Entity.GetComponent<CharacterData>();
         var SpeedManager = Entity.GetComponent<SpeedManager>();
-        Entity.GetComponent<StatusManager_Character>().InvulnerableEffect.GetComponent<SpriteRenderer>().enabled = false;
-        Entity.GetComponent<StatusManager_Character>().Invulnerable = false;
+        //Entity.GetComponent<StatusManager_Character>().InvulnerableEffect.GetComponent<SpriteRenderer>().enabled = false;
+        //Entity.GetComponent<StatusManager_Character>().Invulnerable = false;
         SpeedManager.IgnoredLayers = Data.NormalIgnoredLayers;
         SpeedManager.SelfSpeed.x = 0;
     }
@@ -1838,7 +1844,7 @@ public class Roll: CharacterActionState
             SpeedManager.SelfSpeed.x = -Data.RollSpeed;
         }
 
-        Entity.GetComponent<StatusManager_Character>().Invulnerable = true;
+        //Entity.GetComponent<StatusManager_Character>().Invulnerable = true;
     }
 
     private void SetAppearance()
@@ -1848,7 +1854,7 @@ public class Roll: CharacterActionState
 
         SetCharacterSprite();
         Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
-        Entity.GetComponent<StatusManager_Character>().InvulnerableEffect.GetComponent<SpriteRenderer>().enabled = true;
+        //Entity.GetComponent<StatusManager_Character>().InvulnerableEffect.GetComponent<SpriteRenderer>().enabled = true;
         Entity.GetComponent<StatusManager_Character>().InvulnerableEffect.transform.position = Entity.GetComponent<SpeedManager>().GetTruePos();
     }
 

@@ -402,13 +402,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHP: 30
   NormalMoveSpeed: 3.5
-  KeepDisMoveSpeed: 2
-  AttackStepForwardSpeed: 8
-  SingleAttackAnticipationTime: 0.6
-  DoubleAttackFirstAnticipationTime: 0.8
+  KeepDisMoveSpeed: 1
+  AttackStepForwardSpeed: 12
+  ChaseAttackSpeed: 7
+  StepBackAndForthMinTime: 0.25
+  StepBackAndForthMaxTime: 0.5
+  SingleAttackAnticipationTime: 0.7
+  DoubleAttackFirstAnticipationTime: 0.7
   DoubleAttackSecondAnticipationTime: 0.3
+  ChaseAttackAnticipationTime: 0.5
   AttackTime: 0.1
-  AttackRecoveryTime: 0.5
+  SingleAttackRecoveryTime: 0.5
+  DoubleAttackFirstRecoveryTime: 0.3
+  DoubleAttackSecondRecoveryTime: 0.5
   Damage: 5
   AttackOffset: {x: 1.25, y: -0.2}
   AttackHitBoxSize: {x: 1.6, y: 0.64}
@@ -421,13 +427,11 @@ MonoBehaviour:
   DangerDistance: 2.5
   ChaseForAttackDistance: 1
   TacticDecisionInterval: 1.5
-  ShortDisAttackDecisionChance: 0.6
-  LongDisAttackDecisionChance: 0.3
+  AttackDecisionChance: 0.5
   ShortDisSingleAttackChance: 0.7
   LongDisSingleAttackChance: 0.3
   MaxStamina: 2
   MaxPatience: 2
-  ShockDamage: 2
 --- !u!114 &4305804637280515000
 MonoBehaviour:
   m_ObjectHideFlags: 0
