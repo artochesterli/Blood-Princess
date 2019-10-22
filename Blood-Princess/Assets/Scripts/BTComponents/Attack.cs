@@ -24,8 +24,6 @@ public class Attack : Action
 	public override void OnAwake()
 	{
 		m_KnightSpriteData = GetComponent<KnightSpriteData>();
-		bool isRight = transform.eulerAngles.y == 0f;
-		AttackInfo = new EnemyAttackInfo(Owner.gameObject, isRight, Damage.Value, HitBoxOffset.Value, HitBoxSize.Value);
 	}
 
 	public override void OnStart()
@@ -33,6 +31,9 @@ public class Attack : Action
 		m_Timer = Time.timeSinceLevelLoad + Duration.Value;
 		GetComponent<SpriteRenderer>().sprite = m_KnightSpriteData.Recovery;
 		m_AttackHit = false;
+		bool isRight = transform.eulerAngles.y == 0f;
+		AttackInfo = new EnemyAttackInfo(Owner.gameObject, isRight, Damage.Value, HitBoxOffset.Value, HitBoxSize.Value);
+		GetComponent<SpeedManager>().SelfSpeed.x = transform.right.x * ForwardStep.Value;
 	}
 
 	public override TaskStatus OnUpdate()
@@ -70,6 +71,16 @@ public class Attack : Action
 		{
 			return false;
 		}
+	}
+
+	public override void OnDrawGizmos()
+	{
+#if UNITY_EDITOR
+		Rect boxCastRect = new Rect((Vector2)Owner.transform.position + HitBoxOffset.Value, HitBoxSize.Value);
+		boxCastRect.center = (Vector2)Owner.transform.position + HitBoxOffset.Value;
+		UnityEditor.Handles.DrawSolidRectangleWithOutline(boxCastRect,
+			Color.cyan, Color.white);
+#endif
 	}
 
 }

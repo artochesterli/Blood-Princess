@@ -36,7 +36,7 @@ public class PlayerInFront : Conditional
 	private bool _isPlayerInSight()
 	{
 		if (Vector2.Distance(Owner.transform.position, m_Player.transform.position) < Distance.Value &&
-			Vector3.Angle(Owner.transform.right, m_Player.transform.right) > 180f - HalfAngle.Value)
+			Vector3.Angle((m_Player.transform.position - Owner.transform.position).normalized, Owner.transform.right) < HalfAngle.Value)
 		{
 			return true;
 		}

@@ -22,13 +22,13 @@ public class Recovery : Action
 	{
 		base.OnStart();
 		m_Timer = Time.timeSinceLevelLoad + Duration.Value;
+		GetComponent<SpriteRenderer>().sprite = m_KnightSpriteData.Idle;
 	}
 
 	public override TaskStatus OnUpdate()
 	{
 		if (m_Timer < Time.timeSinceLevelLoad)
 		{
-			GetComponent<SpriteRenderer>().sprite = m_KnightSpriteData.Idle;
 			return TaskStatus.Success;
 		}
 
