@@ -9,7 +9,8 @@ public class KnightData : MonoBehaviour
     public float NormalMoveSpeed;
     public float KeepDisMoveSpeed;
     public float AttackStepForwardSpeed;
-    public float ChaseAttackSpeed;
+
+
     public float StepBackAndForthMinTime;
     public float StepBackAndForthMaxTime;
 
@@ -17,6 +18,8 @@ public class KnightData : MonoBehaviour
     public float DoubleAttackFirstAnticipationTime;
     public float DoubleAttackSecondAnticipationTime;
     public float ChaseAttackAnticipationTime;
+    public float ChaseAttackSpeed;
+    public float ChaseAttackTriggerDistance;
     public float AttackTime;
     public float SingleAttackRecoveryTime;
     public float DoubleAttackFirstRecoveryTime;
