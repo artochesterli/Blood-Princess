@@ -420,14 +420,14 @@ MonoBehaviour:
   MaxEnergy: 3
   BlockDamageDeduction: 0.6
   BlockInvulnerableTime: 0.3
-  NormalSlashAnticipationTime: 0.1
+  NormalSlashAnticipationTime: 0.2
   NormalSlashStrikeTime: 0.1
   NormalSlashRecoveryTime: 0.2
   NormalSlashStepForwardSpeed: 8
   NormalSlashDamage: 5
   NormalSlashOffset: {x: 1.1, y: -0.2}
   NormalSlashHitBoxSize: {x: 1.44, y: 0.64}
-  BloodSlashAnticipationTime: 0.1
+  BloodSlashAnticipationTime: 0.2
   BloodSlashStrikeTime: 0.1
   BloodSlashRecoveryTime: 0.2
   BloodSlashStepForwardSpeed: 8
