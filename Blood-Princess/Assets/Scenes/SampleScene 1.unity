@@ -4188,6 +4188,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fba2cdbd563fda24b995312312d61e5e, type: 3}
+--- !u!1 &467121386 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4954734968556382954, guid: 2ec4490577490ea4390628fcb5b094d0,
+    type: 3}
+  m_PrefabInstance: {fileID: 1197945775}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &467746170 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2072297363477874203, guid: fba2cdbd563fda24b995312312d61e5e,
@@ -8699,7 +8705,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraState: 0
-  Character: {fileID: 0}
+  Character: {fileID: 467121386}
 --- !u!4 &964372182 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2072297363477874203, guid: fba2cdbd563fda24b995312312d61e5e,
