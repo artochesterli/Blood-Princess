@@ -15,12 +15,16 @@ namespace PCG
 	public class Exit
 	{
 		public string ExitType;
-		public IntVector2 Position;
+		/// <summary>
+		/// Relative Position to Room File
+		/// </summary>
+		public IntVector2 RelativePosition;
+		public IntVector2 BoardPosition;
 
-		public Exit(string exitType, IntVector2 position)
+		public Exit(string exitType, IntVector2 relativePosition)
 		{
 			ExitType = exitType;
-			Position = position;
+			RelativePosition = relativePosition;
 		}
 	}
 
@@ -28,12 +32,22 @@ namespace PCG
 	{
 		public IntVector2 RoomDimension;
 		public List<Exit> Exits;
+		public Exit RoomExit;
 
 		private StreamReader _streamReader;
-		private IntVector2 _boardPosition;
-		private IntVector2 _boardDimension;
+		/// <summary>
+		/// The Start Position of the room on board
+		/// </summary>
 		private IntVector2 m_BoardStartPosition;
+		/// <summary>
+		/// Board should make sure to check this type
+		/// of room has this entry type
+		/// </summary>
 		private string m_EntryType;
+		/// <summary>
+		/// Get a copy of the current board when creating this room
+		/// a 2-d string array, each string with tile type on it
+		/// </summary>
 		private string[,] m_CurrentBoard;
 		private int _seed;
 		/// <summary>
@@ -46,25 +60,17 @@ namespace PCG
 		/// </summary>
 		private int _roomType;
 		private System.Random _random;
+		private string[][] entireRoomFile;
+		private Exit m_ConnectingExit;
+		/// <summary>
+		/// m_BoardRoomOffset = BoardStartPosition - m_ConnectingExit.RelativePosition
+		/// </summary>
+		private IntVector2 m_BoardRoomOffset;
+
 		private GameObject _room;
 		private GameObject _boardGameObject;
-		private Vector2 _roomCenterPosition;
 
-		public Room(IntVector2 boardPosition, IntVector2 boardDimension, int seed, int roomType, GameObject boardGameObject)
-		{
-			// Debug.Assert(_streamReader != null, "Text File Assets Not Found when constructing a room");
-			_boardPosition = boardPosition;
-			_seed = seed;
-			_roomType = roomType;
-			_random = new System.Random(Guid.NewGuid().GetHashCode());
-			RoomDimension = new IntVector2();
-			Exits = new List<Exit>();
-			_boardDimension = boardDimension;
-			_boardGameObject = boardGameObject;
-			_setupRoom();
-		}
-
-		public Room(IntVector2 BoardStartPosition, string entryType, int seed, int roomType, string[,] currentBoard)
+		public Room(IntVector2 BoardStartPosition, string entryType, int seed, int roomType, ref string[,] currentBoard, GameObject boardGameObject)
 		{
 			m_BoardStartPosition = BoardStartPosition;
 			m_EntryType = entryType;
@@ -72,15 +78,157 @@ namespace PCG
 			m_CurrentBoard = currentBoard;
 			_random = new System.Random(Guid.NewGuid().GetHashCode());
 			Exits = new List<Exit>();
+			m_ConnectingExit = null;
+			RoomExit = null;
 			_setupRoom2();
 		}
 
 		private void _setupRoom2()
 		{
+			// 1. Find a random room according to requiredRoomtype
+			_findRandomRoom();
+			Debug.Assert(entireRoomFile != null, "Something Wrong Finding Random Room");
+			// 2. Find the random room's exit position
+			_findExitPosition();
+			// Find the Room's Exit
 
+			Debug.Assert(Exits.Count != 0, "Something Wrong Loading Room Exits");
+			// 3. Find the exit that is same as the entryType
+			_findConnectingExit();
+			Debug.Assert(m_ConnectingExit != null, "Something wrong finding the exit that has the same type");
+			// 4. Check if current placing will not obstruct current board
+			if (_canPlaceRoom())
+			{
+				// 5. Place
+				_placeRoom();
+				_findRoomExit();
+				Debug.Assert(RoomExit != null, "No RoomExit Was Found");
+			}
+			else
+			{
+				Debug.LogError("Cannot Place room due to overlapping tiles");
+			}
 		}
 
-		private void _setupRoom()
+		private void _findRoomExit()
+		{
+			foreach (Exit e in Exits)
+			{
+				if (e.ExitType != m_EntryType)
+				{
+					RoomExit = e;
+					RoomExit.BoardPosition = RoomExit.RelativePosition + m_BoardRoomOffset;
+					return;
+				}
+			}
+		}
+
+		private void _placeRoom()
+		{
+			for (int i = 0; i < entireRoomFile.Length; i++)
+			{
+				for (int j = 0; j < entireRoomFile[0].Length; j++)
+				{
+					IntVector2 curTileRelativePosition = new IntVector2(i, j);
+					IntVector2 curTileWorldPosition = curTileRelativePosition + m_BoardRoomOffset;
+					string curChar = entireRoomFile[i][j];
+					// Always Assumes Board zero position is world zero position
+					// add to board
+					if (curChar != "")
+						m_CurrentBoard[curTileWorldPosition.x, curTileWorldPosition.y] = entireRoomFile[i][j];
+					// Place Tile irw
+					_placeTile(curChar, curTileWorldPosition);
+				}
+			}
+		}
+
+		private void _placeTile(string curChar, IntVector2 worldPosition)
+		{
+			Vector2 curTileWorldPosition = Vector2.zero +
+				new Vector2(worldPosition.x * Utility.TileSize().x, worldPosition.y * Utility.TileSize().y);
+
+			GameObject instantiatedObject = null;
+			if (curChar == "1")
+			{
+				instantiatedObject = GameObject.Instantiate(Resources.Load("BlockTile" + _random.Next(0, 2).ToString(), typeof(GameObject))) as GameObject;
+
+			}
+			else if (curChar == "2")
+			{
+				if (_random.Next(0, 100) > 50)
+				{
+					instantiatedObject = GameObject.Instantiate(Resources.Load("BlockTile" + _random.Next(0, 2).ToString(), typeof(GameObject))) as GameObject;
+				}
+			}
+			else if (curChar == "5")
+			{
+				instantiatedObject = GameObject.Instantiate(Resources.Load("Ladder", typeof(GameObject))) as GameObject;
+			}
+			else if (curChar == "6")
+			{
+				instantiatedObject = GameObject.Instantiate(Resources.Load("PassablePlatform", typeof(GameObject))) as GameObject;
+			}
+			else if (curChar == "a")
+			{
+				instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Knight", typeof(GameObject))) as GameObject;
+			}
+			else if (curChar == "b")
+			{
+				if (_random.Next(0, 100) > 50)
+				{
+					instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Knight", typeof(GameObject))) as GameObject;
+				}
+			}
+			// Store the exit of the room, but do not generate anything there
+			else if (curChar == "8" || curChar == "9")
+			{
+				Exits.Add(new Exit(curChar, new IntVector2()));
+			}
+			if (instantiatedObject != null)
+			{
+				//instantiatedObject.transform.parent = _room.transform;
+				instantiatedObject.transform.position = curTileWorldPosition;
+			}
+		}
+
+		private bool _canPlaceRoom()
+		{
+			for (int i = 0; i < entireRoomFile.Length; i++)
+			{
+				for (int j = 0; j < entireRoomFile[i].Length; j++)
+				{
+					IntVector2 curTileRelativePosition = new IntVector2(i, j);
+					IntVector2 curTileWorldPosition = curTileRelativePosition + m_BoardRoomOffset;
+					// If the current tile is not empty and 
+					// there is anything there on board
+
+					if (entireRoomFile[i][j] != "0" &&
+						entireRoomFile[i][j] != "" &&
+						entireRoomFile[i][j] != "\n" &&
+						m_CurrentBoard[curTileWorldPosition.x, curTileWorldPosition.y] != "0" &&
+						m_CurrentBoard[curTileWorldPosition.x, curTileWorldPosition.y] != "") return false;
+				}
+			}
+			return true;
+		}
+
+		private void _findConnectingExit()
+		{
+			foreach (Exit e in Exits)
+			{
+				if (e.ExitType == m_EntryType)
+				{
+					m_ConnectingExit = e;
+					m_BoardRoomOffset = m_BoardStartPosition - m_ConnectingExit.RelativePosition;
+					return;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Find a random room and load the EntireRoomFile
+		/// </summary>
+		private void _findRandomRoom()
 		{
 			// Load Stream Reader According to RoomType
 			string path = "Assets/PCG/RoomType" + _roomType.ToString();
@@ -88,154 +236,66 @@ namespace PCG
 			int fileRandom = _random.Next(0, info.GetFiles().Length / 2);
 			path += ("/" + fileRandom.ToString() + ".csv");
 			_streamReader = new StreamReader(path);
-			Debug.Assert(_streamReader != null, "Could not read file from path:" + path);
 
 			// Read File into manipulable string array
 			string entireFile = _streamReader.ReadToEnd();
 			string[] choppedUpFile = entireFile.Split('\n');
-			string[][] entireFileRead = new string[choppedUpFile.Length][];
+			entireRoomFile = new string[choppedUpFile.Length][];
 			for (int i = 0; i < choppedUpFile.Length; i++)
 			{
 				string[] oneline = choppedUpFile[i].Split(',');
-				entireFileRead[i] = oneline;
+				entireRoomFile[i] = oneline;
 			}
 
-			// Generate Block Tiles 
-			int roomHeight = entireFileRead.Length;
-			int roomWidth = entireFileRead[0].Length - 1;
-			Sprite sampleTileSprite = (Resources.Load("BlockTile0", typeof(GameObject)) as GameObject).GetComponent<SpriteRenderer>().sprite;
-			Debug.Assert(sampleTileSprite != null, "Sample Tile Sprite Not Found");
-			float halfX = sampleTileSprite.bounds.extents.x;
-			float halfY = sampleTileSprite.bounds.extents.y;
-			float x = 2f * halfX;
-			float y = 2f * halfY;
-			// Set Room's Dimensions
-			RoomDimension.x = roomWidth;
-			RoomDimension.y = roomHeight;
-			// Calculate Room Center Position
-			// Assuming Board Position 0, 0 is World Position 0, 0
-			_roomCenterPosition = Vector2.zero + new Vector2(x * roomWidth * _boardPosition.x, y * roomHeight * _boardPosition.y);
-			_room = new GameObject("Room(" + _boardPosition.x + "," + _boardPosition.y + ")" + _roomType.ToString() + " - " + fileRandom.ToString());
-			_room.transform.parent = _boardGameObject.transform;
-			_room.transform.position = _roomCenterPosition;
-
-			// Place Tiles based on file reader
-			// 0 is 100% Empty
-			// 1 is 100% Solid Tile
-			// 2 is 50% Solid, 50% Empty
-
-			for (int i = 0; i < entireFileRead.Length; i++)
+			// Rotatte entireRoomFile ClockWise 90
+			int x = entireRoomFile.Length;
+			int y = entireRoomFile[0].Length;
+			string[][] temp = new string[y][];
+			for (int i = 0; i < y; i++)
 			{
-				for (int j = 0; j < entireFileRead[i].Length; j++)
+				temp[i] = new string[x];
+			}
+
+			for (int i = 0; i < y; i++)
+			{
+				for (int j = 0; j < x; j++)
 				{
-					string curChar = entireFileRead[i][j];
-					Vector2 curTilePosition = _roomCenterPosition - new Vector2(((roomWidth - 1) / 2 - j) * x, 0);
-					curTilePosition += new Vector2(0, ((roomHeight - 1) / 2 - i) * y);
-
-					GameObject instantiatedObject = null;
-					if (curChar == "1")
-					{
-						instantiatedObject = GameObject.Instantiate(Resources.Load("BlockTile" + _random.Next(0, 2).ToString(), typeof(GameObject))) as GameObject;
-
-					}
-					else if (curChar == "2")
-					{
-						if (_random.Next(0, 100) > 50)
-						{
-							instantiatedObject = GameObject.Instantiate(Resources.Load("BlockTile" + _random.Next(0, 2).ToString(), typeof(GameObject))) as GameObject;
-						}
-					}
-					else if (curChar == "5")
-					{
-						instantiatedObject = GameObject.Instantiate(Resources.Load("Ladder", typeof(GameObject))) as GameObject;
-					}
-					else if (curChar == "6")
-					{
-						instantiatedObject = GameObject.Instantiate(Resources.Load("PassablePlatform", typeof(GameObject))) as GameObject;
-					}
-					else if (curChar == "a")
-					{
-						instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Knight", typeof(GameObject))) as GameObject;
-					}
-					else if (curChar == "b")
-					{
-						if (_random.Next(0, 100) > 50)
-						{
-							instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Knight", typeof(GameObject))) as GameObject;
-						}
-					}
-					// Store the exit of the room, but do not generate anything there
-					else if (curChar == "8" || curChar == "9")
-					{
-						Exits.Add(new Exit(curChar, new IntVector2()));
-					}
-					if (instantiatedObject != null)
-					{
-						instantiatedObject.transform.parent = _room.transform;
-						instantiatedObject.transform.position = curTilePosition;
-					}
-
+					temp[i][j] = entireRoomFile[x - j - 1][i];
+					temp[i][j] = temp[i][j].Trim();
 				}
 			}
 
-			//// Place Extra Tiles if the Room is in the corner or edge
-			//GameObject edgeHolder = new GameObject("EdgeHolder");
-			//edgeHolder.transform.parent = _boardGameObject.transform;
-			//edgeHolder.transform.position = Vector2.zero;
-			//if (_boardPosition.x == 0)
+			entireRoomFile = temp;
+
+			//str = "";
+			//for (int i = 0; i < entireRoomFile.Length; i++)
 			//{
-			//	float LeftPosition = _roomCenterPosition.x - ((roomWidth - 1) / 2 + 1) * x;
-			//	float topPosition = _roomCenterPosition.y + ((roomHeight - 1) / 2 + 1) * y;
-			//	for (int i = 0; i < roomHeight + 1; i++)
+			//	for (int j = 0; j < entireRoomFile[i].Length; j++)
 			//	{
-			//		float yPos = topPosition - i * (y);
-			//		GameObject tile = GameObject.Instantiate(Resources.Load("BlockTile2", typeof(GameObject))) as GameObject;
-			//		tile.transform.parent = edgeHolder.transform;
-			//		tile.transform.position = new Vector2(LeftPosition, yPos);
+			//		str += entireRoomFile[i][j];
 			//	}
-			//}
-			//if (_boardPosition.x == _boardDimension.x - 1)
-			//{
-			//	float rightPosition = _roomCenterPosition.x + ((roomWidth - 1) / 2 + 2) * x;
-			//	float topPosition = _roomCenterPosition.y + ((roomHeight - 1) / 2 + 1) * y;
-			//	for (int i = 0; i < roomHeight + 1; i++)
-			//	{
-			//		float yPos = topPosition - i * (y);
-			//		GameObject tile = GameObject.Instantiate(Resources.Load("BlockTile2", typeof(GameObject))) as GameObject;
-			//		tile.transform.parent = edgeHolder.transform;
-			//		tile.transform.position = new Vector2(rightPosition, yPos);
-			//	}
-			//}
-			//if (_boardPosition.y == 0)
-			//{
-			//	float downPosition = _roomCenterPosition.y - ((roomHeight - 1) / 2 + 2) * y;
-			//	float LeftPosition = _roomCenterPosition.x - ((roomWidth - 1) / 2 + 1) * x;
-			//	for (int i = 0; i < roomWidth + 1; i++)
-			//	{
-			//		float xPos = LeftPosition + i * (x);
-			//		GameObject tile = GameObject.Instantiate(Resources.Load("BlockTile2", typeof(GameObject))) as GameObject;
-			//		tile.transform.parent = edgeHolder.transform;
-			//		tile.transform.position = new Vector2(xPos, downPosition);
-			//	}
-			//}
-			//if (_boardPosition.y == _boardDimension.y - 1)
-			//{
-			//	float topPosition = _roomCenterPosition.y + ((roomHeight - 1) / 2 + 1) * y;
-			//	float LeftPosition = _roomCenterPosition.x - ((roomWidth - 1) / 2 + 1) * x;
-			//	for (int i = 0; i < roomWidth + 1; i++)
-			//	{
-			//		float xPos = LeftPosition + i * (x);
-			//		GameObject tile = GameObject.Instantiate(Resources.Load("BlockTile2", typeof(GameObject))) as GameObject;
-			//		tile.transform.parent = edgeHolder.transform;
-			//		tile.transform.position = new Vector2(xPos, topPosition);
-			//	}
+			//	str += "\n";
 			//}
 		}
 
-		public void GeneratePlayer()
+		/// <summary>
+		/// Find all exits Position of this room
+		/// and load them into Exits
+		/// </summary>
+		private void _findExitPosition()
 		{
-			GameObject Player = GameObject.Instantiate(Resources.Load("Prefabs/Character", typeof(GameObject))) as GameObject;
-			Player.transform.position = _roomCenterPosition;
+			for (int i = 0; i < entireRoomFile.Length; i++)
+			{
+				for (int j = 0; j < entireRoomFile[i].Length; j++)
+				{
+					string curChar = entireRoomFile[i][j];
+					if (curChar == "8" ||
+						curChar == "9")
+					{
+						Exits.Add(new Exit(curChar, new IntVector2(i, j)));
+					}
+				}
+			}
 		}
 	}
 

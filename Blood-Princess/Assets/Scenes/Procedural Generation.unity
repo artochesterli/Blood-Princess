@@ -227,8 +227,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BoardDimension:
-    x: 8
-    y: 8
+    x: 200
+    y: 200
+  Length: 10
 --- !u!1 &2108433861
 GameObject:
   m_ObjectHideFlags: 0
