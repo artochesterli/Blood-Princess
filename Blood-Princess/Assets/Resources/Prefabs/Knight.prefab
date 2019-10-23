@@ -412,6 +412,7 @@ MonoBehaviour:
   ChaseAttackAnticipationTime: 0.8
   ChaseAttackSpeed: 7
   ChaseAttackTriggerDistance: 6
+  MaxChaseAttackDistance: 8
   AttackTime: 0.1
   SingleAttackRecoveryTime: 0.5
   DoubleAttackFirstRecoveryTime: 0.3
@@ -428,10 +429,10 @@ MonoBehaviour:
   DangerDistance: 2.5
   ChaseForAttackDistance: 1
   TacticDecisionInterval: 1.5
-  AttackDecisionChance: 0.5
-  ShortDisSingleAttackChance: 0.7
-  LongDisSingleAttackChance: 0.3
-  MaxStamina: 2
+  AttackDecisionChance: 1
+  ShortDisSingleAttackChance: 0.6
+  LongDisSingleAttackChance: 0.4
+  MaxStamina: 1
   MaxPatience: 2
 --- !u!114 &4305804637280515000
 MonoBehaviour:

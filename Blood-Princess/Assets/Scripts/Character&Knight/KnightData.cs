@@ -20,6 +20,7 @@ public class KnightData : MonoBehaviour
     public float ChaseAttackAnticipationTime;
     public float ChaseAttackSpeed;
     public float ChaseAttackTriggerDistance;
+    public float MaxChaseAttackDistance;
     public float AttackTime;
     public float SingleAttackRecoveryTime;
     public float DoubleAttackFirstRecoveryTime;

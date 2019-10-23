@@ -23,26 +23,26 @@ public class Utility
 
     public static bool InputRight()
     {
-        return Input.GetKey(KeyCode.D);
-        //return Input.GetKey(KeyCode.RightArrow);
+        //return Input.GetKey(KeyCode.D);
+        return Input.GetKey(KeyCode.RightArrow);
     }
 
     public static bool InputLeft()
     {
-        return Input.GetKey(KeyCode.A);
-        //return Input.GetKey(KeyCode.LeftArrow);
+        //return Input.GetKey(KeyCode.A);
+        return Input.GetKey(KeyCode.LeftArrow);
     }
 
     public static bool InputUp()
     {
-        return Input.GetKey(KeyCode.W);
-        //return Input.GetKey(KeyCode.UpArrow);
+        //return Input.GetKey(KeyCode.W);
+        return Input.GetKey(KeyCode.UpArrow);
     }
 
     public static bool InputDown()
     {
-        return Input.GetKey(KeyCode.S);
-        //return Input.GetKey(KeyCode.DownArrow);
+        //return Input.GetKey(KeyCode.S);
+        return Input.GetKey(KeyCode.DownArrow);
     }
 
     public static bool InputJump()
@@ -57,20 +57,20 @@ public class Utility
 
     public static bool InputNormalSlash()
     {
-        return Input.GetKeyDown(KeyCode.J);
-        //return Input.GetKeyDown(KeyCode.Z);
+        //return Input.GetKeyDown(KeyCode.J);
+        return Input.GetKeyDown(KeyCode.S);
     }
 
     public static bool InputBloodSlash()
     {
-        return Input.GetKeyDown(KeyCode.I);
-        //return Input.GetKeyDown(KeyCode.X);
+        //return Input.GetKeyDown(KeyCode.I);
+        return Input.GetKeyDown(KeyCode.D);
     }
 
     public static bool InputDeadSlash()
     {
-        return Input.GetKeyDown(KeyCode.L);
-        //return Input.GetKeyDown(KeyCode.F);
+        //return Input.GetKeyDown(KeyCode.L);
+        return Input.GetKeyDown(KeyCode.F);
     }
 
     public static bool InputBlock()

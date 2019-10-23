@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CharacterData : MonoBehaviour
 {
+    public float InputSaveTime;
+
     public float MaxSpeed;
     public float GroundAcceleration;
     public float GroundDeceleration;
@@ -68,7 +70,6 @@ public class CharacterData : MonoBehaviour
     public LayerMask RollIgnoredLayers;
 
     public float ClimbPlatformTime;
-    public float ClimbPlatformDownOffset;
     public LayerMask PassablePlatformLayer;
 
     public float ClimbLadderSpeed;

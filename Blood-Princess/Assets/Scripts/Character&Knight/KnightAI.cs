@@ -288,6 +288,15 @@ public class KnightPatron : KnightBehavior
         }
         if (PlayerInDetectRange())
         {
+            if (GetXDiff() > 0)
+            {
+                Entity.transform.eulerAngles = new Vector3(0, 0, 0);
+            }
+            else
+            {
+                Entity.transform.eulerAngles = new Vector3(0, 180, 0);
+            }
+
             TransitionTo<KnightInitDecision>();
             return;
         }
@@ -706,6 +715,8 @@ public class KnightAttackAnticipation : KnightBehavior
     private float TimeCount;
     private float StateTime;
 
+    private float DistanceTraveled;
+
     public override void OnEnter()
     {
         base.OnEnter();
@@ -794,13 +805,24 @@ public class KnightAttackAnticipation : KnightBehavior
         {
             var Data = Entity.GetComponent<KnightData>();
 
+            float Speed = Data.ChaseAttackSpeed;
+            bool TraveledEnough = false;
+
+            if (DistanceTraveled+ Data.ChaseAttackSpeed * Time.deltaTime >= Data.MaxChaseAttackDistance)
+            {
+                TraveledEnough = true;
+                Speed = (Data.MaxChaseAttackDistance - DistanceTraveled) / Time.deltaTime;
+            }
+
+            DistanceTraveled += Data.ChaseAttackSpeed * Time.deltaTime;
+
             if (Entity.transform.right.x > 0)
             {
-                Entity.GetComponent<SpeedManager>().SelfSpeed.x = Data.ChaseAttackSpeed;
+                Entity.GetComponent<SpeedManager>().SelfSpeed.x = Speed;
             }
             else
             {
-                Entity.GetComponent<SpeedManager>().SelfSpeed.x = -Data.ChaseAttackSpeed;
+                Entity.GetComponent<SpeedManager>().SelfSpeed.x = -Speed;
             }
 
             float XDiff = GetXDiff();
@@ -809,7 +831,7 @@ public class KnightAttackAnticipation : KnightBehavior
             {
                 TransitionTo<KnightPatron>();
             }
-            else if (XDiff > 0 && Entity.transform.right.x < 0 || XDiff < 0 && Entity.transform.right.x > 0 || PlayerInHitRange(Data.AttackOffset, Data.AttackHitBoxSize.y, Entity.transform.right, Data.AttackStepForwardSpeed * Data.AttackTime))
+            else if (TraveledEnough || XDiff > 0 && Entity.transform.right.x < 0 || XDiff < 0 && Entity.transform.right.x > 0 || PlayerInHitRange(Data.AttackOffset, Data.AttackHitBoxSize.y, Entity.transform.right, Data.AttackStepForwardSpeed * Data.AttackTime))
             {
                 TransitionTo<KnightAttackStrike>();
             }

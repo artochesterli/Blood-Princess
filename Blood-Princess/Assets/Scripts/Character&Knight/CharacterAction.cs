@@ -44,12 +44,34 @@ public class EnemyAttackInfo : AttackInfo
     }
 }
 
+
 public enum CharacterAttackType
 {
     NormalSlash,
     BloodSlash,
     DeadSlash,
     Explosion
+}
+
+public enum InputType
+{
+    Jump,
+    NormalSlash,
+    BloodSlash,
+    DeadSlash,
+    Roll
+}
+
+public class InputInfo
+{
+    public InputType Type;
+    public float TimeCount;
+
+    public InputInfo(InputType type)
+    {
+        Type = type;
+        TimeCount = 0;
+    }
 }
 
 public class CharacterAction : MonoBehaviour
@@ -60,10 +82,12 @@ public class CharacterAction : MonoBehaviour
     public GameObject AttachedPassablePlatform;
     public GameObject AttachedLadder;
 
+    public List<InputInfo> SavedInputInfo;
     private FSM<CharacterAction> CharacterActionFSM; 
     // Start is called before the first frame update
     void Start()
     {
+        SavedInputInfo = new List<InputInfo>();
         CharacterActionFSM = new FSM<CharacterAction>(this);
         CharacterActionFSM.TransitionTo<Stand>();
     }
@@ -71,8 +95,58 @@ public class CharacterAction : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        UpdateSavedInputInfo();
+        GetInput();
         CharacterActionFSM.Update();
     }
+
+    private void UpdateSavedInputInfo()
+    {
+        List<InputInfo> RemoveList = new List<InputInfo>();
+        for(int i = 0; i < SavedInputInfo.Count; i++)
+        {
+            SavedInputInfo[i].TimeCount += Time.deltaTime;
+            if (SavedInputInfo[i].TimeCount >= GetComponent<CharacterData>().InputSaveTime)
+            {
+                RemoveList.Add(SavedInputInfo[i]);
+            }
+        }
+
+        for(int i = 0; i < RemoveList.Count; i++)
+        {
+            SavedInputInfo.Remove(RemoveList[i]);
+        }
+    }
+
+    private void GetInput()
+    {
+        if (Utility.InputJump())
+        {
+            SavedInputInfo.Add(new InputInfo(InputType.Jump));
+        }
+
+        if (Utility.InputNormalSlash())
+        {
+            SavedInputInfo.Add(new InputInfo(InputType.NormalSlash));
+        }
+
+        if (Utility.InputBloodSlash())
+        {
+            SavedInputInfo.Add(new InputInfo(InputType.BloodSlash));
+        }
+
+        if (Utility.InputDeadSlash())
+        {
+            SavedInputInfo.Add(new InputInfo(InputType.DeadSlash));
+        }
+
+        if (Utility.InputRoll())
+        {
+            SavedInputInfo.Add(new InputInfo(InputType.Roll));
+        }
+    }
+
+
 }
 
 public abstract class CharacterActionState : FSM<CharacterAction>.State
@@ -140,6 +214,63 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         {
             Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[0];
         }
+    }
+
+    protected void RecoveryTransition()
+    {
+        if(Utility.InputRight() && !Utility.InputLeft())
+        {
+            Entity.transform.eulerAngles = new Vector3(0, 0, 0);
+        }
+        else if(!Utility.InputRight() && Utility.InputLeft())
+        {
+            Entity.transform.eulerAngles = new Vector3(0, 180, 0);
+        }
+
+        if (CheckCharacterJump())
+        {
+            Context.SavedInputInfo.Clear();
+            TransitionTo<JumpHoldingStay>();
+            return;
+        }
+
+        if (CheckCharacterNormalSlash())
+        {
+            Context.SavedInputInfo.Clear();
+            TransitionTo<NormalSlashAnticipation>();
+            return;
+        }
+
+        if (CheckCharacterBloodSlash())
+        {
+            Context.SavedInputInfo.Clear();
+            TransitionTo<BloodSlashAnticipation>();
+            return;
+        }
+
+        if (CheckCharacterDeadSlash())
+        {
+            Context.SavedInputInfo.Clear();
+            TransitionTo<DeadSlashAnticipation>();
+            return;
+        }
+
+        if (CheckCharacterRoll())
+        {
+            Context.SavedInputInfo.Clear();
+            TransitionTo<RollAnticipation>();
+            return;
+        }
+
+        if (CheckGrounded())
+        {
+            TransitionTo<Stand>();
+        }
+        else
+        {
+            TransitionTo<AirStay>();
+        }
+        return;
     }
 
     protected bool HitEnemy(CharacterAttackInfo Attack, List<GameObject> EnemyHit)
@@ -385,7 +516,13 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
 
     protected bool CheckCharacterNormalSlash()
     {
-        return Utility.InputNormalSlash();
+        //return Utility.InputNormalSlash();
+        if(Context.SavedInputInfo.Count>0 && Context.SavedInputInfo[0].Type == InputType.NormalSlash)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     protected bool CheckCharacterBloodSlash()
@@ -393,7 +530,14 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         var Data = Entity.GetComponent<CharacterData>();
         var Status = Entity.GetComponent<StatusManager_Character>();
 
-        return Utility.InputBloodSlash() && Status.CurrentEnergy >= Data.BloodSlashEnergyCost;
+        if (Context.SavedInputInfo.Count > 0 && Context.SavedInputInfo[0].Type == InputType.BloodSlash && Status.CurrentEnergy >= Data.BloodSlashEnergyCost)
+        {
+            return true;
+        }
+
+        return false;
+
+        //return Utility.InputBloodSlash() && Status.CurrentEnergy >= Data.BloodSlashEnergyCost;
     }
 
     protected bool CheckCharacterDeadSlash()
@@ -401,7 +545,13 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         var Data = Entity.GetComponent<CharacterData>();
         var Status = Entity.GetComponent<StatusManager_Character>();
 
-        return Utility.InputDeadSlash() && Status.CurrentEnergy >= Data.DeadSlashEnergyCost;
+        if (Context.SavedInputInfo.Count > 0 && Context.SavedInputInfo[0].Type == InputType.DeadSlash && Status.CurrentEnergy >= Data.DeadSlashEnergyCost)
+        {
+            return true;
+        }
+
+        return false;
+        //return Utility.InputDeadSlash() && Status.CurrentEnergy >= Data.DeadSlashEnergyCost;
     }
 
     protected bool CheckCharacterBlink()
@@ -420,13 +570,30 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
 
     protected bool CheckCharacterJump()
     {
-        if (Utility.InputJump())
+        /*if (Utility.InputJump())
+        {
+            return true;
+        }*/
+
+        if(Context.SavedInputInfo.Count>0 && Context.SavedInputInfo[0].Type == InputType.Jump)
         {
             return true;
         }
 
         return false;
     }
+
+    protected bool CheckCharacterRoll()
+    {
+        if (Context.SavedInputInfo.Count > 0 && Context.SavedInputInfo[0].Type == InputType.Roll && CheckGrounded())
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+
 
     protected bool CheckCharacterMove<StopState>(bool Ground, bool Transition) where StopState: CharacterActionState
     {
@@ -623,6 +790,7 @@ public class Stand : CharacterActionState
 
         if (CheckCharacterJump())
         {
+            Context.SavedInputInfo.Clear();
             Context.JumpHoldingTimeCount = 0;
             TransitionTo<JumpHoldingStay>();
             return;
@@ -721,6 +889,7 @@ public class GroundMove : CharacterActionState
 
         if (CheckCharacterJump())
         {
+            Context.SavedInputInfo.Clear();
             Context.JumpHoldingTimeCount = 0;
             TransitionTo<JumpHoldingMove>();
             return;
@@ -1257,11 +1426,6 @@ public class NormalSlashRecovery : CharacterActionState
             return;
         }
 
-        if (Utility.InputRoll() && CheckGrounded())
-        {
-            TransitionTo<RollAnticipation>();
-            return;
-        }
         CheckTime();
     }
 
@@ -1276,15 +1440,7 @@ public class NormalSlashRecovery : CharacterActionState
         TimeCount += Time.deltaTime;
         if (TimeCount > StateTime)
         {
-            if (CheckGrounded())
-            {
-                TransitionTo<Stand>();
-            }
-            else
-            {
-                TransitionTo<AirStay>();
-            }
-            return;
+            RecoveryTransition();
         }
     }
 
@@ -1503,15 +1659,7 @@ public class BloodSlashRecovery : CharacterActionState
         TimeCount += Time.deltaTime;
         if (TimeCount > StateTime)
         {
-            if (CheckGrounded())
-            {
-                TransitionTo<Stand>();
-            }
-            else
-            {
-                TransitionTo<AirStay>();
-            }
-            return;
+            RecoveryTransition();
         }
     }
 
@@ -1706,8 +1854,7 @@ public class DeadSlashRecovery : CharacterActionState
         TimeCount += Time.deltaTime;
         if (TimeCount > StateTime)
         {
-            TransitionTo<Stand>();
-            return;
+            RecoveryTransition();
         }
     }
 
@@ -1801,6 +1948,12 @@ public class Roll: CharacterActionState
     public override void Update()
     {
         base.Update();
+
+        if (CheckGetInterrupted())
+        {
+            TransitionTo<GetInterrupted>();
+            return;
+        }
 
         if (HitWall())
         {
@@ -1942,7 +2095,7 @@ public class RollRecovery : CharacterActionState
         TimeCount += Time.deltaTime;
         if (TimeCount >= StateTime)
         {
-            TransitionTo<Stand>();
+            RecoveryTransition();
         }
     }
 }
@@ -2222,6 +2375,8 @@ public class DownToLadder : CharacterActionState
         StartHeight = Entity.transform.position.y;
 
         TargetHeight = LadderTop - SpeedManager.BodyHeight / 2 - (SpeedManager.GetTruePos().y - Entity.transform.position.y);
+
+        Entity.transform.position = new Vector2(Context.AttachedLadder.transform.position.x - (SpeedManager.GetTruePos().x - Entity.transform.position.x),Entity.transform.position.y);
     }
 
     private void SetAppearance()
