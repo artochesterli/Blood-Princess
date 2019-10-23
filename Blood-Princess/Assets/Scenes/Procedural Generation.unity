@@ -227,7 +227,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BoardDimension:
-    x: 200
+    x: 300
     y: 200
   Length: 10
 --- !u!1 &2108433861

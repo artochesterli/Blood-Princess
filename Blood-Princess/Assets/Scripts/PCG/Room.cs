@@ -80,6 +80,7 @@ namespace PCG
 			Exits = new List<Exit>();
 			m_ConnectingExit = null;
 			RoomExit = null;
+			_boardGameObject = boardGameObject;
 			_setupRoom2();
 		}
 
@@ -186,7 +187,7 @@ namespace PCG
 			}
 			if (instantiatedObject != null)
 			{
-				//instantiatedObject.transform.parent = _room.transform;
+				instantiatedObject.transform.parent = _room.transform;
 				instantiatedObject.transform.position = curTileWorldPosition;
 			}
 		}
@@ -267,6 +268,8 @@ namespace PCG
 
 			entireRoomFile = temp;
 
+			_room = new GameObject("Room" + _roomType.ToString() + "-" + fileRandom.ToString());
+			_room.transform.parent = _boardGameObject.transform;
 			//str = "";
 			//for (int i = 0; i < entireRoomFile.Length; i++)
 			//{
