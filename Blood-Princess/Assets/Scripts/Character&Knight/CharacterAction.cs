@@ -359,6 +359,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         }
         else
         {
+            Context.AttachedPassablePlatform = null;
             return false;
         }
     }
