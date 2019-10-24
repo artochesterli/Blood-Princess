@@ -81,10 +81,10 @@ namespace PCG
 			m_ConnectingExit = null;
 			RoomExit = null;
 			_boardGameObject = boardGameObject;
-			_setupRoom2();
+			_setupRoom();
 		}
 
-		private void _setupRoom2()
+		private void _setupRoom()
 		{
 			// 1. Find a random room according to requiredRoomtype
 			_findRandomRoom();
@@ -181,7 +181,7 @@ namespace PCG
 		private void _findRandomRoom()
 		{
 			// Load Stream Reader According to RoomType
-			string path = "Assets/PCG/RoomType" + _roomType.ToString();
+			string path = Application.dataPath + "/PCG/RoomType" + _roomType.ToString();
 			var info = new DirectoryInfo(path);
 			int fileRandom = _random.Next(0, info.GetFiles().Length / 2);
 			path += ("/" + fileRandom.ToString() + ".csv");
