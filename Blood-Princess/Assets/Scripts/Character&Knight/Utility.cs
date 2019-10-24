@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
+using PCG;
 
 public class Utility
 {
@@ -98,5 +100,26 @@ public class Utility
 		float x = 2f * halfX;
 		float y = 2f * halfY;
 		return new Vector2(x, y);
+	}
+
+	public static int MaxFileHeight()
+	{
+		string[] csvFiles = Directory.GetFiles("Assets/PCG", ".csv", SearchOption.AllDirectories);
+		Debug.Log(csvFiles.Length);
+		foreach (string str in csvFiles)
+		{
+			Debug.Log(str);
+		}
+		return 0;
+	}
+
+	public static int MaxFileWidth()
+	{
+		return 0;
+	}
+
+	public static Vector2 BoardPositionToWorldPosition(IntVector2 boardPosition)
+	{
+		return new Vector2(boardPosition.x * TileSize().x, boardPosition.y * TileSize().y);
 	}
 }

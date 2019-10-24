@@ -137,6 +137,16 @@ namespace PCG
 					// add to board
 					if (curChar != "")
 						m_CurrentBoard[curTileWorldPosition.x, curTileWorldPosition.y] = entireRoomFile[i][j];
+				}
+			}
+			for (int i = 0; i < entireRoomFile.Length; i++)
+			{
+				for (int j = 0; j < entireRoomFile[0].Length; j++)
+				{
+					IntVector2 curTileRelativePosition = new IntVector2(i, j);
+					IntVector2 curTileWorldPosition = curTileRelativePosition + m_BoardRoomOffset;
+					string curChar = entireRoomFile[i][j];
+					// Always Assumes Board zero position is world zero position
 					// Place Tile irw
 					_placeTile(curChar, curTileWorldPosition);
 				}
@@ -172,23 +182,69 @@ namespace PCG
 			else if (curChar == "a")
 			{
 				instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Knight", typeof(GameObject))) as GameObject;
+				// initialize knight's Patrol Point and Engage Point
+				_initializeAI(instantiatedObject, worldPosition);
 			}
 			else if (curChar == "b")
 			{
 				if (_random.Next(0, 100) > 50)
 				{
 					instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Knight", typeof(GameObject))) as GameObject;
+					_initializeAI(instantiatedObject, worldPosition);
 				}
 			}
-			// Store the exit of the room, but do not generate anything there
-			else if (curChar == "8" || curChar == "9")
+			else if (curChar == "p")
 			{
-				Exits.Add(new Exit(curChar, new IntVector2()));
+				instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Character", typeof(GameObject))) as GameObject;
 			}
+
 			if (instantiatedObject != null)
 			{
 				instantiatedObject.transform.parent = _room.transform;
 				instantiatedObject.transform.position = curTileWorldPosition;
+				if (curChar == "a" || curChar == "b")
+					instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.2f;
+
+			}
+
+		}
+
+		private void _initializeAI(GameObject AI, IntVector2 worldPosition)
+		{
+			// Go Left and Check
+			bool leftIsWall = false;
+			bool leftIsEdge = false;
+			int currentX = worldPosition.x;
+			while (!leftIsWall && !leftIsEdge)
+			{
+				string leftDownPos = m_CurrentBoard[currentX - 1, worldPosition.y - 1];
+				string leftPos = m_CurrentBoard[currentX - 1, worldPosition.y];
+				leftIsWall = (leftPos != "" && leftPos != "0");
+				leftIsEdge = (leftPos == "" || leftPos == "0") && (leftDownPos == "" || leftDownPos == "0");
+				currentX--;
+			}
+
+			if (AI.name.Contains("Knight"))
+			{
+				AI.transform.Find("PatronLeftMark").localPosition = Utility.BoardPositionToWorldPosition(new IntVector2(currentX + 2, worldPosition.y) - worldPosition);
+				AI.transform.Find("DetectLeftMark").localPosition = Utility.BoardPositionToWorldPosition(new IntVector2(currentX + 2, worldPosition.y) - worldPosition);
+			}
+			// Go Right and Check
+			bool rightIsWall = false;
+			bool RightIsEdge = false;
+			currentX = worldPosition.x;
+			while (!rightIsWall && !RightIsEdge)
+			{
+				string rightDownPos = m_CurrentBoard[currentX + 1, worldPosition.y - 1];
+				string rightPos = m_CurrentBoard[currentX + 1, worldPosition.y];
+				rightIsWall = (rightPos != "" && rightPos != "0");
+				RightIsEdge = (rightPos == "" || rightPos == "0") && (rightDownPos == "" || rightDownPos == "0");
+				currentX++;
+			}
+			if (AI.name.Contains("Knight"))
+			{
+				AI.transform.Find("PatronRightMark").localPosition = Utility.BoardPositionToWorldPosition(new IntVector2(currentX - 2, worldPosition.y) - worldPosition);
+				AI.transform.Find("DetectRightMark").localPosition = Utility.BoardPositionToWorldPosition(new IntVector2(currentX - 2, worldPosition.y) - worldPosition);
 			}
 		}
 

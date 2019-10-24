@@ -18,7 +18,7 @@ namespace PCG
 		/// board width as x
 		/// board height as y
 		/// down left corner is (0, 0)
-		/// int value means the room type
+		/// string value means the tile type
 		/// </summary>
 		private string[,] _board;
 		private GameObject _boardGameObject;
@@ -43,11 +43,15 @@ namespace PCG
 			//_setupBoard();
 			_setupBoard2(length);
 			Print();
+			//_fillupBoard();
 		}
 
 		private void _setupBoard2(int length)
 		{
-			IntVector2 startPosition = new IntVector2(0, _width / 2);
+			IntVector2 startPosition = new IntVector2(1, _height / 2);
+			Room entrance = new Room(startPosition, "8", _seed, 5, ref _board, _boardGameObject);
+			startPosition = entrance.RoomExit.BoardPosition;
+			startPosition.x += 1;
 			for (int i = 0; i < length; i++)
 			{
 				Room newRoom = new Room(startPosition, "8", _seed, 3, ref _board, _boardGameObject);
@@ -183,6 +187,27 @@ namespace PCG
 		//	//	}
 		//	//}
 		//}
+
+		///
+		/// Fill Up the Empty Part of the Board
+		///
+		private void _fillupBoard()
+		{
+			for (int i = 0; i < _width; i++)
+			{
+				for (int j = 0; j < _height; j++)
+				{
+					if (_board[i, j] == "")
+					{
+						Vector2 curTileWorldPosition = Vector2.zero +
+							new Vector2(i * Utility.TileSize().x, j * Utility.TileSize().y);
+						GameObject instantiatedObject = GameObject.Instantiate(Resources.Load("BlockTile" + m_Rand.Next(0, 2).ToString(), typeof(GameObject))) as GameObject;
+						instantiatedObject.transform.position = curTileWorldPosition;
+
+					}
+				}
+			}
+		}
 
 		public void Print()
 		{
