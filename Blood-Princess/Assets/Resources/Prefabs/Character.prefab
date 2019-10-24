@@ -811,6 +811,7 @@ GameObject:
   - component: {fileID: 4954734968556382947}
   - component: {fileID: 4954734968556382944}
   - component: {fileID: 4954734968556382945}
+  - component: {fileID: 544058304}
   m_Layer: 8
   m_Name: Character
   m_TagString: Player
@@ -1014,8 +1015,6 @@ MonoBehaviour:
   JumpHoldingTimeCount: 0
   AttachedPassablePlatform: {fileID: 0}
   AttachedLadder: {fileID: 0}
-  InBuff: 0
-  CurrentBuffTime: 0
 --- !u!114 &4954734968556382944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1122,6 +1121,18 @@ MonoBehaviour:
     type: 3}
   EnergyOrbFilledSprite: {fileID: 21300000, guid: e6611fecc07cc024e9984503bff1c8f2,
     type: 3}
+--- !u!114 &544058304
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4954734968556382954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c3b0301ec20266e4785188cb83feba9a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4954734968990089302
 GameObject:
   m_ObjectHideFlags: 0
