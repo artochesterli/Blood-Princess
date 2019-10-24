@@ -193,13 +193,20 @@ namespace PCG
 			{
 				if (_random.Next(0, 100) > 50)
 				{
-					instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Enemy1", typeof(GameObject))) as GameObject;
+					if (_random.Next(0, 100) > 30)
+						instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Enemy1", typeof(GameObject))) as GameObject;
+					else
+						instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Knight", typeof(GameObject))) as GameObject;
 					_initializeAI(instantiatedObject, worldPosition);
 				}
 			}
 			else if (curChar == "p")
 			{
 				instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Character", typeof(GameObject))) as GameObject;
+			}
+			else if (curChar == "dummy")
+			{
+				instantiatedObject = GameObject.Instantiate(Resources.Load("Dummy", typeof(GameObject))) as GameObject;
 			}
 
 			if (instantiatedObject != null)
@@ -210,6 +217,8 @@ namespace PCG
 					instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.2f;
 				else if (instantiatedObject.name.Contains("Enemy1"))
 					instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.5f;
+				else if (instantiatedObject.name.Contains("Passable"))
+					instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.4f;
 
 			}
 

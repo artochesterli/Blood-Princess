@@ -1035,7 +1035,7 @@ MonoBehaviour:
   AirAcceleration: 25
   AirDeceleration: 50
   NormalGravity: 3
-  JumpSpeed: 8
+  JumpSpeed: 8.3
   JumpHoldingTime: 0.2
   MaxHP: 30
   MaxEnergy: 3
