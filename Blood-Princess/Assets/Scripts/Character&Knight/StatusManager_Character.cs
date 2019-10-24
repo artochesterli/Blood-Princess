@@ -122,7 +122,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         if(CurrentHP <= 0)
         {
-            SceneManager.LoadScene(0);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             return true;
         }
         else
