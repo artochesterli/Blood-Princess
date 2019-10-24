@@ -81,9 +81,13 @@ public class CharacterAction : MonoBehaviour
     public float JumpHoldingTimeCount;
     public GameObject AttachedPassablePlatform;
     public GameObject AttachedLadder;
+    public bool InBuff;
+    public float CurrentBuffTime;
 
     public List<InputInfo> SavedInputInfo;
-    private FSM<CharacterAction> CharacterActionFSM; 
+    private FSM<CharacterAction> CharacterActionFSM;
+    private float BuffTimeCount;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -95,6 +99,7 @@ public class CharacterAction : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        CheckBuff();
         UpdateSavedInputInfo();
         GetInput();
         CharacterActionFSM.Update();
@@ -115,6 +120,25 @@ public class CharacterAction : MonoBehaviour
         for(int i = 0; i < RemoveList.Count; i++)
         {
             SavedInputInfo.Remove(RemoveList[i]);
+        }
+    }
+
+    private void CheckBuff()
+    {
+        GameObject BuffMark = transform.Find("BuffMark").gameObject;
+        if (InBuff)
+        {
+            BuffMark.GetComponent<SpriteRenderer>().enabled = true;
+            BuffTimeCount += Time.deltaTime;
+            if (BuffTimeCount >= CurrentBuffTime)
+            {
+                InBuff = false;
+                BuffTimeCount = 0;
+            }
+        }
+        else
+        {
+            BuffMark.GetComponent<SpriteRenderer>().enabled = false;
         }
     }
 
@@ -299,6 +323,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             switch (Attack.Type)
             {
                 case CharacterAttackType.NormalSlash:
+
                     Status.CurrentEnergy += AvailableCount;
                     if (Status.CurrentEnergy > Data.MaxEnergy)
                     {
