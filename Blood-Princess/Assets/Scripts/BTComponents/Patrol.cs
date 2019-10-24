@@ -18,6 +18,7 @@ public class Patrol : Action
 	private float m_WayPointReachTimer;
 	private SpeedManager m_SpeedManager;
 	private Vector2 m_TruePosition { get { return m_SpeedManager.GetTruePos(); } }
+	private bool m_MovingRight;
 
 	public override void OnAwake()
 	{
@@ -31,6 +32,18 @@ public class Patrol : Action
 			m_TargetPositions.Add(new Vector2(m_TruePosition.x + WayPoints.Value[i].x, m_TruePosition.y + WayPoints.Value[i].y));
 		}
 	}
+
+	public override void OnStart()
+	{
+		m_MovingRight = false;
+		if (m_MovingRight) transform.eulerAngles = Vector3.zero;
+		else transform.eulerAngles = new Vector3(0f, 180f, 0f);
+
+		// Set Speed
+		m_SpeedManager.SelfSpeed.x = (m_MovingRight ? 1f : -1f) * Speed.Value;
+
+	}
+
 	public override TaskStatus OnUpdate()
 	{
 		// If Arrived at point, then wait for seconds
@@ -43,28 +56,51 @@ public class Patrol : Action
 			}
 			if (m_WayPointReachTimer <= Time.timeSinceLevelLoad)
 			{
-				m_WayPointIndex = (m_WayPointIndex + 1) % m_TargetPositions.Count;
+				//m_WayPointIndex = (m_WayPointIndex + 1) % m_TargetPositions.Count;
+				m_MovingRight = !m_MovingRight;
+				if (m_MovingRight) transform.eulerAngles = Vector3.zero;
+				else transform.eulerAngles = new Vector3(0f, 180f, 0f);
+
+				// Set Speed
+				m_SpeedManager.SelfSpeed.x = (m_MovingRight ? 1f : -1f) * Speed.Value;
+
 				m_WayPointReachTimer = -1;
 			}
 		}
 		// If not arrived at points, then move towards the next point
 		else
 		{
-			bool MovingRight = m_TruePosition.x < m_TargetPositions[m_WayPointIndex].x;
+			//bool MovingRight = m_TruePosition.x < m_TargetPositions[m_WayPointIndex].x;
 
-			if (MovingRight) transform.eulerAngles = Vector3.zero;
-			else transform.eulerAngles = new Vector3(0f, 180f, 0f);
-
-			// Set Speed
-			m_SpeedManager.SelfSpeed.x = (MovingRight ? 1f : -1f) * Speed.Value;
 
 		}
 		return TaskStatus.Running;
 	}
 	private bool _hasArrived()
 	{
-		return Mathf.Abs(m_TruePosition.x - m_TargetPositions[m_WayPointIndex].x) < ArrivalDistance.Value;
-		//return Vector2.Distance(m_TruePosition, m_TargetPositions[m_WayPointIndex]) < ArrivalDistance.Value;
+		if ((m_SpeedManager.SelfSpeed.x > 0 || m_SpeedManager.SelfSpeed.x == 0) && m_SpeedManager.Right != null)
+			return true;
+		if ((m_SpeedManager.SelfSpeed.x < 0 || m_SpeedManager.SelfSpeed.x == 0) && m_SpeedManager.Left != null)
+			return true;
+		if ((m_SpeedManager.SelfSpeed.x > 0 || m_SpeedManager.SelfSpeed.x == 0) && _isOnRightEdge())
+			return true;
+		if ((m_SpeedManager.SelfSpeed.x < 0 || m_SpeedManager.SelfSpeed.x == 0) && _isOnLeftEdge())
+			return true;
+		return false;
+	}
+
+	private bool _isOnLeftEdge()
+	{
+		RaycastHit2D hit = Physics2D.BoxCast(m_SpeedManager.GetTruePos() - new Vector2(1.5f, 1f), new Vector2(0.1f, 0.1f), 0f, Vector2.zero);
+
+		return hit.collider == null;
+	}
+
+	private bool _isOnRightEdge()
+	{
+		RaycastHit2D hit = Physics2D.BoxCast(m_SpeedManager.GetTruePos() - new Vector2(-1.5f, 1f), new Vector2(0.1f, 0.1f), 0f, Vector2.zero);
+
+		return hit.collider == null;
 	}
 
 	public override void OnDrawGizmos()

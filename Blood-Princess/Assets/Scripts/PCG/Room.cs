@@ -135,7 +135,7 @@ namespace PCG
 					string curChar = entireRoomFile[i][j];
 					// Always Assumes Board zero position is world zero position
 					// add to board
-					if (curChar != "")
+					if (curChar != "" && curChar != "8" && curChar != "9" && curChar != "a" && curChar != "b")
 						m_CurrentBoard[curTileWorldPosition.x, curTileWorldPosition.y] = entireRoomFile[i][j];
 				}
 			}
@@ -181,7 +181,11 @@ namespace PCG
 			}
 			else if (curChar == "a")
 			{
-				instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Knight", typeof(GameObject))) as GameObject;
+				if (_random.Next(0, 100) > 30)
+					instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Enemy1", typeof(GameObject))) as GameObject;
+				else
+					instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Knight", typeof(GameObject))) as GameObject;
+
 				// initialize knight's Patrol Point and Engage Point
 				_initializeAI(instantiatedObject, worldPosition);
 			}
@@ -189,7 +193,7 @@ namespace PCG
 			{
 				if (_random.Next(0, 100) > 50)
 				{
-					instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Knight", typeof(GameObject))) as GameObject;
+					instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Enemy1", typeof(GameObject))) as GameObject;
 					_initializeAI(instantiatedObject, worldPosition);
 				}
 			}
@@ -202,8 +206,10 @@ namespace PCG
 			{
 				instantiatedObject.transform.parent = _room.transform;
 				instantiatedObject.transform.position = curTileWorldPosition;
-				if (curChar == "a" || curChar == "b")
+				if (instantiatedObject.name.Contains("Knight"))
 					instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.2f;
+				else if (instantiatedObject.name.Contains("Enemy1"))
+					instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.5f;
 
 			}
 
@@ -227,7 +233,7 @@ namespace PCG
 			if (AI.name.Contains("Knight"))
 			{
 				AI.transform.Find("PatronLeftMark").localPosition = Utility.BoardPositionToWorldPosition(new IntVector2(currentX + 2, worldPosition.y) - worldPosition);
-				AI.transform.Find("DetectLeftMark").localPosition = Utility.BoardPositionToWorldPosition(new IntVector2(currentX + 2, worldPosition.y) - worldPosition);
+				AI.transform.Find("DetectLeftMark").localPosition = Utility.BoardPositionToWorldPosition(new IntVector2(currentX, worldPosition.y) - worldPosition);
 			}
 			// Go Right and Check
 			bool rightIsWall = false;
@@ -244,7 +250,7 @@ namespace PCG
 			if (AI.name.Contains("Knight"))
 			{
 				AI.transform.Find("PatronRightMark").localPosition = Utility.BoardPositionToWorldPosition(new IntVector2(currentX - 2, worldPosition.y) - worldPosition);
-				AI.transform.Find("DetectRightMark").localPosition = Utility.BoardPositionToWorldPosition(new IntVector2(currentX - 2, worldPosition.y) - worldPosition);
+				AI.transform.Find("DetectRightMark").localPosition = Utility.BoardPositionToWorldPosition(new IntVector2(currentX, worldPosition.y) - worldPosition);
 			}
 		}
 
