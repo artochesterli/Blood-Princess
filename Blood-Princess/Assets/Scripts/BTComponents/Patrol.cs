@@ -49,6 +49,7 @@ public class Patrol : Action
 		// If Arrived at point, then wait for seconds
 		if (_hasArrived())
 		{
+			Debug.Log("Arrived");
 			if (m_WayPointReachTimer == -1)
 			{
 				m_SpeedManager.SelfSpeed = Vector2.zero;
@@ -56,7 +57,6 @@ public class Patrol : Action
 			}
 			if (m_WayPointReachTimer <= Time.timeSinceLevelLoad)
 			{
-				//m_WayPointIndex = (m_WayPointIndex + 1) % m_TargetPositions.Count;
 				m_MovingRight = !m_MovingRight;
 				if (m_MovingRight) transform.eulerAngles = Vector3.zero;
 				else transform.eulerAngles = new Vector3(0f, 180f, 0f);
@@ -67,11 +67,13 @@ public class Patrol : Action
 				m_WayPointReachTimer = -1;
 			}
 		}
-		// If not arrived at points, then move towards the next point
 		else
 		{
-			//bool MovingRight = m_TruePosition.x < m_TargetPositions[m_WayPointIndex].x;
+			if (m_MovingRight) transform.eulerAngles = Vector3.zero;
+			else transform.eulerAngles = new Vector3(0f, 180f, 0f);
 
+			// Set Speed
+			m_SpeedManager.SelfSpeed.x = (m_MovingRight ? 1f : -1f) * Speed.Value;
 
 		}
 		return TaskStatus.Running;
@@ -86,6 +88,7 @@ public class Patrol : Action
 			return true;
 		if ((m_SpeedManager.SelfSpeed.x < 0 || m_SpeedManager.SelfSpeed.x == 0) && _isOnLeftEdge())
 			return true;
+		Debug.Log("Not Arrived");
 		return false;
 	}
 
@@ -93,14 +96,14 @@ public class Patrol : Action
 	{
 		RaycastHit2D hit = Physics2D.BoxCast(m_SpeedManager.GetTruePos() - new Vector2(1.5f, 1f), new Vector2(0.1f, 0.1f), 0f, Vector2.zero);
 
-		return hit.collider == null;
+		return hit.collider == null && m_SpeedManager.HitGround;
 	}
 
 	private bool _isOnRightEdge()
 	{
 		RaycastHit2D hit = Physics2D.BoxCast(m_SpeedManager.GetTruePos() - new Vector2(-1.5f, 1f), new Vector2(0.1f, 0.1f), 0f, Vector2.zero);
 
-		return hit.collider == null;
+		return hit.collider == null && m_SpeedManager.HitGround;
 	}
 
 	public override void OnDrawGizmos()
