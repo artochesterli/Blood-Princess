@@ -353,7 +353,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c2b3fe2bd5fd774194c12a144e246bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurrentHP: 0
   Canvas: {fileID: 4305804638784953937}
   SharedCanvas: {fileID: 0}
   HPFill: {fileID: 2692453752014028249}
