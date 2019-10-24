@@ -467,6 +467,18 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         if(Context.AttachedPassablePlatform && Utility.InputDown() && Utility.InputJump())
         {
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+
+            var SpeedManager = Entity.GetComponent<SpeedManager>();
+            var Data = Entity.GetComponent<CharacterData>();
+
+            RaycastHit2D LeftHit = Physics2D.Raycast(SpeedManager.GetTruePos() + SpeedManager.BodyWidth / 2 * Vector2.left + SpeedManager.BodyHeight / 2 * Vector2.down, Vector2.down, 0.02f, Data.PassablePlatformLayer);
+            RaycastHit2D RightHit = Physics2D.Raycast(SpeedManager.GetTruePos() + SpeedManager.BodyWidth / 2 * Vector2.right + SpeedManager.BodyHeight / 2 * Vector2.down, Vector2.down, 0.02f, Data.PassablePlatformLayer);
+
+            LeftHit.collider.GetComponent<PassableInfo>().TopPassable = true;
+            RightHit.collider.GetComponent<PassableInfo>().TopPassable = true;
+            LeftHit.collider.gameObject.GetComponent<PassablePlatform>().Player = Entity;
+            RightHit.collider.gameObject.GetComponent<PassablePlatform>().Player = Entity;
+
             Context.AttachedPassablePlatform.GetComponent<PassableInfo>().TopPassable = true;
             Context.AttachedPassablePlatform.GetComponent<PassablePlatform>().Player = Entity;
             return true;
