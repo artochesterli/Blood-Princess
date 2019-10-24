@@ -6,6 +6,8 @@ using PCG;
 
 public class Utility
 {
+    private const float StickAvailableThreshold = 0.9f;
+
 	public static float GetConstraintValue(float Value, float Min, float Max)
 	{
 		float Ans = Value;
@@ -26,58 +28,53 @@ public class Utility
 	public static bool InputRight()
 	{
 		//return Input.GetKey(KeyCode.D);
-		return Input.GetKey(KeyCode.RightArrow);
+		return Input.GetKey(KeyCode.RightArrow) || (ControllerManager.CharacterJoystick!=null && ControllerManager.Character.GetAxis("HorizontalMove")>StickAvailableThreshold);
 	}
 
 	public static bool InputLeft()
 	{
 		//return Input.GetKey(KeyCode.A);
-		return Input.GetKey(KeyCode.LeftArrow);
+		return Input.GetKey(KeyCode.LeftArrow) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetAxis("HorizontalMove") < -StickAvailableThreshold);
 	}
 
 	public static bool InputUp()
 	{
 		//return Input.GetKey(KeyCode.W);
-		return Input.GetKey(KeyCode.UpArrow);
+		return Input.GetKey(KeyCode.UpArrow) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetAxis("VerticalMove") > StickAvailableThreshold);
 	}
 
 	public static bool InputDown()
 	{
 		//return Input.GetKey(KeyCode.S);
-		return Input.GetKey(KeyCode.DownArrow);
+		return Input.GetKey(KeyCode.DownArrow) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetAxis("VerticalMove") < -StickAvailableThreshold);
 	}
 
 	public static bool InputJump()
 	{
-		return Input.GetKeyDown(KeyCode.Space);
+		return Input.GetKeyDown(KeyCode.Space) || (ControllerManager.CharacterJoystick!=null && ControllerManager.Character.GetButtonDown("Jump"));
 	}
 
 	public static bool InputJumpHold()
 	{
-		return Input.GetKey(KeyCode.Space);
+		return Input.GetKey(KeyCode.Space) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButton("Jump"));
 	}
 
 	public static bool InputNormalSlash()
 	{
 		//return Input.GetKeyDown(KeyCode.J);
-		return Input.GetKeyDown(KeyCode.S);
+		return Input.GetKeyDown(KeyCode.S) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("NormalSlash"));
 	}
 
 	public static bool InputBloodSlash()
 	{
 		//return Input.GetKeyDown(KeyCode.I);
-		return Input.GetKeyDown(KeyCode.D);
+		return Input.GetKeyDown(KeyCode.D) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("FirstSkill"));
 	}
 
 	public static bool InputDeadSlash()
 	{
 		//return Input.GetKeyDown(KeyCode.L);
-		return Input.GetKeyDown(KeyCode.F);
-	}
-
-	public static bool InputBlock()
-	{
-		return Input.GetKey(KeyCode.LeftAlt);
+		return Input.GetKeyDown(KeyCode.F) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("SecondSkill"));
 	}
 
 	public static bool InputBlink()
@@ -88,7 +85,7 @@ public class Utility
 
 	public static bool InputRoll()
 	{
-		return Input.GetKeyDown(KeyCode.LeftShift);
+		return Input.GetKeyDown(KeyCode.LeftShift) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Roll"));
 	}
 
 	public static Vector2 TileSize()

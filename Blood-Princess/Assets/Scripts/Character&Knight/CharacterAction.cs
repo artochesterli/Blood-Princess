@@ -81,12 +81,9 @@ public class CharacterAction : MonoBehaviour
     public float JumpHoldingTimeCount;
     public GameObject AttachedPassablePlatform;
     public GameObject AttachedLadder;
-    public bool InBuff;
-    public float CurrentBuffTime;
 
     public List<InputInfo> SavedInputInfo;
     private FSM<CharacterAction> CharacterActionFSM;
-    private float BuffTimeCount;
 
     // Start is called before the first frame update
     void Start()
@@ -172,7 +169,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
     public override void OnEnter()
     {
         base.OnEnter();
-        //Debug.Log(this.GetType().Name);
+        Debug.Log(this.GetType().Name);
 
     }
 
