@@ -99,7 +99,6 @@ public class CharacterAction : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CheckBuff();
         UpdateSavedInputInfo();
         GetInput();
         CharacterActionFSM.Update();
@@ -120,25 +119,6 @@ public class CharacterAction : MonoBehaviour
         for(int i = 0; i < RemoveList.Count; i++)
         {
             SavedInputInfo.Remove(RemoveList[i]);
-        }
-    }
-
-    private void CheckBuff()
-    {
-        GameObject BuffMark = transform.Find("BuffMark").gameObject;
-        if (InBuff)
-        {
-            BuffMark.GetComponent<SpriteRenderer>().enabled = true;
-            BuffTimeCount += Time.deltaTime;
-            if (BuffTimeCount >= CurrentBuffTime)
-            {
-                InBuff = false;
-                BuffTimeCount = 0;
-            }
-        }
-        else
-        {
-            BuffMark.GetComponent<SpriteRenderer>().enabled = false;
         }
     }
 
@@ -451,7 +431,12 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             float GroundLeft = SpeedManager.Ground.transform.position.x + SpeedManager.Ground.transform.localScale.x * (SpeedManager.Ground.GetComponent<BoxCollider2D>().offset.x - SpeedManager.Ground.GetComponent<BoxCollider2D>().size.x / 2);
             float GroundRight = SpeedManager.Ground.transform.position.x + SpeedManager.Ground.transform.localScale.x * (SpeedManager.Ground.GetComponent<BoxCollider2D>().offset.x + SpeedManager.Ground.GetComponent<BoxCollider2D>().size.x / 2);
 
-            if (PlayerLeft >= GroundLeft && PlayerRight <= GroundRight)
+            var Data = Entity.GetComponent<CharacterData>();
+
+            RaycastHit2D LeftHit = Physics2D.Raycast(SpeedManager.GetTruePos() + SpeedManager.BodyWidth / 2*Vector2.left + SpeedManager.BodyHeight / 2*Vector2.down, Vector2.down, 0.02f, Data.PassablePlatformLayer);
+            RaycastHit2D RightHit = Physics2D.Raycast(SpeedManager.GetTruePos() + SpeedManager.BodyWidth / 2 * Vector2.right + SpeedManager.BodyHeight / 2 * Vector2.down, Vector2.down, 0.02f, Data.PassablePlatformLayer);
+
+            if (LeftHit && LeftHit.collider.gameObject.CompareTag("PassablePlatform") && RightHit && RightHit.collider.gameObject.CompareTag("PassablePlatform"))
             {
                 Context.AttachedPassablePlatform = SpeedManager.Ground;
             }
@@ -459,6 +444,15 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             {
                 Context.AttachedPassablePlatform = null;
             }
+
+            /*if (PlayerLeft >= GroundLeft && PlayerRight <= GroundRight)
+            {
+                Context.AttachedPassablePlatform = SpeedManager.Ground;
+            }
+            else
+            {
+                Context.AttachedPassablePlatform = null;
+            }*/
         }
         else
         {
