@@ -199,7 +199,7 @@ namespace PCG
 				}
 				_boardstr += "\n";
 			}
-			Debug.Log(_boardstr);
+			//Debug.Log(_boardstr);
 		}
 	}
 

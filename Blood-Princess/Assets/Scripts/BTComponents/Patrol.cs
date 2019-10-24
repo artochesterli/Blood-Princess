@@ -49,7 +49,6 @@ public class Patrol : Action
 		// If Arrived at point, then wait for seconds
 		if (_hasArrived())
 		{
-			Debug.Log("Arrived");
 			if (m_WayPointReachTimer == -1)
 			{
 				m_SpeedManager.SelfSpeed = Vector2.zero;
@@ -88,7 +87,6 @@ public class Patrol : Action
 			return true;
 		if ((m_SpeedManager.SelfSpeed.x < 0 || m_SpeedManager.SelfSpeed.x == 0) && _isOnLeftEdge())
 			return true;
-		Debug.Log("Not Arrived");
 		return false;
 	}
 
