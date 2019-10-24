@@ -396,6 +396,8 @@ MonoBehaviour:
   JumpHoldingTimeCount: 0
   AttachedPassablePlatform: {fileID: 0}
   AttachedLadder: {fileID: 0}
+  InBuff: 0
+  CurrentBuffTime: 0
 --- !u!114 &4954734968556382944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -408,6 +410,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee46af2cbb06dd242a5cc4402d3a7672, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  InputSaveTime: 0.1
   MaxSpeed: 5.5
   GroundAcceleration: 50
   GroundDeceleration: 50
@@ -466,7 +469,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 5888
   ClimbPlatformTime: 0.3
-  ClimbPlatformDownOffset: 0
   PassablePlatformLayer:
     serializedVersion: 2
     m_Bits: 2048
@@ -489,7 +491,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1326e3486e3c0c444b1f51f2f73dfa1f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CurrentHP: 0
   CurrentEnergy: 0
   Invulnerable: 0
   Blocking: 0

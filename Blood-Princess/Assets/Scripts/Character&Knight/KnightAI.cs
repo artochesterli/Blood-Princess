@@ -267,14 +267,32 @@ public class KnightPatron : KnightBehavior
     private float TimeCount;
     private bool Moving;
     private bool MovingRight;
-    
+
+
+    private bool First;
+
+    public override void Init()
+    {
+        base.Init();
+        First = true;
+    }
 
     public override void OnEnter()
     {
         base.OnEnter();
 
-        SetUp();
+        if (!First)
+        {
+            SetUp();
+        }
+        else
+        {
+            SetUpInit();
+        }
         SetAppearance();
+
+
+        First = false;
     }
 
     public override void Update()
@@ -345,6 +363,7 @@ public class KnightPatron : KnightBehavior
         {
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = -KnightData.NormalMoveSpeed;
         }
+
     }
 
     private void SetAppearance()
@@ -357,6 +376,8 @@ public class KnightPatron : KnightBehavior
     {
         var Data = Entity.GetComponent<PatronData>();
         Vector2 TruePos = Entity.GetComponent<SpeedManager>().GetTruePos();
+
+        TimeCount = 0;
 
         if(MovingRight && TruePos.x >= Context.PatronRightX)
         {
@@ -374,7 +395,7 @@ public class KnightPatron : KnightBehavior
 
     private void CheckStayTime()
     {
-        var KnightData = Entity.GetComponent<KnightData>();
+        var Data = Entity.GetComponent<KnightData>();
         TimeCount += Time.deltaTime;
         if (TimeCount >= Entity.GetComponent<PatronData>().PatronStayTime)
         {
@@ -383,12 +404,12 @@ public class KnightPatron : KnightBehavior
             if (MovingRight)
             {
                 Entity.transform.rotation = Quaternion.Euler(0, 0, 0);
-                Entity.GetComponent<SpeedManager>().SelfSpeed.x = KnightData.NormalMoveSpeed;
+                Entity.GetComponent<SpeedManager>().SelfSpeed.x = Data.NormalMoveSpeed;
             }
             else
             {
                 Entity.transform.rotation = Quaternion.Euler(0, 180, 0);
-                Entity.GetComponent<SpeedManager>().SelfSpeed.x = -KnightData.NormalMoveSpeed;
+                Entity.GetComponent<SpeedManager>().SelfSpeed.x = -Data.NormalMoveSpeed;
             }
         }
 
@@ -406,6 +427,83 @@ public class KnightPatron : KnightBehavior
         }
     }
 
+    private void SetUpInit()
+    {
+        var Data = Entity.GetComponent<KnightData>();
+
+        float StayTime = Entity.GetComponent<PatronData>().PatronStayTime;
+
+        float SelfX = Entity.GetComponent<SpeedManager>().GetTruePos().x;
+
+        float CycleTime = 2 * (Context.PatronRightX - Context.PatronLeftX) / Data.NormalMoveSpeed + 2 * StayTime;
+
+        float time = Random.Range(0, CycleTime);
+
+        float PositionX = SelfX;
+
+        if(time< (Context.PatronRightX-SelfX)/ Data.NormalMoveSpeed)
+        {
+            Moving = true;
+            MovingRight = true;
+            PositionX = Mathf.Lerp(Entity.transform.position.x, Context.PatronRightX, time / (Context.PatronRightX - SelfX) / Data.NormalMoveSpeed);
+        }
+        else if(time < (Context.PatronRightX - SelfX) / Data.NormalMoveSpeed + StayTime)
+        {
+            Moving = false;
+            MovingRight = true;
+            TimeCount = time - (Context.PatronRightX - SelfX) / Data.NormalMoveSpeed;
+            PositionX = Context.PatronRightX;
+
+        }
+        else if(time < (Context.PatronRightX - SelfX) / Data.NormalMoveSpeed + StayTime + (Context.PatronRightX - Context.PatronLeftX) / Data.NormalMoveSpeed)
+        {
+            Moving = true;
+            MovingRight = false;
+            float CutTime = time - ((Context.PatronRightX - SelfX) / Data.NormalMoveSpeed + StayTime);
+            PositionX = Mathf.Lerp(Context.PatronRightX, Context.PatronLeftX, CutTime / (Context.PatronRightX - Context.PatronLeftX) / Data.NormalMoveSpeed);
+        }
+        else if(time < (Context.PatronRightX - SelfX) / Data.NormalMoveSpeed + 2*StayTime + (Context.PatronRightX - Context.PatronLeftX) / Data.NormalMoveSpeed)
+        {
+            Moving = false;
+            MovingRight = false;
+            TimeCount = time - (Context.PatronRightX - SelfX) / Data.NormalMoveSpeed - StayTime - (Context.PatronRightX - Context.PatronLeftX) / Data.NormalMoveSpeed;
+            PositionX = Context.PatronLeftX;
+        }
+        else
+        {
+            Moving = true;
+            MovingRight = true;
+            float CutTime = time - ((Context.PatronRightX - SelfX) / Data.NormalMoveSpeed + 2*StayTime+ (Context.PatronRightX - Context.PatronLeftX) / Data.NormalMoveSpeed);
+            PositionX = Mathf.Lerp(Context.PatronLeftX, Context.PatronRightX, CutTime / (Context.PatronRightX - Context.PatronLeftX) / Data.NormalMoveSpeed);
+        }
+
+        Entity.transform.position = new Vector2(PositionX - Entity.GetComponent<SpeedManager>().OriPos.x, Entity.transform.position.y);
+
+        if (MovingRight)
+        {
+            Entity.transform.eulerAngles = new Vector3(0, 0, 0);
+        }
+        else
+        {
+            Entity.transform.eulerAngles = new Vector3(0, 180, 0);
+        }
+
+        if (Moving)
+        {
+            if (MovingRight)
+            {
+                Entity.GetComponent<SpeedManager>().SelfSpeed.x = Data.NormalMoveSpeed;
+            }
+            else
+            {
+                Entity.GetComponent<SpeedManager>().SelfSpeed.x = -Data.NormalMoveSpeed;
+            }
+        }
+        else
+        {
+            Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+        }
+    }
 }
 
 public class KnightInitDecision : KnightBehavior
