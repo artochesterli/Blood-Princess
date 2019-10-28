@@ -26,7 +26,7 @@ public class InvulnerableExplosion : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        TimeCount += Time.deltaTime;
+        /*TimeCount += Time.deltaTime;
         if(TimeCount >= Duration)
         {
             Destroy(gameObject);
@@ -51,6 +51,6 @@ public class InvulnerableExplosion : MonoBehaviour
                     AllHits[i].GetComponent<IHittable>().OnHit(ExplosionAttack);
                 }
             }
-        }
+        }*/
     }
 }

@@ -32,7 +32,6 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 	void Update()
 	{
 		SetFill();
-		//CheckShockEffect();
 	}
 
 	public override bool OnHit(AttackInfo Attack)
@@ -48,7 +47,7 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 
 		CurrentHP -= HitAttack.Damage;
 
-		if (HitAttack.Type != CharacterAttackType.NormalSlash)
+		if (HitAttack.InterruptLevel >= Data.ShieldLevel)
 		{
 			Interrupted = true;
 		}

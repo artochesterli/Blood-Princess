@@ -199,10 +199,6 @@ public abstract class KnightBehavior : FSM<KnightAI>.State
         }
         else
         {
-            //Context.CurrentAttackMode = KnightAttackMode.DoubleFirst;
-            //TransitionTo<KnightChaseForAttack>();
-            //TransitionTo<KnightKeepDistance>();
-
             Context.CurrentAttackMode = KnightAttackMode.Chase;
             TransitionTo<KnightAttackAnticipation>();
         }
@@ -212,43 +208,12 @@ public abstract class KnightBehavior : FSM<KnightAI>.State
     {
         var Data = Entity.GetComponent<KnightData>();
 
-        bool PlayerInShortDis = PlayerInHitRange(Data.AttackOffset, Data.AttackHitBoxSize.y, Entity.transform.right, Data.AttackStepForwardSpeed * Data.AttackTime + Data.ChaseForAttackDistance);
-        bool PlayerInLongDis = PlayerInHitRange(Data.AttackOffset, Data.AttackHitBoxSize.y, Entity.transform.right, 2 * Data.AttackStepForwardSpeed * Data.AttackTime + Data.ChaseForAttackDistance);
-
         if (Context.CurrentStamina > 0)
         {
-            if (Context.CurrentPatience <= 0)
-            {
-                //Debug.Log("Attack");
-                //Debug.Log(Context.CurrentStamina);
-                //Debug.Log(Context.CurrentPatience);
-                MakeAttackDecision();
-            }
-            else
-            {
-                float DecisionNumber = Random.Range(0.0f, 1.0f);
-
-                if (DecisionNumber < Data.AttackDecisionChance)
-                {
-                    //Debug.Log("Attack");
-                    //Debug.Log(Context.CurrentStamina);
-                    //Debug.Log(Context.CurrentPatience);
-                    MakeAttackDecision();
-                }
-                else
-                {
-                    //Debug.Log("Keep");
-                    //Debug.Log(Context.CurrentStamina);
-                    //Debug.Log(Context.CurrentPatience);
-                    TransitionTo<KnightKeepDistance>();
-                }
-            }
+            MakeAttackDecision();
         }
         else
         {
-            //Debug.Log("Keep");
-            //Debug.Log(Context.CurrentStamina);
-            //Debug.Log(Context.CurrentPatience);
             TransitionTo<KnightKeepDistance>();
         }
     }
@@ -892,6 +857,7 @@ public class KnightAttackAnticipation : KnightBehavior
         Context.CurrentPatience = Data.MaxPatience;
 
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+        DistanceTraveled = 0;
 
 
     }
@@ -995,13 +961,15 @@ public class KnightAttackStrike : KnightBehavior
             EulerAngle = 180;
         }
 
-        Vector2 Offset = Entity.GetComponent<KnightData>().AttackOffset;
+        var Data = Entity.GetComponent<KnightData>();
+
+        Vector2 Offset = Data.AttackOffset;
         if (!Attack.Right)
         {
             Offset.x = -Offset.x;
         }
 
-        SlashImage = (GameObject)Object.Instantiate(Resources.Load("Prefabs/KnightSlash"), (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
+        SlashImage = GameObject.Instantiate(Data.SlashImage, (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
         SlashImage.transform.parent = Entity.transform;
     }
 
@@ -1210,20 +1178,7 @@ public class KnightGetInterrupted : KnightBehavior
 
         var KnightData = Entity.GetComponent<KnightData>();
 
-        float InterruptedSpeed = 0;
-
-        switch (Temp.Type)
-        {
-            case CharacterAttackType.BloodSlash:
-                InterruptedSpeed = KnightData.InterruptedSpeed_BloodSlash;
-                break;
-            case CharacterAttackType.DeadSlash:
-                InterruptedSpeed = KnightData.InterruptedSpeed_DeadSlash;
-                break;
-            case CharacterAttackType.Explosion:
-                InterruptedSpeed = KnightData.InterruptedSpeed_Explosion;
-                break;
-        }
+        float InterruptedSpeed = KnightData.InterruptedSpeed;
 
         if (Temp.Right)
         {
@@ -1240,14 +1195,8 @@ public class KnightGetInterrupted : KnightBehavior
         MoveTime = KnightData.InterruptedMoveTime;
 
         Source = Temp.Source;
-        if(Temp.Type != CharacterAttackType.Explosion)
-        {
-            Counter = true;
-        }
-        else
-        {
-            Counter = false;
-        }
+
+        Counter = true;
 
         Entity.GetComponent<IHittable>().Interrupted = false;
     }

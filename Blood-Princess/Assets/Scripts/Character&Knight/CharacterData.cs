@@ -18,35 +18,6 @@ public class CharacterData : MonoBehaviour
     public int MaxHP;
     public int MaxEnergy;
 
-    public float BlockDamageDeduction;
-    public float BlockInvulnerableTime;
-
-    public float NormalSlashAnticipationTime;
-    public float NormalSlashStrikeTime;
-    public float NormalSlashRecoveryTime;
-    public float NormalSlashStepForwardSpeed;
-    public int NormalSlashDamage;
-    public Vector2 NormalSlashOffset;
-    public Vector2 NormalSlashHitBoxSize;
-
-    public float BloodSlashAnticipationTime;
-    public float BloodSlashStrikeTime;
-    public float BloodSlashRecoveryTime;
-    public float BloodSlashStepForwardSpeed;
-    public int BloodSlashDamage;
-    public int BloodSlashEnergyCost;
-    public Vector2 BloodSlashOffset;
-    public Vector2 BloodSlashHitBoxSize;
-
-    public float DeadSlashAnticipationTime;
-    public float DeadSlashStrikeTime;
-    public float DeadSlashRecoveryTime;
-    public int DeadSlashDamage;
-    public int DeadSlashHeal;
-    public int DeadSlashEnergyCost;
-    public Vector2 DeadSlashOffset;
-    public Vector2 DeadSlashHitBoxSize;
-
     public float InvulnerableAnticipationTime;
     public float InvulnerableTime;
     public float InvulnerableRecoveryTime;
@@ -64,6 +35,7 @@ public class CharacterData : MonoBehaviour
     public float RollAnticipationTime;
     public float RollTime;
     public float RollRecoveryTime;
+    public float RollCoolDown;
     public float RollSpeed;
 
     public LayerMask NormalIgnoredLayers;

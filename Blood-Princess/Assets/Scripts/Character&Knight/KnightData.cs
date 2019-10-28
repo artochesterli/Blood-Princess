@@ -29,11 +29,11 @@ public class KnightData : MonoBehaviour
 
     public Vector2 AttackOffset;
     public Vector2 AttackHitBoxSize;
+    public GameObject SlashImage;
 
+    public int ShieldLevel;
     public float InterruptedTime;
-    public float InterruptedSpeed_BloodSlash;
-    public float InterruptedSpeed_DeadSlash;
-    public float InterruptedSpeed_Explosion;
+    public float InterruptedSpeed;
     public float InterruptedMoveTime;
 
     public float TacticDistance;

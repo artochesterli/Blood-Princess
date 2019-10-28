@@ -65,23 +65,15 @@ public class Utility
 		return Input.GetKeyDown(KeyCode.S) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("NormalSlash"));
 	}
 
-	public static bool InputBloodSlash()
-	{
-		//return Input.GetKeyDown(KeyCode.I);
-		return Input.GetKeyDown(KeyCode.D) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("FirstSkill"));
-	}
+    public static bool InputFirstSkill()
+    {
+        return Input.GetKeyDown(KeyCode.D) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("FirstSkill"));
+    }
 
-	public static bool InputDeadSlash()
-	{
-		//return Input.GetKeyDown(KeyCode.L);
-		return Input.GetKeyDown(KeyCode.F) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("SecondSkill"));
-	}
-
-	public static bool InputBlink()
-	{
-		return false;
-		return Input.GetKeyDown(KeyCode.LeftShift);
-	}
+    public static bool InputSecondSkill()
+    {
+        return Input.GetKeyDown(KeyCode.F) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("SecondSkill"));
+    }
 
 	public static bool InputRoll()
 	{

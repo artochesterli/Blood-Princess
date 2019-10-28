@@ -83,21 +83,6 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             //GenerateInvulnerableExplosion();
 
         }
-        else if (Blocking)
-        {
-            if(HitAttack.Right && transform.right.x < 0 || !HitAttack.Right && transform.right.x > 0)
-            {
-                Damage = Mathf.RoundToInt((1 - GetComponent<CharacterData>().BlockDamageDeduction) * Damage);
-                Interrupted = false;
-            }
-            else
-            {
-                CurrentEnergy = 0;
-                Interrupted = true;
-            }
-
-
-        }
         else
         {
             CurrentEnergy = 0;
