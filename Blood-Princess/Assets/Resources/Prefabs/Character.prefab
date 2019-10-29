@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7652296207025352242}
   - component: {fileID: 4066351285130628870}
   m_Layer: 0
-  m_Name: InvulnerableEffect
+  m_Name: CriticalEyeIcon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25,8 +25,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1032249660650897308}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalPosition: {x: 0, y: 1.2, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children: []
   m_Father: {fileID: 4954734968556382950}
   m_RootOrder: 1
@@ -66,11 +66,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 2107308129
-  m_SortingLayer: 1
-  m_SortingOrder: 1
-  m_Sprite: {fileID: 21300000, guid: e0f824bdd55db9a4f92f9ab2fee773e7, type: 3}
-  m_Color: {r: 0.8666667, g: 0.32156864, b: 0.32156864, a: 1}
+  m_SortingLayerID: -608503495
+  m_SortingLayer: 3
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 21300000, guid: e6611fecc07cc024e9984503bff1c8f2, type: 3}
+  m_Color: {r: 0.9433962, g: 0.9433962, b: 0.9433962, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -189,7 +189,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -100, y: -75}
-  m_SizeDelta: {x: 1000, y: 100}
+  m_SizeDelta: {x: 2000, y: 100}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &1712277557968345405
 CanvasRenderer:
@@ -586,7 +586,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -100, y: -25}
-  m_SizeDelta: {x: 1000, y: 100}
+  m_SizeDelta: {x: 2000, y: 100}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &4757667328041168749
 CanvasRenderer:
@@ -949,6 +949,7 @@ MonoBehaviour:
   FirstSkillInfo: {fileID: 5357458694240549373}
   SecondSkillInfo: {fileID: 4621477503520236898}
   PassiveSkillInfo: {fileID: 3307014302454286480}
+  CriticalEyeIcon: {fileID: 1032249660650897308}
   RollCoolDownTimeCount: 0
   CurrentAttackType: 0
 --- !u!114 &4954734968556382944
@@ -989,7 +990,7 @@ MonoBehaviour:
   RollAnticipationTime: 0.1
   RollTime: 0.2
   RollRecoveryTime: 0.2
-  RollCoolDown: 0.5
+  RollCoolDown: 0.3
   RollSpeed: 20
   NormalIgnoredLayers:
     serializedVersion: 2
@@ -1021,11 +1022,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentEnergy: 0
-  Invulnerable: 0
-  Blocking: 0
-  InvulnerableEffect: {fileID: 1032249660650897308}
-  BarDefaultSize: {x: 384, y: 32}
-  BarInflateSize: {x: 480, y: 40}
   Canvas: {fileID: 4954734967981678427}
   HPFill: {fileID: 3710162351775908928}
   EnergyMarks: {fileID: 7718897753089196614}
@@ -1068,22 +1064,24 @@ MonoBehaviour:
   NormalSlashOffset: {x: 1.1, y: -0.2}
   NormalSlashHitBoxSize: {x: 1.44, y: 0.64}
   NormalSlashAirUsable: 1
+  BloodSlashName: Blood Slash
   BloodSlashAnticipationTime: 0.2
   BloodSlashStrikeTime: 0.1
   BloodSlashRecoveryTime: 0.2
   BloodSlashStepForwardSpeed: 8
-  BloodSlashDamage: 8
+  BloodSlashDamage: 10
   BloodSlashInterruptLevel: 2
   BloodSlashEnergyCost: 1
   BloodSlashImage: {fileID: 4100517640345132926, guid: 60c0520c6cd80f249b8a43f7e1c4d14f,
     type: 3}
-  BloodSlashOffset: {x: 1.1, y: -0.2}
-  BloodSlashHitBoxSize: {x: 1.44, y: 0.64}
+  BloodSlashOffset: {x: 0.86, y: -0.2}
+  BloodSlashHitBoxSize: {x: 0.96, y: 0.64}
   BloodSlashAirUsable: 1
-  DeadSlashAnticipationTime: 0.4
+  DeadSlashName: Dead Slash
+  DeadSlashAnticipationTime: 0.5
   DeadSlashStrikeTime: 0.1
-  DeadSlashRecoveryTime: 0.4
-  DeadSlashDamage: 25
+  DeadSlashRecoveryTime: 0.5
+  DeadSlashDamage: 30
   DeadSlashInterruptLevel: 3
   DeadSlashEnergyCost: 3
   DeadSlashImage: {fileID: 3683772998224471359, guid: d309ced642cf1e54fb1bd22f6c34a77f,
@@ -1091,6 +1089,7 @@ MonoBehaviour:
   DeadSlashOffset: {x: 1.4, y: -0.2}
   DeadSlashHitBoxSize: {x: 2, y: 0.64}
   DeadSlashAirUsable: 0
+  LacerationSlashName: Laceration Slash
   LacerationSlashAnticipationTime: 0.2
   LacerationSlashStrikeTime: 0.1
   LacerationSlashRecoveryTime: 0.2
@@ -1103,9 +1102,10 @@ MonoBehaviour:
   LacerationSlashOffset: {x: 1.1, y: -0.2}
   LacerationSlashHitBoxSize: {x: 1.44, y: 0.64}
   LacerationSlashAirUsable: 1
-  LacerationSlashLacerationDamage: 7
-  LacerationEffectTime: 3
-  EndlessTortureLacerationTimeExtension: 1
+  LacerationSlashLacerationDamage: 15
+  CriticalEyeName: Criticle Eye
+  CriticalEyeBonusDamage: 5
+  CriticalEyeEffectTime: 1.5
 --- !u!1 &5357458694240549373
 GameObject:
   m_ObjectHideFlags: 0
@@ -1141,7 +1141,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -100, y: 25}
-  m_SizeDelta: {x: 1000, y: 100}
+  m_SizeDelta: {x: 2000, y: 100}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &438605401462160039
 CanvasRenderer:

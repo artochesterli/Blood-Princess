@@ -15,6 +15,7 @@ public class CharacterAbilityData : MonoBehaviour
     public Vector2 NormalSlashHitBoxSize;
     public bool NormalSlashAirUsable;
 
+    public string BloodSlashName;
     public float BloodSlashAnticipationTime;
     public float BloodSlashStrikeTime;
     public float BloodSlashRecoveryTime;
@@ -27,6 +28,7 @@ public class CharacterAbilityData : MonoBehaviour
     public Vector2 BloodSlashHitBoxSize;
     public bool BloodSlashAirUsable;
 
+    public string DeadSlashName;
     public float DeadSlashAnticipationTime;
     public float DeadSlashStrikeTime;
     public float DeadSlashRecoveryTime;
@@ -38,6 +40,7 @@ public class CharacterAbilityData : MonoBehaviour
     public Vector2 DeadSlashHitBoxSize;
     public bool DeadSlashAirUsable;
 
+    public string LacerationSlashName;
     public float LacerationSlashAnticipationTime;
     public float LacerationSlashStrikeTime;
     public float LacerationSlashRecoveryTime;
@@ -50,8 +53,9 @@ public class CharacterAbilityData : MonoBehaviour
     public Vector2 LacerationSlashHitBoxSize;
     public bool LacerationSlashAirUsable;
     public int LacerationSlashLacerationDamage;
-    public float LacerationEffectTime;
 
-    public float EndlessTortureLacerationTimeExtension;
+    public string CriticalEyeName;
+    public int CriticalEyeBonusDamage;
+    public float CriticalEyeEffectTime;
 
 }

@@ -5,6 +5,7 @@ using UnityEngine;
 public class LacerationManager : MonoBehaviour
 {
     public float StateTime;
+    public int ExtraDamage;
     public GameObject LacerationMark;
 
     private float TimeCount;
@@ -20,14 +21,20 @@ public class LacerationManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        TimeCount += Time.deltaTime;
+        /*TimeCount += Time.deltaTime;
         LacerationMark.transform.localScale = Vector3.one * Mathf.Lerp(InitScale, 0, TimeCount / StateTime);
         if(TimeCount >= StateTime)
         {
             LacerationMark.transform.localScale = Vector3.one * InitScale;
             LacerationMark.GetComponent<SpriteRenderer>().enabled = false;
             Destroy(this);
-        }
+        }*/
+    }
+
+    public void DestroySelf()
+    {
+        LacerationMark.GetComponent<SpriteRenderer>().enabled = false;
+        Destroy(this);
     }
 
     public void ResetState()

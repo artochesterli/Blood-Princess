@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StatusManager_Knight : StatusManagerBase, IHittable
+public class StatusManager_Knight : StatusManagerBase, IHittable, IShield
 {
 
 	public GameObject Canvas;
 	public GameObject SharedCanvas;
 	public GameObject HPFill;
-	public GameObject ShockEffect;
+    public GameObject ShieldFill;
 
 	public Color NormalColor;
 	public Color RageColor;
@@ -24,6 +24,7 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 	{
 		var Data = GetComponent<KnightData>();
 		CurrentHP = Data.MaxHP;
+        CurrentShield = Data.MaxShield;
 		if (SharedCanvas == null)
 			SharedCanvas = GameObject.Find("SharedCanvas");
 	}
@@ -31,7 +32,7 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 	// Update is called once per frame
 	void Update()
 	{
-		SetFill();
+        Canvas.transform.eulerAngles = new Vector3(0, 0, 0);
 	}
 
 	public override bool OnHit(AttackInfo Attack)
@@ -47,14 +48,34 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 
 		CurrentHP -= HitAttack.Damage;
 
-		if (HitAttack.InterruptLevel >= Data.ShieldLevel)
+
+        if (!Interrupted)
+        {
+            CurrentShield -= HitAttack.ShieldBreak;
+            if (CurrentShield <= 0)
+            {
+                CurrentShield = 0;
+                Interrupted = true;
+            }
+            else
+            {
+                Interrupted = false;
+            }
+            SetShieldFill((float)CurrentShield / Data.MaxShield);
+        }
+
+
+        SetHPFill((float)CurrentHP / Data.MaxHP);
+
+
+		/*if (HitAttack.InterruptLevel >= Data.ShieldLevel)
 		{
 			Interrupted = true;
 		}
 		else
 		{
 			Interrupted = false;
-		}
+		}*/
 
 
 		if (HitAttack.Right)
@@ -90,11 +111,14 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 	}
 
 
-	private void SetFill()
+	public void SetHPFill(float value)
 	{
-		Canvas.GetComponent<RectTransform>().eulerAngles = Vector3.zero;
-		var Data = GetComponent<KnightData>();
-		HPFill.GetComponent<Image>().fillAmount = (float)CurrentHP / Data.MaxHP;
+        HPFill.GetComponent<Image>().fillAmount = value;
 	}
+
+    public void SetShieldFill(float value)
+    {
+        ShieldFill.GetComponent<Image>().fillAmount = value;
+    }
 
 }

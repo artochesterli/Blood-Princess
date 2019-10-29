@@ -89,6 +89,18 @@ public abstract class KnightBehavior : FSM<KnightAI>.State
         return Context.Player.GetComponent<CharacterAction>().InRecovery;
     }
 
+    protected void RectifyDirection()
+    {
+        if (GetXDiff() > 0)
+        {
+            Entity.transform.eulerAngles = new Vector3(0, 0, 0);
+        }
+        else
+        {
+            Entity.transform.eulerAngles = new Vector3(0, 180, 0);
+        }
+    }
+
     protected bool PlayerInDetectRange()
     {
         if (Context.Player)
@@ -1094,17 +1106,7 @@ public class KnightAttackRecovery : KnightBehavior
         }
     }
 
-    private void RectifyDirection()
-    {
-        if (GetXDiff() > 0)
-        {
-            Entity.transform.eulerAngles = new Vector3(0, 0, 0);
-        }
-        else
-        {
-            Entity.transform.eulerAngles = new Vector3(0, 180, 0);
-        }
-    }
+
 
 }
 
@@ -1114,7 +1116,6 @@ public class KnightGetInterrupted : KnightBehavior
     private float MoveTime;
     private float TotalTime;
     private GameObject Source;
-    private bool Counter;
 
     public override void OnEnter()
     {
@@ -1126,11 +1127,11 @@ public class KnightGetInterrupted : KnightBehavior
     public override void Update()
     {
         base.Update();
-        if (CheckGetInterrupted())
+        /*if (CheckGetInterrupted())
         {
             SetUp();
             return;
-        }
+        }*/
         CheckTime();
     }
 
@@ -1138,30 +1139,31 @@ public class KnightGetInterrupted : KnightBehavior
     {
         base.OnExit();
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+        Entity.GetComponent<IHittable>().Interrupted = false;
     }
 
     private void CheckTime()
     {
         TimeCount += Time.deltaTime;
+
+        var Status = Entity.GetComponent<StatusManager_Knight>();
+
+        Status.SetShieldFill(TimeCount / TotalTime);
+
+
         if (TimeCount >= TotalTime)
         {
-            if (Counter)
+            Status.CurrentShield = Entity.GetComponent<KnightData>().MaxShield;
+            Context.Player = Source;
+            if (Context.CurrentStamina > 0)
             {
-                Context.Player = Source;
-                if (Context.CurrentStamina > 0)
-                {
-                    Context.CurrentPatience = Entity.GetComponent<KnightData>().MaxPatience;
-                    MakeAttackDecision();
-                }
-                else
-                {
-                    //
-                    TransitionTo<KnightKeepDistance>();
-                }
+                RectifyDirection();
+                Context.CurrentPatience = Entity.GetComponent<KnightData>().MaxPatience;
+                MakeAttackDecision();
             }
             else
             {
-                MakeTacticalDecision();
+                TransitionTo<KnightKeepDistance>();
             }
 
             return;
@@ -1191,14 +1193,12 @@ public class KnightGetInterrupted : KnightBehavior
 
         TimeCount = 0;
 
-        TotalTime = KnightData.InterruptedTime;
+        TotalTime = KnightData.InterruptedTime * KnightData.MaxShield;
         MoveTime = KnightData.InterruptedMoveTime;
 
         Source = Temp.Source;
 
-        Counter = true;
 
-        Entity.GetComponent<IHittable>().Interrupted = false;
     }
 
     private void SetAppearance()

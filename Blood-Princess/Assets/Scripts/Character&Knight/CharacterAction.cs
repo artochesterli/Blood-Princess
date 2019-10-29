@@ -14,16 +14,18 @@ public class CharacterAttackInfo : AttackInfo
     public bool Right;
     public int Damage;
     public int InterruptLevel;
+    public int ShieldBreak;
     public Vector2 HitBoxOffset;
     public Vector2 HitBoxSize;
 
-    public CharacterAttackInfo(GameObject source, CharacterAttackType type, bool right, int damage, int interruptlevel, Vector2 offset, Vector2 size)
+    public CharacterAttackInfo(GameObject source, CharacterAttackType type, bool right, int damage, int interruptlevel, int shieldbreak, Vector2 offset, Vector2 size)
     {
         Source = source;
         Type = type;
         Right = right;
         Damage = damage;
         InterruptLevel = interruptlevel;
+        ShieldBreak = shieldbreak;
         HitBoxOffset = offset;
         HitBoxSize = size;
     }
@@ -54,10 +56,12 @@ public abstract class CharacterAbility
 public class CharacterActiveAbility : CharacterAbility
 {
     public CharacterActiveAbilityType Type;
-    public CharacterActiveAbility(string s,CharacterActiveAbilityType type)
+    public int Cost;
+    public CharacterActiveAbility(string s,CharacterActiveAbilityType type, int cost)
     {
         name = s;
         Type = type;
+        Cost = cost;
     }
 }
 
@@ -82,7 +86,10 @@ public enum CharacterActiveAbilityType
 public enum CharacterPassiveAbilityType
 {
     Null,
-    EndlessTorture
+    EndlessTorture,
+    BloodDrainer,
+    EagleEye,
+    CriticleEye
 }
 
 public enum CharacterAttackType
@@ -126,10 +133,15 @@ public class CharacterAction : MonoBehaviour
     public GameObject SecondSkillInfo;
     public GameObject PassiveSkillInfo;
 
+    public GameObject CriticalEyeIcon;
+
     public float RollCoolDownTimeCount;
 
     public CharacterActiveAbility FirstEquipedActiveAbility;
     public CharacterActiveAbility SecondEquipedActiveAbility;
+
+    public CharacterPassiveAbility BloodSlashPassiveAbility;
+    public CharacterPassiveAbility DeadSlashPassiveAbility;
 
     public CharacterPassiveAbility EquipedPassiveAbility;
 
@@ -141,9 +153,19 @@ public class CharacterAction : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        FirstEquipedActiveAbility = new CharacterActiveAbility("Blood Slash", CharacterActiveAbilityType.BloodSlash);
-        SecondEquipedActiveAbility = new CharacterActiveAbility("Laceration Slash", CharacterActiveAbilityType.LacerationSlash);
-        EquipedPassiveAbility = new CharacterPassiveAbility("Endless Torture", CharacterPassiveAbilityType.EndlessTorture);
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
+        FirstEquipedActiveAbility = new CharacterActiveAbility(AbilityData.BloodSlashName, CharacterActiveAbilityType.BloodSlash,AbilityData.BloodSlashEnergyCost);
+        SecondEquipedActiveAbility = new CharacterActiveAbility(AbilityData.DeadSlashName, CharacterActiveAbilityType.DeadSlash, AbilityData.DeadSlashEnergyCost);
+        //SecondEquipedActiveAbility = new CharacterActiveAbility(AbilityData.LacerationSlashName, CharacterActiveAbilityType.LacerationSlash, AbilityData.LacerationSlashEnergyCost);
+        //FirstEquipedActiveAbility = new CharacterActiveAbility(AbilityData.LacerationSlashName, CharacterActiveAbilityType.LacerationSlash, AbilityData.LacerationSlashEnergyCost);
+
+        //EquipedPassiveAbility = new CharacterPassiveAbility("Endless Torture", CharacterPassiveAbilityType.EndlessTorture);
+        EquipedPassiveAbility = new CharacterPassiveAbility("", CharacterPassiveAbilityType.Null);
+
+        BloodSlashPassiveAbility = new CharacterPassiveAbility(AbilityData.CriticalEyeName, CharacterPassiveAbilityType.CriticleEye);
+        DeadSlashPassiveAbility = new CharacterPassiveAbility("", CharacterPassiveAbilityType.Null);
+
         SetCanvasInfo();
 
         SavedInputInfo = new List<InputInfo>();
@@ -162,8 +184,8 @@ public class CharacterAction : MonoBehaviour
 
     private void SetCanvasInfo()
     {
-        FirstSkillInfo.GetComponent<Text>().text = "LT: " + FirstEquipedActiveAbility.name;
-        SecondSkillInfo.GetComponent<Text>().text = "RT: " + SecondEquipedActiveAbility.name;
+        FirstSkillInfo.GetComponent<Text>().text = "BloodSlashEnhancement: " + BloodSlashPassiveAbility.name;
+        SecondSkillInfo.GetComponent<Text>().text = "DeadSlashEnhancement: " + DeadSlashPassiveAbility.name; 
         PassiveSkillInfo.GetComponent<Text>().text = "Passive:" + EquipedPassiveAbility.name;
     }
 
@@ -368,16 +390,6 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         }
     }
 
-    protected float EndlessTortureExtendStateTime()
-    {
-        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
-        if (PassiveSkillEquiped(CharacterPassiveAbilityType.EndlessTorture))
-        {
-            return AbilityData.EndlessTortureLacerationTimeExtension;
-        }
-        return 0;
-    }
-
     protected void UseAbility(CharacterActiveAbilityType ability)
     {
         switch (ability)
@@ -423,13 +435,16 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         RaycastHit2D[] AllHits = Physics2D.BoxCastAll(Entity.transform.position + (Vector3)Offset, Attack.HitBoxSize, 0, Entity.transform.right, 0, Data.EnemyLayer);
         if (AllHits.Length > 0)
         {
-
             for(int i = 0; i < AllHits.Length; i++)
             {
                 GameObject Enemy = AllHits[i].collider.gameObject;
 
                 if (!EnemyHit.Contains(Enemy))
                 {
+                    var AbilityData = Entity.GetComponent<CharacterAbilityData>();
+
+                    CriticleEyeBonusToDamage(Attack);
+
                     switch (Attack.Type)
                     {
                         case CharacterAttackType.NormalSlash:
@@ -441,8 +456,18 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
                             }
                             break;
                         case CharacterAttackType.BloodSlash:
+
+                            if (Context.BloodSlashPassiveAbility.Type == CharacterPassiveAbilityType.CriticleEye)
+                            {
+                                AddCriticalEye();
+                            }
+
                             break;
                         case CharacterAttackType.DeadSlash:
+                            if (Context.BloodSlashPassiveAbility.Type == CharacterPassiveAbilityType.CriticleEye)
+                            {
+                                AddCriticalEye();
+                            }
                             /*int Drained = Data.DeadSlashHeal * AvailableCount;
                             if (Drained > Data.MaxHP - Status.CurrentHP)
                             {
@@ -461,16 +486,14 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
                             break;
                         case CharacterAttackType.LacerationSlash:
 
-                            var AbilityData = Entity.GetComponent<CharacterAbilityData>();
                             if (Enemy.GetComponent<LacerationManager>())
                             {
-                                Enemy.GetComponent<LacerationManager>().ResetState();
                                 Attack.Damage += AbilityData.LacerationSlashLacerationDamage;
+                                Enemy.GetComponent<LacerationManager>().DestroySelf();
                             }
                             else
                             {
                                 Enemy.AddComponent<LacerationManager>();
-                                Enemy.GetComponent<LacerationManager>().StateTime = AbilityData.LacerationEffectTime + EndlessTortureExtendStateTime();
                             }
                             break;
                     }
@@ -488,6 +511,33 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             return false;
         }
 
+    }
+
+    protected void AddCriticalEye()
+    {
+        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
+
+        if (Entity.GetComponent<CriticalEyeManager>())
+        {
+            Attack.Damage += Entity.GetComponent<CriticalEyeManager>().CurrentBonus;
+            Entity.GetComponent<CriticalEyeManager>().ResetState();
+            //Entity.GetComponent<CriticalEyeManager>().CurrentBonus += AbilityData.CriticalEyeBonusDamage;
+        }
+        else
+        {
+            Entity.AddComponent<CriticalEyeManager>();
+            Entity.GetComponent<CriticalEyeManager>().CurrentBonus = AbilityData.CriticalEyeBonusDamage;
+            Entity.GetComponent<CriticalEyeManager>().EffectTime = AbilityData.CriticalEyeEffectTime;
+            Entity.GetComponent<CriticalEyeManager>().Icon = Context.CriticalEyeIcon;
+        }
+    }
+
+    protected void CriticleEyeBonusToDamage(CharacterAttackInfo Attack)
+    {
+        if (Entity.GetComponent<CriticalEyeManager>())
+        {
+            Attack.Damage += Entity.GetComponent<CriticalEyeManager>().CurrentBonus;
+        }
     }
 
     protected bool CharacterClimbPlatform()
@@ -1509,9 +1559,6 @@ public class SlashAnticipation : CharacterActionState
                 Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightAnticipationOffset, SpriteData.LightAnticipationSize);
                 break;
         }
-
-        CurrentSpriteSeries = SpriteData.LightAnticipationSeries;
-        SetCharacterSprite();
         Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightAnticipationOffset, SpriteData.LightAnticipationSize);
     }
 
@@ -1604,7 +1651,7 @@ public class SlashStrike : CharacterActionState
                 break;
         }
         EnemyHit = new List<GameObject>();
-        AttackInfo = new CharacterAttackInfo(Entity, Context.CurrentAttackType, Entity.transform.right.x > 0, Damage, InterruptLevel, Offset, Size);
+        AttackInfo = new CharacterAttackInfo(Entity, Context.CurrentAttackType, Entity.transform.right.x > 0, Damage, InterruptLevel, EnergyCost, Offset, Size);
         GenerateSlashImage(Image, AttackInfo);
     }
 
@@ -1945,7 +1992,6 @@ public class Roll: CharacterActionState
 
         SetCharacterSprite();
         Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
-        Entity.GetComponent<StatusManager_Character>().InvulnerableEffect.transform.position = Entity.GetComponent<SpeedManager>().GetTruePos();
     }
 
     private void CheckTime()
