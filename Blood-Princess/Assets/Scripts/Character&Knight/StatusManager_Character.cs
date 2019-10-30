@@ -9,13 +9,6 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 {
     public int CurrentEnergy;
 
-    public bool Invulnerable;
-    public bool Blocking;
-    public GameObject InvulnerableEffect;
-
-    public Vector2 BarDefaultSize;
-    public Vector2 BarInflateSize;
-
     public GameObject Canvas;
     public GameObject HPFill;
     public GameObject EnergyMarks;
@@ -75,29 +68,18 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         int Damage = HitAttack.Damage;
 
-        //Damage = 0;
-
-        if (Invulnerable)
+        CurrentEnergy = 0;
+        Interrupted = true;
+        if (HitAttack.Right)
         {
-            Damage = 0;
-            //GenerateInvulnerableExplosion();
-
+            DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 1);
         }
         else
         {
-            CurrentEnergy = 0;
-            Interrupted = true;
-            if (HitAttack.Right)
-            {
-                DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 1);
-            }
-            else
-            {
-                DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 1);
-            }
-            DamageText.GetComponent<Text>().text = Damage.ToString();
-            DamageText.transform.parent = Canvas.transform;
+            DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 1);
         }
+        DamageText.GetComponent<Text>().text = Damage.ToString();
+        DamageText.transform.parent = Canvas.transform;
 
 
         CurrentHP -= Damage;

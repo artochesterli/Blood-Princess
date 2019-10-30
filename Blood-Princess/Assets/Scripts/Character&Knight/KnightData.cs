@@ -5,6 +5,7 @@ using UnityEngine;
 public class KnightData : MonoBehaviour
 {
     public int MaxHP;
+    public int MaxShield;
 
     public float NormalMoveSpeed;
     public float KeepDisMoveSpeed;
@@ -31,7 +32,7 @@ public class KnightData : MonoBehaviour
     public Vector2 AttackHitBoxSize;
     public GameObject SlashImage;
 
-    public int ShieldLevel;
+    //public int ShieldLevel;
     public float InterruptedTime;
     public float InterruptedSpeed;
     public float InterruptedMoveTime;
