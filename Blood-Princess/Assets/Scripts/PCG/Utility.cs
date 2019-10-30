@@ -38,7 +38,7 @@ namespace PCG
         /// <returns></returns>
         public static readonly HashSet<string> IgnorePlacingStrHashSet = new HashSet<string>()
         {
-            "8", "9", "s.1", "s.2"
+            "8", "9", "s.1", "s.2", ""
         };
 
         /// <summary>

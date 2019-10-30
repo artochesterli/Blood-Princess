@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using PCG;
+using System;
 
 public class MapManager : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class MapManager : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        int seed = Random.Range(0, 100000);
+        int seed = Guid.NewGuid().GetHashCode();
         Debug.Log(seed);
         // Set Zone according to the board Dimension
         Zone.GetComponent<BoxCollider>().size = new Vector3(BoardDimension.x * PCG.Utility.TileSize().x, BoardDimension.y * PCG.Utility.TileSize().y);
