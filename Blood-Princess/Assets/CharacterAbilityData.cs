@@ -58,4 +58,6 @@ public class CharacterAbilityData : MonoBehaviour
     public int CriticalEyeBonusDamage;
     public float CriticalEyeEffectTime;
 
+    public int HarmonyHealUnitAmount;
+
 }

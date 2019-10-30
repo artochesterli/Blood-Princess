@@ -53,18 +53,6 @@ public abstract class CharacterAbility
     public Sprite Icon;
 }
 
-public class CharacterActiveAbility : CharacterAbility
-{
-    public CharacterActiveAbilityType Type;
-    public int Cost;
-    public CharacterActiveAbility(string s,CharacterActiveAbilityType type, int cost)
-    {
-        name = s;
-        Type = type;
-        Cost = cost;
-    }
-}
-
 public class CharacterPassiveAbility : CharacterAbility
 {
     public CharacterPassiveAbilityType Type;
@@ -75,21 +63,11 @@ public class CharacterPassiveAbility : CharacterAbility
     }
 }
 
-public enum CharacterActiveAbilityType
-{
-    Null,
-    BloodSlash,
-    DeadSlash,
-    LacerationSlash
-}
-
 public enum CharacterPassiveAbilityType
 {
     Null,
-    EndlessTorture,
-    BloodDrainer,
-    EagleEye,
-    CriticleEye
+    CriticleEye,
+    Harmony
 }
 
 public enum CharacterAttackType
@@ -98,7 +76,6 @@ public enum CharacterAttackType
     NormalSlash,
     BloodSlash,
     DeadSlash,
-    LacerationSlash
 }
 
 public enum InputType
@@ -137,9 +114,6 @@ public class CharacterAction : MonoBehaviour
 
     public float RollCoolDownTimeCount;
 
-    public CharacterActiveAbility FirstEquipedActiveAbility;
-    public CharacterActiveAbility SecondEquipedActiveAbility;
-
     public CharacterPassiveAbility BloodSlashPassiveAbility;
     public CharacterPassiveAbility DeadSlashPassiveAbility;
 
@@ -155,12 +129,7 @@ public class CharacterAction : MonoBehaviour
     {
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        FirstEquipedActiveAbility = new CharacterActiveAbility(AbilityData.BloodSlashName, CharacterActiveAbilityType.BloodSlash,AbilityData.BloodSlashEnergyCost);
-        SecondEquipedActiveAbility = new CharacterActiveAbility(AbilityData.DeadSlashName, CharacterActiveAbilityType.DeadSlash, AbilityData.DeadSlashEnergyCost);
-        //SecondEquipedActiveAbility = new CharacterActiveAbility(AbilityData.LacerationSlashName, CharacterActiveAbilityType.LacerationSlash, AbilityData.LacerationSlashEnergyCost);
-        //FirstEquipedActiveAbility = new CharacterActiveAbility(AbilityData.LacerationSlashName, CharacterActiveAbilityType.LacerationSlash, AbilityData.LacerationSlashEnergyCost);
 
-        //EquipedPassiveAbility = new CharacterPassiveAbility("Endless Torture", CharacterPassiveAbilityType.EndlessTorture);
         EquipedPassiveAbility = new CharacterPassiveAbility("", CharacterPassiveAbilityType.Null);
 
         BloodSlashPassiveAbility = new CharacterPassiveAbility(AbilityData.CriticalEyeName, CharacterPassiveAbilityType.CriticleEye);
@@ -251,7 +220,6 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
 {
     protected GameObject Entity;
 
-    protected CharacterAttackInfo Attack;
     protected GameObject SlashImage;
     protected List<Sprite> CurrentSpriteSeries;
 
@@ -343,14 +311,16 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         if (CheckCharacterFirstSkill())
         {
             Context.SavedInputInfo.Clear();
-            UseAbility(Context.FirstEquipedActiveAbility.Type);
+            Context.CurrentAttackType = CharacterAttackType.BloodSlash;
+            TransitionTo<SlashAnticipation>();
             return;
         }
 
         if (CheckCharacterSecondSkill())
         {
             Context.SavedInputInfo.Clear();
-            UseAbility(Context.SecondEquipedActiveAbility.Type);
+            Context.CurrentAttackType = CharacterAttackType.DeadSlash;
+            TransitionTo<SlashAnticipation>();
             return;
         }
 
@@ -372,58 +342,6 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         return;
     }
 
-    protected bool PassiveSkillEquiped(CharacterPassiveAbilityType type)
-    {
-        return Context.EquipedPassiveAbility.Type == type;
-    }
-
-    protected void EndlessTortureRefreshState(GameObject Enemy)
-    {
-        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
-
-        if (PassiveSkillEquiped(CharacterPassiveAbilityType.EndlessTorture))
-        {
-            if (Enemy.GetComponent<LacerationManager>())
-            {
-                Enemy.GetComponent<LacerationManager>().ResetState();
-            }
-        }
-    }
-
-    protected void UseAbility(CharacterActiveAbilityType ability)
-    {
-        switch (ability)
-        {
-            case CharacterActiveAbilityType.BloodSlash:
-                UseBloodSlash();
-                break;
-            case CharacterActiveAbilityType.DeadSlash:
-                UseDeadSlash();
-                break;
-            case CharacterActiveAbilityType.LacerationSlash:
-                UseLacerationSlash();
-                break;
-        }
-    }
-
-    protected void UseBloodSlash()
-    {
-        Context.CurrentAttackType = CharacterAttackType.BloodSlash;
-        TransitionTo<SlashAnticipation>();
-    }
-
-    protected void UseDeadSlash()
-    {
-        Context.CurrentAttackType = CharacterAttackType.DeadSlash;
-        TransitionTo<SlashAnticipation>();
-    }
-
-    protected void UseLacerationSlash()
-    {
-        Context.CurrentAttackType = CharacterAttackType.LacerationSlash;
-        TransitionTo<SlashAnticipation>();
-    }
-
     protected bool HitEnemy(CharacterAttackInfo Attack, List<GameObject> EnemyHit)
     {
         var Data = Entity.GetComponent<CharacterData>();
@@ -435,15 +353,14 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         RaycastHit2D[] AllHits = Physics2D.BoxCastAll(Entity.transform.position + (Vector3)Offset, Attack.HitBoxSize, 0, Entity.transform.right, 0, Data.EnemyLayer);
         if (AllHits.Length > 0)
         {
-            for(int i = 0; i < AllHits.Length; i++)
+
+            for (int i = 0; i < AllHits.Length; i++)
             {
                 GameObject Enemy = AllHits[i].collider.gameObject;
 
                 if (!EnemyHit.Contains(Enemy))
                 {
                     var AbilityData = Entity.GetComponent<CharacterAbilityData>();
-
-                    CriticleEyeBonusToDamage(Attack);
 
                     switch (Attack.Type)
                     {
@@ -457,48 +374,20 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
                             break;
                         case CharacterAttackType.BloodSlash:
 
-                            if (Context.BloodSlashPassiveAbility.Type == CharacterPassiveAbilityType.CriticleEye)
+                            if(EnhancementEquiped(CharacterPassiveAbilityType.Harmony,CharacterAttackType.BloodSlash))
                             {
-                                AddCriticalEye();
+                                HarmonyHeal();
                             }
 
                             break;
                         case CharacterAttackType.DeadSlash:
-                            if (Context.BloodSlashPassiveAbility.Type == CharacterPassiveAbilityType.CriticleEye)
+                            if (EnhancementEquiped(CharacterPassiveAbilityType.Harmony, CharacterAttackType.DeadSlash))
                             {
-                                AddCriticalEye();
-                            }
-                            /*int Drained = Data.DeadSlashHeal * AvailableCount;
-                            if (Drained > Data.MaxHP - Status.CurrentHP)
-                            {
-                                Drained = Data.MaxHP - Status.CurrentHP;
-                            }
-
-                            if (Drained > 0)
-                            {
-                                GameObject DamageText = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/DamageText"), Entity.transform.position, Quaternion.Euler(0, 0, 0));
-                                DamageText.GetComponent<DamageText>().TravelVector = Vector2.up;
-                                DamageText.GetComponent<Text>().color = Color.green;
-                                DamageText.transform.parent = Status.Canvas.transform;
-                                DamageText.GetComponent<Text>().text = Drained.ToString();
-                                Status.CurrentHP += Drained;
-                            }*/
-                            break;
-                        case CharacterAttackType.LacerationSlash:
-
-                            if (Enemy.GetComponent<LacerationManager>())
-                            {
-                                Attack.Damage += AbilityData.LacerationSlashLacerationDamage;
-                                Enemy.GetComponent<LacerationManager>().DestroySelf();
-                            }
-                            else
-                            {
-                                Enemy.AddComponent<LacerationManager>();
+                                HarmonyHeal();
                             }
                             break;
                     }
 
-                    EndlessTortureRefreshState(Enemy);
                     Enemy.GetComponent<IHittable>().OnHit(Attack);
                     EnemyHit.Add(Enemy);
                 }
@@ -513,15 +402,26 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
 
     }
 
-    protected void AddCriticalEye()
+    protected bool EnhancementEquiped(CharacterPassiveAbilityType Type, CharacterAttackType AttackType)
+    {
+        switch (AttackType)
+        {
+            case CharacterAttackType.BloodSlash:
+                return Context.BloodSlashPassiveAbility.Type == Type;
+            case CharacterAttackType.DeadSlash:
+                return Context.DeadSlashPassiveAbility.Type == Type;
+        }
+
+        return false;
+    }
+
+    protected void AddCriticalEye(CharacterAttackInfo Attack)
     {
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
 
         if (Entity.GetComponent<CriticalEyeManager>())
         {
-            Attack.Damage += Entity.GetComponent<CriticalEyeManager>().CurrentBonus;
             Entity.GetComponent<CriticalEyeManager>().ResetState();
-            //Entity.GetComponent<CriticalEyeManager>().CurrentBonus += AbilityData.CriticalEyeBonusDamage;
         }
         else
         {
@@ -532,11 +432,38 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         }
     }
 
-    protected void CriticleEyeBonusToDamage(CharacterAttackInfo Attack)
+    protected void CriticalEyeBonusToDamage(CharacterAttackInfo Attack)
     {
         if (Entity.GetComponent<CriticalEyeManager>())
         {
             Attack.Damage += Entity.GetComponent<CriticalEyeManager>().CurrentBonus;
+        }
+    }
+
+    protected void HarmonyHeal()
+    {
+        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
+
+        Heal(AbilityData.HarmonyHealUnitAmount);
+    }
+
+    protected void Heal(int amount)
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+        var Status = Entity.GetComponent<StatusManager_Character>();
+        if (amount > Data.MaxHP - Status.CurrentHP)
+        {
+            amount = Data.MaxHP - Status.CurrentHP;
+        }
+
+        if (amount > 0)
+        {
+            GameObject DamageText = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/DamageText"), Entity.transform.position, Quaternion.Euler(0, 0, 0));
+            DamageText.GetComponent<DamageText>().TravelVector = Vector2.up;
+            DamageText.GetComponent<Text>().color = Color.green;
+            DamageText.transform.parent = Status.Canvas.transform;
+            DamageText.GetComponent<Text>().text = amount.ToString();
+            Status.CurrentHP += amount;
         }
     }
 
@@ -729,10 +656,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
         var Status = Entity.GetComponent<StatusManager_Character>();
 
-        int Cost = GetCost(Context.FirstEquipedActiveAbility.Type);
-        bool Usable = GetUsable(Context.FirstEquipedActiveAbility.Type);
-
-        if (Usable && Context.SavedInputInfo.Count > 0 && Context.SavedInputInfo[0].Type == InputType.FirstSkill && Status.CurrentEnergy >= Cost)
+        if (Context.SavedInputInfo.Count > 0 && Context.SavedInputInfo[0].Type == InputType.FirstSkill && Status.CurrentEnergy >= AbilityData.BloodSlashEnergyCost)
         {
             return true;
         }
@@ -741,59 +665,14 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
 
     protected bool CheckCharacterSecondSkill()
     {
+        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
         var Status = Entity.GetComponent<StatusManager_Character>();
 
-        int Cost = GetCost(Context.SecondEquipedActiveAbility.Type);
-        bool Usable = GetUsable(Context.SecondEquipedActiveAbility.Type);
-
-        if(Usable && Context.SavedInputInfo.Count > 0 && Context.SavedInputInfo[0].Type == InputType.SecondSkill && Status.CurrentEnergy >= Cost)
+        if(CheckGrounded() && Context.SavedInputInfo.Count > 0 && Context.SavedInputInfo[0].Type == InputType.SecondSkill && Status.CurrentEnergy >= AbilityData.DeadSlashEnergyCost)
         {
             return true;
         }
         return false;
-    }
-
-    protected int GetCost(CharacterActiveAbilityType ability)
-    {
-        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
-        switch (ability)
-        {
-            case CharacterActiveAbilityType.BloodSlash:
-                return AbilityData.BloodSlashEnergyCost;
-            case CharacterActiveAbilityType.DeadSlash:
-                return AbilityData.DeadSlashEnergyCost;
-            case CharacterActiveAbilityType.LacerationSlash:
-                return AbilityData.LacerationSlashEnergyCost;
-        }
-        return 0;
-    }
-
-    protected bool GetUsable(CharacterActiveAbilityType ability)
-    {
-        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
-        switch (ability)
-        {
-            case CharacterActiveAbilityType.BloodSlash:
-                if(!CheckGrounded() && !AbilityData.BloodSlashAirUsable)
-                {
-                    return false;
-                }
-                break;
-            case CharacterActiveAbilityType.DeadSlash:
-                if (!CheckGrounded() && !AbilityData.DeadSlashAirUsable)
-                {
-                    return false;
-                }
-                break;
-            case CharacterActiveAbilityType.LacerationSlash:
-                if (!CheckGrounded() && !AbilityData.LacerationSlashAirUsable)
-                {
-                    return false;
-                }
-                break;
-        }
-
-        return true;
     }
 
     protected bool CheckCharacterJump()
@@ -1022,14 +901,16 @@ public class Stand : CharacterActionState
         if (CheckCharacterFirstSkill())
         {
             Context.SavedInputInfo.Clear();
-            UseAbility(Context.FirstEquipedActiveAbility.Type);
+            Context.CurrentAttackType = CharacterAttackType.BloodSlash;
+            TransitionTo<SlashAnticipation>();
             return;
         }
 
         if (CheckCharacterSecondSkill())
         {
             Context.SavedInputInfo.Clear();
-            UseAbility(Context.SecondEquipedActiveAbility.Type);
+            Context.CurrentAttackType = CharacterAttackType.DeadSlash;
+            TransitionTo<SlashAnticipation>();
             return;
         }
 
@@ -1120,14 +1001,16 @@ public class GroundMove : CharacterActionState
         if (CheckCharacterFirstSkill())
         {
             Context.SavedInputInfo.Clear();
-            UseAbility(Context.FirstEquipedActiveAbility.Type);
+            Context.CurrentAttackType = CharacterAttackType.BloodSlash;
+            TransitionTo<SlashAnticipation>();
             return;
         }
 
         if (CheckCharacterSecondSkill())
         {
             Context.SavedInputInfo.Clear();
-            UseAbility(Context.SecondEquipedActiveAbility.Type);
+            Context.CurrentAttackType = CharacterAttackType.DeadSlash;
+            TransitionTo<SlashAnticipation>();
             return;
         }
 
@@ -1206,14 +1089,16 @@ public class JumpHoldingStay : CharacterActionState
         if (CheckCharacterFirstSkill())
         {
             Context.SavedInputInfo.Clear();
-            UseAbility(Context.FirstEquipedActiveAbility.Type);
+            Context.CurrentAttackType = CharacterAttackType.BloodSlash;
+            TransitionTo<SlashAnticipation>();
             return;
         }
 
         if (CheckCharacterSecondSkill())
         {
             Context.SavedInputInfo.Clear();
-            UseAbility(Context.SecondEquipedActiveAbility.Type);
+            Context.CurrentAttackType = CharacterAttackType.DeadSlash;
+            TransitionTo<SlashAnticipation>();
             return;
         }
 
@@ -1307,14 +1192,16 @@ public class JumpHoldingMove : CharacterActionState
         if (CheckCharacterFirstSkill())
         {
             Context.SavedInputInfo.Clear();
-            UseAbility(Context.FirstEquipedActiveAbility.Type);
+            Context.CurrentAttackType = CharacterAttackType.BloodSlash;
+            TransitionTo<SlashAnticipation>();
             return;
         }
 
         if (CheckCharacterSecondSkill())
         {
             Context.SavedInputInfo.Clear();
-            UseAbility(Context.SecondEquipedActiveAbility.Type);
+            Context.CurrentAttackType = CharacterAttackType.DeadSlash;
+            TransitionTo<SlashAnticipation>();
             return;
         }
 
@@ -1397,14 +1284,16 @@ public class AirStay : CharacterActionState
         if (CheckCharacterFirstSkill())
         {
             Context.SavedInputInfo.Clear();
-            UseAbility(Context.FirstEquipedActiveAbility.Type);
+            Context.CurrentAttackType = CharacterAttackType.BloodSlash;
+            TransitionTo<SlashAnticipation>();
             return;
         }
 
         if (CheckCharacterSecondSkill())
         {
             Context.SavedInputInfo.Clear();
-            UseAbility(Context.SecondEquipedActiveAbility.Type);
+            Context.CurrentAttackType = CharacterAttackType.DeadSlash;
+            TransitionTo<SlashAnticipation>();
             return;
         }
 
@@ -1468,14 +1357,16 @@ public class AirMove : CharacterActionState
         if (CheckCharacterFirstSkill())
         {
             Context.SavedInputInfo.Clear();
-            UseAbility(Context.FirstEquipedActiveAbility.Type);
+            Context.CurrentAttackType = CharacterAttackType.BloodSlash;
+            TransitionTo<SlashAnticipation>();
             return;
         }
 
         if (CheckCharacterSecondSkill())
         {
             Context.SavedInputInfo.Clear();
-            UseAbility(Context.SecondEquipedActiveAbility.Type);
+            Context.CurrentAttackType = CharacterAttackType.DeadSlash;
+            TransitionTo<SlashAnticipation>();
             return;
         }
 
@@ -1525,9 +1416,6 @@ public class SlashAnticipation : CharacterActionState
             case CharacterAttackType.DeadSlash:
                 StateTime = AbilityData.DeadSlashAnticipationTime;
                 break;
-            case CharacterAttackType.LacerationSlash:
-                StateTime = AbilityData.LacerationSlashAnticipationTime;
-                break;
         }
 
     }
@@ -1552,11 +1440,6 @@ public class SlashAnticipation : CharacterActionState
                 CurrentSpriteSeries = SpriteData.HeavyAnticipationSeries;
                 SetCharacterSprite();
                 Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyAnticipationOffset, SpriteData.HeavyAnticipationSize);
-                break;
-            case CharacterAttackType.LacerationSlash:
-                CurrentSpriteSeries = SpriteData.LightAnticipationSeries;
-                SetCharacterSprite();
-                Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightAnticipationOffset, SpriteData.LightAnticipationSize);
                 break;
         }
         Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightAnticipationOffset, SpriteData.LightAnticipationSize);
@@ -1597,6 +1480,8 @@ public class SlashStrike : CharacterActionState
     private CharacterAttackInfo AttackInfo;
     private List<GameObject> EnemyHit;
     private float TimeCount;
+
+    private bool HitAnything;
 
     public override void OnEnter()
     {
@@ -1644,15 +1529,16 @@ public class SlashStrike : CharacterActionState
                     AbilityData.DeadSlashEnergyCost, AbilityData.DeadSlashOffset, AbilityData.DeadSlashHitBoxSize,
                     AbilityData.DeadSlashImage, 0);
                 break;
-            case CharacterAttackType.LacerationSlash:
-                SetAttribute(AbilityData.LacerationSlashStrikeTime, AbilityData.LacerationSlashDamage, AbilityData.LacerationSlashInterruptLevel,
-                    AbilityData.LacerationSlashEnergyCost, AbilityData.LacerationSlashOffset, AbilityData.LacerationSlashHitBoxSize,
-                    AbilityData.LacerationSlashImage, AbilityData.LacerationSlashStepForwardSpeed);
-                break;
         }
         EnemyHit = new List<GameObject>();
         AttackInfo = new CharacterAttackInfo(Entity, Context.CurrentAttackType, Entity.transform.right.x > 0, Damage, InterruptLevel, EnergyCost, Offset, Size);
+        HitAnything = false;
         GenerateSlashImage(Image, AttackInfo);
+
+        if (EnhancementEquiped(CharacterPassiveAbilityType.CriticleEye, Context.CurrentAttackType))
+        {
+            CriticalEyeBonusToDamage(AttackInfo);
+        }
     }
 
     private void SetAttribute(float time, int damage, int interruptlevel, int cost, Vector2 offset, Vector2 size, GameObject image, float stepspeed)
@@ -1687,11 +1573,6 @@ public class SlashStrike : CharacterActionState
                 CurrentSpriteSeries = SpriteData.HeavyRecoverySeries;
                 SetCharacterSprite();
                 Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyRecoveryOffset, SpriteData.HeavyRecoverySize);
-                break;
-            case CharacterAttackType.LacerationSlash:
-                CurrentSpriteSeries = SpriteData.LightRecoverySeries;
-                SetCharacterSprite();
-                Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightRecoveryOffset, SpriteData.LightRecoverySize);
                 break;
         }
     }
@@ -1759,6 +1640,11 @@ public class SlashStrike : CharacterActionState
     {
         if (HitEnemy(AttackInfo, EnemyHit))
         {
+            if (!HitAnything && EnhancementEquiped(CharacterPassiveAbilityType.CriticleEye,AttackInfo.Type))
+            {
+                HitAnything = true;
+                AddCriticalEye(AttackInfo);
+            }
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
         }
     }
@@ -1822,9 +1708,6 @@ public class SlashRecovery : CharacterActionState
             case CharacterAttackType.DeadSlash:
                 StateTime = AbilityData.DeadSlashRecoveryTime;
                 break;
-            case CharacterAttackType.LacerationSlash:
-                StateTime = AbilityData.LacerationSlashRecoveryTime;
-                break;
         }
 
     }
@@ -1849,11 +1732,6 @@ public class SlashRecovery : CharacterActionState
                 CurrentSpriteSeries = SpriteData.HeavyRecoverySeries;
                 SetCharacterSprite();
                 Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyRecoveryOffset, SpriteData.HeavyRecoverySize);
-                break;
-            case CharacterAttackType.LacerationSlash:
-                CurrentSpriteSeries = SpriteData.LightRecoverySeries;
-                SetCharacterSprite();
-                Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightRecoveryOffset, SpriteData.LightRecoverySize);
                 break;
         }
     }
@@ -2031,178 +1909,6 @@ public class Roll: CharacterActionState
         }
     }
 }
-
-/*public class BlinkAnticipation : CharacterActionState
-{
-    private float TimeCount;
-    private float StateTime;
-
-    public override void OnEnter()
-    {
-        base.OnEnter();
-        SetUp();
-        SetAppearance();
-    }
-
-    public override void Update()
-    {
-        base.Update();
-
-        if (CheckGetInterrupted())
-        {
-            TransitionTo<GetInterrupted>();
-            return;
-        }
-        CheckTime();
-    }
-
-    private void SetUp()
-    {
-        var Data = Entity.GetComponent<CharacterData>();
-        TimeCount = 0;
-        StateTime = Data.InvulnerableAnticipationTime;
-        Context.CurrentGravity = 0;
-        Entity.GetComponent<SpeedManager>().SelfSpeed = Vector2.zero;
-    }
-
-    private void SetAppearance()
-    {
-        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
-        CurrentSpriteSeries = SpriteData.IdleSeries;
-
-        SetCharacterSprite();
-        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
-
-    }
-
-
-    private void CheckTime()
-    {
-        TimeCount += Time.deltaTime;
-        if (TimeCount >= StateTime)
-        {
-            TransitionTo<BlinkActivated>();
-        }
-    }
-}
-
-public class BlinkActivated : CharacterActionState
-{
-    private float TimeCount;
-    private float StateTime;
-
-    public override void OnEnter()
-    {
-        base.OnEnter();
-        SetUp();
-        SetAppearance();
-    }
-
-    public override void Update()
-    {
-        base.Update();
-        CheckTime();
-    }
-
-    public override void OnExit()
-    {
-        base.OnExit();
-        Entity.GetComponent<StatusManager_Character>().Invulnerable = false;
-        Entity.GetComponent<SpriteRenderer>().enabled = true;
-        Entity.GetComponent<StatusManager_Character>().InvulnerableEffect.GetComponent<SpriteRenderer>().enabled = false;
-    }
-
-    private void SetUp()
-    {
-        var Data = Entity.GetComponent<CharacterData>();
-        TimeCount = 0;
-        StateTime = Data.InvulnerableTime;
-        Context.CurrentGravity = 0;
-        Entity.GetComponent<StatusManager_Character>().CurrentEnergy -= Data.InvulberableEnergyCost;
-        Entity.GetComponent<StatusManager_Character>().Invulnerable = true;
-    }
-
-    private void SetAppearance()
-    {
-        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
-        CurrentSpriteSeries = SpriteData.IdleSeries;
-
-        SetCharacterSprite();
-        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
-        Entity.GetComponent<SpriteRenderer>().enabled = false;
-        Entity.GetComponent<StatusManager_Character>().InvulnerableEffect.GetComponent<SpriteRenderer>().enabled = true;
-        Entity.GetComponent<StatusManager_Character>().InvulnerableEffect.transform.position = Entity.GetComponent<SpeedManager>().GetTruePos();
-    }
-
-    private void CheckTime()
-    {
-        TimeCount += Time.deltaTime;
-        if (TimeCount >= StateTime)
-        {
-            TransitionTo<BlinkRecovery>();
-        }
-    }
-}
-
-public class BlinkRecovery : CharacterActionState
-{
-    private float TimeCount;
-    private float StateTime;
-
-    public override void OnEnter()
-    {
-        base.OnEnter();
-        SetUp();
-        SetAppearance();
-    }
-
-    public override void Update()
-    {
-        base.Update();
-        if (CheckGetInterrupted())
-        {
-            SetAppearance();
-            TransitionTo<GetInterrupted>();
-            return;
-        }
-        CheckTime();
-    }
-
-    private void SetUp()
-    {
-        var Data = Entity.GetComponent<CharacterData>();
-        TimeCount = 0;
-        StateTime = Data.InvulnerableRecoveryTime;
-        Context.CurrentGravity = Data.NormalGravity;
-    }
-
-    private void SetAppearance()
-    {
-        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
-        CurrentSpriteSeries = SpriteData.IdleSeries;
-
-        SetCharacterSprite();
-        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
-        Entity.GetComponent<SpriteRenderer>().enabled = true;
-        Entity.GetComponent<StatusManager_Character>().InvulnerableEffect.GetComponent<SpriteRenderer>().enabled = false;
-    }
-
-    private void CheckTime()
-    {
-        TimeCount += Time.deltaTime;
-        if (TimeCount >= StateTime)
-        {
-            if (CheckGrounded())
-            {
-                TransitionTo<Stand>();
-            }
-            else
-            {
-                TransitionTo<AirStay>();
-            }
-        }
-    }
-}*/
 
 public class ClimbPlatform : CharacterActionState
 {

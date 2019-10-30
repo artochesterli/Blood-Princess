@@ -1074,8 +1074,8 @@ MonoBehaviour:
   BloodSlashEnergyCost: 1
   BloodSlashImage: {fileID: 4100517640345132926, guid: 60c0520c6cd80f249b8a43f7e1c4d14f,
     type: 3}
-  BloodSlashOffset: {x: 0.86, y: -0.2}
-  BloodSlashHitBoxSize: {x: 0.96, y: 0.64}
+  BloodSlashOffset: {x: 1.1, y: -0.2}
+  BloodSlashHitBoxSize: {x: 1.44, y: 0.64}
   BloodSlashAirUsable: 1
   DeadSlashName: Dead Slash
   DeadSlashAnticipationTime: 0.5
@@ -1106,6 +1106,7 @@ MonoBehaviour:
   CriticalEyeName: Criticle Eye
   CriticalEyeBonusDamage: 5
   CriticalEyeEffectTime: 1.5
+  HarmonyHealUnitAmount: 0
 --- !u!1 &5357458694240549373
 GameObject:
   m_ObjectHideFlags: 0
