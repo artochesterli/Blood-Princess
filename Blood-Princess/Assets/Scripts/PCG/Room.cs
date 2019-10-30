@@ -162,8 +162,15 @@ namespace PCG
                 {
                     IntVector2 curTileWorldPosition = startWorldPosition + new IntVector2(i, j);
                     string curChar = expandableroom[i][j];
+                    if (Utility.ExpandableStrHashSet.Contains(curChar))
+                    {
+                        _placeExpandableRoom(curChar, curTileWorldPosition);
+                        continue;
+                    }
                     if (!Utility.IgnorePlacingStrHashSet.Contains(curChar))
+                    {
                         m_CurrentBoard[curTileWorldPosition.x, curTileWorldPosition.y] = expandableroom[i][j];
+                    }
                 }
             }
         }
@@ -185,16 +192,16 @@ namespace PCG
             // Read File into manipulable string array
             string entireFile = _streamReader.ReadToEnd();
             string[] choppedUpFile = entireFile.Split('\n');
-            entireRoomFile = new string[choppedUpFile.Length][];
+            string[][] result = new string[choppedUpFile.Length][];
             for (int i = 0; i < choppedUpFile.Length; i++)
             {
                 string[] oneline = choppedUpFile[i].Split(',');
-                entireRoomFile[i] = oneline;
+                result[i] = oneline;
             }
 
             // Rotatte entireRoomFile ClockWise 90
-            int x = entireRoomFile.Length;
-            int y = entireRoomFile[0].Length;
+            int x = result.Length;
+            int y = result[0].Length;
             string[][] temp = new string[y][];
             for (int i = 0; i < y; i++)
             {
@@ -205,7 +212,7 @@ namespace PCG
             {
                 for (int j = 0; j < x; j++)
                 {
-                    temp[i][j] = entireRoomFile[x - j - 1][i];
+                    temp[i][j] = result[x - j - 1][i];
                     temp[i][j] = temp[i][j].Trim();
                 }
             }
