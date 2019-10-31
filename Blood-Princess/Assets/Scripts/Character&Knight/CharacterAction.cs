@@ -60,11 +60,13 @@ public abstract class CharacterAbility
 [System.Serializable]
 public class BattleArtEnhancement : CharacterAbility
 {
+    public CharacterAttackType EnhancementAttackType;
     public BattleArtEnhancementType Type;
-    public BattleArtEnhancement(string s, BattleArtEnhancementType type, int level)
+    public BattleArtEnhancement(string s, CharacterAttackType attacktype, BattleArtEnhancementType type, int level)
     {
         name = s;
         Type = type;
+        EnhancementAttackType = attacktype;
         Level = level;
     }
 }
@@ -100,6 +102,7 @@ public enum BattleArtEnhancementType
 
 public enum CharacterAttackType
 {
+    Null,
     NormalSlash,
     BloodSlash,
     DeadSlash,
@@ -211,8 +214,8 @@ public class CharacterAction : MonoBehaviour
 
         for(int i = 0; i < AbilityData.MaxBattleArtEnhancementNumber; i++)
         {
-            BloodSlashEnhancements.Add(new BattleArtEnhancement("",BattleArtEnhancementType.Null,0));
-            DeadSlashEnhancements.Add(new BattleArtEnhancement("", BattleArtEnhancementType.Null, 0));
+            BloodSlashEnhancements.Add(new BattleArtEnhancement("",CharacterAttackType.Null , BattleArtEnhancementType.Null,0));
+            DeadSlashEnhancements.Add(new BattleArtEnhancement("", CharacterAttackType.Null , BattleArtEnhancementType.Null, 0));
         }
 
         for(int i = 0; i < AbilityData.MaxPassiveSkillNumber; i++)
@@ -456,56 +459,48 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
 
     }
 
-    protected BattleArtEnhancement EnhancementEquiped(BattleArtEnhancementType Type, CharacterAttackType AttackType)
+    protected BattleArtEnhancement EnhancementEquiped(BattleArtEnhancementType Type)
     {
-        switch (AttackType)
+        for (int i = 0; i < Context.BloodSlashEnhancements.Count; i++)
         {
-            case CharacterAttackType.BloodSlash:
-                for(int i = 0; i < Context.BloodSlashEnhancements.Count; i++)
-                {
-                    if(Context.BloodSlashEnhancements[i].Type == Type)
-                    {
-                        return Context.BloodSlashEnhancements[i];
-                    }
-                }
-                break;
-            case CharacterAttackType.DeadSlash:
-                for (int i = 0; i < Context.DeadSlashEnhancements.Count; i++)
-                {
-                    if (Context.DeadSlashEnhancements[i].Type == Type)
-                    {
-                        return Context.DeadSlashEnhancements[i];
-                    }
-                }
-                break;
+            if (Context.BloodSlashEnhancements[i].Type == Type)
+            {
+                return Context.BloodSlashEnhancements[i];
+            }
         }
 
-        return new BattleArtEnhancement("",BattleArtEnhancementType.Null,0);
+        for (int i = 0; i < Context.DeadSlashEnhancements.Count; i++)
+        {
+            if (Context.DeadSlashEnhancements[i].Type == Type)
+            {
+                return Context.DeadSlashEnhancements[i];
+            }
+        }
+
+        return new BattleArtEnhancement("", CharacterAttackType.Null, BattleArtEnhancementType.Null,0);
     }
 
     protected void AddCriticalEye(BattleArtEnhancement Enhancement, CharacterAttackInfo Attack)
     {
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
 
-        if (!Entity.GetComponent<CriticalEyeManager>())
+        if (!Entity.GetComponent<CriticalEyeManager>() && Enhancement.EnhancementAttackType == Attack.Type)
         {
             Entity.AddComponent<CriticalEyeManager>();
+            Entity.GetComponent<CriticalEyeManager>().Bonus = AbilityData.CriticalEyeBonus;
 
-            if (Enhancement.Level == 1)
-            {
-                Entity.GetComponent<CriticalEyeManager>().Bonus = AbilityData.CriticalEyeBonusLv1;
-            }
-            else
-            {
-                Entity.GetComponent<CriticalEyeManager>().Bonus = AbilityData.CriticalEyeBonusLv2;
-            }
             Entity.GetComponent<CriticalEyeManager>().Type = Attack.Type;
             Entity.GetComponent<CriticalEyeManager>().Icon = Context.CriticalEyeIcon;
         }
     }
 
-    protected void CriticalEyeEnhanceBattleArt(BattleArtEnhancement Enhancement, int HitNumber)
+    protected void CriticalEyeEnhanceBattleArt(BattleArtEnhancement Enhancement, int HitNumber, CharacterAttackInfo Attack)
     {
+        if (!Entity.GetComponent<CriticalEyeManager>() || Attack.Type != Entity.GetComponent<CriticalEyeManager>().Type)
+        {
+            return;
+        }
+
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
 
         if (Enhancement.Level == 3)
@@ -520,6 +515,11 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
 
     protected void CriticalEyeBonusToDamage(BattleArtEnhancement Enhancement, CharacterAttackInfo Attack)
     {
+        if (!Entity.GetComponent<CriticalEyeManager>())
+        {
+            return;
+        }
+
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
 
         int Bonus = 0;
@@ -1595,7 +1595,7 @@ public class SlashStrike : CharacterActionState
     private float StepForwardSpeed;
     private GameObject Image;
 
-    private BattleArtEnhancement CriticleEyeEnhancement;
+    private BattleArtEnhancement CriticalEyeEnhancement;
     private BattleArtEnhancement HarmonyEnhancement;
     private CharacterAttackInfo AttackInfo;
     private List<GameObject> EnemyHit;
@@ -1627,6 +1627,8 @@ public class SlashStrike : CharacterActionState
         GameObject.Destroy(SlashImage);
 
         CheckHarmonyHeal();
+
+        CriticalEyeEnhanceBattleArt(CriticalEyeEnhancement, EnemyHit.Count, AttackInfo);
         CheckRemoveCriticalEye();
     }
 
@@ -1640,9 +1642,25 @@ public class SlashStrike : CharacterActionState
 
     private void CheckRemoveCriticalEye()
     {
+        if (!Entity.GetComponent<CriticalEyeManager>())
+        {
+            return;
+        }
+
         var CriticalEye = Entity.GetComponent<CriticalEyeManager>();
 
-        if (CriticalEye && AttackInfo.Type != CharacterAttackType.NormalSlash && AttackInfo.Type != CriticalEye.Type)
+        bool UseEndAttack = false;
+
+        if(CriticalEyeEnhancement.Level == 1)
+        {
+            UseEndAttack = AttackInfo.Type != CriticalEye.Type;
+        }
+        else
+        {
+            UseEndAttack = AttackInfo.Type != CharacterAttackType.NormalSlash && AttackInfo.Type != CriticalEye.Type;
+        }
+
+        if (UseEndAttack)
         {
             CriticalEye.DestroySelf();
         }
@@ -1678,13 +1696,11 @@ public class SlashStrike : CharacterActionState
         GenerateSlashImage(Image, AttackInfo);
 
 
-        CriticleEyeEnhancement = EnhancementEquiped(BattleArtEnhancementType.CriticleEye, AttackInfo.Type);
-        HarmonyEnhancement = EnhancementEquiped(BattleArtEnhancementType.Harmony, AttackInfo.Type);
+        CriticalEyeEnhancement = EnhancementEquiped(BattleArtEnhancementType.CriticleEye);
+        HarmonyEnhancement = EnhancementEquiped(BattleArtEnhancementType.Harmony);
 
-        if (Entity.GetComponent<CriticalEyeManager>())
-        {
-            CriticalEyeBonusToDamage(CriticleEyeEnhancement,AttackInfo);
-        }
+
+        CriticalEyeBonusToDamage(CriticalEyeEnhancement, AttackInfo);
     }
 
     private void SetAttribute(float time, int damage, int cost, Vector2 offset, Vector2 size, GameObject image, float stepspeed)
@@ -1785,10 +1801,10 @@ public class SlashStrike : CharacterActionState
     {
         if (HitEnemy(AttackInfo, EnemyHit))
         {
-            if (!HitAnything && CriticleEyeEnhancement.Type !=BattleArtEnhancementType.Null)
+            if (!HitAnything && CriticalEyeEnhancement.Type !=BattleArtEnhancementType.Null)
             {
                 HitAnything = true;
-                AddCriticalEye(CriticleEyeEnhancement, AttackInfo);
+                AddCriticalEye(CriticalEyeEnhancement, AttackInfo);
             }
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
         }

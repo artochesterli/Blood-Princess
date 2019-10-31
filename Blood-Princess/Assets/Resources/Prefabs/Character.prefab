@@ -2236,7 +2236,6 @@ MonoBehaviour:
   BloodSlashRecoveryTime: 0.2
   BloodSlashStepForwardSpeed: 8
   BloodSlashDamage: 10
-  BloodSlashInterruptLevel: 2
   BloodSlashEnergyCost: 1
   BloodSlashImage: {fileID: 4100517640345132926, guid: 60c0520c6cd80f249b8a43f7e1c4d14f,
     type: 3}
@@ -2248,33 +2247,18 @@ MonoBehaviour:
   DeadSlashStrikeTime: 0.1
   DeadSlashRecoveryTime: 0.5
   DeadSlashDamage: 30
-  DeadSlashInterruptLevel: 3
   DeadSlashEnergyCost: 3
   DeadSlashImage: {fileID: 3683772998224471359, guid: d309ced642cf1e54fb1bd22f6c34a77f,
     type: 3}
   DeadSlashOffset: {x: 1.4, y: -0.2}
   DeadSlashHitBoxSize: {x: 2, y: 0.64}
   DeadSlashAirUsable: 0
-  LacerationSlashName: Laceration Slash
-  LacerationSlashAnticipationTime: 0.2
-  LacerationSlashStrikeTime: 0.1
-  LacerationSlashRecoveryTime: 0.2
-  LacerationSlashStepForwardSpeed: 8
-  LacerationSlashDamage: 5
-  LacerationSlashInterruptLevel: 1
-  LacerationSlashEnergyCost: 1
-  LacerationSlashImage: {fileID: 6176813267775539533, guid: d78322b008e4bc04e841ef93de21b846,
-    type: 3}
-  LacerationSlashOffset: {x: 1.1, y: -0.2}
-  LacerationSlashHitBoxSize: {x: 1.44, y: 0.64}
-  LacerationSlashAirUsable: 1
-  LacerationSlashLacerationDamage: 15
   MaxBattleArtEnhancementNumber: 2
   MaxPassiveSkillNumber: 2
   CriticalEyeName: Criticle Eye
-  CriticalEyeBonusLv1: 2
-  CriticalEyeBonusLv2: 3
-  BattleArtBonusUnit: 0.1
+  CriticalEyeBonus: 2
+  CriticalEyeBattleArtBonusUnit: 0.1
+  CriticalEyeMaxBattleArtBonusNumber: 5
   HarmonyName: Harmony
   HarmonyHealAmountLv1: 1
   HarmonyHealAmountLv2: 2
@@ -2618,7 +2602,11 @@ MonoBehaviour:
   PassiveSkillSelectionList:
   - {fileID: 7866540853584275667}
   - {fileID: 6866339286799928065}
-  SkillPoint: 0
+  SkillPointText: {fileID: 1446015582844935747}
+  SkillPoint: 6
+  EquipCost: 1
+  Lv2Cost: 2
+  Lv3Cost: 2
 --- !u!1 &7249003829750371344
 GameObject:
   m_ObjectHideFlags: 0

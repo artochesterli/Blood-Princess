@@ -25,9 +25,29 @@ public class Utility
         return Ans;
     }
 
+
+
     public static bool InputOpenCloseSkillPanel()
     {
         return Input.GetKeyDown(KeyCode.P);
+    }
+
+    public static bool InputUpgrade()
+    {
+        if (ControlStateManager.CurrentControlState == ControlState.Action)
+        {
+            return false;
+        }
+        return Input.GetKeyDown(KeyCode.U);
+    }
+
+    public static bool InputDowngrade()
+    {
+        if (ControlStateManager.CurrentControlState == ControlState.Action)
+        {
+            return false;
+        }
+        return Input.GetKeyDown(KeyCode.J);
     }
 
     public static bool InputSelectBack()

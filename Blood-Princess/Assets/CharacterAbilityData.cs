@@ -42,8 +42,7 @@ public class CharacterAbilityData : MonoBehaviour
     public int MaxPassiveSkillNumber;
 
     public string CriticalEyeName;
-    public int CriticalEyeBonusLv1;
-    public int CriticalEyeBonusLv2;
+    public int CriticalEyeBonus;
     public float CriticalEyeBattleArtBonusUnit;
     public int CriticalEyeMaxBattleArtBonusNumber;
 
