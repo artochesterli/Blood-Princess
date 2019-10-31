@@ -21,7 +21,6 @@ public class CharacterAbilityData : MonoBehaviour
     public float BloodSlashRecoveryTime;
     public float BloodSlashStepForwardSpeed;
     public int BloodSlashDamage;
-    public int BloodSlashInterruptLevel;
     public int BloodSlashEnergyCost;
     public GameObject BloodSlashImage;
     public Vector2 BloodSlashOffset;
@@ -33,31 +32,24 @@ public class CharacterAbilityData : MonoBehaviour
     public float DeadSlashStrikeTime;
     public float DeadSlashRecoveryTime;
     public int DeadSlashDamage;
-    public int DeadSlashInterruptLevel;
     public int DeadSlashEnergyCost;
     public GameObject DeadSlashImage;
     public Vector2 DeadSlashOffset;
     public Vector2 DeadSlashHitBoxSize;
     public bool DeadSlashAirUsable;
 
-    public string LacerationSlashName;
-    public float LacerationSlashAnticipationTime;
-    public float LacerationSlashStrikeTime;
-    public float LacerationSlashRecoveryTime;
-    public float LacerationSlashStepForwardSpeed;
-    public int LacerationSlashDamage;
-    public int LacerationSlashInterruptLevel;
-    public int LacerationSlashEnergyCost;
-    public GameObject LacerationSlashImage;
-    public Vector2 LacerationSlashOffset;
-    public Vector2 LacerationSlashHitBoxSize;
-    public bool LacerationSlashAirUsable;
-    public int LacerationSlashLacerationDamage;
+    public int MaxBattleArtEnhancementNumber;
+    public int MaxPassiveSkillNumber;
 
     public string CriticalEyeName;
-    public int CriticalEyeBonusDamage;
-    public float CriticalEyeEffectTime;
+    public int CriticalEyeBonusLv1;
+    public int CriticalEyeBonusLv2;
+    public float CriticalEyeBattleArtBonusUnit;
+    public int CriticalEyeMaxBattleArtBonusNumber;
 
-    public int HarmonyHealUnitAmount;
+    public string HarmonyName;
+    public int HarmonyHealAmountLv1;
+    public int HarmonyHealAmountLv2;
+    public int HarmonyHealNoEnergyExtraAmount;
 
 }
