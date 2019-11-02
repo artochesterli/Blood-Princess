@@ -14,6 +14,7 @@ public class CriticalEyeManager : MonoBehaviour
     void Start()
     {
         Icon.GetComponent<SpriteRenderer>().enabled = true;
+        
     }
 
     // Update is called once per frame

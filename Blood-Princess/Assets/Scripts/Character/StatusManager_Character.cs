@@ -97,16 +97,4 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             return false;
         }
     }
-
-    private void GenerateInvulnerableExplosion()
-    {
-        GameObject Explosion = (GameObject)Instantiate(Resources.Load("Prefabs/InvulnerableExplosion"), GetComponent<SpeedManager>().GetTruePos(), Quaternion.Euler(0, 0, 0));
-        var ExplosionComponent = Explosion.GetComponent<InvulnerableExplosion>();
-        var Data = GetComponent<CharacterData>();
-        ExplosionComponent.Source = gameObject;
-        ExplosionComponent.Damage = Data.InvulnerableExplosionDamage;
-        ExplosionComponent.Duration = Data.InvulnerableExplosionTime;
-        ExplosionComponent.StartScale = Data.InvulnerableExplosionStartRadius * 2;
-        ExplosionComponent.EndScale = Data.InvulnerableExplosionEndRadius * 2;
-    }
 }

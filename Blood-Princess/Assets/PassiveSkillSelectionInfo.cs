@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class PassiveSkillSelectionInfo : MonoBehaviour
 {
     public CharacterPassiveAbility PassiveAbility;
-    public bool Selected;
+    public bool Selected { get; set; }
     public Color UnselectedColor;
     public Color SelectedColor;
     // Start is called before the first frame update

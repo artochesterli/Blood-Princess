@@ -50,6 +50,15 @@ public class Utility
         return Input.GetKeyDown(KeyCode.J);
     }
 
+    public static bool InputRemove()
+    {
+        if (ControlStateManager.CurrentControlState == ControlState.Action)
+        {
+            return false;
+        }
+        return Input.GetKeyDown(KeyCode.L);
+    }
+
     public static bool InputSelectBack()
     {
         if (ControlStateManager.CurrentControlState == ControlState.Action)
