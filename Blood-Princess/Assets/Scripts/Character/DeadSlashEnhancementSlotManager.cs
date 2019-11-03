@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PassiveAbilitySlotManager : MonoBehaviour, ISkillSlot
+public class DeadSlashEnhancementSlotManager : MonoBehaviour, ISkillSlot
 {
     public bool IsEnhancementSlot { get; set; }
 
     public SkillSlotState State { get; set; }
 
     public GameObject Player;
-    public CharacterPassiveAbility EquipedPassiveAbility;
+
+    public BattleArtEnhancement EquipedEnhancement;
 
     public int index;
     public Color UnselectedColor;
@@ -20,7 +21,7 @@ public class PassiveAbilitySlotManager : MonoBehaviour, ISkillSlot
     // Start is called before the first frame update
     void Start()
     {
-        IsEnhancementSlot = false;
+        IsEnhancementSlot = transform;
         GetAbility();
         SetSlot();
     }
@@ -28,15 +29,15 @@ public class PassiveAbilitySlotManager : MonoBehaviour, ISkillSlot
     // Update is called once per frame
     void Update()
     {
-
+        
     }
 
     public void SetSlot()
     {
 
-        if (EquipedPassiveAbility.Type != CharacterPassiveAbilityType.Null)
+        if (EquipedEnhancement.Type != BattleArtEnhancementType.Null)
         {
-            GetComponent<Text>().text = EquipedPassiveAbility.name + "(" + EquipedPassiveAbility.Level + ")";
+            GetComponent<Text>().text = EquipedEnhancement.name + "(" + EquipedEnhancement.Level + ")";
         }
         else
         {
@@ -46,7 +47,7 @@ public class PassiveAbilitySlotManager : MonoBehaviour, ISkillSlot
 
     private void GetAbility()
     {
-        EquipedPassiveAbility = Player.GetComponent<CharacterAction>().EquipedPassiveAbilities[index];
+        EquipedEnhancement = Player.GetComponent<CharacterAction>().DeadSlashEnhancements[index];
     }
 
     public void SetAppearance()
@@ -67,29 +68,35 @@ public class PassiveAbilitySlotManager : MonoBehaviour, ISkillSlot
 
     public void Equip(CharacterAbility Ability)
     {
-        EquipedPassiveAbility = (CharacterPassiveAbility)Ability;
-        Player.GetComponent<CharacterAction>().EquipedPassiveAbilities[index] = EquipedPassiveAbility;
+        EquipedEnhancement = (BattleArtEnhancement)Ability;
+        EquipedEnhancement.EnhancementAttackType = CharacterAttackType.DeadSlash;
+        Player.GetComponent<CharacterAction>().DeadSlashEnhancements[index] = EquipedEnhancement;
+        EventManager.instance.Fire(new PlayerEquipEnhancement(EquipedEnhancement));
     }
     public void UpgradeAbility()
     {
-        EquipedPassiveAbility.Level++;
+        EquipedEnhancement.Level++;
+        EventManager.instance.Fire(new PlayerUpgradeEnhancement(EquipedEnhancement));
     }
     public void DowngradeAbility()
     {
-        EquipedPassiveAbility.Level--;
+        EquipedEnhancement.Level--;
+        EventManager.instance.Fire(new PlayerDowngradeEnhancement(EquipedEnhancement));
     }
     public void RemoveAbility()
     {
-        EquipedPassiveAbility = new CharacterPassiveAbility("", CharacterPassiveAbilityType.Null, 0);
-        Player.GetComponent<CharacterAction>().EquipedPassiveAbilities[index] = new CharacterPassiveAbility("", CharacterPassiveAbilityType.Null, 0);
+        EventManager.instance.Fire(new PlayerUnequipEnhancement(EquipedEnhancement));
+        EquipedEnhancement = new BattleArtEnhancement("", CharacterAttackType.DeadSlash, BattleArtEnhancementType.Null, 0);
+        Player.GetComponent<CharacterAction>().DeadSlashEnhancements[index] = new BattleArtEnhancement("", CharacterAttackType.DeadSlash, BattleArtEnhancementType.Null, 0);
+
     }
     public bool IsAbilityEquiped()
     {
-        return EquipedPassiveAbility.Type != CharacterPassiveAbilityType.Null;
+        return EquipedEnhancement.Type != BattleArtEnhancementType.Null;
     }
     public int GetAbilityLevel()
     {
-        return EquipedPassiveAbility.Level;
+        return EquipedEnhancement.Level;
     }
     public void SetState(SkillSlotState state)
     {

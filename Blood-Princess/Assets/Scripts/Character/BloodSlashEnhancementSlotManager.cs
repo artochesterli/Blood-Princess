@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class DeadSlashEnhancementSlotManager : MonoBehaviour, ISkillSlot
+public class BloodSlashEnhancementSlotManager : MonoBehaviour,ISkillSlot
 {
     public bool IsEnhancementSlot { get; set; }
-
     public SkillSlotState State { get; set; }
 
     public GameObject Player;
+
 
     public BattleArtEnhancement EquipedEnhancement;
 
@@ -17,11 +17,10 @@ public class DeadSlashEnhancementSlotManager : MonoBehaviour, ISkillSlot
     public Color UnselectedColor;
     public Color HoveredColor;
     public Color SelectedColor;
-
     // Start is called before the first frame update
     void Start()
     {
-        IsEnhancementSlot = transform;
+        IsEnhancementSlot = true;
         GetAbility();
         SetSlot();
     }
@@ -47,7 +46,7 @@ public class DeadSlashEnhancementSlotManager : MonoBehaviour, ISkillSlot
 
     private void GetAbility()
     {
-        EquipedEnhancement = Player.GetComponent<CharacterAction>().DeadSlashEnhancements[index];
+        EquipedEnhancement = Player.GetComponent<CharacterAction>().BloodSlashEnhancements[index];
     }
 
     public void SetAppearance()
@@ -69,21 +68,27 @@ public class DeadSlashEnhancementSlotManager : MonoBehaviour, ISkillSlot
     public void Equip(CharacterAbility Ability)
     {
         EquipedEnhancement = (BattleArtEnhancement)Ability;
-        EquipedEnhancement.EnhancementAttackType = CharacterAttackType.DeadSlash;
-        Player.GetComponent<CharacterAction>().DeadSlashEnhancements[index] = EquipedEnhancement;
+        EquipedEnhancement.EnhancementAttackType = CharacterAttackType.BloodSlash;
+
+        Player.GetComponent<CharacterAction>().BloodSlashEnhancements[index] = EquipedEnhancement;
+        EventManager.instance.Fire(new PlayerEquipEnhancement(EquipedEnhancement));
     }
     public void UpgradeAbility()
     {
         EquipedEnhancement.Level++;
+        EventManager.instance.Fire(new PlayerUpgradeEnhancement(EquipedEnhancement));
     }
     public void DowngradeAbility()
     {
         EquipedEnhancement.Level--;
+        EventManager.instance.Fire(new PlayerDowngradeEnhancement(EquipedEnhancement));
     }
     public void RemoveAbility()
     {
-        EquipedEnhancement = new BattleArtEnhancement("", CharacterAttackType.DeadSlash, BattleArtEnhancementType.Null, 0);
-        Player.GetComponent<CharacterAction>().DeadSlashEnhancements[index] = new BattleArtEnhancement("", CharacterAttackType.DeadSlash, BattleArtEnhancementType.Null, 0);
+        EventManager.instance.Fire(new PlayerUnequipEnhancement(EquipedEnhancement));
+        EquipedEnhancement = new BattleArtEnhancement("", CharacterAttackType.BloodSlash, BattleArtEnhancementType.Null, 0);
+        Player.GetComponent<CharacterAction>().BloodSlashEnhancements[index] = new BattleArtEnhancement("", CharacterAttackType.BloodSlash, BattleArtEnhancementType.Null, 0);
+
     }
     public bool IsAbilityEquiped()
     {
@@ -93,6 +98,7 @@ public class DeadSlashEnhancementSlotManager : MonoBehaviour, ISkillSlot
     {
         return EquipedEnhancement.Level;
     }
+
     public void SetState(SkillSlotState state)
     {
         State = state;

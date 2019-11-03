@@ -41,14 +41,21 @@ public class CharacterAbilityData : MonoBehaviour
     public int MaxBattleArtEnhancementNumber;
     public int MaxPassiveSkillNumber;
 
+
+
     public string CriticalEyeName;
-    public int CriticalEyeBonus;
-    public float CriticalEyeBattleArtBonusUnit;
-    public int CriticalEyeMaxBattleArtBonusNumber;
+    public int MaxCriticalEyeLevel;
+    public float CriticalEyeBonusUnit;
+    public int CriticalEyeMaxBonusNumberLv1;
+    public int CriticalEyeMaxBonusNumberLv2;
+
+
 
     public string HarmonyName;
-    public int HarmonyHealAmountLv1;
-    public int HarmonyHealAmountLv2;
-    public int HarmonyHealNoEnergyExtraAmount;
+    public int MaxHarmonyLevel;
+    public float HarmonyHealLv1;
+    public float HarmonyHealLv2;
+    public int HarmonyEnergyRecovery;
+
 
 }

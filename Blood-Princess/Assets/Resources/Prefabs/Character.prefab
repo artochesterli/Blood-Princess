@@ -282,7 +282,7 @@ GameObject:
   - component: {fileID: 7652296207025352242}
   - component: {fileID: 4066351285130628870}
   m_Layer: 0
-  m_Name: CriticalEyeIcon
+  m_Name: CriticalEyeMark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2130,8 +2130,8 @@ MonoBehaviour:
   FirstSkillInfo: {fileID: 5357458694240549373}
   SecondSkillInfo: {fileID: 4621477503520236898}
   PassiveSkillInfo: {fileID: 3307014302454286480}
-  CriticalEyeIcon: {fileID: 1032249660650897308}
   RollCoolDownTimeCount: 0
+  HitEnemies: []
   BloodSlashEnhancements: []
   DeadSlashEnhancements: []
   EquipedPassiveAbilities: []
@@ -2209,6 +2209,7 @@ MonoBehaviour:
   Canvas: {fileID: 4954734967981678427}
   HPFill: {fileID: 3710162351775908928}
   EnergyMarks: {fileID: 7718897753089196614}
+  CriticalEyeMark: {fileID: 1032249660650897308}
   EnergyOrbEmptySprite: {fileID: 21300000, guid: e0f824bdd55db9a4f92f9ab2fee773e7,
     type: 3}
   EnergyOrbFilledSprite: {fileID: 21300000, guid: e6611fecc07cc024e9984503bff1c8f2,
@@ -2274,13 +2275,15 @@ MonoBehaviour:
   MaxBattleArtEnhancementNumber: 2
   MaxPassiveSkillNumber: 2
   CriticalEyeName: Criticle Eye
-  CriticalEyeBonus: 2
-  CriticalEyeBattleArtBonusUnit: 0.1
-  CriticalEyeMaxBattleArtBonusNumber: 5
+  MaxCriticalEyeLevel: 3
+  CriticalEyeBonusUnit: 0.1
+  CriticalEyeMaxBonusNumberLv1: 3
+  CriticalEyeMaxBonusNumberLv2: 5
   HarmonyName: Harmony
-  HarmonyHealAmountLv1: 1
-  HarmonyHealAmountLv2: 2
-  HarmonyHealNoEnergyExtraAmount: 2
+  MaxHarmonyLevel: 3
+  HarmonyHealLv1: 0.1
+  HarmonyHealLv2: 0.2
+  HarmonyEnergyRecovery: 1
 --- !u!114 &8072353811691231456
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3040,7 +3043,7 @@ MonoBehaviour:
     m_MinSize: 3
     m_MaxSize: 60
     m_Alignment: 4
-    m_AlignByGeometry: 0
+    m_AlignByGeometry: 1
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0

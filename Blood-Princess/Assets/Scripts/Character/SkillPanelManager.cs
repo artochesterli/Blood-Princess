@@ -315,7 +315,7 @@ public class SkillPanelManager : MonoBehaviour
                     break;
                 case SkillPanelState.SelectEnhancement:
 
-                    if (SkillPoint >= EquipCost)
+                    if (SkillPoint >= EquipCost && !SlotList[SelectedSlot].GetComponent<ISkillSlot>().IsAbilityEquiped() && !HaveSameEnhancement(EnhancementSelectionList[SelectedEnhancement].GetComponent<EnhancementSelectionInfo>().Enhancement.Type))
                     {
                         SkillPoint -= EquipCost;
                         SetSkillPoint();
@@ -334,7 +334,7 @@ public class SkillPanelManager : MonoBehaviour
                     break;
                 case SkillPanelState.SelectPassiveSkill:
 
-                    if (SkillPoint >= EquipCost)
+                    if (SkillPoint >= EquipCost && !SlotList[SelectedSlot].GetComponent<ISkillSlot>().IsAbilityEquiped() && !HaveSamePassive(PassiveSkillSelectionList[SelectedPassiveSkill].GetComponent<PassiveSkillSelectionInfo>().PassiveAbility.Type))
                     {
                         SkillPoint -= EquipCost;
                         SetSkillPoint();
@@ -352,6 +352,46 @@ public class SkillPanelManager : MonoBehaviour
                     break;
             }
         }
+    }
+
+    private bool HaveSameEnhancement(BattleArtEnhancementType Type)
+    {
+        for(int i = 0; i < SlotList.Count; i++)
+        {
+            if (SlotList[i].GetComponent<ISkillSlot>().IsEnhancementSlot)
+            {
+                if (SlotList[i].GetComponent<BloodSlashEnhancementSlotManager>())
+                {
+                    if (SlotList[i].GetComponent<BloodSlashEnhancementSlotManager>().EquipedEnhancement.Type == Type)
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (SlotList[i].GetComponent<DeadSlashEnhancementSlotManager>().EquipedEnhancement.Type == Type)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private bool HaveSamePassive(CharacterPassiveAbilityType Type)
+    {
+        for (int i = 0; i < SlotList.Count; i++)
+        {
+            if (!SlotList[i].GetComponent<ISkillSlot>().IsEnhancementSlot)
+            {
+                if(SlotList[i].GetComponent<CharacterPassiveAbility>().Type == Type)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

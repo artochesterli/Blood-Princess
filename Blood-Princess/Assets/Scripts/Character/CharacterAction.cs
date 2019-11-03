@@ -15,9 +15,13 @@ public class CharacterAttackInfo : AttackInfo
     public int Damage;
     public int BaseDamage;
     public int ShieldBreak;
+    public int BaseShieldBreak;
     public int Cost;
+    public int BaseCost;
     public Vector2 HitBoxOffset;
+    public Vector2 BaseHitBoxOffset;
     public Vector2 HitBoxSize;
+    public Vector2 BaseHitBoxSize;
 
     public CharacterAttackInfo(GameObject source, CharacterAttackType type, bool right, int damage, int basedamage,int shieldbreak,int cost, Vector2 offset, Vector2 size)
     {
@@ -140,9 +144,10 @@ public class CharacterAction : MonoBehaviour
     public GameObject SecondSkillInfo;
     public GameObject PassiveSkillInfo;
 
-    public GameObject CriticalEyeIcon;
-
     public float RollCoolDownTimeCount;
+
+    public CharacterAttackInfo CurrentAttack;
+    public List<GameObject> HitEnemies;
 
     public List<BattleArtEnhancement> BloodSlashEnhancements;
     public List<BattleArtEnhancement> DeadSlashEnhancements;
@@ -419,31 +424,13 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         RaycastHit2D[] AllHits = Physics2D.BoxCastAll(Entity.transform.position + (Vector3)Offset, Attack.HitBoxSize, 0, Entity.transform.right, 0, Data.EnemyLayer);
         if (AllHits.Length > 0)
         {
-
             for (int i = 0; i < AllHits.Length; i++)
             {
                 GameObject Enemy = AllHits[i].collider.gameObject;
 
                 if (!EnemyHit.Contains(Enemy))
                 {
-                    var AbilityData = Entity.GetComponent<CharacterAbilityData>();
-
-                    switch (Attack.Type)
-                    {
-                        case CharacterAttackType.NormalSlash:
-
-                            Status.CurrentEnergy ++;
-                            if (Status.CurrentEnergy > Data.MaxEnergy)
-                            {
-                                Status.CurrentEnergy = Data.MaxEnergy;
-                            }
-                            break;
-                        case CharacterAttackType.BloodSlash:
-
-                            break;
-                        case CharacterAttackType.DeadSlash:
-                            break;
-                    }
+                    EventManager.instance.Fire(new PlayerHitEnemy(Attack, Enemy));
 
                     Enemy.GetComponent<IHittable>().OnHit(Attack);
                     EnemyHit.Add(Enemy);
@@ -480,111 +467,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         return new BattleArtEnhancement("", CharacterAttackType.Null, BattleArtEnhancementType.Null,0);
     }
 
-    protected void AddCriticalEye(BattleArtEnhancement Enhancement, CharacterAttackInfo Attack)
-    {
-        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
 
-        if (!Entity.GetComponent<CriticalEyeManager>() && Enhancement.EnhancementAttackType == Attack.Type)
-        {
-            Entity.AddComponent<CriticalEyeManager>();
-            Entity.GetComponent<CriticalEyeManager>().Bonus = AbilityData.CriticalEyeBonus;
-
-            Entity.GetComponent<CriticalEyeManager>().Type = Attack.Type;
-            Entity.GetComponent<CriticalEyeManager>().Icon = Context.CriticalEyeIcon;
-        }
-    }
-
-    protected void CriticalEyeEnhanceBattleArt(BattleArtEnhancement Enhancement, int HitNumber, CharacterAttackInfo Attack)
-    {
-        if (!Entity.GetComponent<CriticalEyeManager>() || Attack.Type != Entity.GetComponent<CriticalEyeManager>().Type)
-        {
-            return;
-        }
-
-        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
-
-        if (Enhancement.Level == 3)
-        {
-            Entity.GetComponent<CriticalEyeManager>().BattleArtBonusNumber += HitNumber;
-            if (Entity.GetComponent<CriticalEyeManager>().BattleArtBonusNumber > AbilityData.CriticalEyeMaxBattleArtBonusNumber)
-            {
-                Entity.GetComponent<CriticalEyeManager>().BattleArtBonusNumber = AbilityData.CriticalEyeMaxBattleArtBonusNumber;
-            }
-        }
-    }
-
-    protected void CriticalEyeBonusToDamage(BattleArtEnhancement Enhancement, CharacterAttackInfo Attack)
-    {
-        if (!Entity.GetComponent<CriticalEyeManager>())
-        {
-            return;
-        }
-
-        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
-
-        int Bonus = 0;
-
-        if (Entity.GetComponent<CriticalEyeManager>())
-        {
-            Bonus += Entity.GetComponent<CriticalEyeManager>().Bonus;
-        }
-
-        if(Attack.Type != CharacterAttackType.NormalSlash && Attack.Type != Entity.GetComponent<CriticalEyeManager>().Type)
-        {
-            Bonus += Mathf.FloorToInt(Attack.BaseDamage * AbilityData.CriticalEyeBattleArtBonusUnit * Entity.GetComponent<CriticalEyeManager>().BattleArtBonusNumber);
-        }
-
-        Attack.Damage += Bonus;
-    }
-
-    protected void HarmonyHeal(BattleArtEnhancement Enhancement,int HitNumber, int Cost)
-    {
-        if(HitNumber == 0)
-        {
-            return;
-        }
-
-        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
-
-        int HealNum = 0;
-        if(Enhancement.Level == 1)
-        {
-            HealNum = AbilityData.HarmonyHealAmountLv1;
-        }
-        else
-        {
-            HealNum = AbilityData.HarmonyHealAmountLv2;
-        }
-
-        HealNum *= HitNumber;
-
-        if (Enhancement.Level == 3)
-        {
-            HealNum *= Cost;
-        }
-
-        Heal(HealNum);
-    }
-
-    protected void Heal(int amount)
-    {
-        var Data = Entity.GetComponent<CharacterData>();
-        var Status = Entity.GetComponent<StatusManager_Character>();
-        if (amount > Data.MaxHP - Status.CurrentHP)
-        {
-            amount = Data.MaxHP - Status.CurrentHP;
-        }
-
-        if (amount > 0)
-        {
-            GameObject DamageText = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/DamageText"), Entity.transform.position, Quaternion.Euler(0, 0, 0));
-            DamageText.GetComponent<DamageText>().TravelVector = Vector2.up;
-            DamageText.GetComponent<Text>().color = Color.green;
-            DamageText.transform.parent = Status.Canvas.transform;
-            DamageText.GetComponent<Text>().text = amount.ToString();
-            Status.CurrentHP += amount;
-        }
-    }
 
     protected bool CharacterClimbPlatform()
     {
@@ -1498,12 +1381,21 @@ public class SlashAnticipation : CharacterActionState
     private float StateTime;
     private float TimeCount;
 
+    private int Damage;
+    private int EnergyCost;
+    private Vector2 Offset;
+    private Vector2 Size;
+    private float StepForwardSpeed;
+    private GameObject Image;
+
     public override void OnEnter()
     {
         base.OnEnter();
         SetUp();
         SetAppearance();
         SetSpeed();
+
+        EventManager.instance.Fire(new PlayerStartAttackAnticipation(Context.CurrentAttack));
     }
 
     public override void Update()
@@ -1517,6 +1409,11 @@ public class SlashAnticipation : CharacterActionState
         CheckTime();
     }
 
+    public override void OnExit()
+    {
+        base.OnExit();
+        EventManager.instance.Fire(new PlayerEndAttackAnticipation(Context.CurrentAttack));
+    }
 
     private void SetUp()
     {
@@ -1528,14 +1425,23 @@ public class SlashAnticipation : CharacterActionState
         {
             case CharacterAttackType.NormalSlash:
                 StateTime = AbilityData.NormalSlashAnticipationTime;
+
+                SetAttribute( AbilityData.NormalSlashDamage, 0, AbilityData.NormalSlashOffset, AbilityData.NormalSlashHitBoxSize, AbilityData.NormalSlashImage, AbilityData.NormalSlashStepForwardSpeed);
+
                 break;
             case CharacterAttackType.BloodSlash:
                 StateTime = AbilityData.BloodSlashAnticipationTime;
+                SetAttribute( AbilityData.BloodSlashDamage,AbilityData.BloodSlashEnergyCost, AbilityData.BloodSlashOffset, AbilityData.BloodSlashHitBoxSize,AbilityData.BloodSlashImage, AbilityData.BloodSlashStepForwardSpeed);
                 break;
             case CharacterAttackType.DeadSlash:
                 StateTime = AbilityData.DeadSlashAnticipationTime;
+                SetAttribute( AbilityData.DeadSlashDamage,AbilityData.DeadSlashEnergyCost, AbilityData.DeadSlashOffset, AbilityData.DeadSlashHitBoxSize,AbilityData.DeadSlashImage, 0);
                 break;
         }
+
+        Context.CurrentAttack = new CharacterAttackInfo(Entity, Context.CurrentAttackType, Entity.transform.right.x > 0, Damage, Damage, EnergyCost, EnergyCost, Offset, Size);
+
+        Context.HitEnemies = new List<GameObject>();
 
     }
 
@@ -1583,25 +1489,26 @@ public class SlashAnticipation : CharacterActionState
         }
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
     }
+
+    private void SetAttribute(int damage, int cost, Vector2 offset, Vector2 size, GameObject image, float stepspeed)
+    {
+        Damage = damage;
+        EnergyCost = cost;
+        Offset = offset;
+        Size = size;
+        Image = image;
+        StepForwardSpeed = stepspeed;
+    }
 }
 
 public class SlashStrike : CharacterActionState
 {
     private float StateTime;
-    private int Damage;
-    private int EnergyCost;
-    private Vector2 Offset;
-    private Vector2 Size;
     private float StepForwardSpeed;
     private GameObject Image;
 
-    private BattleArtEnhancement CriticalEyeEnhancement;
-    private BattleArtEnhancement HarmonyEnhancement;
-    private CharacterAttackInfo AttackInfo;
-    private List<GameObject> EnemyHit;
-    private float TimeCount;
 
-    private bool HitAnything;
+    private float TimeCount;
 
     public override void OnEnter()
     {
@@ -1609,6 +1516,7 @@ public class SlashStrike : CharacterActionState
         SetUp();
         SetAppearance();
         SetSpeed();
+        EventManager.instance.Fire(new PlayerStartAttackStrike(Context.CurrentAttack));
     }
 
     public override void Update()
@@ -1621,50 +1529,10 @@ public class SlashStrike : CharacterActionState
     public override void OnExit()
     {
         base.OnExit();
-        var Data = Entity.GetComponent<CharacterData>();
-        var Status = Entity.GetComponent<StatusManager_Character>();
-        Status.CurrentEnergy -= EnergyCost;
         GameObject.Destroy(SlashImage);
-
-        CheckHarmonyHeal();
-
-        CriticalEyeEnhanceBattleArt(CriticalEyeEnhancement, EnemyHit.Count, AttackInfo);
-        CheckRemoveCriticalEye();
+        EventManager.instance.Fire(new PlayerEndAttackStrike(Context.CurrentAttack, Context.HitEnemies));
     }
 
-    private void CheckHarmonyHeal()
-    {
-        if (AttackInfo.Type != CharacterAttackType.NormalSlash && HarmonyEnhancement.Type != BattleArtEnhancementType.Null && EnemyHit.Count > 0)
-        {
-            HarmonyHeal(HarmonyEnhancement, EnemyHit.Count, AttackInfo.Cost);
-        }
-    }
-
-    private void CheckRemoveCriticalEye()
-    {
-        if (!Entity.GetComponent<CriticalEyeManager>())
-        {
-            return;
-        }
-
-        var CriticalEye = Entity.GetComponent<CriticalEyeManager>();
-
-        bool UseEndAttack = false;
-
-        if(CriticalEyeEnhancement.Level == 1)
-        {
-            UseEndAttack = AttackInfo.Type != CriticalEye.Type;
-        }
-        else
-        {
-            UseEndAttack = AttackInfo.Type != CharacterAttackType.NormalSlash && AttackInfo.Type != CriticalEye.Type;
-        }
-
-        if (UseEndAttack)
-        {
-            CriticalEye.DestroySelf();
-        }
-    }
 
 
     private void SetUp()
@@ -1674,44 +1542,24 @@ public class SlashStrike : CharacterActionState
         switch (Context.CurrentAttackType)
         {
             case CharacterAttackType.NormalSlash:
-                SetAttribute(AbilityData.NormalSlashStrikeTime, AbilityData.NormalSlashDamage,
-                    0, AbilityData.NormalSlashOffset, AbilityData.NormalSlashHitBoxSize,
-                    AbilityData.NormalSlashImage, AbilityData.NormalSlashStepForwardSpeed);
-
+                StateTime = AbilityData.NormalSlashStrikeTime;
+                Image = AbilityData.NormalSlashImage;
+                StepForwardSpeed = AbilityData.NormalSlashStepForwardSpeed;
                 break;
             case CharacterAttackType.BloodSlash:
-                SetAttribute(AbilityData.BloodSlashStrikeTime, AbilityData.BloodSlashDamage,
-                    AbilityData.BloodSlashEnergyCost, AbilityData.BloodSlashOffset, AbilityData.BloodSlashHitBoxSize,
-                    AbilityData.BloodSlashImage, AbilityData.BloodSlashStepForwardSpeed);
+
+                StateTime = AbilityData.BloodSlashStrikeTime;
+                Image = AbilityData.BloodSlashImage;
+                StepForwardSpeed = AbilityData.BloodSlashStepForwardSpeed;
                 break;
             case CharacterAttackType.DeadSlash:
-                SetAttribute(AbilityData.DeadSlashStrikeTime, AbilityData.DeadSlashDamage, 
-                    AbilityData.DeadSlashEnergyCost, AbilityData.DeadSlashOffset, AbilityData.DeadSlashHitBoxSize,
-                    AbilityData.DeadSlashImage, 0);
+                StateTime = AbilityData.DeadSlashStrikeTime;
+                Image = AbilityData.DeadSlashImage;
+                StepForwardSpeed = 0;
                 break;
         }
-        EnemyHit = new List<GameObject>();
-        AttackInfo = new CharacterAttackInfo(Entity, Context.CurrentAttackType, Entity.transform.right.x > 0, Damage, Damage, EnergyCost, EnergyCost, Offset, Size);
-        HitAnything = false;
-        GenerateSlashImage(Image, AttackInfo);
 
-
-        CriticalEyeEnhancement = EnhancementEquiped(BattleArtEnhancementType.CriticleEye);
-        HarmonyEnhancement = EnhancementEquiped(BattleArtEnhancementType.Harmony);
-
-
-        CriticalEyeBonusToDamage(CriticalEyeEnhancement, AttackInfo);
-    }
-
-    private void SetAttribute(float time, int damage, int cost, Vector2 offset, Vector2 size, GameObject image, float stepspeed)
-    {
-        StateTime = time;
-        Damage = damage;
-        EnergyCost = cost;
-        Offset = offset;
-        Size = size;
-        Image = image;
-        StepForwardSpeed = stepspeed;
+        GenerateSlashImage(Image, Context.CurrentAttack);
     }
 
     private void SetAppearance()
@@ -1799,13 +1647,8 @@ public class SlashStrike : CharacterActionState
 
     private void CheckHitEnemy()
     {
-        if (HitEnemy(AttackInfo, EnemyHit))
+        if (HitEnemy(Context.CurrentAttack, Context.HitEnemies))
         {
-            if (!HitAnything && CriticalEyeEnhancement.Type !=BattleArtEnhancementType.Null)
-            {
-                HitAnything = true;
-                AddCriticalEye(CriticalEyeEnhancement, AttackInfo);
-            }
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
         }
     }
@@ -1823,6 +1666,7 @@ public class SlashRecovery : CharacterActionState
         SetUp();
         SetAppearance();
         SetSpeed();
+        EventManager.instance.Fire(new PlayerStartAttackRecovery(Context.CurrentAttack,Context.HitEnemies));
     }
 
     public override void Update()
@@ -1840,6 +1684,7 @@ public class SlashRecovery : CharacterActionState
     {
         base.OnExit();
         Context.InRecovery = false;
+        EventManager.instance.Fire(new PlayerEndAttackRecovery(Context.CurrentAttack, Context.HitEnemies));
     }
 
     private void CheckTime()
