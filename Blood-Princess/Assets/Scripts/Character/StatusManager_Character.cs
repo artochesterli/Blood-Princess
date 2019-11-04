@@ -44,6 +44,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private CharacterPassiveAbility AccurateBladeAbility;
 
+    private CharacterPassiveAbility CursedBladeAbility;
 
 
     private GameObject DamageText;
@@ -864,7 +865,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         Vector2 Offset = SpeedManager.GetTruePos() - (Vector2)transform.position;
 
-        CharacterAttackInfo DancerAttack = new CharacterAttackInfo(gameObject, CharacterAttackType.Dancer, gameObject.transform.right.x > 0, AbilityData.DancerDamage, AbilityData.DancerDamage, DancerShieldBreak, DancerShieldBreak , 0, 0, Offset, Offset, AbilityData.DancerHitBoxSize, AbilityData.DancerHitBoxSize);
+        CharacterAttackInfo DancerAttack = new CharacterAttackInfo(gameObject, CharacterAttackType.Dancer, gameObject.transform.right.x > 0, AbilityData.DancerDamage, AbilityData.DancerDamage, AbilityData.DancerDamage, DancerShieldBreak, DancerShieldBreak , 0, 0, Offset, Offset, AbilityData.DancerHitBoxSize, AbilityData.DancerHitBoxSize);
 
 
         RaycastHit2D[] Allhits = Physics2D.BoxCastAll(SpeedManager.GetTruePos(), AbilityData.DancerHitBoxSize, 0, Vector2.zero, 0, Data.EnemyLayer);
@@ -984,6 +985,52 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var AbilityData = GetComponent<CharacterAbilityData>();
 
         Heal(Mathf.RoundToInt(Attack.Damage * HitNumber * AbilityData.AccurateBladeHeal));
+    }
+
+    //Cursed Blade Functions
+
+    private void CursedBladeIncreaseRecievedDamage(EnemyAttackInfo EnemyAttack)
+    {
+        if(CursedBladeAbility.Type == CharacterPassiveAbilityType.Null)
+        {
+            return;
+        }
+
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
+        EnemyAttack.Damage += Mathf.RoundToInt(EnemyAttack.BaseDamage * AbilityData.CursedBladeBattleArtDamageDecrease);
+    }
+
+    private void CursedBladeDecreaseBattleArtBaseDamage(CharacterAttackInfo Attack)
+    {
+        if (CursedBladeAbility.Type == CharacterPassiveAbilityType.Null || Attack.Type == CharacterAttackType.NormalSlash)
+        {
+            return;
+        }
+
+        var Data = GetComponent<CharacterData>();
+        if(CurrentEnergy == Data.MaxEnergy && CursedBladeAbility.Level >= 2)
+        {
+            return;
+        }
+
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
+        Attack.BaseDamage -= Mathf.RoundToInt(AbilityData.CursedBladeBattleArtDamageDecrease * Attack.OriginalDamage);
+
+    }
+
+    private void CursedBladeIncreaseNormalSlashBaseDamage(CharacterAttackInfo Attack)
+    {
+        var Data = GetComponent<CharacterData>();
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
+        if (CursedBladeAbility.Type == CharacterPassiveAbilityType.Null || Attack.Type!=CharacterAttackType.NormalSlash || CursedBladeAbility.Level < 3 || CurrentEnergy < Data.MaxEnergy)
+        {
+            return;
+        }
+
+        Attack.BaseDamage += Mathf.RoundToInt(AbilityData.CursedBladeNormalSlashDamageIncrease * Attack.OriginalDamage);
     }
 
 }

@@ -14,6 +14,7 @@ public class CharacterAttackInfo : AttackInfo
     public bool Right;
     public int Damage;
     public int BaseDamage;
+    public int OriginalDamage;
     public int ShieldBreak;
     public int BaseShieldBreak;
     public int Cost;
@@ -31,7 +32,7 @@ public class CharacterAttackInfo : AttackInfo
     public Vector2 HitBoxSize;
     public Vector2 BaseHitBoxSize;
 
-    public CharacterAttackInfo(GameObject source, CharacterAttackType type, bool right, int damage, int basedamage,int shieldbreak, int baseshieldbreak, int cost, int basecost, 
+    public CharacterAttackInfo(GameObject source, CharacterAttackType type, bool right, int damage, int basedamage, int originaldamage, int shieldbreak, int baseshieldbreak, int cost, int basecost, 
         Vector2 offset, Vector2 baseoffset, Vector2 size, Vector2 basesize, float anticipation = 0, float baseanticipation = 0, float strike = 0, float basestrike = 0, float recovery = 0, float baserecovery = 0)
     {
         Source = source;
@@ -39,6 +40,7 @@ public class CharacterAttackInfo : AttackInfo
         Right = right;
         Damage = damage;
         BaseDamage = basedamage;
+        OriginalDamage = originaldamage;
         ShieldBreak = shieldbreak;
         BaseShieldBreak = baseshieldbreak;
         Cost = cost;
@@ -64,6 +66,7 @@ public class CharacterAttackInfo : AttackInfo
         Right = Attack.Right;
         Damage = Attack.Damage;
         BaseDamage = Attack.BaseDamage;
+        OriginalDamage = Attack.OriginalDamage;
         ShieldBreak = Attack.ShieldBreak;
         BaseShieldBreak = Attack.BaseShieldBreak;
         Cost = Attack.Cost;
@@ -92,13 +95,15 @@ public class EnemyAttackInfo : AttackInfo
 {
     public bool Right;
     public int Damage;
+    public int BaseDamage;
     public Vector2 HitBoxOffset;
     public Vector2 HitBoxSize;
-    public EnemyAttackInfo(GameObject source, bool right,int damage,Vector2 offset,Vector2 size)
+    public EnemyAttackInfo(GameObject source, bool right,int damage, int basedamage, Vector2 offset,Vector2 size)
     {
         Source = source;
         Right = right;
         Damage = damage;
+        BaseDamage = basedamage;
         HitBoxOffset = offset;
         HitBoxSize = size;
     }
@@ -1501,7 +1506,7 @@ public class SlashAnticipation : CharacterActionState
                 break;
         }
 
-        Context.CurrentAttack = new CharacterAttackInfo(Entity, Context.CurrentAttackType, Entity.transform.right.x > 0, Damage, Damage, ShieldBreak,ShieldBreak, EnergyCost, EnergyCost, Offset,Offset, Size, Size, Anticipation, Anticipation, Strike, Strike, Recovery, Recovery);
+        Context.CurrentAttack = new CharacterAttackInfo(Entity, Context.CurrentAttackType, Entity.transform.right.x > 0, Damage, Damage, Damage, ShieldBreak,ShieldBreak, EnergyCost, EnergyCost, Offset,Offset, Size, Size, Anticipation, Anticipation, Strike, Strike, Recovery, Recovery);
 
         Context.HitEnemies = new List<GameObject>();
 

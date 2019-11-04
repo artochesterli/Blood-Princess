@@ -78,5 +78,10 @@ public class CharacterAbilityData : MonoBehaviour
     public int AccurateBladeMaxBonusNumber;
     public float AccurateBladeHeal;
 
+    public string CursedBladeName;
+    public int MaxCursedBladeLevel;
+    public float CursedBladeExtraDamageRecieved;
+    public float CursedBladeBattleArtDamageDecrease;
+    public float CursedBladeNormalSlashDamageIncrease;
 
 }
