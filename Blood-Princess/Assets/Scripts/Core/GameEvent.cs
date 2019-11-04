@@ -64,17 +64,76 @@ public class PlayerEndAttackStrike : GameEvent
     }
 }
 
+public class PlayerStartRollAnticipation : GameEvent
+{
+
+}
+
+public class PlayerEndRollAnticipation : GameEvent
+{
+
+}
+
+public class PlayerStartRoll : GameEvent
+{
+
+}
+
+public class PlayerEndRoll : GameEvent
+{
+
+}
+
+
+
 public class PlayerHitEnemy : GameEvent
+{
+    public CharacterAttackInfo OriginalAttack;
+    public CharacterAttackInfo UpdatedAttack;
+    public GameObject Enemy;
+
+    public PlayerHitEnemy(CharacterAttackInfo originalattack, CharacterAttackInfo updatedattack, GameObject enemy)
+    {
+        OriginalAttack = originalattack;
+        UpdatedAttack = updatedattack;
+        Enemy = enemy;
+    }
+}
+
+public class PlayerBreakEnemyShield : GameEvent
 {
     public CharacterAttackInfo Attack;
     public GameObject Enemy;
 
-    public PlayerHitEnemy(CharacterAttackInfo attack, GameObject enemy)
+    public PlayerBreakEnemyShield(CharacterAttackInfo attack, GameObject enemy)
     {
         Attack = attack;
         Enemy = enemy;
     }
 }
+
+public class PlayerKillEnemy : GameEvent
+{
+    public CharacterAttackInfo Attack;
+    public GameObject Enemy;
+
+    public PlayerKillEnemy(CharacterAttackInfo attack, GameObject enemy)
+    {
+        Attack = attack;
+        Enemy = enemy;
+    }
+}
+
+public class PlayerGetHit : GameEvent
+{
+    public EnemyAttackInfo EnemyAttack;
+    public PlayerGetHit(EnemyAttackInfo attack)
+    {
+        EnemyAttack = attack;
+    }
+}
+
+
 
 public class PlayerEquipEnhancement : GameEvent
 {

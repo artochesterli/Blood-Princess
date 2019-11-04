@@ -18,12 +18,21 @@ public class CharacterAttackInfo : AttackInfo
     public int BaseShieldBreak;
     public int Cost;
     public int BaseCost;
+
+    public float AnticipationTime;
+    public float BaseAnticipationTime;
+    public float StrikeTime;
+    public float BaseStrikeTime;
+    public float RecoveryTime;
+    public float BaseRecoveryTime;
+
     public Vector2 HitBoxOffset;
     public Vector2 BaseHitBoxOffset;
     public Vector2 HitBoxSize;
     public Vector2 BaseHitBoxSize;
 
-    public CharacterAttackInfo(GameObject source, CharacterAttackType type, bool right, int damage, int basedamage,int shieldbreak,int cost, Vector2 offset, Vector2 size)
+    public CharacterAttackInfo(GameObject source, CharacterAttackType type, bool right, int damage, int basedamage,int shieldbreak, int baseshieldbreak, int cost, int basecost, 
+        Vector2 offset, Vector2 baseoffset, Vector2 size, Vector2 basesize, float anticipation = 0, float baseanticipation = 0, float strike = 0, float basestrike = 0, float recovery = 0, float baserecovery = 0)
     {
         Source = source;
         Type = type;
@@ -31,9 +40,51 @@ public class CharacterAttackInfo : AttackInfo
         Damage = damage;
         BaseDamage = basedamage;
         ShieldBreak = shieldbreak;
+        BaseShieldBreak = baseshieldbreak;
         Cost = cost;
+        BaseCost = basecost;
+
+        AnticipationTime = anticipation;
+        BaseAnticipationTime = baseanticipation;
+        StrikeTime = strike;
+        BaseStrikeTime = basestrike;
+        RecoveryTime = recovery;
+        BaseRecoveryTime = baserecovery;
+
         HitBoxOffset = offset;
+        BaseHitBoxOffset = baseoffset;
         HitBoxSize = size;
+        BaseHitBoxSize = basesize;
+    }
+
+    public CharacterAttackInfo(CharacterAttackInfo Attack)
+    {
+        Source = Attack.Source;
+        Type = Attack.Type;
+        Right = Attack.Right;
+        Damage = Attack.Damage;
+        BaseDamage = Attack.BaseDamage;
+        ShieldBreak = Attack.ShieldBreak;
+        BaseShieldBreak = Attack.BaseShieldBreak;
+        Cost = Attack.Cost;
+        BaseCost = Attack.BaseCost;
+
+        AnticipationTime = Attack.AnticipationTime;
+        BaseAnticipationTime = Attack.BaseAnticipationTime;
+        StrikeTime = Attack.StrikeTime;
+        BaseStrikeTime = Attack.BaseStrikeTime;
+        RecoveryTime = Attack.RecoveryTime;
+        BaseRecoveryTime = Attack.BaseRecoveryTime;
+
+        HitBoxOffset = Attack.HitBoxOffset;
+        BaseHitBoxOffset = Attack.BaseHitBoxOffset;
+        HitBoxSize = Attack.HitBoxSize;
+        BaseHitBoxSize =  Attack.BaseHitBoxSize;
+    }
+
+    public CharacterAttackInfo()
+    {
+        Type = CharacterAttackType.Null;
     }
 }
 
@@ -90,8 +141,10 @@ public class CharacterPassiveAbility : CharacterAbility
 public enum CharacterPassiveAbilityType
 {
     Null,
-    SpiritBlade,
-    Vines
+    Dancer,
+    Executioner,
+    AccurateBlade,
+    CursedBlade
 }
 
 public enum BattleArtEnhancementType
@@ -100,8 +153,7 @@ public enum BattleArtEnhancementType
     CriticleEye,
     Harmony,
     ShieldBreaker,
-    SpiritSlash,
-    Laceration
+    SpiritSlash
 }
 
 public enum CharacterAttackType
@@ -110,6 +162,7 @@ public enum CharacterAttackType
     NormalSlash,
     BloodSlash,
     DeadSlash,
+    Dancer
 }
 
 public enum InputType
@@ -162,6 +215,8 @@ public class CharacterAction : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        CurrentAttack = new CharacterAttackInfo();
+
         SetUpAbility();
         SetCanvasInfo();
 
@@ -430,9 +485,11 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
 
                 if (!EnemyHit.Contains(Enemy))
                 {
-                    EventManager.instance.Fire(new PlayerHitEnemy(Attack, Enemy));
+                    CharacterAttackInfo UpdatedAttack = new CharacterAttackInfo(Attack);
 
-                    Enemy.GetComponent<IHittable>().OnHit(Attack);
+                    EventManager.instance.Fire(new PlayerHitEnemy(Attack, UpdatedAttack, Enemy));
+
+                    Enemy.GetComponent<IHittable>().OnHit(UpdatedAttack);
                     EnemyHit.Add(Enemy);
                 }
             }
@@ -1378,10 +1435,14 @@ public class AirMove : CharacterActionState
 
 public class SlashAnticipation : CharacterActionState
 {
-    private float StateTime;
     private float TimeCount;
 
+    private float Anticipation;
+    private float Strike;
+    private float Recovery;
+
     private int Damage;
+    private int ShieldBreak;
     private int EnergyCost;
     private Vector2 Offset;
     private Vector2 Size;
@@ -1413,6 +1474,8 @@ public class SlashAnticipation : CharacterActionState
     {
         base.OnExit();
         EventManager.instance.Fire(new PlayerEndAttackAnticipation(Context.CurrentAttack));
+
+
     }
 
     private void SetUp()
@@ -1424,22 +1487,21 @@ public class SlashAnticipation : CharacterActionState
         switch (Context.CurrentAttackType)
         {
             case CharacterAttackType.NormalSlash:
-                StateTime = AbilityData.NormalSlashAnticipationTime;
 
-                SetAttribute( AbilityData.NormalSlashDamage, 0, AbilityData.NormalSlashOffset, AbilityData.NormalSlashHitBoxSize, AbilityData.NormalSlashImage, AbilityData.NormalSlashStepForwardSpeed);
+                SetAttribute(AbilityData.NormalSlashAnticipationTime, AbilityData.NormalSlashStrikeTime, AbilityData.NormalSlashRecoveryTime,  AbilityData.NormalSlashDamage,0, 0, AbilityData.NormalSlashOffset, AbilityData.NormalSlashHitBoxSize, AbilityData.NormalSlashImage, AbilityData.NormalSlashStepForwardSpeed);
 
                 break;
             case CharacterAttackType.BloodSlash:
-                StateTime = AbilityData.BloodSlashAnticipationTime;
-                SetAttribute( AbilityData.BloodSlashDamage,AbilityData.BloodSlashEnergyCost, AbilityData.BloodSlashOffset, AbilityData.BloodSlashHitBoxSize,AbilityData.BloodSlashImage, AbilityData.BloodSlashStepForwardSpeed);
+
+                SetAttribute(AbilityData.BloodSlashAnticipationTime, AbilityData.BloodSlashStrikeTime, AbilityData.BloodSlashRecoveryTime,  AbilityData.BloodSlashDamage, AbilityData.BloodSlashShieldBreak, AbilityData.BloodSlashEnergyCost, AbilityData.BloodSlashOffset, AbilityData.BloodSlashHitBoxSize,AbilityData.BloodSlashImage, AbilityData.BloodSlashStepForwardSpeed);
                 break;
             case CharacterAttackType.DeadSlash:
-                StateTime = AbilityData.DeadSlashAnticipationTime;
-                SetAttribute( AbilityData.DeadSlashDamage,AbilityData.DeadSlashEnergyCost, AbilityData.DeadSlashOffset, AbilityData.DeadSlashHitBoxSize,AbilityData.DeadSlashImage, 0);
+
+                SetAttribute(AbilityData.DeadSlashAnticipationTime, AbilityData.DeadSlashStrikeTime, AbilityData.DeadSlashRecoveryTime, AbilityData.DeadSlashDamage, AbilityData.DeadSlashShieldBreak, AbilityData.DeadSlashEnergyCost, AbilityData.DeadSlashOffset, AbilityData.DeadSlashHitBoxSize,AbilityData.DeadSlashImage, 0);
                 break;
         }
 
-        Context.CurrentAttack = new CharacterAttackInfo(Entity, Context.CurrentAttackType, Entity.transform.right.x > 0, Damage, Damage, EnergyCost, EnergyCost, Offset, Size);
+        Context.CurrentAttack = new CharacterAttackInfo(Entity, Context.CurrentAttackType, Entity.transform.right.x > 0, Damage, Damage, ShieldBreak,ShieldBreak, EnergyCost, EnergyCost, Offset,Offset, Size, Size, Anticipation, Anticipation, Strike, Strike, Recovery, Recovery);
 
         Context.HitEnemies = new List<GameObject>();
 
@@ -1473,7 +1535,7 @@ public class SlashAnticipation : CharacterActionState
     private void CheckTime()
     {
         TimeCount += Time.deltaTime;
-        if (TimeCount >= StateTime)
+        if (TimeCount >= Context.CurrentAttack.AnticipationTime)
         {
             TransitionTo<SlashStrike>();
             return;
@@ -1490,9 +1552,14 @@ public class SlashAnticipation : CharacterActionState
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
     }
 
-    private void SetAttribute(int damage, int cost, Vector2 offset, Vector2 size, GameObject image, float stepspeed)
+    private void SetAttribute(float anticipation, float strike, float recovery, int damage, int shieldbreak, int cost, Vector2 offset, Vector2 size, GameObject image, float stepspeed)
     {
+        Anticipation = anticipation;
+        Strike = strike;
+        Recovery = recovery;
+
         Damage = damage;
+        ShieldBreak = shieldbreak;
         EnergyCost = cost;
         Offset = offset;
         Size = size;
@@ -1503,7 +1570,6 @@ public class SlashAnticipation : CharacterActionState
 
 public class SlashStrike : CharacterActionState
 {
-    private float StateTime;
     private float StepForwardSpeed;
     private GameObject Image;
 
@@ -1523,6 +1589,11 @@ public class SlashStrike : CharacterActionState
     {
         base.Update();
         CheckHitEnemy();
+        if (CheckGetInterrupted())
+        {
+            TransitionTo<GetInterrupted>();
+            return;
+        }
         CheckTime();
     }
 
@@ -1542,18 +1613,14 @@ public class SlashStrike : CharacterActionState
         switch (Context.CurrentAttackType)
         {
             case CharacterAttackType.NormalSlash:
-                StateTime = AbilityData.NormalSlashStrikeTime;
                 Image = AbilityData.NormalSlashImage;
                 StepForwardSpeed = AbilityData.NormalSlashStepForwardSpeed;
                 break;
             case CharacterAttackType.BloodSlash:
-
-                StateTime = AbilityData.BloodSlashStrikeTime;
                 Image = AbilityData.BloodSlashImage;
                 StepForwardSpeed = AbilityData.BloodSlashStepForwardSpeed;
                 break;
             case CharacterAttackType.DeadSlash:
-                StateTime = AbilityData.DeadSlashStrikeTime;
                 Image = AbilityData.DeadSlashImage;
                 StepForwardSpeed = 0;
                 break;
@@ -1638,7 +1705,7 @@ public class SlashStrike : CharacterActionState
     private void CheckTime()
     {
         TimeCount += Time.deltaTime;
-        if (TimeCount > StateTime)
+        if (TimeCount > Context.CurrentAttack.StrikeTime)
         {
             TransitionTo<SlashRecovery>();
             return;
@@ -1657,7 +1724,6 @@ public class SlashStrike : CharacterActionState
 
 public class SlashRecovery : CharacterActionState
 {
-    private float StateTime;
     private float TimeCount;
 
     public override void OnEnter()
@@ -1685,12 +1751,14 @@ public class SlashRecovery : CharacterActionState
         base.OnExit();
         Context.InRecovery = false;
         EventManager.instance.Fire(new PlayerEndAttackRecovery(Context.CurrentAttack, Context.HitEnemies));
+
+        Context.CurrentAttack = new CharacterAttackInfo();
     }
 
     private void CheckTime()
     {
         TimeCount += Time.deltaTime;
-        if (TimeCount > StateTime)
+        if (TimeCount > Context.CurrentAttack.RecoveryTime)
         {
             RecoveryTransition();
         }
@@ -1700,21 +1768,6 @@ public class SlashRecovery : CharacterActionState
     {
         TimeCount = 0;
         Context.InRecovery = true;
-
-        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
-
-        switch (Context.CurrentAttackType)
-        {
-            case CharacterAttackType.NormalSlash:
-                StateTime = AbilityData.NormalSlashRecoveryTime;
-                break;
-            case CharacterAttackType.BloodSlash:
-                StateTime = AbilityData.BloodSlashRecoveryTime;
-                break;
-            case CharacterAttackType.DeadSlash:
-                StateTime = AbilityData.DeadSlashRecoveryTime;
-                break;
-        }
 
     }
 
@@ -1760,6 +1813,7 @@ public class RollAnticipation : CharacterActionState
         base.OnEnter();
         SetUp();
         SetAppearance();
+        EventManager.instance.Fire(new PlayerStartRollAnticipation());
     }
 
     public override void Update()
@@ -1771,6 +1825,12 @@ public class RollAnticipation : CharacterActionState
             return;
         }
         CheckTime();
+    }
+
+    public override void OnExit()
+    {
+        base.OnExit();
+        EventManager.instance.Fire(new PlayerEndRollAnticipation());
     }
 
     private void SetUp()
@@ -1810,6 +1870,7 @@ public class Roll: CharacterActionState
         base.OnEnter();
         SetUp();
         SetAppearance();
+        EventManager.instance.Fire(new PlayerStartRoll());
     }
 
     public override void Update()
@@ -1842,6 +1903,8 @@ public class Roll: CharacterActionState
         base.OnExit();
         var Data = Entity.GetComponent<CharacterData>();
         var SpeedManager = Entity.GetComponent<SpeedManager>();
+
+        EventManager.instance.Fire(new PlayerEndRoll());
 
         SpeedManager.IgnoredLayers = Data.NormalIgnoredLayers;
         SpeedManager.SelfSpeed.x = 0;

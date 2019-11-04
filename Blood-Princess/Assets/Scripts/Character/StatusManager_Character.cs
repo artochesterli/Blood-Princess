@@ -13,10 +13,11 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     public GameObject HPFill;
     public GameObject EnergyMarks;
     public GameObject CriticalEyeMark;
+    public GameObject ShieldBreakerShield;
+    public GameObject DancerInvulnerableMark;
 
     public Sprite EnergyOrbEmptySprite;
     public Sprite EnergyOrbFilledSprite;
-
 
     private BattleArtEnhancement CriticalEyeEnhancement;
     private bool HaveCriticalEyeBuff;
@@ -27,7 +28,21 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     private bool HarmonyAvailable;
     private float HarmonyHealUnit;
 
+    private BattleArtEnhancement ShieldBreakerEnhancement;
+    private bool InShieldBreakerShield;
+    private bool ShieldBreakerAbsorbAttack;
+    private int ShieldBreakerBonus;
+    private float ShieldBreakerShieldTimeCount;
 
+    private CharacterPassiveAbility DancerPassiveAbility;
+    private bool InDancerInvulnerability;
+    private int DancerShieldBreak;
+    private List<GameObject> DancerHitEnemies;
+
+    private CharacterPassiveAbility ExecutionerAbility;
+    private bool ExecutionerShortenAnticipationActivated;
+
+    private CharacterPassiveAbility AccurateBladeAbility;
 
 
 
@@ -35,9 +50,12 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private float TimeCount;
 
+    private bool GetHitAvailable;
+
     // Start is called before the first frame update
     void Start()
     {
+
         Init();
 
         EventManager.instance.AddHandler<PlayerStartAttackAnticipation>(OnPlayerStartAttackAnticipation);
@@ -46,7 +64,14 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         EventManager.instance.AddHandler<PlayerEndAttackStrike>(OnPlayerEndAttackStrike);
         EventManager.instance.AddHandler<PlayerStartAttackRecovery>(OnPlayerStartAttackRecovery);
         EventManager.instance.AddHandler<PlayerEndAttackRecovery>(OnPlayerEndAttackRecovery);
+        EventManager.instance.AddHandler<PlayerStartRollAnticipation>(OnPlayerStartRollAnticipation);
+        EventManager.instance.AddHandler<PlayerEndRollAnticipation>(OnPlayerEndRollAnticipation);
+        EventManager.instance.AddHandler<PlayerStartRoll>(OnPlayerStartRoll);
+        EventManager.instance.AddHandler<PlayerEndRoll>(OnPlayerEndRoll);
         EventManager.instance.AddHandler<PlayerHitEnemy>(OnPlayerHitEnemy);
+        EventManager.instance.AddHandler<PlayerBreakEnemyShield>(OnPlayerBreakEnemyShield);
+        EventManager.instance.AddHandler<PlayerKillEnemy>(OnPlayerKillEnemy);
+        EventManager.instance.AddHandler<PlayerGetHit>(OnPlayerGetHit);
 
         EventManager.instance.AddHandler<PlayerEquipEnhancement>(OnPlayerEquipEnhancement);
         EventManager.instance.AddHandler<PlayerUnequipEnhancement>(OnPlayerUnequipEnhancement);
@@ -66,7 +91,14 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         EventManager.instance.RemoveHandler<PlayerEndAttackStrike>(OnPlayerEndAttackStrike);
         EventManager.instance.RemoveHandler<PlayerStartAttackRecovery>(OnPlayerStartAttackRecovery);
         EventManager.instance.RemoveHandler<PlayerEndAttackRecovery>(OnPlayerEndAttackRecovery);
+        EventManager.instance.RemoveHandler<PlayerStartRollAnticipation>(OnPlayerStartRollAnticipation);
+        EventManager.instance.RemoveHandler<PlayerEndRollAnticipation>(OnPlayerEndRollAnticipation);
+        EventManager.instance.RemoveHandler<PlayerStartRoll>(OnPlayerStartRoll);
+        EventManager.instance.RemoveHandler<PlayerEndRoll>(OnPlayerEndRoll);
         EventManager.instance.RemoveHandler<PlayerHitEnemy>(OnPlayerHitEnemy);
+        EventManager.instance.RemoveHandler<PlayerBreakEnemyShield>(OnPlayerBreakEnemyShield);
+        EventManager.instance.RemoveHandler<PlayerKillEnemy>(OnPlayerKillEnemy);
+        EventManager.instance.RemoveHandler<PlayerGetHit>(OnPlayerGetHit);
 
         EventManager.instance.RemoveHandler<PlayerEquipEnhancement>(OnPlayerEquipEnhancement);
         EventManager.instance.RemoveHandler<PlayerUnequipEnhancement>(OnPlayerUnequipEnhancement);
@@ -81,8 +113,13 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     // Update is called once per frame
     void Update()
     {
-
         SetFill();
+
+        var Action = GetComponent<CharacterAction>();
+
+        CountShieldTime();
+
+        DancerHitEnemy();
     }
 
     private void Init()
@@ -93,6 +130,12 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         CriticalEyeEnhancement = GetNullBattleArtEnhancement();
         HarmonyEnhancement = GetNullBattleArtEnhancement();
+        ShieldBreakerEnhancement = GetNullBattleArtEnhancement();
+
+        DancerPassiveAbility = GetNullPassiveAbility();
+        DancerHitEnemies = new List<GameObject>();
+        ExecutionerAbility = GetNullPassiveAbility();
+        AccurateBladeAbility = GetNullPassiveAbility();
     }
 
     private void SetFill()
@@ -123,42 +166,53 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     {
         base.OnHit(Attack);
 
-
-        LoseCriticalEye();
-
-
-
-        DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
-
         EnemyAttackInfo HitAttack = (EnemyAttackInfo)Attack;
 
-        int Damage = HitAttack.Damage;
+        GetHitAvailable = true;
 
-        CurrentEnergy = 0;
-        Interrupted = true;
-        if (HitAttack.Right)
+        EventManager.instance.Fire(new PlayerGetHit(HitAttack));
+
+        if (GetHitAvailable)
         {
-            DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 1);
-        }
-        else
-        {
-            DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 1);
-        }
-        DamageText.GetComponent<Text>().text = Damage.ToString();
-        DamageText.transform.parent = Canvas.transform;
+            DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
 
 
-        CurrentHP -= Damage;
+            int Damage = HitAttack.Damage;
 
-        if(CurrentHP <= 0)
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-            return true;
+            CurrentEnergy = 0;
+
+            Interrupted = true;
+
+
+            if (HitAttack.Right)
+            {
+                DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 1);
+            }
+            else
+            {
+                DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 1);
+            }
+            DamageText.GetComponent<Text>().text = Damage.ToString();
+            DamageText.transform.parent = Canvas.transform;
+
+
+            CurrentHP -= Damage;
+
+            if (CurrentHP <= 0)
+            {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
-        else
-        {
-            return false;
-        }
+
+        return false;
+
+
+
     }
 
     private void OnPlayerStartAttackAnticipation(PlayerStartAttackAnticipation e)
@@ -166,6 +220,10 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         CurrentEnergy -= e.Attack.Cost;
 
         CheckHarmonyAvailable(e.Attack);
+
+        ActivateShieldBreakerShield(e.Attack);
+
+        ExecutionerShortenAnticipation(e.Attack);
     }
 
     private void OnPlayerEndAttackAnticipation(PlayerEndAttackAnticipation e)
@@ -176,6 +234,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     private void OnPlayerStartAttackStrike(PlayerStartAttackStrike e)
     {
         CriticalEyeBonusToAttack(e.Attack);
+
     }
 
     private void OnPlayerEndAttackStrike(PlayerEndAttackStrike e)
@@ -187,6 +246,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         HarmonyHeal(e.Attack,e.HitEnemies.Count);
 
+        AccurateBladeHeal(e.Attack,e.HitEnemies.Count);
 
     }
 
@@ -200,18 +260,65 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     }
 
+    private void OnPlayerStartRollAnticipation(PlayerStartRollAnticipation e)
+    {
+
+    }
+
+    private void OnPlayerEndRollAnticipation(PlayerEndRollAnticipation e)
+    {
+
+    }
+
+    private void OnPlayerStartRoll(PlayerStartRoll e)
+    {
+        ActivateDancerInvulnerability();
+    }
+
+    private void OnPlayerEndRoll(PlayerEndRoll e)
+    {
+        DeactivateDancerInvulnerability();
+    }
+
+
+    private void OnPlayerGetHit(PlayerGetHit e)
+    {
+        var Action = GetComponent<CharacterAction>();
+
+        ShieldBreakerGetHit(Action.CurrentAttack);
+
+        DancerGetHit();
+
+        if (GetHitAvailable)
+        {
+            LoseCriticalEye();
+        }
+    }
+
+    private void OnPlayerKillEnemy(PlayerKillEnemy e)
+    {
+
+    }
+
     private void OnPlayerHitEnemy(PlayerHitEnemy e)
     {
         var Data = GetComponent<CharacterData>();
 
-        if (e.Attack.Type == CharacterAttackType.NormalSlash)
+        if (e.UpdatedAttack.Type == CharacterAttackType.NormalSlash)
         {
-            CurrentEnergy++;
-            if(CurrentEnergy > Data.MaxEnergy)
-            {
-                CurrentEnergy = Data.MaxEnergy;
-            }
+            GainEnergy(1);
         }
+
+        AccurateBladeBonusDamage(e.UpdatedAttack, e.Enemy);
+
+    }
+
+    private void OnPlayerBreakEnemyShield(PlayerBreakEnemyShield e)
+    {
+        ShieldBreakerDamageBonus(e.Attack);
+
+        ActivateExecutionerShorten();
+        ExecutionerRecoverEnergy();
     }
 
     private void OnPlayerEquipEnhancement(PlayerEquipEnhancement e)
@@ -243,6 +350,17 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                     HarmonyHealUnit = AbilityData.HarmonyHealLv1;
                 }
                 break;
+            case BattleArtEnhancementType.ShieldBreaker:
+                ShieldBreakerEnhancement = e.Enhancement;
+                if(ShieldBreakerEnhancement.Level >= 2)
+                {
+                    ShieldBreakerBonus = AbilityData.ShieldBreakerBonusLv2;
+                }
+                else
+                {
+                    ShieldBreakerBonus = AbilityData.ShieldBreakerBonusLv1;
+                }
+                break;
         }
     }
 
@@ -260,6 +378,10 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             case BattleArtEnhancementType.Harmony:
                 HarmonyEnhancement = GetNullBattleArtEnhancement();
                 HarmonyAvailable = false;
+                break;
+            case BattleArtEnhancementType.ShieldBreaker:
+                ShieldBreakerEnhancement = GetNullBattleArtEnhancement();
+                DeactivateShieldBreakerShield();
                 break;
         }
     }
@@ -281,6 +403,12 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                 if (HarmonyEnhancement.Level >= 2)
                 {
                     HarmonyHealUnit = AbilityData.HarmonyHealLv2;
+                }
+                break;
+            case BattleArtEnhancementType.ShieldBreaker:
+                if(ShieldBreakerEnhancement.Level >= 2)
+                {
+                    ShieldBreakerBonus = AbilityData.ShieldBreakerBonusLv2;
                 }
                 break;
         }
@@ -310,27 +438,97 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                     HarmonyHealUnit = AbilityData.HarmonyHealLv1;
                 }
                 break;
+            case BattleArtEnhancementType.ShieldBreaker:
+                if(ShieldBreakerEnhancement.Level < 2)
+                {
+                    ShieldBreakerBonus = AbilityData.ShieldBreakerBonusLv1;
+                }
+                break;
         }
     }
 
     private void OnPlayerEquipPassiveAbility(PlayerEquipPassiveAbility e)
     {
+        var AbilityData = GetComponent<CharacterAbilityData>();
 
+        switch (e.PassiveAbility.Type)
+        {
+            case CharacterPassiveAbilityType.Dancer:
+                DancerPassiveAbility = e.PassiveAbility;
+                if(DancerPassiveAbility.Level == 3)
+                {
+                    DancerShieldBreak = AbilityData.DancerShieldBreak;
+                }
+                else
+                {
+                    DancerShieldBreak = 0;
+                }
+                break;
+            case CharacterPassiveAbilityType.Executioner:
+                ExecutionerAbility = e.PassiveAbility;
+                break;
+            case CharacterPassiveAbilityType.AccurateBlade:
+                AccurateBladeAbility = e.PassiveAbility;
+                break;
+        }
     }
 
     private void OnPlayerUnequipPassiveAbility(PlayerUnequipPassiveAbility e)
     {
+        var AbilityData = GetComponent<CharacterAbilityData>();
 
+        switch (e.PassiveAbility.Type)
+        {
+            case CharacterPassiveAbilityType.Dancer:
+                DancerPassiveAbility = GetNullPassiveAbility();
+                DeactivateDancerInvulnerability();
+                break;
+            case CharacterPassiveAbilityType.Executioner:
+                ExecutionerAbility = GetNullPassiveAbility();
+                DeactivateExecutionerShorten();
+                break;
+            case CharacterPassiveAbilityType.AccurateBlade:
+                AccurateBladeAbility = GetNullPassiveAbility();
+                break;
+        }
     }
 
     private void OnPlayerUpgradePassiveAbility(PlayerUpgradePassiveAbility e)
     {
+        var AbilityData = GetComponent<CharacterAbilityData>();
 
+        switch (e.PassiveAbility.Type)
+        {
+            case CharacterPassiveAbilityType.Dancer:
+                if (DancerPassiveAbility.Level == 3)
+                {
+                    DancerShieldBreak = AbilityData.DancerShieldBreak;
+                }
+                break;
+            case CharacterPassiveAbilityType.Executioner:
+                break;
+            case CharacterPassiveAbilityType.AccurateBlade:
+                break;
+        }
     }
 
     private void OnPlayerDowngradePassiveAbility(PlayerDowngradePassiveAbility e)
     {
+        var AbilityData = GetComponent<CharacterAbilityData>();
 
+        switch (e.PassiveAbility.Type)
+        {
+            case CharacterPassiveAbilityType.Dancer:
+                if (DancerPassiveAbility.Level < 3)
+                {
+                    DancerShieldBreak = 0;
+                }
+                break;
+            case CharacterPassiveAbilityType.Executioner:
+                break;
+            case CharacterPassiveAbilityType.AccurateBlade:
+                break;
+        }
     }
 
     private BattleArtEnhancement GetNullBattleArtEnhancement()
@@ -361,6 +559,17 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             DamageText.GetComponent<Text>().text = amount.ToString();
             CurrentHP += amount;
         }
+    }
+
+    private void GainEnergy(int amount)
+    {
+        var Data = GetComponent<CharacterData>();
+        if(amount > Data.MaxEnergy - CurrentEnergy)
+        {
+            amount = Data.MaxEnergy - CurrentEnergy;
+        }
+
+        CurrentEnergy += amount;
     }
 
     /*private BattleArtEnhancement GetTargetEnhancement(BattleArtEnhancementType Type, CharacterAttackType ArtType)
@@ -493,6 +702,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void LoseCriticalEye()
     {
+
         CriticalEyeMark.GetComponent<SpriteRenderer>().enabled = false;
         HaveCriticalEyeBuff = false;
         CurrentCriticalEyeBonusNumber = 0;
@@ -523,7 +733,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             return;
         }
 
-        if(HarmonyEnhancement.Type == BattleArtEnhancementType.Null && HarmonyEnhancement.EnhancementAttackType != Attack.Type)
+        if(HarmonyEnhancement.Type == BattleArtEnhancementType.Null || HarmonyEnhancement.EnhancementAttackType != Attack.Type || HitNumber==0)
         {
             return;
         }
@@ -536,11 +746,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         if (CurrentHP == Data.MaxHP && HarmonyEnhancement.Level == 3)
         {
-            CurrentEnergy+=AbilityData.HarmonyEnergyRecovery;
-            if(CurrentEnergy > Data.MaxEnergy)
-            {
-                CurrentEnergy = Data.MaxEnergy;
-            }
+            GainEnergy(AbilityData.HarmonyEnergyRecovery);
         }
         else
         {
@@ -548,5 +754,236 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         }
     }
 
+    //ShieldBreaker Functions
+
+    private void CountShieldTime()
+    {
+        if (!InShieldBreakerShield)
+        {
+            return;
+        }
+
+        var AbilityData = GetComponent<CharacterAbilityData>();
+        ShieldBreakerShieldTimeCount += Time.deltaTime;
+        if (ShieldBreakerShieldTimeCount >= AbilityData.ShieldBreakerShieldTime)
+        {
+            DeactivateShieldBreakerShield();
+        }
+    }
+
+    private void ActivateShieldBreakerShield(CharacterAttackInfo Attack)
+    {
+        if(ShieldBreakerEnhancement.Type==BattleArtEnhancementType.Null || ShieldBreakerEnhancement.EnhancementAttackType != Attack.Type)
+        {
+            return;
+        }
+
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
+        ShieldBreakerAbsorbAttack = false;
+        InShieldBreakerShield = true;
+        ShieldBreakerShieldTimeCount = 0;
+        ShieldBreakerShield.GetComponent<SpriteRenderer>().enabled = true;
+        ShieldBreakerShield.transform.position = GetComponent<SpeedManager>().GetTruePos();
+
+        Attack.AnticipationTime += AbilityData.ShieldBreakerShieldTime;
+    }
+
+    private void DeactivateShieldBreakerShield()
+    {
+        ShieldBreakerAbsorbAttack = false;
+        InShieldBreakerShield = false;
+        ShieldBreakerShield.GetComponent<SpriteRenderer>().enabled = false;
+    }
+
+    private void ShieldBreakerGetHit(CharacterAttackInfo Attack)
+    {
+        if (ShieldBreakerEnhancement.Type == BattleArtEnhancementType.Null || ShieldBreakerEnhancement.EnhancementAttackType != Attack.Type || !InShieldBreakerShield)
+        {
+            return;
+        }
+
+        ShieldBreakerAbsorbAttack = true;
+        GetHitAvailable = false;
+
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
+        Attack.AnticipationTime = 0;
+
+        Attack.ShieldBreak += ShieldBreakerBonus;
+
+        DeactivateShieldBreakerShield();
+    }
+
+    private void ShieldBreakerDamageBonus(CharacterAttackInfo Attack)
+    {
+        if (ShieldBreakerEnhancement.Type == BattleArtEnhancementType.Null || ShieldBreakerEnhancement.EnhancementAttackType != Attack.Type || !ShieldBreakerAbsorbAttack || ShieldBreakerEnhancement.Level <3)
+        {
+            return;
+        }
+
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
+        Attack.Damage += Mathf.RoundToInt(Attack.BaseDamage * AbilityData.ShieldBreakerDamageBonus);
+    }
+
+    //DancerFunctions
+
+    private void ActivateDancerInvulnerability()
+    {
+        var Data = GetComponent<CharacterData>();
+
+        if(DancerPassiveAbility.Type == CharacterPassiveAbilityType.Null || CurrentEnergy < Data.MaxEnergy)
+        {
+            return;
+        }
+
+        InDancerInvulnerability = true;
+        DancerInvulnerableMark.GetComponent<SpriteRenderer>().enabled = true;
+        DancerInvulnerableMark.transform.position = GetComponent<SpeedManager>().GetTruePos();
+        DancerHitEnemies = new List<GameObject>();
+    }
+
+    private void DeactivateDancerInvulnerability()
+    {
+        InDancerInvulnerability = false;
+        DancerInvulnerableMark.GetComponent<SpriteRenderer>().enabled = false;
+        DancerHitEnemies.Clear();
+    }
+
+    private void DancerHitEnemy()
+    {
+        if (DancerPassiveAbility.Type == CharacterPassiveAbilityType.Null || !InDancerInvulnerability || DancerPassiveAbility.Level < 2)
+        {
+            return;
+        }
+
+        var AbilityData = GetComponent<CharacterAbilityData>();
+        var Data = GetComponent<CharacterData>();
+        var SpeedManager = GetComponent<SpeedManager>();
+
+        Vector2 Offset = SpeedManager.GetTruePos() - (Vector2)transform.position;
+
+        CharacterAttackInfo DancerAttack = new CharacterAttackInfo(gameObject, CharacterAttackType.Dancer, gameObject.transform.right.x > 0, AbilityData.DancerDamage, AbilityData.DancerDamage, DancerShieldBreak, DancerShieldBreak , 0, 0, Offset, Offset, AbilityData.DancerHitBoxSize, AbilityData.DancerHitBoxSize);
+
+
+        RaycastHit2D[] Allhits = Physics2D.BoxCastAll(SpeedManager.GetTruePos(), AbilityData.DancerHitBoxSize, 0, Vector2.zero, 0, Data.EnemyLayer);
+
+        for(int i = 0; i < Allhits.Length; i++)
+        {
+            GameObject Enemy = Allhits[i].collider.gameObject;
+            if (!DancerHitEnemies.Contains(Enemy))
+            {
+                EventManager.instance.Fire(new PlayerHitEnemy(DancerAttack,new CharacterAttackInfo(DancerAttack), Enemy));
+                DancerHitEnemies.Add(Enemy);
+                Enemy.GetComponent<IHittable>().OnHit(DancerAttack);
+            }
+        }
+
+    }
+
+    private void DancerGetHit()
+    {
+        if (!InDancerInvulnerability)
+        {
+            return;
+        }
+
+        GetHitAvailable = false;
+    }
+
+    //Executioner Functions
+
+    private void ExecutionerShortenAnticipation(CharacterAttackInfo Attack)
+    {
+        if (ExecutionerAbility.Type == CharacterPassiveAbilityType.Null || !ExecutionerShortenAnticipationActivated)
+        {
+            return;
+        }
+
+        DeactivateExecutionerShorten();
+
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
+        Attack.AnticipationTime -= AbilityData.ExecutionerAnticipationCut * Attack.BaseAnticipationTime;
+    }
+
+    private void ActivateExecutionerShorten()
+    {
+        if (ExecutionerAbility.Type == CharacterPassiveAbilityType.Null || ExecutionerAbility.Level < 2)
+        {
+            return;
+        }
+
+        ExecutionerShortenAnticipationActivated = true;
+    }
+
+    private void DeactivateExecutionerShorten()
+    {
+        ExecutionerShortenAnticipationActivated = false;
+    }
+
+    private void ExecutionerRecoverEnergy()
+    {
+        if (ExecutionerAbility.Type == CharacterPassiveAbilityType.Null)
+        {
+            return;
+        }
+
+        var AbilityData = GetComponent<CharacterAbilityData>();
+        var Data = GetComponent<CharacterData>();
+
+        if(ExecutionerAbility.Level < 3)
+        {
+            GainEnergy(AbilityData.ExecutionerEnergyRecovery);
+        }
+        else
+        {
+            CurrentEnergy = Data.MaxEnergy;
+        }
+    }
+
+    //Accurate Blade Functions
+
+    private void AccurateBladeBonusDamage(CharacterAttackInfo Attack,GameObject Enemy)
+    {
+        if (AccurateBladeAbility.Type == CharacterPassiveAbilityType.Null || Attack.Type!=CharacterAttackType.NormalSlash)
+        {
+            return;
+        }
+
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
+        int BonusNumber = Enemy.GetComponent<IShield>().MaxShield - Enemy.GetComponent<IShield>().CurrentShield;
+        if (BonusNumber > AbilityData.AccurateBladeMaxBonusNumber)
+        {
+            BonusNumber = AbilityData.AccurateBladeMaxBonusNumber;
+        }
+
+        if (BonusNumber > 0)
+        {
+            if (AccurateBladeAbility.Level < 2)
+            {
+                Attack.Damage += Mathf.RoundToInt(Attack.BaseDamage * AbilityData.AccurateBladeBonusUnit);
+            }
+            else
+            {
+                Attack.Damage += Mathf.RoundToInt(Attack.BaseDamage * AbilityData.AccurateBladeBonusUnit * BonusNumber);
+            }
+        }
+    }
+
+    private void AccurateBladeHeal(CharacterAttackInfo Attack, int HitNumber)
+    {
+        if(AccurateBladeAbility.Type == CharacterPassiveAbilityType.Null || AccurateBladeAbility.Level < 3 || Attack.Type !=CharacterAttackType.NormalSlash)
+        {
+            return;
+        }
+
+
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
+        Heal(Mathf.RoundToInt(Attack.Damage * HitNumber * AbilityData.AccurateBladeHeal));
+    }
 
 }

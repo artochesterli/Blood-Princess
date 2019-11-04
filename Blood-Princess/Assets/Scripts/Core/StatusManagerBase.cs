@@ -12,13 +12,14 @@ interface IHittable
 
 interface IShield
 {
+    int MaxShield { get; set; }
 	int CurrentShield { get; set; }
 }
 
 public class StatusManagerBase : MonoBehaviour, IHittable
 {
 	public int CurrentHP { get; set; }
-    public int CurrentShield { get; set; }
+
 	public AttackInfo HitAttack { get; set; }
 	public bool Interrupted { get; set; }
 	// Start is called before the first frame update

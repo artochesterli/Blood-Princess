@@ -69,17 +69,17 @@ public class PassiveAbilitySlotManager : MonoBehaviour, ISkillSlot
     {
         EquipedPassiveAbility = (CharacterPassiveAbility)Ability;
         Player.GetComponent<CharacterAction>().EquipedPassiveAbilities[index] = EquipedPassiveAbility;
-        EventManager.instance.Fire(new PlayerUnequipPassiveAbility(EquipedPassiveAbility));
+        EventManager.instance.Fire(new PlayerEquipPassiveAbility(EquipedPassiveAbility));
     }
     public void UpgradeAbility()
     {
         EquipedPassiveAbility.Level++;
-        EventManager.instance.Fire(new PlayerUnequipPassiveAbility(EquipedPassiveAbility));
+        EventManager.instance.Fire(new PlayerUpgradePassiveAbility(EquipedPassiveAbility));
     }
     public void DowngradeAbility()
     {
         EquipedPassiveAbility.Level--;
-        EventManager.instance.Fire(new PlayerUnequipPassiveAbility(EquipedPassiveAbility));
+        EventManager.instance.Fire(new PlayerDowngradePassiveAbility(EquipedPassiveAbility));
     }
     public void RemoveAbility()
     {

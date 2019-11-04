@@ -10,9 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 2851188449567497400}
   - component: {fileID: 4337077918451909969}
-  - component: {fileID: 8691740799381182595}
   m_Layer: 0
-  m_Name: InvulnerableExplosion
+  m_Name: ShieldMark
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -81,22 +80,3 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &8691740799381182595
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 413116451739042639}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1898b6cd3e9ffa640b1168b2d53ae86d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  StartScale: 0
-  EndScale: 0
-  Duration: 0
-  Damage: 0
-  EnemyLayer:
-    serializedVersion: 2
-    m_Bits: 1024

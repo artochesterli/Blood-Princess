@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class StatusManager_Dummy : StatusManagerBase, IHittable, IShield
 {
+    public int MaxShield { get; set; }
     public int CurrentShield { get; set; }
 
     public GameObject HPFill;

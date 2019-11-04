@@ -385,7 +385,7 @@ public class SkillPanelManager : MonoBehaviour
         {
             if (!SlotList[i].GetComponent<ISkillSlot>().IsEnhancementSlot)
             {
-                if(SlotList[i].GetComponent<CharacterPassiveAbility>().Type == Type)
+                if(SlotList[i].GetComponent<PassiveAbilitySlotManager>().EquipedPassiveAbility.Type == Type)
                 {
                     return true;
                 }
