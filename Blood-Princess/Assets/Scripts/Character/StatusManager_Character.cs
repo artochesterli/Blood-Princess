@@ -137,6 +137,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         DancerHitEnemies = new List<GameObject>();
         ExecutionerAbility = GetNullPassiveAbility();
         AccurateBladeAbility = GetNullPassiveAbility();
+        CursedBladeAbility = GetNullPassiveAbility();
     }
 
     private void SetFill()
@@ -220,11 +221,16 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     {
         CurrentEnergy -= e.Attack.Cost;
 
+        CursedBladeDecreaseBattleArtBaseDamage(e.Attack);
+        CursedBladeIncreaseNormalSlashBaseDamage(e.Attack);
+
         CheckHarmonyAvailable(e.Attack);
 
         ActivateShieldBreakerShield(e.Attack);
 
         ExecutionerShortenAnticipation(e.Attack);
+
+
     }
 
     private void OnPlayerEndAttackAnticipation(PlayerEndAttackAnticipation e)
@@ -293,6 +299,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         if (GetHitAvailable)
         {
             LoseCriticalEye();
+            CursedBladeIncreaseRecievedDamage(e.EnemyAttack);
         }
     }
 
@@ -768,6 +775,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         ShieldBreakerShieldTimeCount += Time.deltaTime;
         if (ShieldBreakerShieldTimeCount >= AbilityData.ShieldBreakerShieldTime)
         {
+            ShieldBreakerAbsorbAttack = false;
             DeactivateShieldBreakerShield();
         }
     }
@@ -792,7 +800,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void DeactivateShieldBreakerShield()
     {
-        ShieldBreakerAbsorbAttack = false;
+
         InShieldBreakerShield = false;
         ShieldBreakerShield.GetComponent<SpriteRenderer>().enabled = false;
     }
@@ -822,6 +830,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         {
             return;
         }
+
 
         var AbilityData = GetComponent<CharacterAbilityData>();
 

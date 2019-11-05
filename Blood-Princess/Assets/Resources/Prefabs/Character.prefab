@@ -2419,7 +2419,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56df4c9e1cb507a42b6717fb1dcdaaa4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NormalSlashAnticipationTime: 0.2
+  NormalSlashAnticipationTime: 0.15
   NormalSlashStrikeTime: 0.1
   NormalSlashRecoveryTime: 0.2
   NormalSlashStepForwardSpeed: 8
@@ -2430,7 +2430,7 @@ MonoBehaviour:
   NormalSlashHitBoxSize: {x: 1.44, y: 0.64}
   NormalSlashAirUsable: 1
   BloodSlashName: Blood Slash
-  BloodSlashAnticipationTime: 0.3
+  BloodSlashAnticipationTime: 0.2
   BloodSlashStrikeTime: 0.1
   BloodSlashRecoveryTime: 0.3
   BloodSlashStepForwardSpeed: 8
@@ -2486,6 +2486,11 @@ MonoBehaviour:
   AccurateBladeBonusUnit: 1
   AccurateBladeMaxBonusNumber: 3
   AccurateBladeHeal: 0.1
+  CursedBladeName: Cursed Blade
+  MaxCursedBladeLevel: 3
+  CursedBladeExtraDamageRecieved: 1
+  CursedBladeBattleArtDamageDecrease: 0.5
+  CursedBladeNormalSlashDamageIncrease: 1
 --- !u!114 &8072353811691231456
 MonoBehaviour:
   m_ObjectHideFlags: 0
