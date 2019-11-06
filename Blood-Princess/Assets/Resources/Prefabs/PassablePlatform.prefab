@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 5340953039180328781}
   - component: {fileID: 5340953039180328780}
-  - component: {fileID: 5340953039180328779}
   - component: {fileID: 5340953039180328782}
   - component: {fileID: 732325721108646310}
+  - component: {fileID: 3217939201014831804}
   m_Layer: 11
   m_Name: PassablePlatform
   m_TagString: PassablePlatform
@@ -83,22 +83,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &5340953039180328779
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5340953039180328778}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9777945ce8308994c9d49bd53a5b2889, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  LeftPassable: 1
-  RightPassable: 1
-  TopPassable: 0
-  BottomPassable: 1
 --- !u!61 &5340953039180328782
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -141,3 +125,20 @@ MonoBehaviour:
   PlayerLayer:
     serializedVersion: 2
     m_Bits: 256
+--- !u!114 &3217939201014831804
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5340953039180328778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 803b2eb48b73189489fd658edfe0cde5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Type: 0
+  LeftPassable: 0
+  RightPassable: 0
+  TopPassable: 0
+  BottomPassable: 1

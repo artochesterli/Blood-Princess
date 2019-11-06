@@ -38,7 +38,7 @@ public class PassablePlatform : MonoBehaviour
             if (!hit)
             {
                 Player = null;
-                GetComponent<PassableInfo>().TopPassable = false;
+                GetComponent<ColliderInfo>().TopPassable = false;
             }
         }
     }

@@ -165,9 +165,6 @@ public enum CharacterAttackType
 {
     Null,
     NormalSlash,
-    BloodSlash,
-    DeadSlash,
-    Dancer,
     SpiritSlash
 }
 
@@ -176,8 +173,6 @@ public enum InputType
     Jump,
     NormalSlash,
     Roll,
-    FirstSkill,
-    SecondSkill,
     SpiritSlash
 }
 
@@ -330,16 +325,6 @@ public class CharacterAction : MonoBehaviour
             SavedInputInfo.Add(new InputInfo(InputType.NormalSlash));
         }
 
-        if (Utility.InputFirstSkill())
-        {
-            SavedInputInfo.Add(new InputInfo(InputType.FirstSkill));
-        }
-
-        if (Utility.InputSecondSkill())
-        {
-            SavedInputInfo.Add(new InputInfo(InputType.SecondSkill));
-        }
-
         if (Utility.InputRoll())
         {
             SavedInputInfo.Add(new InputInfo(InputType.Roll));
@@ -446,21 +431,6 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             return;
         }
 
-        if (CheckCharacterFirstSkill())
-        {
-            Context.SavedInputInfo.Clear();
-            Context.CurrentAttackType = CharacterAttackType.BloodSlash;
-            TransitionTo<SlashAnticipation>();
-            return;
-        }
-
-        if (CheckCharacterSecondSkill())
-        {
-            Context.SavedInputInfo.Clear();
-            Context.CurrentAttackType = CharacterAttackType.DeadSlash;
-            TransitionTo<SlashAnticipation>();
-            return;
-        }
         if (CheckCharacterSpiritSlash())
         {
             Context.SavedInputInfo.Clear();
@@ -679,12 +649,12 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             RaycastHit2D LeftHit = Physics2D.Raycast(SpeedManager.GetTruePos() + SpeedManager.BodyWidth / 2 * Vector2.left + SpeedManager.BodyHeight / 2 * Vector2.down, Vector2.down, 0.02f, Data.PassablePlatformLayer);
             RaycastHit2D RightHit = Physics2D.Raycast(SpeedManager.GetTruePos() + SpeedManager.BodyWidth / 2 * Vector2.right + SpeedManager.BodyHeight / 2 * Vector2.down, Vector2.down, 0.02f, Data.PassablePlatformLayer);
 
-            LeftHit.collider.GetComponent<PassableInfo>().TopPassable = true;
-            RightHit.collider.GetComponent<PassableInfo>().TopPassable = true;
+            LeftHit.collider.GetComponent<ColliderInfo>().TopPassable = true;
+            RightHit.collider.GetComponent<ColliderInfo>().TopPassable = true;
             LeftHit.collider.gameObject.GetComponent<PassablePlatform>().Player = Entity;
             RightHit.collider.gameObject.GetComponent<PassablePlatform>().Player = Entity;
 
-            Context.AttachedPassablePlatform.GetComponent<PassableInfo>().TopPassable = true;
+            Context.AttachedPassablePlatform.GetComponent<ColliderInfo>().TopPassable = true;
             Context.AttachedPassablePlatform.GetComponent<PassablePlatform>().Player = Entity;
             return true;
         }
@@ -729,36 +699,12 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         return false;
     }
 
-    protected bool CheckCharacterFirstSkill()
-    {
-        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
-        var Status = Entity.GetComponent<StatusManager_Character>();
-
-        if (Context.SavedInputInfo.Count > 0 && Context.SavedInputInfo[0].Type == InputType.FirstSkill && Status.CurrentEnergy >= AbilityData.BloodSlashEnergyCost)
-        {
-            return true;
-        }
-        return false;
-    }
-
     protected bool CheckCharacterSpiritSlash()
     {
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
         var Status = Entity.GetComponent<StatusManager_Character>();
 
         if (CheckGrounded() && Context.SavedInputInfo.Count > 0 && Context.SavedInputInfo[0].Type == InputType.SpiritSlash && Status.CurrentEnergy > 0)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    protected bool CheckCharacterSecondSkill()
-    {
-        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
-        var Status = Entity.GetComponent<StatusManager_Character>();
-
-        if(CheckGrounded() && Context.SavedInputInfo.Count > 0 && Context.SavedInputInfo[0].Type == InputType.SecondSkill && Status.CurrentEnergy >= AbilityData.DeadSlashEnergyCost)
         {
             return true;
         }
@@ -988,22 +934,6 @@ public class Stand : CharacterActionState
             return;
         }
 
-        if (CheckCharacterFirstSkill())
-        {
-            Context.SavedInputInfo.Clear();
-            Context.CurrentAttackType = CharacterAttackType.BloodSlash;
-            TransitionTo<SlashAnticipation>();
-            return;
-        }
-
-        if (CheckCharacterSecondSkill())
-        {
-            Context.SavedInputInfo.Clear();
-            Context.CurrentAttackType = CharacterAttackType.DeadSlash;
-            TransitionTo<SlashAnticipation>();
-            return;
-        }
-
         if (CheckCharacterSpiritSlash())
         {
             Context.SavedInputInfo.Clear();
@@ -1096,21 +1026,6 @@ public class GroundMove : CharacterActionState
             return;
         }
 
-        if (CheckCharacterFirstSkill())
-        {
-            Context.SavedInputInfo.Clear();
-            Context.CurrentAttackType = CharacterAttackType.BloodSlash;
-            TransitionTo<SlashAnticipation>();
-            return;
-        }
-
-        if (CheckCharacterSecondSkill())
-        {
-            Context.SavedInputInfo.Clear();
-            Context.CurrentAttackType = CharacterAttackType.DeadSlash;
-            TransitionTo<SlashAnticipation>();
-            return;
-        }
         if (CheckCharacterSpiritSlash())
         {
             Context.SavedInputInfo.Clear();
@@ -1191,21 +1106,6 @@ public class JumpHoldingStay : CharacterActionState
             return;
         }
 
-        if (CheckCharacterFirstSkill())
-        {
-            Context.SavedInputInfo.Clear();
-            Context.CurrentAttackType = CharacterAttackType.BloodSlash;
-            TransitionTo<SlashAnticipation>();
-            return;
-        }
-
-        if (CheckCharacterSecondSkill())
-        {
-            Context.SavedInputInfo.Clear();
-            Context.CurrentAttackType = CharacterAttackType.DeadSlash;
-            TransitionTo<SlashAnticipation>();
-            return;
-        }
         if (CheckCharacterSpiritSlash())
         {
             Context.SavedInputInfo.Clear();
@@ -1301,21 +1201,6 @@ public class JumpHoldingMove : CharacterActionState
             return;
         }
 
-        if (CheckCharacterFirstSkill())
-        {
-            Context.SavedInputInfo.Clear();
-            Context.CurrentAttackType = CharacterAttackType.BloodSlash;
-            TransitionTo<SlashAnticipation>();
-            return;
-        }
-
-        if (CheckCharacterSecondSkill())
-        {
-            Context.SavedInputInfo.Clear();
-            Context.CurrentAttackType = CharacterAttackType.DeadSlash;
-            TransitionTo<SlashAnticipation>();
-            return;
-        }
         if (CheckCharacterSpiritSlash())
         {
             Context.SavedInputInfo.Clear();
@@ -1400,21 +1285,6 @@ public class AirStay : CharacterActionState
             return;
         }
 
-        if (CheckCharacterFirstSkill())
-        {
-            Context.SavedInputInfo.Clear();
-            Context.CurrentAttackType = CharacterAttackType.BloodSlash;
-            TransitionTo<SlashAnticipation>();
-            return;
-        }
-
-        if (CheckCharacterSecondSkill())
-        {
-            Context.SavedInputInfo.Clear();
-            Context.CurrentAttackType = CharacterAttackType.DeadSlash;
-            TransitionTo<SlashAnticipation>();
-            return;
-        }
         if (CheckCharacterSpiritSlash())
         {
             Context.SavedInputInfo.Clear();
@@ -1480,21 +1350,6 @@ public class AirMove : CharacterActionState
             return;
         }
 
-        if (CheckCharacterFirstSkill())
-        {
-            Context.SavedInputInfo.Clear();
-            Context.CurrentAttackType = CharacterAttackType.BloodSlash;
-            TransitionTo<SlashAnticipation>();
-            return;
-        }
-
-        if (CheckCharacterSecondSkill())
-        {
-            Context.SavedInputInfo.Clear();
-            Context.CurrentAttackType = CharacterAttackType.DeadSlash;
-            TransitionTo<SlashAnticipation>();
-            return;
-        }
         if (CheckCharacterSpiritSlash())
         {
             Context.SavedInputInfo.Clear();
@@ -1560,32 +1415,35 @@ public class SlashAnticipation : CharacterActionState
         var Status = Entity.GetComponent<StatusManager_Character>();
 
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
+        var Data = Entity.GetComponent<CharacterData>();
 
         switch (Context.CurrentAttackType)
         {
             case CharacterAttackType.NormalSlash:
 
-                int NormalSlashDamage = Mathf.RoundToInt(AbilityData.NormalSlashBaseDamage*(1+AbilityData.NormalSlashDamageBonusPerEnergy * Status.CurrentEnergy)) ;
+                int NormalSlashDamage = AbilityData.NormalSlashBaseDamage;
 
-                SetAttribute(AbilityData.NormalSlashAnticipationTime, AbilityData.NormalSlashStrikeTime, AbilityData.NormalSlashRecoveryTime, NormalSlashDamage,0, 0, AbilityData.NormalSlashOffset, AbilityData.NormalSlashHitBoxSize, AbilityData.NormalSlashImage, AbilityData.NormalSlashStepForwardSpeed);
+                if (Status.GetCriticalEye())
+                {
+                    NormalSlashDamage += Mathf.RoundToInt(AbilityData.NormalSlashCriticalEyeDamageBonus * AbilityData.NormalSlashBaseDamage);
+                }
+
+                SetAttribute(AbilityData.NormalSlashAnticipationTime, AbilityData.NormalSlashStrikeTime, AbilityData.NormalSlashRecoveryTime, AbilityData.NormalSlashBaseDamage, 0, 0, AbilityData.NormalSlashOffset, AbilityData.NormalSlashHitBoxSize, AbilityData.NormalSlashImage, AbilityData.NormalSlashStepForwardSpeed);
 
                 break;
 
             case CharacterAttackType.SpiritSlash:
 
-                int SpiritSlashDamage = Mathf.RoundToInt(AbilityData.SpiritSlashDamageList[Status.CurrentEnergy - 1]);
+                int SpiritSlashDamage = AbilityData.SpiritSlashBaseDamage;
+
+                if(Status.CurrentEnergy == Data.MaxEnergy)
+                {
+                    SpiritSlashDamage += Mathf.RoundToInt(AbilityData.SpiritSlashFullEnergyDamageBonus * AbilityData.SpiritSlashBaseDamage);
+                }
 
                 SetAttribute(AbilityData.SpiritSlashAnticipationTime, AbilityData.SpiritSlashStrikeTime, AbilityData.SpiritSlashRecoveryTime, SpiritSlashDamage, 0, 0, AbilityData.SpiritSlashOffset, AbilityData.SpiritSlashHitBoxSize, AbilityData.SpiritSlashImage, AbilityData.SpiritSlashStepForwardSpeed);
                 break;
 
-            case CharacterAttackType.BloodSlash:
-
-                SetAttribute(AbilityData.BloodSlashAnticipationTime, AbilityData.BloodSlashStrikeTime, AbilityData.BloodSlashRecoveryTime,  AbilityData.BloodSlashDamage, AbilityData.BloodSlashShieldBreak, AbilityData.BloodSlashEnergyCost, AbilityData.BloodSlashOffset, AbilityData.BloodSlashHitBoxSize,AbilityData.BloodSlashImage, AbilityData.BloodSlashStepForwardSpeed);
-                break;
-            case CharacterAttackType.DeadSlash:
-
-                SetAttribute(AbilityData.DeadSlashAnticipationTime, AbilityData.DeadSlashStrikeTime, AbilityData.DeadSlashRecoveryTime, AbilityData.DeadSlashDamage, AbilityData.DeadSlashShieldBreak, AbilityData.DeadSlashEnergyCost, AbilityData.DeadSlashOffset, AbilityData.DeadSlashHitBoxSize,AbilityData.DeadSlashImage, 0);
-                break;
         }
 
         Context.CurrentAttack = new CharacterAttackInfo(Entity, Context.CurrentAttackType, Entity.transform.right.x > 0, Damage, Damage, Damage, ShieldBreak,ShieldBreak, EnergyCost, EnergyCost, Offset,Offset, Size, Size, Anticipation, Anticipation, Strike, Strike, Recovery, Recovery);
@@ -1606,16 +1464,6 @@ public class SlashAnticipation : CharacterActionState
                 Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightAnticipationOffset, SpriteData.LightAnticipationSize);
                 break;
             case CharacterAttackType.SpiritSlash:
-                CurrentSpriteSeries = SpriteData.HeavyAnticipationSeries;
-                SetCharacterSprite();
-                Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyAnticipationOffset, SpriteData.HeavyAnticipationSize);
-                break;
-            case CharacterAttackType.BloodSlash:
-                CurrentSpriteSeries = SpriteData.LightAnticipationSeries;
-                SetCharacterSprite();
-                Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightAnticipationOffset, SpriteData.LightAnticipationSize);
-                break;
-            case CharacterAttackType.DeadSlash:
                 CurrentSpriteSeries = SpriteData.HeavyAnticipationSeries;
                 SetCharacterSprite();
                 Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyAnticipationOffset, SpriteData.HeavyAnticipationSize);
@@ -1738,14 +1586,6 @@ public class SlashStrike : CharacterActionState
                 Image = AbilityData.SpiritSlashImage;
                 StepForwardSpeed = AbilityData.SpiritSlashStepForwardSpeed;
                 break;
-            case CharacterAttackType.BloodSlash:
-                Image = AbilityData.BloodSlashImage;
-                StepForwardSpeed = AbilityData.BloodSlashStepForwardSpeed;
-                break;
-            case CharacterAttackType.DeadSlash:
-                Image = AbilityData.DeadSlashImage;
-                StepForwardSpeed = 0;
-                break;
         }
 
         GenerateSlashImage(Image, Context.CurrentAttack);
@@ -1766,16 +1606,6 @@ public class SlashStrike : CharacterActionState
                 CurrentSpriteSeries = SpriteData.HeavyAnticipationSeries;
                 SetCharacterSprite();
                 Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyAnticipationOffset, SpriteData.HeavyAnticipationSize);
-                break;
-            case CharacterAttackType.BloodSlash:
-                CurrentSpriteSeries = SpriteData.LightRecoverySeries;
-                SetCharacterSprite();
-                Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightRecoveryOffset, SpriteData.LightRecoverySize);
-                break;
-            case CharacterAttackType.DeadSlash:
-                CurrentSpriteSeries = SpriteData.HeavyRecoverySeries;
-                SetCharacterSprite();
-                Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyRecoveryOffset, SpriteData.HeavyRecoverySize);
                 break;
         }
     }
@@ -1927,16 +1757,6 @@ public class SlashRecovery : CharacterActionState
                 Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightRecoveryOffset, SpriteData.LightRecoverySize);
                 break;
             case CharacterAttackType.SpiritSlash:
-                CurrentSpriteSeries = SpriteData.HeavyRecoverySeries;
-                SetCharacterSprite();
-                Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyRecoveryOffset, SpriteData.HeavyRecoverySize);
-                break;
-            case CharacterAttackType.BloodSlash:
-                CurrentSpriteSeries = SpriteData.LightRecoverySeries;
-                SetCharacterSprite();
-                Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightRecoveryOffset, SpriteData.LightRecoverySize);
-                break;
-            case CharacterAttackType.DeadSlash:
                 CurrentSpriteSeries = SpriteData.HeavyRecoverySeries;
                 SetCharacterSprite();
                 Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyRecoveryOffset, SpriteData.HeavyRecoverySize);

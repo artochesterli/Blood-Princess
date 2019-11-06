@@ -11,45 +11,19 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     public GameObject Canvas;
     public GameObject HPFill;
+    public GameObject EnergyFill;
     public GameObject EnergyMarks;
     public GameObject CriticalEyeMark;
     public GameObject SpiritSlashInvulnerableMark;
-    public GameObject ShieldBreakerShield;
-    public GameObject DancerInvulnerableMark;
 
     public Sprite EnergyOrbEmptySprite;
     public Sprite EnergyOrbFilledSprite;
 
     private bool InRollInvulnerability;
+
     private bool InSpiritSlashInvulnerability;
 
-
-    private BattleArtEnhancement CriticalEyeEnhancement;
-    private bool HaveCriticalEyeBuff;
-    private int CurrentCriticalEyeBonusNumber;
-    private int MaxCriticalEyeBonusNumber;
-
-    private BattleArtEnhancement HarmonyEnhancement;
-    private bool HarmonyAvailable;
-    private float HarmonyHealUnit;
-
-    private BattleArtEnhancement ShieldBreakerEnhancement;
-    private bool InShieldBreakerShield;
-    private bool ShieldBreakerAbsorbAttack;
-    private int ShieldBreakerBonus;
-    private float ShieldBreakerShieldTimeCount;
-
-    private CharacterPassiveAbility DancerPassiveAbility;
-    private bool InDancerInvulnerability;
-    private int DancerShieldBreak;
-    private List<GameObject> DancerHitEnemies;
-
-    private CharacterPassiveAbility ExecutionerAbility;
-    private bool ExecutionerShortenAnticipationActivated;
-
-    private CharacterPassiveAbility AccurateBladeAbility;
-
-    private CharacterPassiveAbility CursedBladeAbility;
+    private bool InCriticalEye;
 
 
     private GameObject DamageText;
@@ -123,14 +97,11 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         var Action = GetComponent<CharacterAction>();
 
-        CountShieldTime();
-
-        DancerHitEnemy();
     }
 
-    public void SetSpiritSlashInvulnerability(bool b)
+    public void SetSpiritSlashInvulnerability(bool value)
     {
-        InSpiritSlashInvulnerability = b;
+        InSpiritSlashInvulnerability = value;
         if (InSpiritSlashInvulnerability)
         {
             SpiritSlashInvulnerableMark.GetComponent<SpriteRenderer>().enabled = true;
@@ -142,23 +113,29 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         }
     }
 
+    public bool GetCriticalEye()
+    {
+        return InCriticalEye;
+    }
 
+    private void SetCriticalEye (bool value)
+    {
+        InCriticalEye = value;
+        if (InCriticalEye)
+        {
+            CriticalEyeMark.GetComponent<SpriteRenderer>().enabled = true;
+        }
+        else
+        {
+            CriticalEyeMark.GetComponent<SpriteRenderer>().enabled = false;
+        }
+    }
 
     private void Init()
     {
         var Data = GetComponent<CharacterData>();
         CurrentHP = Data.MaxHP;
         CurrentEnergy = 0;
-
-        CriticalEyeEnhancement = GetNullBattleArtEnhancement();
-        HarmonyEnhancement = GetNullBattleArtEnhancement();
-        ShieldBreakerEnhancement = GetNullBattleArtEnhancement();
-
-        DancerPassiveAbility = GetNullPassiveAbility();
-        DancerHitEnemies = new List<GameObject>();
-        ExecutionerAbility = GetNullPassiveAbility();
-        AccurateBladeAbility = GetNullPassiveAbility();
-        CursedBladeAbility = GetNullPassiveAbility();
     }
 
     private void SetFill()
@@ -167,7 +144,9 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Data = GetComponent<CharacterData>();
         HPFill.GetComponent<Image>().fillAmount = (float)CurrentHP / Data.MaxHP;
 
-        int count = 0;
+        EnergyFill.GetComponent<Image>().fillAmount = (float)CurrentEnergy / Data.MaxEnergy;
+
+        /*int count = 0;
 
         foreach(Transform child in EnergyMarks.transform)
         {
@@ -180,15 +159,12 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                 child.GetComponent<Image>().enabled = false;
             }
             count++;
-        }
+        }*/
 
-        //EnergyFill.GetComponent<Image>().fillAmount = (float)CurrentEnergy / Data.MaxEnergy;
     }
 
-    private void SetHitAvailable(bool value)
-    {
-        GetHitAvailable = value;
-    }
+
+
 
     public override bool OnHit(AttackInfo Attack)
     {
@@ -202,8 +178,14 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         if (!Invulnerable())
         {
-            DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
+            if (InCriticalEye)
+            {
+                CurrentEnergy = 0;
+                SetCriticalEye(false);
+            }
 
+
+            DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
 
             int Damage = HitAttack.Damage;
 
@@ -240,7 +222,6 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         return false;
 
 
-
     }
 
     private bool Invulnerable()
@@ -250,18 +231,6 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void OnPlayerStartAttackAnticipation(PlayerStartAttackAnticipation e)
     {
-        //CurrentEnergy -= e.Attack.Cost;
-
-        
-
-        CursedBladeDecreaseBattleArtBaseDamage(e.Attack);
-        CursedBladeIncreaseNormalSlashBaseDamage(e.Attack);
-
-        CheckHarmonyAvailable(e.Attack);
-
-        ActivateShieldBreakerShield(e.Attack);
-
-        ExecutionerShortenAnticipation(e.Attack);
 
 
     }
@@ -273,26 +242,35 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void OnPlayerStartAttackStrike(PlayerStartAttackStrike e)
     {
-        if(e.Attack.Type == CharacterAttackType.SpiritSlash)
-        {
-            CurrentEnergy = 0;
-        }
 
-        CriticalEyeBonusToAttack(e.Attack);
+
 
     }
 
     private void OnPlayerEndAttackStrike(PlayerEndAttackStrike e)
     {
-        LoseCriticalEye(e.Attack, e.HitEnemies.Count);
-        AddCriticalEyeBuff(e.Attack,e.HitEnemies.Count);
-        ImproveCriticalEyeBuff(e.Attack, e.HitEnemies.Count);
+        var Data = GetComponent<CharacterData>();
+        var AbilityData = GetComponent<CharacterAbilityData>();
 
+        if (e.HitEnemies.Count > 0)
+        {
+            if (e.Attack.Type == CharacterAttackType.NormalSlash)
+            {
+                if (InCriticalEye)
+                {
+                    GainEnergy(AbilityData.NormalSlashEnergyGain + AbilityData.NormalSlashCriticalEyeEnergyGainBonus);
+                }
+                else
+                {
+                    GainEnergy(AbilityData.NormalSlashEnergyGain);
+                }
 
-        HarmonyHeal(e.Attack,e.HitEnemies.Count);
-
-        AccurateBladeHeal(e.Attack,e.HitEnemies.Count);
-
+            }
+            else if (e.Attack.Type == CharacterAttackType.SpiritSlash)
+            {
+                SetCriticalEye(true);
+            }
+        }
     }
 
     private void OnPlayerStartAttackRecovery(PlayerStartAttackRecovery e)
@@ -319,30 +297,17 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     {
         InRollInvulnerability = true;
 
-        //ActivateDancerInvulnerability();
     }
 
     private void OnPlayerEndRoll(PlayerEndRoll e)
     {
         InRollInvulnerability = false;
-
-        //DeactivateDancerInvulnerability();
     }
 
 
     private void OnPlayerGetHit(PlayerGetHit e)
     {
-        var Action = GetComponent<CharacterAction>();
-
-        ShieldBreakerGetHit(Action.CurrentAttack);
-
-        DancerGetHit();
-
-        if (GetHitAvailable)
-        {
-            LoseCriticalEye();
-            CursedBladeIncreaseRecievedDamage(e.EnemyAttack);
-        }
+        
     }
 
     private void OnPlayerKillEnemy(PlayerKillEnemy e)
@@ -352,233 +317,53 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void OnPlayerHitEnemy(PlayerHitEnemy e)
     {
-        var Data = GetComponent<CharacterData>();
-
-        if (e.UpdatedAttack.Type == CharacterAttackType.NormalSlash)
-        {
-            GainEnergy(1);
-        }
-
-        AccurateBladeBonusDamage(e.UpdatedAttack, e.Enemy);
 
     }
 
     private void OnPlayerBreakEnemyShield(PlayerBreakEnemyShield e)
     {
-        ShieldBreakerDamageBonus(e.Attack);
 
-        ActivateExecutionerShorten();
-        ExecutionerRecoverEnergy();
     }
 
     private void OnPlayerEquipEnhancement(PlayerEquipEnhancement e)
     {
-        var AbilityData = GetComponent<CharacterAbilityData>();
 
-        switch (e.Enhancement.Type)
-        {
-            case BattleArtEnhancementType.CriticleEye:
-                CriticalEyeEnhancement = e.Enhancement;
-                if(CriticalEyeEnhancement.Level >= 2)
-                {
-                    MaxCriticalEyeBonusNumber = AbilityData.CriticalEyeMaxBonusNumberLv2;
-                }
-                else
-                {
-                    MaxCriticalEyeBonusNumber = AbilityData.CriticalEyeMaxBonusNumberLv1;
-                }
-                break;
-
-            case BattleArtEnhancementType.Harmony:
-                HarmonyEnhancement = e.Enhancement;
-                if(HarmonyEnhancement.Level >= 2)
-                {
-                    HarmonyHealUnit = AbilityData.HarmonyHealLv2;
-                }
-                else
-                {
-                    HarmonyHealUnit = AbilityData.HarmonyHealLv1;
-                }
-                break;
-            case BattleArtEnhancementType.ShieldBreaker:
-                ShieldBreakerEnhancement = e.Enhancement;
-                if(ShieldBreakerEnhancement.Level >= 2)
-                {
-                    ShieldBreakerBonus = AbilityData.ShieldBreakerBonusLv2;
-                }
-                else
-                {
-                    ShieldBreakerBonus = AbilityData.ShieldBreakerBonusLv1;
-                }
-                break;
-        }
     }
 
     private void OnPlayerUnequipEnhancement(PlayerUnequipEnhancement e)
     {
-        var AbilityData = GetComponent<CharacterAbilityData>();
 
-        switch (e.Enhancement.Type)
-        {
-            case BattleArtEnhancementType.CriticleEye:
-                CriticalEyeEnhancement = GetNullBattleArtEnhancement();
-                LoseCriticalEye();
-                break;
-
-            case BattleArtEnhancementType.Harmony:
-                HarmonyEnhancement = GetNullBattleArtEnhancement();
-                HarmonyAvailable = false;
-                break;
-            case BattleArtEnhancementType.ShieldBreaker:
-                ShieldBreakerEnhancement = GetNullBattleArtEnhancement();
-                DeactivateShieldBreakerShield();
-                break;
-        }
     }
 
     private void OnPlayerUpgradeEnhancement(PlayerUpgradeEnhancement e)
     {
-        var AbilityData = GetComponent<CharacterAbilityData>();
 
-        switch (e.Enhancement.Type)
-        {
-            case BattleArtEnhancementType.CriticleEye:
-                if(CriticalEyeEnhancement.Level >= 2)
-                {
-                    MaxCriticalEyeBonusNumber = AbilityData.CriticalEyeMaxBonusNumberLv2;
-                }
-                break;
-
-            case BattleArtEnhancementType.Harmony:
-                if (HarmonyEnhancement.Level >= 2)
-                {
-                    HarmonyHealUnit = AbilityData.HarmonyHealLv2;
-                }
-                break;
-            case BattleArtEnhancementType.ShieldBreaker:
-                if(ShieldBreakerEnhancement.Level >= 2)
-                {
-                    ShieldBreakerBonus = AbilityData.ShieldBreakerBonusLv2;
-                }
-                break;
-        }
     }
 
 
     private void OnPlayerDowngradeEnhancement(PlayerDowngradeEnhancement e)
     {
-        var AbilityData = GetComponent<CharacterAbilityData>();
 
-        switch (e.Enhancement.Type)
-        {
-            case BattleArtEnhancementType.CriticleEye:
-                if (CriticalEyeEnhancement.Level < 2)
-                {
-                    MaxCriticalEyeBonusNumber = AbilityData.CriticalEyeMaxBonusNumberLv1;
-                    if(CurrentCriticalEyeBonusNumber > MaxCriticalEyeBonusNumber)
-                    {
-                        CurrentCriticalEyeBonusNumber = MaxCriticalEyeBonusNumber;
-                    }
-                }
-                break;
-
-            case BattleArtEnhancementType.Harmony:
-                if (HarmonyEnhancement.Level < 2)
-                {
-                    HarmonyHealUnit = AbilityData.HarmonyHealLv1;
-                }
-                break;
-            case BattleArtEnhancementType.ShieldBreaker:
-                if(ShieldBreakerEnhancement.Level < 2)
-                {
-                    ShieldBreakerBonus = AbilityData.ShieldBreakerBonusLv1;
-                }
-                break;
-        }
     }
 
     private void OnPlayerEquipPassiveAbility(PlayerEquipPassiveAbility e)
     {
-        var AbilityData = GetComponent<CharacterAbilityData>();
 
-        switch (e.PassiveAbility.Type)
-        {
-            case CharacterPassiveAbilityType.Dancer:
-                DancerPassiveAbility = e.PassiveAbility;
-                if(DancerPassiveAbility.Level == 3)
-                {
-                    DancerShieldBreak = AbilityData.DancerShieldBreak;
-                }
-                else
-                {
-                    DancerShieldBreak = 0;
-                }
-                break;
-            case CharacterPassiveAbilityType.Executioner:
-                ExecutionerAbility = e.PassiveAbility;
-                break;
-            case CharacterPassiveAbilityType.AccurateBlade:
-                AccurateBladeAbility = e.PassiveAbility;
-                break;
-        }
     }
 
     private void OnPlayerUnequipPassiveAbility(PlayerUnequipPassiveAbility e)
     {
-        var AbilityData = GetComponent<CharacterAbilityData>();
 
-        switch (e.PassiveAbility.Type)
-        {
-            case CharacterPassiveAbilityType.Dancer:
-                DancerPassiveAbility = GetNullPassiveAbility();
-                DeactivateDancerInvulnerability();
-                break;
-            case CharacterPassiveAbilityType.Executioner:
-                ExecutionerAbility = GetNullPassiveAbility();
-                DeactivateExecutionerShorten();
-                break;
-            case CharacterPassiveAbilityType.AccurateBlade:
-                AccurateBladeAbility = GetNullPassiveAbility();
-                break;
-        }
     }
 
     private void OnPlayerUpgradePassiveAbility(PlayerUpgradePassiveAbility e)
     {
-        var AbilityData = GetComponent<CharacterAbilityData>();
 
-        switch (e.PassiveAbility.Type)
-        {
-            case CharacterPassiveAbilityType.Dancer:
-                if (DancerPassiveAbility.Level == 3)
-                {
-                    DancerShieldBreak = AbilityData.DancerShieldBreak;
-                }
-                break;
-            case CharacterPassiveAbilityType.Executioner:
-                break;
-            case CharacterPassiveAbilityType.AccurateBlade:
-                break;
-        }
     }
 
     private void OnPlayerDowngradePassiveAbility(PlayerDowngradePassiveAbility e)
     {
-        var AbilityData = GetComponent<CharacterAbilityData>();
 
-        switch (e.PassiveAbility.Type)
-        {
-            case CharacterPassiveAbilityType.Dancer:
-                if (DancerPassiveAbility.Level < 3)
-                {
-                    DancerShieldBreak = 0;
-                }
-                break;
-            case CharacterPassiveAbilityType.Executioner:
-                break;
-            case CharacterPassiveAbilityType.AccurateBlade:
-                break;
-        }
     }
 
     private BattleArtEnhancement GetNullBattleArtEnhancement()
@@ -622,466 +407,5 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         CurrentEnergy += amount;
     }
 
-    /*private BattleArtEnhancement GetTargetEnhancement(BattleArtEnhancementType Type, CharacterAttackType ArtType)
-    {
-        var Action = GetComponent<CharacterAction>();
-
-        if(ArtType == CharacterAttackType.BloodSlash)
-        {
-            for(int i=0;i< Action.BloodSlashEnhancements.Count; i++)
-            {
-                if(Action.BloodSlashEnhancements[i].Type == Type)
-                {
-                    return Action.BloodSlashEnhancements[i];
-                }
-            } 
-        }
-        else
-        {
-            for (int i = 0; i < Action.DeadSlashEnhancements.Count; i++)
-            {
-                if(Action.DeadSlashEnhancements[i].Type == Type)
-                {
-                    return Action.DeadSlashEnhancements[i];
-                }
-            }
-        }
-
-        return new BattleArtEnhancement("", CharacterAttackType.Null, BattleArtEnhancementType.Null, 0);
-    }
-
-    private CharacterPassiveAbility GetTargetPassiveAbility(CharacterPassiveAbilityType Type)
-    {
-        var Action = GetComponent<CharacterAction>();
-
-        for(int i = 0; i < Action.EquipedPassiveAbilities.Count; i++)
-        {
-            if (Action.EquipedPassiveAbilities[i].Type == Type)
-            {
-                return Action.EquipedPassiveAbilities[i];
-            }
-        }
-
-        return new CharacterPassiveAbility("", CharacterPassiveAbilityType.Null, 0);
-    }*/
-
-
-
-
-
-    //CriticalEyeFunctions
-
-
-
-    private void AddCriticalEyeBuff(CharacterAttackInfo Attack, int HitNumber)
-    {
-
-        if (CriticalEyeEnhancement.Type == BattleArtEnhancementType.Null || CriticalEyeEnhancement.EnhancementAttackType != Attack.Type)
-        {
-            return;
-        }
-
-        var AbilityData = GetComponent<CharacterAbilityData>();
-
-        if (HitNumber > 0 && !HaveCriticalEyeBuff)
-        {
-            CriticalEyeMark.GetComponent<SpriteRenderer>().enabled = true;
-            HaveCriticalEyeBuff = true;
-            CurrentCriticalEyeBonusNumber = 0;
-
-            if (CriticalEyeEnhancement.Level >= 2)
-            {
-                MaxCriticalEyeBonusNumber = AbilityData.CriticalEyeMaxBonusNumberLv2;
-            }
-            else
-            {
-                MaxCriticalEyeBonusNumber = AbilityData.CriticalEyeMaxBonusNumberLv1;
-            }
-
-        }
-    }
-
-    private void CriticalEyeBonusToAttack(CharacterAttackInfo Attack)
-    {
-        if (CriticalEyeEnhancement.Type == BattleArtEnhancementType.Null || Attack.Type == CharacterAttackType.NormalSlash)
-        {
-            return;
-        }
-
-        if(Attack.Type != CriticalEyeEnhancement.EnhancementAttackType &&(CriticalEyeEnhancement.Level < 3 || CurrentCriticalEyeBonusNumber < MaxCriticalEyeBonusNumber))
-        {
-            return;
-        }
-
-        var AbilityData = GetComponent<CharacterAbilityData>();
-
-        Attack.Damage += Mathf.RoundToInt(Attack.BaseDamage * AbilityData.CriticalEyeBonusUnit * CurrentCriticalEyeBonusNumber);
-    }
-
-    private void ImproveCriticalEyeBuff(CharacterAttackInfo Attack, int HitNumber)
-    {
-        if (CriticalEyeEnhancement.Type == BattleArtEnhancementType.Null || CriticalEyeEnhancement.EnhancementAttackType != Attack.Type)
-        {
-            return;
-        }
-
-        if (HaveCriticalEyeBuff)
-        {
-            CurrentCriticalEyeBonusNumber += HitNumber;
-            if (CurrentCriticalEyeBonusNumber > MaxCriticalEyeBonusNumber)
-            {
-                CurrentCriticalEyeBonusNumber = MaxCriticalEyeBonusNumber;
-            }
-        }
-    }
-
-    private void LoseCriticalEye(CharacterAttackInfo Attack, int HitNumber)
-    {
-        if (CriticalEyeEnhancement.Type == BattleArtEnhancementType.Null || CriticalEyeEnhancement.EnhancementAttackType != Attack.Type)
-        {
-            return;
-        }
-
-        if (HitNumber == 0)
-        {
-            CriticalEyeMark.GetComponent<SpriteRenderer>().enabled = false;
-            HaveCriticalEyeBuff = false;
-            CurrentCriticalEyeBonusNumber = 0;
-        }
-    }
-
-    private void LoseCriticalEye()
-    {
-
-        CriticalEyeMark.GetComponent<SpriteRenderer>().enabled = false;
-        HaveCriticalEyeBuff = false;
-        CurrentCriticalEyeBonusNumber = 0;
-    }
-
-    //HarmonyFunctions
-
-    private void CheckHarmonyAvailable(CharacterAttackInfo Attack)
-    {
-        if(HarmonyEnhancement.Type != BattleArtEnhancementType.Null && HarmonyEnhancement.EnhancementAttackType == Attack.Type && CurrentEnergy == 0)
-        {
-            HarmonyAvailable = true;
-        }
-        else
-        {
-            HarmonyAvailable = false;
-        }
-    }
-
-    private void HarmonyHeal(CharacterAttackInfo Attack, int HitNumber)
-    {
-        if (HarmonyAvailable)
-        {
-            HarmonyAvailable = false;
-        }
-        else
-        {
-            return;
-        }
-
-        if(HarmonyEnhancement.Type == BattleArtEnhancementType.Null || HarmonyEnhancement.EnhancementAttackType != Attack.Type || HitNumber==0)
-        {
-            return;
-        }
-
-        var Data = GetComponent<CharacterData>();
-        var AbilityData = GetComponent<CharacterAbilityData>();
-
-        int HealNumber = Mathf.RoundToInt(Attack.Damage * HitNumber * HarmonyHealUnit);
-
-
-        if (CurrentHP == Data.MaxHP && HarmonyEnhancement.Level == 3)
-        {
-            GainEnergy(AbilityData.HarmonyEnergyRecovery);
-        }
-        else
-        {
-            Heal(HealNumber);
-        }
-    }
-
-    //ShieldBreaker Functions
-
-    private void CountShieldTime()
-    {
-        if (!InShieldBreakerShield)
-        {
-            return;
-        }
-
-        var AbilityData = GetComponent<CharacterAbilityData>();
-        ShieldBreakerShieldTimeCount += Time.deltaTime;
-        if (ShieldBreakerShieldTimeCount >= AbilityData.ShieldBreakerShieldTime)
-        {
-            ShieldBreakerAbsorbAttack = false;
-            DeactivateShieldBreakerShield();
-        }
-    }
-
-    private void ActivateShieldBreakerShield(CharacterAttackInfo Attack)
-    {
-        if(ShieldBreakerEnhancement.Type==BattleArtEnhancementType.Null || ShieldBreakerEnhancement.EnhancementAttackType != Attack.Type)
-        {
-            return;
-        }
-
-        var AbilityData = GetComponent<CharacterAbilityData>();
-
-        ShieldBreakerAbsorbAttack = false;
-        InShieldBreakerShield = true;
-        ShieldBreakerShieldTimeCount = 0;
-        ShieldBreakerShield.GetComponent<SpriteRenderer>().enabled = true;
-        ShieldBreakerShield.transform.position = GetComponent<SpeedManager>().GetTruePos();
-
-        Attack.AnticipationTime += AbilityData.ShieldBreakerShieldTime;
-    }
-
-    private void DeactivateShieldBreakerShield()
-    {
-
-        InShieldBreakerShield = false;
-        ShieldBreakerShield.GetComponent<SpriteRenderer>().enabled = false;
-    }
-
-    private void ShieldBreakerGetHit(CharacterAttackInfo Attack)
-    {
-        if (ShieldBreakerEnhancement.Type == BattleArtEnhancementType.Null || ShieldBreakerEnhancement.EnhancementAttackType != Attack.Type || !InShieldBreakerShield)
-        {
-            return;
-        }
-
-        ShieldBreakerAbsorbAttack = true;
-        GetHitAvailable = false;
-
-        var AbilityData = GetComponent<CharacterAbilityData>();
-
-        Attack.AnticipationTime = 0;
-
-        Attack.ShieldBreak += ShieldBreakerBonus;
-
-        DeactivateShieldBreakerShield();
-    }
-
-    private void ShieldBreakerDamageBonus(CharacterAttackInfo Attack)
-    {
-        if (ShieldBreakerEnhancement.Type == BattleArtEnhancementType.Null || ShieldBreakerEnhancement.EnhancementAttackType != Attack.Type || !ShieldBreakerAbsorbAttack || ShieldBreakerEnhancement.Level <3)
-        {
-            return;
-        }
-
-
-        var AbilityData = GetComponent<CharacterAbilityData>();
-
-        Attack.Damage += Mathf.RoundToInt(Attack.BaseDamage * AbilityData.ShieldBreakerDamageBonus);
-    }
-
-    //DancerFunctions
-
-    private void ActivateDancerInvulnerability()
-    {
-        var Data = GetComponent<CharacterData>();
-
-        if(DancerPassiveAbility.Type == CharacterPassiveAbilityType.Null || CurrentEnergy < Data.MaxEnergy)
-        {
-            return;
-        }
-
-        InDancerInvulnerability = true;
-        DancerInvulnerableMark.GetComponent<SpriteRenderer>().enabled = true;
-        DancerInvulnerableMark.transform.position = GetComponent<SpeedManager>().GetTruePos();
-        DancerHitEnemies = new List<GameObject>();
-    }
-
-    private void DeactivateDancerInvulnerability()
-    {
-        InDancerInvulnerability = false;
-        DancerInvulnerableMark.GetComponent<SpriteRenderer>().enabled = false;
-        DancerHitEnemies.Clear();
-    }
-
-    private void DancerHitEnemy()
-    {
-        if (DancerPassiveAbility.Type == CharacterPassiveAbilityType.Null || !InDancerInvulnerability || DancerPassiveAbility.Level < 2)
-        {
-            return;
-        }
-
-        var AbilityData = GetComponent<CharacterAbilityData>();
-        var Data = GetComponent<CharacterData>();
-        var SpeedManager = GetComponent<SpeedManager>();
-
-        Vector2 Offset = SpeedManager.GetTruePos() - (Vector2)transform.position;
-
-        CharacterAttackInfo DancerAttack = new CharacterAttackInfo(gameObject, CharacterAttackType.Dancer, gameObject.transform.right.x > 0, AbilityData.DancerDamage, AbilityData.DancerDamage, AbilityData.DancerDamage, DancerShieldBreak, DancerShieldBreak , 0, 0, Offset, Offset, AbilityData.DancerHitBoxSize, AbilityData.DancerHitBoxSize);
-
-
-        RaycastHit2D[] Allhits = Physics2D.BoxCastAll(SpeedManager.GetTruePos(), AbilityData.DancerHitBoxSize, 0, Vector2.zero, 0, Data.EnemyLayer);
-
-        for(int i = 0; i < Allhits.Length; i++)
-        {
-            GameObject Enemy = Allhits[i].collider.gameObject;
-            if (!DancerHitEnemies.Contains(Enemy))
-            {
-                EventManager.instance.Fire(new PlayerHitEnemy(DancerAttack,new CharacterAttackInfo(DancerAttack), Enemy));
-                DancerHitEnemies.Add(Enemy);
-                Enemy.GetComponent<IHittable>().OnHit(DancerAttack);
-            }
-        }
-
-    }
-
-    private void DancerGetHit()
-    {
-        if (!InDancerInvulnerability)
-        {
-            return;
-        }
-
-        GetHitAvailable = false;
-    }
-
-    //Executioner Functions
-
-    private void ExecutionerShortenAnticipation(CharacterAttackInfo Attack)
-    {
-        if (ExecutionerAbility.Type == CharacterPassiveAbilityType.Null || !ExecutionerShortenAnticipationActivated)
-        {
-            return;
-        }
-
-        DeactivateExecutionerShorten();
-
-        var AbilityData = GetComponent<CharacterAbilityData>();
-
-        Attack.AnticipationTime -= AbilityData.ExecutionerAnticipationCut * Attack.BaseAnticipationTime;
-    }
-
-    private void ActivateExecutionerShorten()
-    {
-        if (ExecutionerAbility.Type == CharacterPassiveAbilityType.Null || ExecutionerAbility.Level < 2)
-        {
-            return;
-        }
-
-        ExecutionerShortenAnticipationActivated = true;
-    }
-
-    private void DeactivateExecutionerShorten()
-    {
-        ExecutionerShortenAnticipationActivated = false;
-    }
-
-    private void ExecutionerRecoverEnergy()
-    {
-        if (ExecutionerAbility.Type == CharacterPassiveAbilityType.Null)
-        {
-            return;
-        }
-
-        var AbilityData = GetComponent<CharacterAbilityData>();
-        var Data = GetComponent<CharacterData>();
-
-        if(ExecutionerAbility.Level < 3)
-        {
-            GainEnergy(AbilityData.ExecutionerEnergyRecovery);
-        }
-        else
-        {
-            CurrentEnergy = Data.MaxEnergy;
-        }
-    }
-
-    //Accurate Blade Functions
-
-    private void AccurateBladeBonusDamage(CharacterAttackInfo Attack,GameObject Enemy)
-    {
-        if (AccurateBladeAbility.Type == CharacterPassiveAbilityType.Null || Attack.Type!=CharacterAttackType.NormalSlash)
-        {
-            return;
-        }
-
-        var AbilityData = GetComponent<CharacterAbilityData>();
-
-        int BonusNumber = Enemy.GetComponent<IShield>().MaxShield - Enemy.GetComponent<IShield>().CurrentShield;
-        if (BonusNumber > AbilityData.AccurateBladeMaxBonusNumber)
-        {
-            BonusNumber = AbilityData.AccurateBladeMaxBonusNumber;
-        }
-
-        if (BonusNumber > 0)
-        {
-            if (AccurateBladeAbility.Level < 2)
-            {
-                Attack.Damage += Mathf.RoundToInt(Attack.BaseDamage * AbilityData.AccurateBladeBonusUnit);
-            }
-            else
-            {
-                Attack.Damage += Mathf.RoundToInt(Attack.BaseDamage * AbilityData.AccurateBladeBonusUnit * BonusNumber);
-            }
-        }
-    }
-
-    private void AccurateBladeHeal(CharacterAttackInfo Attack, int HitNumber)
-    {
-        if(AccurateBladeAbility.Type == CharacterPassiveAbilityType.Null || AccurateBladeAbility.Level < 3 || Attack.Type !=CharacterAttackType.NormalSlash)
-        {
-            return;
-        }
-
-
-        var AbilityData = GetComponent<CharacterAbilityData>();
-
-        Heal(Mathf.RoundToInt(Attack.Damage * HitNumber * AbilityData.AccurateBladeHeal));
-    }
-
-    //Cursed Blade Functions
-
-    private void CursedBladeIncreaseRecievedDamage(EnemyAttackInfo EnemyAttack)
-    {
-        if(CursedBladeAbility.Type == CharacterPassiveAbilityType.Null)
-        {
-            return;
-        }
-
-        var AbilityData = GetComponent<CharacterAbilityData>();
-
-        EnemyAttack.Damage += Mathf.RoundToInt(EnemyAttack.BaseDamage * AbilityData.CursedBladeBattleArtDamageDecrease);
-    }
-
-    private void CursedBladeDecreaseBattleArtBaseDamage(CharacterAttackInfo Attack)
-    {
-        if (CursedBladeAbility.Type == CharacterPassiveAbilityType.Null || Attack.Type == CharacterAttackType.NormalSlash)
-        {
-            return;
-        }
-
-        var Data = GetComponent<CharacterData>();
-        if(CurrentEnergy == Data.MaxEnergy && CursedBladeAbility.Level >= 2)
-        {
-            return;
-        }
-
-        var AbilityData = GetComponent<CharacterAbilityData>();
-
-        Attack.BaseDamage -= Mathf.RoundToInt(AbilityData.CursedBladeBattleArtDamageDecrease * Attack.OriginalDamage);
-
-    }
-
-    private void CursedBladeIncreaseNormalSlashBaseDamage(CharacterAttackInfo Attack)
-    {
-        var Data = GetComponent<CharacterData>();
-        var AbilityData = GetComponent<CharacterAbilityData>();
-
-        if (CursedBladeAbility.Type == CharacterPassiveAbilityType.Null || Attack.Type!=CharacterAttackType.NormalSlash || CursedBladeAbility.Level < 3 || CurrentEnergy < Data.MaxEnergy)
-        {
-            return;
-        }
-
-        Attack.BaseDamage += Mathf.RoundToInt(AbilityData.CursedBladeNormalSlashDamageIncrease * Attack.OriginalDamage);
-    }
 
 }

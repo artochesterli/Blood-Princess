@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StatusManager_Knight : StatusManagerBase, IHittable, IShield
+public class StatusManager_Knight : StatusManagerBase, IHittable
 {
     public int MaxShield { get; set; }
     public int CurrentShield { get; set; }
@@ -26,8 +26,6 @@ public class StatusManager_Knight : StatusManagerBase, IHittable, IShield
 	{
 		var Data = GetComponent<KnightData>();
 		CurrentHP = Data.MaxHP;
-        CurrentShield = Data.MaxShield;
-        MaxShield = Data.MaxShield;
 		if (SharedCanvas == null)
 			SharedCanvas = GameObject.Find("SharedCanvas");
 	}
@@ -60,7 +58,7 @@ public class StatusManager_Knight : StatusManagerBase, IHittable, IShield
             {
                 Interrupted = false;
             }
-            SetShieldFill((float)CurrentShield / Data.MaxShield);
+
         }
 
 
@@ -112,10 +110,4 @@ public class StatusManager_Knight : StatusManagerBase, IHittable, IShield
 	{
         HPFill.GetComponent<Image>().fillAmount = value;
 	}
-
-    public void SetShieldFill(float value)
-    {
-        ShieldFill.GetComponent<Image>().fillAmount = value;
-    }
-
 }
