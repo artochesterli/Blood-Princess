@@ -178,12 +178,22 @@ public class Utility
         return Input.GetKeyDown(KeyCode.G) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("SecondSkill"));
     }
 
+    public static bool InputSpiritSlash()
+    {
+        if (ControlStateManager.CurrentControlState == ControlState.SkillManagement)
+        {
+            return false;
+        }
+
+        return Input.GetMouseButtonDown(1) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("SpiritSlash"));
+    }
+
     public static bool InputRoll()
     {
         if (ControlStateManager.CurrentControlState == ControlState.SkillManagement)
         {
             return false;
         }
-        return Input.GetMouseButtonDown(1) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Roll"));
+        return Input.GetKeyDown(KeyCode.LeftControl)|| (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Roll"));
     }
 }

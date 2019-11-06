@@ -13,11 +13,16 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     public GameObject HPFill;
     public GameObject EnergyMarks;
     public GameObject CriticalEyeMark;
+    public GameObject SpiritSlashInvulnerableMark;
     public GameObject ShieldBreakerShield;
     public GameObject DancerInvulnerableMark;
 
     public Sprite EnergyOrbEmptySprite;
     public Sprite EnergyOrbFilledSprite;
+
+    private bool InRollInvulnerability;
+    private bool InSpiritSlashInvulnerability;
+
 
     private BattleArtEnhancement CriticalEyeEnhancement;
     private bool HaveCriticalEyeBuff;
@@ -123,6 +128,22 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         DancerHitEnemy();
     }
 
+    public void SetSpiritSlashInvulnerability(bool b)
+    {
+        InSpiritSlashInvulnerability = b;
+        if (InSpiritSlashInvulnerability)
+        {
+            SpiritSlashInvulnerableMark.GetComponent<SpriteRenderer>().enabled = true;
+            SpiritSlashInvulnerableMark.transform.position = GetComponent<SpeedManager>().GetTruePos();
+        }
+        else
+        {
+            SpiritSlashInvulnerableMark.GetComponent<SpriteRenderer>().enabled = false;
+        }
+    }
+
+
+
     private void Init()
     {
         var Data = GetComponent<CharacterData>();
@@ -164,17 +185,22 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         //EnergyFill.GetComponent<Image>().fillAmount = (float)CurrentEnergy / Data.MaxEnergy;
     }
 
+    private void SetHitAvailable(bool value)
+    {
+        GetHitAvailable = value;
+    }
+
     public override bool OnHit(AttackInfo Attack)
     {
         base.OnHit(Attack);
 
         EnemyAttackInfo HitAttack = (EnemyAttackInfo)Attack;
 
-        GetHitAvailable = true;
+        //GetHitAvailable = true;
 
         EventManager.instance.Fire(new PlayerGetHit(HitAttack));
 
-        if (GetHitAvailable)
+        if (!Invulnerable())
         {
             DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
 
@@ -217,9 +243,16 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     }
 
+    private bool Invulnerable()
+    {
+        return InRollInvulnerability || InSpiritSlashInvulnerability;
+    }
+
     private void OnPlayerStartAttackAnticipation(PlayerStartAttackAnticipation e)
     {
-        CurrentEnergy -= e.Attack.Cost;
+        //CurrentEnergy -= e.Attack.Cost;
+
+        
 
         CursedBladeDecreaseBattleArtBaseDamage(e.Attack);
         CursedBladeIncreaseNormalSlashBaseDamage(e.Attack);
@@ -240,6 +273,11 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void OnPlayerStartAttackStrike(PlayerStartAttackStrike e)
     {
+        if(e.Attack.Type == CharacterAttackType.SpiritSlash)
+        {
+            CurrentEnergy = 0;
+        }
+
         CriticalEyeBonusToAttack(e.Attack);
 
     }
@@ -279,12 +317,16 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void OnPlayerStartRoll(PlayerStartRoll e)
     {
-        ActivateDancerInvulnerability();
+        InRollInvulnerability = true;
+
+        //ActivateDancerInvulnerability();
     }
 
     private void OnPlayerEndRoll(PlayerEndRoll e)
     {
-        DeactivateDancerInvulnerability();
+        InRollInvulnerability = false;
+
+        //DeactivateDancerInvulnerability();
     }
 
 
