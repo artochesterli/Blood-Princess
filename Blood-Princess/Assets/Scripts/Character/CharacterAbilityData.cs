@@ -9,7 +9,6 @@ public class CharacterAbilityData : MonoBehaviour
     public float NormalSlashRecoveryTime;
     public float NormalSlashStepForwardSpeed;
     public int NormalSlashDamage;
-    public int NormalSlashInterruptLevel;
     public GameObject NormalSlashImage;
     public Vector2 NormalSlashOffset;
     public Vector2 NormalSlashHitBoxSize;
@@ -20,6 +19,7 @@ public class CharacterAbilityData : MonoBehaviour
     public float BloodSlashStrikeTime;
     public float BloodSlashRecoveryTime;
     public float BloodSlashStepForwardSpeed;
+    public int BloodSlashShieldBreak;
     public int BloodSlashDamage;
     public int BloodSlashEnergyCost;
     public GameObject BloodSlashImage;
@@ -31,6 +31,7 @@ public class CharacterAbilityData : MonoBehaviour
     public float DeadSlashAnticipationTime;
     public float DeadSlashStrikeTime;
     public float DeadSlashRecoveryTime;
+    public int DeadSlashShieldBreak;
     public int DeadSlashDamage;
     public int DeadSlashEnergyCost;
     public GameObject DeadSlashImage;
@@ -42,14 +43,45 @@ public class CharacterAbilityData : MonoBehaviour
     public int MaxPassiveSkillNumber;
 
     public string CriticalEyeName;
-    public int CriticalEyeBonusLv1;
-    public int CriticalEyeBonusLv2;
-    public float CriticalEyeBattleArtBonusUnit;
-    public int CriticalEyeMaxBattleArtBonusNumber;
+    public int MaxCriticalEyeLevel;
+    public float CriticalEyeBonusUnit;
+    public int CriticalEyeMaxBonusNumberLv1;
+    public int CriticalEyeMaxBonusNumberLv2;
 
     public string HarmonyName;
-    public int HarmonyHealAmountLv1;
-    public int HarmonyHealAmountLv2;
-    public int HarmonyHealNoEnergyExtraAmount;
+    public int MaxHarmonyLevel;
+    public float HarmonyHealLv1;
+    public float HarmonyHealLv2;
+    public int HarmonyEnergyRecovery;
+
+    public string ShieldBreakerName;
+    public int MaxShieldBreakerLevel;
+    public float ShieldBreakerShieldTime;
+    public int ShieldBreakerBonusLv1;
+    public int ShieldBreakerBonusLv2;
+    public float ShieldBreakerDamageBonus;
+
+    public string ExecutionerName;
+    public int MaxExecutionerLevel;
+    public int ExecutionerEnergyRecovery;
+    public float ExecutionerAnticipationCut;
+
+    public string DancerName;
+    public int MaxDancerLevel;
+    public int DancerDamage;
+    public int DancerShieldBreak;
+    public Vector2 DancerHitBoxSize;
+
+    public string AccurateBladeName;
+    public int MaxAccurateBladeLevel;
+    public float AccurateBladeBonusUnit;
+    public int AccurateBladeMaxBonusNumber;
+    public float AccurateBladeHeal;
+
+    public string CursedBladeName;
+    public int MaxCursedBladeLevel;
+    public float CursedBladeExtraDamageRecieved;
+    public float CursedBladeBattleArtDamageDecrease;
+    public float CursedBladeNormalSlashDamageIncrease;
 
 }

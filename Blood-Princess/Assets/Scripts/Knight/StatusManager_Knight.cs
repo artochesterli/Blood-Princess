@@ -5,8 +5,10 @@ using UnityEngine.UI;
 
 public class StatusManager_Knight : StatusManagerBase, IHittable, IShield
 {
+    public int MaxShield { get; set; }
+    public int CurrentShield { get; set; }
 
-	public GameObject Canvas;
+    public GameObject Canvas;
 	public GameObject SharedCanvas;
 	public GameObject HPFill;
     public GameObject ShieldFill;
@@ -25,6 +27,7 @@ public class StatusManager_Knight : StatusManagerBase, IHittable, IShield
 		var Data = GetComponent<KnightData>();
 		CurrentHP = Data.MaxHP;
         CurrentShield = Data.MaxShield;
+        MaxShield = Data.MaxShield;
 		if (SharedCanvas == null)
 			SharedCanvas = GameObject.Find("SharedCanvas");
 	}
@@ -38,22 +41,18 @@ public class StatusManager_Knight : StatusManagerBase, IHittable, IShield
 	public override bool OnHit(AttackInfo Attack)
 	{
 		base.OnHit(Attack);
-		DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
 
-		CharacterAttackInfo HitAttack = (CharacterAttackInfo)Attack;
 
-		GetComponent<KnightAI>().Player = HitAttack.Source;
+        var Data = GetComponent<KnightData>();
 
-		var Data = GetComponent<KnightData>();
-
-		CurrentHP -= HitAttack.Damage;
-
+        CharacterAttackInfo HitAttack = (CharacterAttackInfo)Attack;
 
         if (!Interrupted)
         {
             CurrentShield -= HitAttack.ShieldBreak;
             if (CurrentShield <= 0)
             {
+                EventManager.instance.Fire(new PlayerBreakEnemyShield(HitAttack, gameObject));
                 CurrentShield = 0;
                 Interrupted = true;
             }
@@ -65,17 +64,15 @@ public class StatusManager_Knight : StatusManagerBase, IHittable, IShield
         }
 
 
+        DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
+
+
+		GetComponent<KnightAI>().Player = HitAttack.Source;
+
+
+		CurrentHP -= HitAttack.Damage;
+
         SetHPFill((float)CurrentHP / Data.MaxHP);
-
-
-		/*if (HitAttack.InterruptLevel >= Data.ShieldLevel)
-		{
-			Interrupted = true;
-		}
-		else
-		{
-			Interrupted = false;
-		}*/
 
 
 		if (HitAttack.Right)

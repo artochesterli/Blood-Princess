@@ -32,7 +32,7 @@ public class Attack : Action
         GetComponent<SpriteRenderer>().sprite = m_KnightSpriteData.Recovery;
         m_AttackHit = false;
         bool isRight = transform.eulerAngles.y == 0f;
-        AttackInfo = new EnemyAttackInfo(Owner.gameObject, isRight, Damage.Value, HitBoxOffset.Value, HitBoxSize.Value);
+        AttackInfo = new EnemyAttackInfo(Owner.gameObject, isRight, Damage.Value, Damage.Value, HitBoxOffset.Value, HitBoxSize.Value);
         GetComponent<SpeedManager>().SelfSpeed.x = transform.right.x * ForwardStep.Value;
     }
 

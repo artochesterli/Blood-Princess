@@ -234,7 +234,7 @@ public abstract class KnightBehavior : FSM<KnightAI>.State
     {
         var KnightData = Entity.GetComponent<KnightData>();
 
-        return new EnemyAttackInfo(Entity, Entity.transform.right.x > 0, KnightData.Damage, KnightData.AttackOffset, KnightData.AttackHitBoxSize);
+        return new EnemyAttackInfo(Entity, Entity.transform.right.x > 0, KnightData.Damage, KnightData.Damage, KnightData.AttackOffset, KnightData.AttackHitBoxSize);
     }
 
 }

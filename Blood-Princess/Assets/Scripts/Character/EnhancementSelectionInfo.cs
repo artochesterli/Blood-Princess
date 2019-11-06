@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PassiveSkillSelectionInfo : MonoBehaviour
+public class EnhancementSelectionInfo : MonoBehaviour
 {
-    public CharacterPassiveAbility PassiveAbility;
-    public bool Selected;
+    public BattleArtEnhancement Enhancement;
+    public bool Selected { get; set; }
     public Color UnselectedColor;
     public Color SelectedColor;
     // Start is called before the first frame update
