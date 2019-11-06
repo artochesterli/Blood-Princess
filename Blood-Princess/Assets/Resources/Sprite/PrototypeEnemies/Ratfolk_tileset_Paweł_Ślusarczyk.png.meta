@@ -1,0 +1,823 @@
+fileFormatVersion: 2
+guid: d59c9959e57450e4fbe4f4189824d91f
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 4486298268944028168
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_0"
+  - first:
+      213: 7686877277858963143
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_1"
+  - first:
+      213: -2356205937232150743
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_2"
+  - first:
+      213: 7925259692281564552
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_4"
+  - first:
+      213: 2480191578707384094
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_5"
+  - first:
+      213: 5505808891135019128
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_6"
+  - first:
+      213: -6407100805717961964
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_7"
+  - first:
+      213: 2277116111142191777
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_8"
+  - first:
+      213: 6859808022590375768
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_9"
+  - first:
+      213: 5382217275868326151
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_11"
+  - first:
+      213: 6221617396124549939
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_12"
+  - first:
+      213: 7320233763649272873
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_14"
+  - first:
+      213: -6337408965429571191
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_15"
+  - first:
+      213: -51065691785260008
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_16"
+  - first:
+      213: 1199912670174777305
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_17"
+  - first:
+      213: 2152760439826452816
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_18"
+  - first:
+      213: 518314857723681724
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_19"
+  - first:
+      213: -9211154836357599506
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_20"
+  - first:
+      213: 8757147546698429766
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_21"
+  - first:
+      213: 238376634073384733
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_22"
+  - first:
+      213: 3595023473487125604
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_23"
+  - first:
+      213: -3065548136876434073
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_24"
+  - first:
+      213: -7696521713028306430
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_25"
+  - first:
+      213: 3603108989649899489
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_26"
+  - first:
+      213: -4610512976624455347
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_27"
+  - first:
+      213: 6370645363883963487
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_28"
+  - first:
+      213: -9027748298842848432
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_29"
+  - first:
+      213: -4103895413781009799
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_30"
+  - first:
+      213: 7075341744501769814
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_31"
+  - first:
+      213: 5497423982736162736
+    second: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_32"
+  externalObjects: {}
+  serializedVersion: 10
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 0
+    aniso: -1
+    mipBias: -100
+    wrapU: 1
+    wrapV: 1
+    wrapW: -1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 25
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  platformSettings:
+  - serializedVersion: 3
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 3
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_0"
+      rect:
+        serializedVersion: 2
+        x: 6
+        y: 96
+        width: 22
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fee60d3d05600bd47872af6bd64192f7
+      internalID: 4486298268944028168
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_1"
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 96
+        width: 17
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f6da08b1afc5ae340b097d993ad903fe
+      internalID: 7686877277858963143
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_2"
+      rect:
+        serializedVersion: 2
+        x: 68
+        y: 96
+        width: 19
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d130fe66224f966428676723cf558b54
+      internalID: -2356205937232150743
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_4"
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 97
+        width: 22
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4aae98ca9d4250f40bbe39a8b724972c
+      internalID: 7925259692281564552
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_5"
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 96
+        width: 17
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8a3503cd89adb4549af12b3c94b8830d
+      internalID: 2480191578707384094
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_6"
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 107
+        width: 10
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 25136aa88cfa09c44af34cfa7f9b224f
+      internalID: 5505808891135019128
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_7"
+      rect:
+        serializedVersion: 2
+        x: 205
+        y: 107
+        width: 8
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4042be9237d6e7f449ec71c8f3ceb211
+      internalID: -6407100805717961964
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_8"
+      rect:
+        serializedVersion: 2
+        x: 232
+        y: 104
+        width: 14
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2eb6779333732a640a9561dd991b2d59
+      internalID: 2277116111142191777
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_9"
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 106
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b7d814f8f4638f248ae2d112babfcb76
+      internalID: 6859808022590375768
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_11"
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 64
+        width: 15
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9e88adc698761e344b5932f1706d5a87
+      internalID: 5382217275868326151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_12"
+      rect:
+        serializedVersion: 2
+        x: 66
+        y: 64
+        width: 23
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 3e91e24f2fb6e754a857fb490d9fa7b3
+      internalID: 6221617396124549939
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_14"
+      rect:
+        serializedVersion: 2
+        x: 137
+        y: 64
+        width: 16
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b6909391aaacf2d40aa954b99532ecd0
+      internalID: 7320233763649272873
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_15"
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 76
+        width: 11
+        height: 10
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4c3e8f69051b5ef458ecfc5a8787cb0c
+      internalID: -6337408965429571191
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_16"
+      rect:
+        serializedVersion: 2
+        x: 197
+        y: 71
+        width: 23
+        height: 18
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 1190bef4950d16e4d95347f3dee2f681
+      internalID: -51065691785260008
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_17"
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 69
+        width: 13
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d205541ace3527d469df43263090acc8
+      internalID: 1199912670174777305
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_18"
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 74
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 454b9dadb057f0e418041d720c7f2232
+      internalID: 2152760439826452816
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_19"
+      rect:
+        serializedVersion: 2
+        x: 100
+        y: 66
+        width: 21
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 11f54b3f9ec24b74384522efde71fb32
+      internalID: 518314857723681724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_20"
+      rect:
+        serializedVersion: 2
+        x: 41
+        y: 32
+        width: 17
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12b70f99cdf0bd44b95a2befb8e0cb23
+      internalID: -9211154836357599506
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_21"
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 32
+        width: 17
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 0238339a16a56424f823dc1b9b740ea7
+      internalID: 8757147546698429766
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_22"
+      rect:
+        serializedVersion: 2
+        x: 98
+        y: 34
+        width: 25
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c152399a13a89404489279cdfc815de3
+      internalID: 238376634073384733
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_23"
+      rect:
+        serializedVersion: 2
+        x: 171
+        y: 43
+        width: 11
+        height: 11
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 2b878ccecf0fba64585d98fb36c5d140
+      internalID: 3595023473487125604
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_24"
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 32
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 96e07e019ea11c54db72d9bc72904b96
+      internalID: -3065548136876434073
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_25"
+      rect:
+        serializedVersion: 2
+        x: 231
+        y: 37
+        width: 14
+        height: 26
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 058dcfc693530644eb7b3bfd1c78b1e7
+      internalID: -7696521713028306430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_26"
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 42
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8bb8f9f0085c01641acd868aee051aad
+      internalID: 3603108989649899489
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_27"
+      rect:
+        serializedVersion: 2
+        x: 89
+        y: 32
+        width: 7
+        height: 4
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: b390749471ef38246a2fec600a136110
+      internalID: -4610512976624455347
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_28"
+      rect:
+        serializedVersion: 2
+        x: 72
+        y: 0
+        width: 17
+        height: 31
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: fa1513aca753cf54a98581c8a4bb9816
+      internalID: 6370645363883963487
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_29"
+      rect:
+        serializedVersion: 2
+        x: 192
+        y: 0
+        width: 32
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: f9824e800a8a7704caee32f1cd296f32
+      internalID: -9027748298842848432
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_30"
+      rect:
+        serializedVersion: 2
+        x: 236
+        y: 10
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4ac75bd63bb8dd144aa33afeb95f140d
+      internalID: -4103895413781009799
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_31"
+      rect:
+        serializedVersion: 2
+        x: 268
+        y: 10
+        width: 8
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 35acf338c3ee4ff43996375697bd59d8
+      internalID: 7075341744501769814
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: "Ratfolk_tileset_Pawe\u0142_\u015Alusarczyk_32"
+      rect:
+        serializedVersion: 2
+        x: 40
+        y: 64
+        width: 18
+        height: 32
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 7f629dedf0df0db4891f2bf84ba35471
+      internalID: 5497423982736162736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+  spritePackingTag: 
+  pSDRemoveMatte: 0
+  pSDShowRemoveMatteOption: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

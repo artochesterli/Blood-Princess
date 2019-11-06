@@ -43,6 +43,8 @@ public class StatusManager_General : StatusManagerBase, IHittable
 
 		CurrentHP -= HitAttack.Damage;
 
+		GetComponent<BehaviorTree>().SendEvent("Attacked");
+
 		if (HitAttack.Type != CharacterAttackType.NormalSlash)
 		{
 			Interrupted = true;
