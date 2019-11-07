@@ -180,10 +180,13 @@ public class InputInfo
 {
     public InputType Type;
     public float TimeCount;
+    public bool Right;
 
-    public InputInfo(InputType type)
+
+    public InputInfo(InputType type, bool right)
     {
         Type = type;
+        Right = right;
         TimeCount = 0;
     }
 }
@@ -315,24 +318,39 @@ public class CharacterAction : MonoBehaviour
 
     private void GetSaveableInput()
     {
+        bool Right;
+
+        if (Utility.InputRight() && !Utility.InputLeft())
+        {
+            Right = true;
+        }
+        else if(!Utility.InputRight() && Utility.InputLeft())
+        {
+            Right = false;
+        }
+        else
+        {
+            Right = transform.right.x > 0;
+        }
+
         if (Utility.InputJump())
         {
-            SavedInputInfo.Add(new InputInfo(InputType.Jump));
+            SavedInputInfo.Add(new InputInfo(InputType.Jump,Right));
         }
 
         if (Utility.InputNormalSlash())
         {
-            SavedInputInfo.Add(new InputInfo(InputType.NormalSlash));
+            SavedInputInfo.Add(new InputInfo(InputType.NormalSlash,Right));
         }
 
         if (Utility.InputRoll())
         {
-            SavedInputInfo.Add(new InputInfo(InputType.Roll));
+            SavedInputInfo.Add(new InputInfo(InputType.Roll,Right));
         }
 
         if (Utility.InputSpiritSlash())
         {
-            SavedInputInfo.Add(new InputInfo(InputType.SpiritSlash));
+            SavedInputInfo.Add(new InputInfo(InputType.SpiritSlash,Right));
         }
     }
 
@@ -689,6 +707,14 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         //return Utility.InputNormalSlash();
         if (Usable && Context.SavedInputInfo.Count>0 && Context.SavedInputInfo[0].Type == InputType.NormalSlash)
         {
+            if (Context.SavedInputInfo[0].Right)
+            {
+                Entity.transform.eulerAngles = new Vector3(0, 0, 0);
+            }
+            else
+            {
+                Entity.transform.eulerAngles = new Vector3(0, 180, 0);
+            }
             return true;
         }
 
@@ -702,6 +728,14 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
 
         if (CheckGrounded() && Context.SavedInputInfo.Count > 0 && Context.SavedInputInfo[0].Type == InputType.SpiritSlash && Status.CurrentEnergy > 0)
         {
+            if (Context.SavedInputInfo[0].Right)
+            {
+                Entity.transform.eulerAngles = new Vector3(0, 0, 0);
+            }
+            else
+            {
+                Entity.transform.eulerAngles = new Vector3(0, 180, 0);
+            }
             return true;
         }
         return false;
@@ -711,6 +745,14 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
     {
         if(Context.SavedInputInfo.Count>0 && Context.SavedInputInfo[0].Type == InputType.Jump)
         {
+            if (Context.SavedInputInfo[0].Right)
+            {
+                Entity.transform.eulerAngles = new Vector3(0, 0, 0);
+            }
+            else
+            {
+                Entity.transform.eulerAngles = new Vector3(0, 180, 0);
+            }
             return true;
         }
 
@@ -721,6 +763,14 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
     {
         if (Context.RollCoolDownTimeCount<=0 && Context.SavedInputInfo.Count > 0 && Context.SavedInputInfo[0].Type == InputType.Roll && CheckGrounded())
         {
+            if (Context.SavedInputInfo[0].Right)
+            {
+                Entity.transform.eulerAngles = new Vector3(0, 0, 0);
+            }
+            else
+            {
+                Entity.transform.eulerAngles = new Vector3(0, 180, 0);
+            }
             return true;
         }
 
@@ -1506,7 +1556,7 @@ public class SlashAnticipation : CharacterActionState
 
         if (Context.CurrentAttackType == CharacterAttackType.SpiritSlash)
         {
-            Status.SetSpiritSlashInvulnerability(true);
+            //Status.SetSpiritSlashInvulnerability(true);
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = -Entity.transform.right.x * AbilityData.SpiritSlashStepBackSpeed;
         }
         else
@@ -1688,7 +1738,7 @@ public class SlashStrike : CharacterActionState
     {
         if (HitEnemy(Context.CurrentAttack, Context.HitEnemies))
         {
-            Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+            //Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
         }
     }
 

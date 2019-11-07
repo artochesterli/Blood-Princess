@@ -183,7 +183,6 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         {
             if (InCriticalEye)
             {
-                Debug.Log("hhhh");
                 CurrentEnergy = 0;
                 SetCriticalEye(false);
             }

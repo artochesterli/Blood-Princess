@@ -2404,7 +2404,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee46af2cbb06dd242a5cc4402d3a7672, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InputSaveTime: 0.1
+  InputSaveTime: 0.2
   MaxSpeed: 5.5
   GroundAcceleration: 50
   GroundDeceleration: 50
