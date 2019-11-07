@@ -18,15 +18,6 @@ public class CharacterData : MonoBehaviour
     public int MaxHP;
     public int MaxEnergy;
 
-    public float InvulnerableAnticipationTime;
-    public float InvulnerableTime;
-    public float InvulnerableRecoveryTime;
-    public int InvulberableEnergyCost;
-    public float InvulnerableExplosionStartRadius;
-    public float InvulnerableExplosionEndRadius;
-    public float InvulnerableExplosionTime;
-    public int InvulnerableExplosionDamage;
-
     public float InterruptedTime;
     public float InterruptedMoveTime;
     public float InterruptedSpeed;
@@ -37,6 +28,8 @@ public class CharacterData : MonoBehaviour
     public float RollRecoveryTime;
     public float RollCoolDown;
     public float RollSpeed;
+
+    public float PushedOutSpeed;
 
     public LayerMask NormalIgnoredLayers;
     public LayerMask RollIgnoredLayers;

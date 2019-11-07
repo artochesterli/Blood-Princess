@@ -67,11 +67,7 @@ public class BloodSlashEnhancementSlotManager : MonoBehaviour,ISkillSlot
 
     public void Equip(CharacterAbility Ability)
     {
-        EquipedEnhancement = (BattleArtEnhancement)Ability;
-        EquipedEnhancement.EnhancementAttackType = CharacterAttackType.BloodSlash;
 
-        Player.GetComponent<CharacterAction>().BloodSlashEnhancements[index] = EquipedEnhancement;
-        EventManager.instance.Fire(new PlayerEquipEnhancement(EquipedEnhancement));
     }
     public void UpgradeAbility()
     {
@@ -85,9 +81,6 @@ public class BloodSlashEnhancementSlotManager : MonoBehaviour,ISkillSlot
     }
     public void RemoveAbility()
     {
-        EventManager.instance.Fire(new PlayerUnequipEnhancement(EquipedEnhancement));
-        EquipedEnhancement = new BattleArtEnhancement("", CharacterAttackType.BloodSlash, BattleArtEnhancementType.Null, 0);
-        Player.GetComponent<CharacterAction>().BloodSlashEnhancements[index] = new BattleArtEnhancement("", CharacterAttackType.BloodSlash, BattleArtEnhancementType.Null, 0);
 
     }
     public bool IsAbilityEquiped()

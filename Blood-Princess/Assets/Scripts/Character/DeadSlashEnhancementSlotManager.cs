@@ -68,10 +68,7 @@ public class DeadSlashEnhancementSlotManager : MonoBehaviour, ISkillSlot
 
     public void Equip(CharacterAbility Ability)
     {
-        EquipedEnhancement = (BattleArtEnhancement)Ability;
-        EquipedEnhancement.EnhancementAttackType = CharacterAttackType.DeadSlash;
-        Player.GetComponent<CharacterAction>().DeadSlashEnhancements[index] = EquipedEnhancement;
-        EventManager.instance.Fire(new PlayerEquipEnhancement(EquipedEnhancement));
+
     }
     public void UpgradeAbility()
     {
@@ -85,9 +82,6 @@ public class DeadSlashEnhancementSlotManager : MonoBehaviour, ISkillSlot
     }
     public void RemoveAbility()
     {
-        EventManager.instance.Fire(new PlayerUnequipEnhancement(EquipedEnhancement));
-        EquipedEnhancement = new BattleArtEnhancement("", CharacterAttackType.DeadSlash, BattleArtEnhancementType.Null, 0);
-        Player.GetComponent<CharacterAction>().DeadSlashEnhancements[index] = new BattleArtEnhancement("", CharacterAttackType.DeadSlash, BattleArtEnhancementType.Null, 0);
 
     }
     public bool IsAbilityEquiped()

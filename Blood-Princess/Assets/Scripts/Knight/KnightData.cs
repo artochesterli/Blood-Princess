@@ -5,7 +5,6 @@ using UnityEngine;
 public class KnightData : MonoBehaviour
 {
     public int MaxHP;
-    public int MaxShield;
 
     public float NormalMoveSpeed;
     public float KeepDisMoveSpeed;
@@ -20,8 +19,7 @@ public class KnightData : MonoBehaviour
     public float DoubleAttackSecondAnticipationTime;
     public float ChaseAttackAnticipationTime;
     public float ChaseAttackSpeed;
-    public float ChaseAttackTriggerDistance;
-    public float MaxChaseAttackDistance;
+
     public float AttackTime;
     public float SingleAttackRecoveryTime;
     public float DoubleAttackFirstRecoveryTime;
@@ -32,21 +30,15 @@ public class KnightData : MonoBehaviour
     public Vector2 AttackHitBoxSize;
     public GameObject SlashImage;
 
-    //public int ShieldLevel;
-    public float InterruptedTime;
-    public float InterruptedSpeed;
-    public float InterruptedMoveTime;
+    public float KnockedBackTime;
+    public float KnockedBackSpeed;
 
-    public float TacticDistance;
-    public float DangerDistance;
-    public float ChaseForAttackDistance;
-    public float TacticDecisionInterval;
-    public float AttackDecisionChance;
-    public float ShortDisSingleAttackChance;
-    public float LongDisSingleAttackChance;
+    public float AttackInterval;
 
-    public int MaxStamina;
-    public int MaxPatience;
+    public float MinChaseAttackChaseDistance;
+    public float MaxChaseAttackChaseDistance;
+
+    public float SingleAttackChance;
 
     // Start is called before the first frame update
     void Start()

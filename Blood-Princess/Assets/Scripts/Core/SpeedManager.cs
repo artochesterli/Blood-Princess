@@ -15,6 +15,7 @@ public class SpeedManager : MonoBehaviour
     public LayerMask IgnoredLayers;
 
     public Vector2 SelfSpeed;
+    public Vector2 ForcedSpeed;
 
     public bool HitRight;
     public float RightDis;
@@ -106,141 +107,245 @@ public class SpeedManager : MonoBehaviour
     }
     
 
-    public void Move()
+    private void CheckPushedOut()
     {
-        Vector2 temp = SelfSpeed;
-
-        if (temp.y > 0)
+        if (CompareTag("Player"))
         {
-            if (TopDis < temp.y * Time.deltaTime)
+            var Data = GetComponent<CharacterData>();
+
+            bool RightStuckForceField = false;
+            if(Right && Right.GetComponent<ColliderInfo>().Type== ColliderType.ForceField && RightDis<0)
             {
-                if (TopDis > 0)
+                RightStuckForceField = true;
+            }
+
+            bool LeftStuckForceField = false;
+            if(Left && Left.GetComponent<ColliderInfo>().Type == ColliderType.ForceField && LeftDis < 0)
+            {
+                LeftStuckForceField = true;
+            }
+
+            if(!RightStuckForceField && !LeftStuckForceField)
+            {
+                ForcedSpeed.x = 0;
+                return;
+            }
+
+            float ReferenceX = 0;
+            int count = 0;
+
+            if (RightStuckForceField)
+            {
+                if (Right.GetComponent<SpeedManager>())
                 {
-                    temp.y = TopDis / Time.deltaTime;
+                    ReferenceX += Right.GetComponent<SpeedManager>().GetTruePos().x;
                 }
                 else
                 {
-                    temp.y = 0;
+                    ReferenceX += Right.transform.position.x;
                 }
-                SelfSpeed.y = 0;
-                HitTop = true;
-                if (ConverseHit(Top))
-                {
-                    Top.GetComponent<SpeedManager>().HitGround = true;
-                }
+                count++;
             }
-            else
+
+            if (LeftStuckForceField)
             {
-                if (Top && Top.GetComponent<SpeedManager>() && Top.GetComponent<SpeedManager>().HitGround)
+                if (Left.GetComponent<SpeedManager>())
                 {
-                    HitTop = true;
+                    ReferenceX += Left.GetComponent<SpeedManager>().GetTruePos().x;
+                }
+                else
+                {
+                    ReferenceX += Left.transform.position.x;
+                }
+                count++;
+            }
+
+            ReferenceX /= count;
+
+            if(GetTruePos().x > ReferenceX && SelfSpeed.x <= 0)
+            {
+                ForcedSpeed.x = Data.PushedOutSpeed;
+            }
+            else if(GetTruePos().x < ReferenceX && SelfSpeed.x >= 0)
+            {
+                ForcedSpeed.x = -Data.PushedOutSpeed;
+            }
+
+        }
+    }
+
+    private void Move()
+    {
+        CheckPushedOut();
+
+
+
+        Vector2 temp = SelfSpeed + ForcedSpeed;
+
+        if (temp.y > 0 && Top)
+        {
+            ColliderType Type = Top.GetComponent<ColliderInfo>().Type;
+
+            if (Type != ColliderType.ForceField)
+            {
+                if (TopDis < temp.y * Time.deltaTime)
+                {
+                    if (TopDis > 0 || Type == ColliderType.Solid)
+                    {
+                        temp.y = TopDis / Time.deltaTime;
+                        SelfSpeed.y = 0;
+                        ForcedSpeed.y = 0;
+
+                        HitTop = true;
+                        if (ConverseHit(Top))
+                        {
+                            Top.GetComponent<SpeedManager>().HitGround = true;
+                        }
+                    }
+                    else
+                    {
+                        HitTop = false;
+                    }
+
+
                 }
                 else
                 {
                     HitTop = false;
                 }
             }
-        }
-
-        if (temp.y < 0)
-        {
-            if (GroundDis < -temp.y * Time.deltaTime)
-            {
-                if (GroundDis > 0)
-                {
-                    temp.y = -GroundDis / Time.deltaTime;
-                }
-                else
-                {
-                    temp.y = 0;
-                }
-                SelfSpeed.y = 0;
-                HitGround = true;
-                if (ConverseHit(Ground))
-                {
-                    Ground.GetComponent<SpeedManager>().HitTop = true;
-                }
-            }
             else
             {
-                if (Ground && Ground.GetComponent<SpeedManager>() && Ground.GetComponent<SpeedManager>().HitTop)
+                HitTop = false;
+            }
+        }
+        else
+        {
+            HitTop = false;
+        }
+
+        if (temp.y < 0 && Ground)
+        {
+            ColliderType Type = Ground.GetComponent<ColliderInfo>().Type;
+
+            if (Type != ColliderType.ForceField)
+            {
+                if (GroundDis < -temp.y * Time.deltaTime)
                 {
-                    HitGround = true;
+                    if (GroundDis > 0 || Type == ColliderType.Solid)
+                    {
+                        temp.y = -GroundDis / Time.deltaTime;
+                        SelfSpeed.y = 0;
+                        ForcedSpeed.y = 0;
+                        HitGround = true;
+                        if (ConverseHit(Ground))
+                        {
+                            Ground.GetComponent<SpeedManager>().HitTop = true;
+                        }
+                    }
+                    else
+                    {
+                        HitGround = false;
+                    }
+
                 }
                 else
                 {
                     HitGround = false;
                 }
             }
-        }
-
-        if (temp.x < 0)
-        {
-            if (LeftDis < -temp.x * Time.deltaTime)
-            {
-                if (LeftDis > 0)
-                {
-                    temp.x = -LeftDis / Time.deltaTime;
-                }
-                else
-                {
-                    temp.x = 0;
-                }
-                SelfSpeed.x = 0;
-                HitLeft = true;
-
-                if (ConverseHit(Left))
-                {
-                    Left.GetComponent<SpeedManager>().HitRight = false;
-                }
-            }
             else
             {
-                if(Left && Left.GetComponent<SpeedManager>() && Left.GetComponent<SpeedManager>().HitRight)
+                HitGround = false;
+            }
+
+        }
+        else
+        {
+            HitGround = false;
+        }
+
+        if (temp.x < 0 && Left)
+        {
+            ColliderType Type = Left.GetComponent<ColliderInfo>().Type;
+
+            if (Type != ColliderType.ForceField)
+            {
+                if (LeftDis < -temp.x * Time.deltaTime)
                 {
-                    HitLeft = true;
+                    if (LeftDis > 0 || Type == ColliderType.Solid)
+                    {
+                        temp.x = -LeftDis / Time.deltaTime;
+                        SelfSpeed.x = 0;
+                        ForcedSpeed.x = 0;
+                        HitLeft = true;
+
+                        if (ConverseHit(Left))
+                        {
+                            Left.GetComponent<SpeedManager>().HitRight = false;
+                        }
+                    }
+                    else
+                    {
+                        HitLeft = false;
+                    }
+
                 }
                 else
                 {
                     HitLeft = false;
-                }
 
-            }
-        }
-
-        if (temp.x > 0)
-        {
-            if (RightDis < temp.x * Time.deltaTime)
-            {
-                if(RightDis > 0)
-                {
-                    temp.x = RightDis / Time.deltaTime;
-                }
-                else
-                {
-                    temp.x = 0;
-                }
-
-                SelfSpeed.x = 0;
-                HitRight = true;
-
-                if(ConverseHit(Right))
-                {
-                    Right.GetComponent<SpeedManager>().HitLeft = true;
                 }
             }
             else
             {
-                if (Right && Right.GetComponent<SpeedManager>() && Right.GetComponent<SpeedManager>().HitLeft)
+                HitLeft = false;
+            }
+        }
+        else
+        {
+            HitLeft = false;
+        }
+
+        if (temp.x > 0 && Right)
+        {
+            ColliderType Type = Right.GetComponent<ColliderInfo>().Type;
+
+            if (Type != ColliderType.ForceField)
+            {
+                if (RightDis < temp.x * Time.deltaTime)
                 {
-                    HitRight = true;
+                    if (RightDis > 0 || Type == ColliderType.Solid)
+                    {
+                        temp.x = RightDis / Time.deltaTime;
+                        SelfSpeed.x = 0;
+                        ForcedSpeed.x = 0;
+                        HitRight = true;
+
+                        if (ConverseHit(Right))
+                        {
+                            Right.GetComponent<SpeedManager>().HitLeft = true;
+                        }
+                    }
+                    else
+                    {
+                        HitRight = false;
+                    }
+
                 }
                 else
                 {
                     HitRight = false;
                 }
-
             }
+            else
+            {
+                HitRight = false;
+            }
+        }
+        else
+        {
+            HitRight = false;
         }
 
         transform.position += (Vector3)temp* Time.deltaTime;
@@ -248,11 +353,6 @@ public class SpeedManager : MonoBehaviour
 
     public void CheckGroundDis()
     {
-        //RaycastHit2D hit = Physics2D.BoxCast(GetTruePos(), new Vector2(BodyWidth - 2 * HitMargin, CastBoxThickness), 0, Vector2.down, DetectDis, layermask);
-
-        //RaycastHit2D hit = Physics2D.BoxCast(GetTruePos(), new Vector2(BodyWidth - 2 * HitMargin, CastBoxThickness), 0, Vector2.down, BodyHeight / 2 + DetectDis / 2 + CastBoxThickness / 2, ~IgnoredLayers);
-
-        //RaycastHit2D hit = Physics2D.BoxCast(GetTruePos() + (BodyHeight / 2 + DetectDis / 2) * Vector2.down, new Vector2(BodyWidth - 2 * HitMargin, DetectDis), 0, Vector2.down, 0, ~IgnoredLayers);
 
         RaycastHit2D[] HitList= Physics2D.BoxCastAll(GetTruePos() + (BodyHeight / 2 + DetectDis / 2) * Vector2.down, new Vector2(BodyWidth - 2 * HitMargin, DetectDis), 0, Vector2.down, 0, ~IgnoredLayers);
         RaycastHit2D hit = GetClosestHit(HitList, Direction.Bottom);
@@ -260,9 +360,6 @@ public class SpeedManager : MonoBehaviour
         if (hit.collider!=null)
         {
             GroundDis = GetHitDis(hit, Direction.Bottom);
-            //GroundDis = GetTruePos().y - BodyHeight/2 - hit.point.y ;
-            //GroundDis = GetTruePos().y - BodyHeight / 2 - hit.point.y;
-            //GroundDis = Mathf.Abs(hit.point.y - GetTruePos().y + CastBoxThickness / 2) - BodyHeight / 2;
             Ground = hit.collider.gameObject;
         }
         else
@@ -301,8 +398,6 @@ public class SpeedManager : MonoBehaviour
         if (hit.collider!=null)
         {
             TopDis = GetHitDis(hit, Direction.Top);
-            //TopDis = hit.point.y - GetTruePos().y - BodyHeight / 2;
-            //TopDis = Mathf.Abs(hit.point.y - GetTruePos().y - CastBoxThickness / 2) - BodyHeight/2;
             Top = hit.collider.gameObject;
         }
         else
@@ -333,8 +428,6 @@ public class SpeedManager : MonoBehaviour
         if (hit.collider!=null)
         {
             LeftDis = GetHitDis(hit, Direction.Left);
-            //LeftDis = GetTruePos().x - BodyWidth / 2  - hit.point.x;
-            //LeftDis = Mathf.Abs(hit.point.x - GetTruePos().x + CastBoxThickness / 2) - BodyWidth / 2;
             Left = hit.collider.gameObject;
         }
         else
@@ -365,8 +458,6 @@ public class SpeedManager : MonoBehaviour
         if (hit.collider!=null)
         {
             RightDis = GetHitDis(hit, Direction.Right);
-            //RightDis = hit.point.x - GetTruePos().x - BodyWidth / 2;
-            //RightDis = Mathf.Abs(hit.point.x - GetTruePos().x - CastBoxThickness / 2) - BodyWidth / 2;
             Right = hit.collider.gameObject;
         }
         else
@@ -401,46 +492,38 @@ public class SpeedManager : MonoBehaviour
 
             if (Dis < MinDis)
             {
-                if (!HitList[i].collider.gameObject.GetComponent<PassableInfo>())
-                {
-                    MinDis = Dis;
-                    Hit = HitList[i];
-                }
-                else
-                {
-                    var Passable = HitList[i].collider.gameObject.GetComponent<PassableInfo>();
+                var Passable = HitList[i].collider.gameObject.GetComponent<ColliderInfo>();
 
-                    switch (Dir)
-                    {
-                        case Direction.Right:
-                            if (!Passable.LeftPassable)
-                            {
-                                MinDis = Dis;
-                                Hit = HitList[i];
-                            }
-                            break;
-                        case Direction.Left:
-                            if (!Passable.RightPassable)
-                            {
-                                MinDis = Dis;
-                                Hit = HitList[i];
-                            }
-                            break;
-                        case Direction.Top:
-                            if (!Passable.BottomPassable)
-                            {
-                                MinDis = Dis;
-                                Hit = HitList[i];
-                            }
-                            break;
-                        case Direction.Bottom:
-                            if (!Passable.TopPassable)
-                            {
-                                MinDis = Dis;
-                                Hit = HitList[i];
-                            }
-                            break;
-                    }
+                switch (Dir)
+                {
+                    case Direction.Right:
+                        if (!Passable.LeftPassable)
+                        {
+                            MinDis = Dis;
+                            Hit = HitList[i];
+                        }
+                        break;
+                    case Direction.Left:
+                        if (!Passable.RightPassable)
+                        {
+                            MinDis = Dis;
+                            Hit = HitList[i];
+                        }
+                        break;
+                    case Direction.Top:
+                        if (!Passable.BottomPassable)
+                        {
+                            MinDis = Dis;
+                            Hit = HitList[i];
+                        }
+                        break;
+                    case Direction.Bottom:
+                        if (!Passable.TopPassable)
+                        {
+                            MinDis = Dis;
+                            Hit = HitList[i];
+                        }
+                        break;
                 }
             }
 
