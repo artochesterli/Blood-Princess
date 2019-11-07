@@ -1425,10 +1425,11 @@ public class SlashAnticipation : CharacterActionState
 
                 if (Status.GetCriticalEye())
                 {
+
                     NormalSlashDamage += Mathf.RoundToInt(AbilityData.NormalSlashCriticalEyeDamageBonus * AbilityData.NormalSlashBaseDamage);
                 }
 
-                SetAttribute(AbilityData.NormalSlashAnticipationTime, AbilityData.NormalSlashStrikeTime, AbilityData.NormalSlashRecoveryTime, AbilityData.NormalSlashBaseDamage, 0, 0, AbilityData.NormalSlashOffset, AbilityData.NormalSlashHitBoxSize, AbilityData.NormalSlashImage, AbilityData.NormalSlashStepForwardSpeed);
+                SetAttribute(AbilityData.NormalSlashAnticipationTime, AbilityData.NormalSlashStrikeTime, AbilityData.NormalSlashRecoveryTime, NormalSlashDamage, 0, 0, AbilityData.NormalSlashOffset, AbilityData.NormalSlashHitBoxSize, AbilityData.NormalSlashImage, AbilityData.NormalSlashStepForwardSpeed);
 
                 break;
 

@@ -259,16 +259,30 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                 if (InCriticalEye)
                 {
                     GainEnergy(AbilityData.NormalSlashEnergyGain + AbilityData.NormalSlashCriticalEyeEnergyGainBonus);
+                    SetCriticalEye(false);
                 }
                 else
                 {
                     GainEnergy(AbilityData.NormalSlashEnergyGain);
                 }
 
+                if(CurrentEnergy == Data.MaxEnergy)
+                {
+                    SetCriticalEye(true);
+                }
+
             }
             else if (e.Attack.Type == CharacterAttackType.SpiritSlash)
             {
-                SetCriticalEye(true);
+                if (CurrentEnergy == Data.MaxEnergy)
+                {
+                    CurrentEnergy = 0;
+                    SetCriticalEye(false);
+                }
+                else
+                {
+                    SetCriticalEye(true);
+                }
             }
         }
     }

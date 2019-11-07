@@ -45,21 +45,8 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 
         CharacterAttackInfo HitAttack = (CharacterAttackInfo)Attack;
 
-        if (!Interrupted)
-        {
-            CurrentShield -= HitAttack.ShieldBreak;
-            if (CurrentShield <= 0)
-            {
-                EventManager.instance.Fire(new PlayerBreakEnemyShield(HitAttack, gameObject));
-                CurrentShield = 0;
-                Interrupted = true;
-            }
-            else
-            {
-                Interrupted = false;
-            }
 
-        }
+        Interrupted = true;
 
 
         DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
@@ -75,11 +62,11 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 
 		if (HitAttack.Right)
 		{
-			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 1);
+			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 0);
 		}
 		else
 		{
-			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 1);
+			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 0);
 		}
 		DamageText.GetComponent<Text>().text = HitAttack.Damage.ToString();
 		DamageText.transform.parent = Canvas.transform;

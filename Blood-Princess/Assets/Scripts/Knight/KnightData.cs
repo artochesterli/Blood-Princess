@@ -33,12 +33,18 @@ public class KnightData : MonoBehaviour
     public float KnockedBackTime;
     public float KnockedBackSpeed;
 
-    public float AttackInterval;
+    public float RecoveryKnockedBackStunTime;
+
+    public float AttackCoolDown;
 
     public float MinChaseAttackChaseDistance;
     public float MaxChaseAttackChaseDistance;
 
     public float SingleAttackChance;
+
+    public float FirstGetHitAttackCoolDown;
+
+    public float CharacterSpiritSlashAttackCoolDown;
 
     // Start is called before the first frame update
     void Start()

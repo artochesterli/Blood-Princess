@@ -162,13 +162,17 @@ public class SpeedManager : MonoBehaviour
 
             ReferenceX /= count;
 
-            if(GetTruePos().x > ReferenceX && SelfSpeed.x <= 0)
+            if(GetTruePos().x > ReferenceX && SelfSpeed.x <= 0 && LeftStuckForceField)
             {
                 ForcedSpeed.x = Data.PushedOutSpeed;
             }
-            else if(GetTruePos().x < ReferenceX && SelfSpeed.x >= 0)
+            else if(GetTruePos().x < ReferenceX && SelfSpeed.x >= 0 && RightStuckForceField)
             {
                 ForcedSpeed.x = -Data.PushedOutSpeed;
+            }
+            else
+            {
+                ForcedSpeed.x = 0;
             }
 
         }
