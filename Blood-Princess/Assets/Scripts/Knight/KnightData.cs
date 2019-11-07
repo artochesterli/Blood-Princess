@@ -10,10 +10,6 @@ public class KnightData : MonoBehaviour
     public float KeepDisMoveSpeed;
     public float AttackStepForwardSpeed;
 
-
-    public float StepBackAndForthMinTime;
-    public float StepBackAndForthMaxTime;
-
     public float SingleAttackAnticipationTime;
     public float DoubleAttackFirstAnticipationTime;
     public float DoubleAttackSecondAnticipationTime;
@@ -26,6 +22,7 @@ public class KnightData : MonoBehaviour
     public float DoubleAttackSecondRecoveryTime;
     public int Damage;
 
+    public float AttackAvailableHitBoxPercentage;
     public Vector2 AttackOffset;
     public Vector2 AttackHitBoxSize;
     public GameObject SlashImage;

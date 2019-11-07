@@ -183,28 +183,27 @@ MonoBehaviour:
   NormalMoveSpeed: 3.5
   KeepDisMoveSpeed: 1
   AttackStepForwardSpeed: 12
-  StepBackAndForthMinTime: 0.25
-  StepBackAndForthMaxTime: 0.5
-  SingleAttackAnticipationTime: 0.7
-  DoubleAttackFirstAnticipationTime: 0.7
+  SingleAttackAnticipationTime: 0.55
+  DoubleAttackFirstAnticipationTime: 0.55
   DoubleAttackSecondAnticipationTime: 0.2
   ChaseAttackAnticipationTime: 0.8
   ChaseAttackSpeed: 7
   AttackTime: 0.1
-  SingleAttackRecoveryTime: 0.5
-  DoubleAttackFirstRecoveryTime: 0.4
-  DoubleAttackSecondRecoveryTime: 0.5
+  SingleAttackRecoveryTime: 0.7
+  DoubleAttackFirstRecoveryTime: 0.3
+  DoubleAttackSecondRecoveryTime: 0.7
   Damage: 5
+  AttackAvailableHitBoxPercentage: 0.3
   AttackOffset: {x: 1.25, y: -0.2}
   AttackHitBoxSize: {x: 1.6, y: 0.64}
   SlashImage: {fileID: 8278314382299867915, guid: b563d54cff4162f42ac0f47b15402d9f,
     type: 3}
   KnockedBackTime: 0.1
-  KnockedBackSpeed: 3
+  KnockedBackSpeed: 6
   RecoveryKnockedBackStunTime: 0.3
   AttackCoolDown: 1
-  MinChaseAttackChaseDistance: 4
-  MaxChaseAttackChaseDistance: 7
+  MinChaseAttackChaseDistance: 2.5
+  MaxChaseAttackChaseDistance: 5
   SingleAttackChance: 0.5
   FirstGetHitAttackCoolDown: 0.4
   CharacterSpiritSlashAttackCoolDown: 0.2

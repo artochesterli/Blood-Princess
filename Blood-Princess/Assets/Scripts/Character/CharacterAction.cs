@@ -387,17 +387,13 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         var Data = Entity.GetComponent<CharacterData>();
         var Status = Entity.GetComponent<StatusManager_Character>();
 
-        if(Status.CurrentEnergy == 3)
+        if(Status.CurrentEnergy == Data.MaxEnergy)
         {
             Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[3];
         }
-        else if(Status.CurrentEnergy == 2)
+        else if(Status.CurrentEnergy > 0)
         {
             Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[2];
-        }
-        else if(Status.CurrentEnergy == 1)
-        {
-            Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[1];
         }
         else
         {
@@ -1491,6 +1487,7 @@ public class SlashAnticipation : CharacterActionState
 
         if (TimeCount >= Context.CurrentAttack.AnticipationTime)
         {
+            Status.SetSpiritSlashInvulnerability(false);
             TransitionTo<SlashStrike>();
             return;
         }
@@ -2229,7 +2226,6 @@ public class GetInterrupted : CharacterActionState
         var Data = Entity.GetComponent<CharacterData>();
         var SpeedManager = Entity.GetComponent<SpeedManager>();
 
-        Entity.GetComponent<StatusManager_Character>().CurrentEnergy = 0;
         Entity.GetComponent<IHittable>().Interrupted = false;
         Context.CurrentGravity = Data.NormalGravity;
 
