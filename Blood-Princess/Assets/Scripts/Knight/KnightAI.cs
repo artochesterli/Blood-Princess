@@ -63,6 +63,11 @@ public class KnightAI : MonoBehaviour
         KnightAIFSM.Update();
     }
 
+    private void OnDestroy()
+    {
+        KnightAIFSM.CurrentState.CleanUp();
+    }
+
     private void GetPatronInfo()
     {
         DetectLeftX = DetectLeftMark.transform.position.x;
@@ -516,6 +521,12 @@ public class KnightEngage : KnightBehavior
         EventManager.instance.RemoveHandler<PlayerStartAttackAnticipation>(OnCharacterGoingToAttack);
     }
 
+    public override void CleanUp()
+    {
+        base.CleanUp();
+        EventManager.instance.RemoveHandler<PlayerStartAttackAnticipation>(OnCharacterGoingToAttack);
+    }
+
     private void SetUp()
     {
         var Data = Entity.GetComponent<KnightData>();
@@ -616,7 +627,7 @@ public class KnightEngage : KnightBehavior
         var Data = Entity.GetComponent<KnightData>();
         if (e.Attack.Type == CharacterAttackType.SpiritSlash && Context.AttackCoolDownTimeCount > Data.CharacterSpiritSlashAttackCoolDown)
         {
-            Context.AttackCoolDownTimeCount = Data.CharacterSpiritSlashAttackCoolDown;
+            //Context.AttackCoolDownTimeCount = Data.CharacterSpiritSlashAttackCoolDown;
         }
     }
 }
