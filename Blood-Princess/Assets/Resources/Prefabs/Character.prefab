@@ -548,7 +548,7 @@ Transform:
   m_GameObject: {fileID: 1032249660650897308}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 1.2, z: 0}
-  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_Children: []
   m_Father: {fileID: 4954734968556382950}
   m_RootOrder: 1
@@ -2415,7 +2415,7 @@ MonoBehaviour:
   JumpHoldingTime: 0.2
   MaxHP: 30
   MaxEnergy: 7
-  InterruptedTime: 0.4
+  InterruptedTime: 0.3
   InterruptedMoveTime: 0.1
   InterruptedSpeed: 10
   InterruptedSpeedX: 10
@@ -2424,7 +2424,7 @@ MonoBehaviour:
   RollRecoveryTime: 0.2
   RollCoolDown: 0.3
   RollSpeed: 15
-  PushedOutSpeed: 4
+  PushedOutSpeed: 4.5
   NormalIgnoredLayers:
     serializedVersion: 2
     m_Bits: 4864
@@ -2489,27 +2489,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56df4c9e1cb507a42b6717fb1dcdaaa4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NormalSlashAnticipationTime: 0.15
+  NormalSlashAnticipationTime: 0.12
   NormalSlashStrikeTime: 0.1
-  NormalSlashRecoveryTime: 0.2
+  NormalSlashRecoveryTime: 0.18
   NormalSlashStepForwardSpeed: 8
   NormalSlashBaseDamage: 10
-  NormalSlashEnergyGain: 0
-  NormalSlashCriticalEyeDamageBonus: 0
-  NormalSlashCriticalEyeEnergyGainBonus: 0
+  NormalSlashEnergyGain: 1
+  NormalSlashCriticalEyeDamageBonus: 0.5
+  NormalSlashCriticalEyeEnergyGainBonus: 2
   NormalSlashImage: {fileID: 7821179725081130998, guid: b3fb9bb73ec2550488f3d2d9bff4e88b,
     type: 3}
   NormalSlashOffset: {x: 1.1, y: -0.2}
   NormalSlashHitBoxSize: {x: 1.44, y: 0.64}
   NormalSlashAirUsable: 1
-  SpiritSlashAnticipationTime: 0.6
+  SpiritSlashAnticipationTime: 0.45
   SpiritSlashStrikeTime: 0.1
-  SpiritSlashRecoveryTime: 0.6
-  SpiritSlashStepBackSpeed: 5
+  SpiritSlashRecoveryTime: 0.55
+  SpiritSlashParriedRecoveryTime: 0.2
+  SpiritSlashParriedAnticipation: 0.3
+  SpiritSlashStepBackSpeed: 2
   SpiritSlashStepBackTime: 0.2
-  SpiritSlashStepForwardSpeed: 18
-  SpiritSlashBaseDamage: 0
-  SpiritSlashFullEnergyDamageBonus: 0
+  SpiritSlashStepForwardSpeed: 10
+  SpiritSlashBaseDamage: 20
+  SpiritSlashFullEnergyDamageBonus: 1
   SpiritSlashHeal: 0.2
   SpiritSlashImage: {fileID: 3683772998224471359, guid: d309ced642cf1e54fb1bd22f6c34a77f,
     type: 3}

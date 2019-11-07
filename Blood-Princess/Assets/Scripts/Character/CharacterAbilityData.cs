@@ -20,6 +20,8 @@ public class CharacterAbilityData : MonoBehaviour
     public float SpiritSlashAnticipationTime;
     public float SpiritSlashStrikeTime;
     public float SpiritSlashRecoveryTime;
+    public float SpiritSlashParriedRecoveryTime;
+    public float SpiritSlashParriedAnticipation;
     public float SpiritSlashStepBackSpeed;
     public float SpiritSlashStepBackTime;
     public float SpiritSlashStepForwardSpeed;

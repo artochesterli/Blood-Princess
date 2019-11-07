@@ -138,7 +138,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Type: 0
-  LeftPassable: 0
-  RightPassable: 0
+  LeftPassable: 1
+  RightPassable: 1
   TopPassable: 0
   BottomPassable: 1

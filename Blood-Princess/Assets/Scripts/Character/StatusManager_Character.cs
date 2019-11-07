@@ -22,6 +22,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     private bool InRollInvulnerability;
 
     private bool InSpiritSlashInvulnerability;
+    private bool SpiritSlashParried;
 
     private bool InCriticalEye;
 
@@ -172,14 +173,17 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         EnemyAttackInfo HitAttack = (EnemyAttackInfo)Attack;
 
-        //GetHitAvailable = true;
+
+        bool IsInvulnerable = Invulnerable();
+
 
         EventManager.instance.Fire(new PlayerGetHit(HitAttack));
 
-        if (!Invulnerable())
+        if (!IsInvulnerable)
         {
             if (InCriticalEye)
             {
+                Debug.Log("hhhh");
                 CurrentEnergy = 0;
                 SetCriticalEye(false);
             }
@@ -188,8 +192,6 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
 
             int Damage = HitAttack.Damage;
-
-            CurrentEnergy = 0;
 
             Interrupted = true;
 
@@ -231,7 +233,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void OnPlayerStartAttackAnticipation(PlayerStartAttackAnticipation e)
     {
-
+        SpiritSlashParried = false;
 
     }
 
@@ -259,23 +261,36 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                 if (InCriticalEye)
                 {
                     GainEnergy(AbilityData.NormalSlashEnergyGain + AbilityData.NormalSlashCriticalEyeEnergyGainBonus);
+                    SetCriticalEye(false);
                 }
                 else
                 {
                     GainEnergy(AbilityData.NormalSlashEnergyGain);
                 }
 
+                if(CurrentEnergy == Data.MaxEnergy)
+                {
+                    SetCriticalEye(true);
+                }
+
             }
             else if (e.Attack.Type == CharacterAttackType.SpiritSlash)
             {
                 SetCriticalEye(true);
+                if(CurrentEnergy == Data.MaxEnergy)
+                {
+                    Heal(Mathf.RoundToInt(e.HitEnemies.Count * AbilityData.SpiritSlashHeal * e.Attack.Damage));
+                }
             }
         }
     }
 
     private void OnPlayerStartAttackRecovery(PlayerStartAttackRecovery e)
     {
-
+        if(e.Attack.Type == CharacterAttackType.SpiritSlash && SpiritSlashParried)
+        {
+            e.Attack.RecoveryTime = GetComponent<CharacterAbilityData>().SpiritSlashParriedRecoveryTime;
+        }
     }
 
     private void OnPlayerEndAttackRecovery(PlayerEndAttackRecovery e)
@@ -307,7 +322,14 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void OnPlayerGetHit(PlayerGetHit e)
     {
-        
+        var Action = GetComponent<CharacterAction>();
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
+        if (InSpiritSlashInvulnerability)
+        {
+            SpiritSlashParried = true;
+            Action.CurrentAttack.AnticipationTime = AbilityData.SpiritSlashParriedAnticipation;
+        }
     }
 
     private void OnPlayerKillEnemy(PlayerKillEnemy e)
@@ -317,7 +339,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void OnPlayerHitEnemy(PlayerHitEnemy e)
     {
-
+        
     }
 
     private void OnPlayerBreakEnemyShield(PlayerBreakEnemyShield e)
