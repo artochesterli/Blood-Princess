@@ -26,11 +26,9 @@ public class RunTimer : Action
 		if (PerformanceTimer.Value >= 0f)
 		{
 			PerformanceTimer.Value -= Time.deltaTime;
-			Debug.Log("Performance Dropping");
 		}
 		else
 		{
-			Debug.Log("Performance Restart");
 			PerformAction.SetValue(true);
 			PerformanceTimer.Value = Random.Range(MinTimer.Value, MaxTimer.Value);
 		}
