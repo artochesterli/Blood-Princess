@@ -6,7 +6,6 @@ using BehaviorDesigner.Runtime;
 
 [RequiredComponent(typeof(KnightSpriteData))]
 [RequiredComponent(typeof(SpriteRenderer))]
-[RequiredComponent(typeof(SpeedManager))]
 public class Anticipation : Action
 {
 	public SharedFloat Duration;
@@ -28,7 +27,6 @@ public class Anticipation : Action
 	{
 		m_Timer = Time.timeSinceLevelLoad + Duration.Value;
 		m_SpriteRenderer.sprite = m_KnightSpriteData.Anticipation;
-		GetComponent<SpeedManager>().SelfSpeed = Vector2.zero;
 	}
 
 	public override TaskStatus OnUpdate()
