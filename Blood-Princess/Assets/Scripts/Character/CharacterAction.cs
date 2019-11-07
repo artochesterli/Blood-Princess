@@ -240,6 +240,25 @@ public class CharacterAction : MonoBehaviour
 
     }
 
+    // <summary>
+    /// return if player is in those states
+    /// </summary>
+    /// <param name="StateName">Anticipation, Recovery, Strike</param>
+    /// <returns></returns>
+    public bool InState(string StateName)
+    {
+        switch (StateName)
+        {
+            case "Anticipation":
+                return CharacterActionFSM.CurrentState.GetType().Equals(typeof(SlashAnticipation));
+            case "Recovery":
+                return CharacterActionFSM.CurrentState.GetType().Equals(typeof(SlashRecovery));
+            case "Strike":
+                return CharacterActionFSM.CurrentState.GetType().Equals(typeof(SlashStrike));
+        }
+        return false;
+    }
+
     private void SetCanvasInfo()
     {
         FirstSkillInfo.GetComponent<Text>().text = "BloodSlash: ";
