@@ -403,6 +403,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         base.Update();
         Entity.GetComponent<SpeedManager>().SelfSpeed.y -= Context.CurrentGravity * Time.deltaTime * 10;
         SetCharacterSprite();
+
     }
 
 
@@ -645,7 +646,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             RaycastHit2D LeftHit = Physics2D.Raycast(SpeedManager.GetTruePos() + SpeedManager.BodyWidth / 2*Vector2.left + SpeedManager.BodyHeight / 2*Vector2.down, Vector2.down, 0.02f, Data.PassablePlatformLayer);
             RaycastHit2D RightHit = Physics2D.Raycast(SpeedManager.GetTruePos() + SpeedManager.BodyWidth / 2 * Vector2.right + SpeedManager.BodyHeight / 2 * Vector2.down, Vector2.down, 0.02f, Data.PassablePlatformLayer);
 
-            if (LeftHit && LeftHit.collider.gameObject.CompareTag("PassablePlatform") && RightHit && RightHit.collider.gameObject.CompareTag("PassablePlatform"))
+            if ((!LeftHit || LeftHit.collider.gameObject.CompareTag("PassablePlatform")) && (!RightHit || RightHit.collider.gameObject.CompareTag("PassablePlatform")))
             {
                 Context.AttachedPassablePlatform = SpeedManager.Ground;
             }
@@ -682,10 +683,17 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             RaycastHit2D LeftHit = Physics2D.Raycast(SpeedManager.GetTruePos() + SpeedManager.BodyWidth / 2 * Vector2.left + SpeedManager.BodyHeight / 2 * Vector2.down, Vector2.down, 0.02f, Data.PassablePlatformLayer);
             RaycastHit2D RightHit = Physics2D.Raycast(SpeedManager.GetTruePos() + SpeedManager.BodyWidth / 2 * Vector2.right + SpeedManager.BodyHeight / 2 * Vector2.down, Vector2.down, 0.02f, Data.PassablePlatformLayer);
 
-            LeftHit.collider.GetComponent<ColliderInfo>().TopPassable = true;
-            RightHit.collider.GetComponent<ColliderInfo>().TopPassable = true;
-            LeftHit.collider.gameObject.GetComponent<PassablePlatform>().Player = Entity;
-            RightHit.collider.gameObject.GetComponent<PassablePlatform>().Player = Entity;
+            if (LeftHit)
+            {
+                LeftHit.collider.GetComponent<ColliderInfo>().TopPassable = true;
+                LeftHit.collider.gameObject.GetComponent<PassablePlatform>().Player = Entity;
+            }
+            if (RightHit)
+            {
+                RightHit.collider.GetComponent<ColliderInfo>().TopPassable = true;
+                RightHit.collider.gameObject.GetComponent<PassablePlatform>().Player = Entity;
+            }
+
 
             Context.AttachedPassablePlatform.GetComponent<ColliderInfo>().TopPassable = true;
             Context.AttachedPassablePlatform.GetComponent<PassablePlatform>().Player = Entity;
@@ -2064,7 +2072,8 @@ public class ClimbPlatform : CharacterActionState
         Entity.transform.position = new Vector2(Entity.transform.position.x, Mathf.Lerp(StartHeight, TargetHeight, TimeCount / StateTime));
         if(TimeCount > StateTime)
         {
-            TransitionTo<Stand>();
+            Entity.GetComponent<SpeedManager>().SelfSpeed.y = Entity.GetComponent<CharacterData>().ClimbPlatformJumpOverSpeed;
+            TransitionTo<AirStay>();
         }
     }
 

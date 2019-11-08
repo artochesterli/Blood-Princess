@@ -35,6 +35,7 @@ public class CharacterData : MonoBehaviour
     public LayerMask RollIgnoredLayers;
 
     public float ClimbPlatformTime;
+    public float ClimbPlatformJumpOverSpeed;
     public LayerMask PassablePlatformLayer;
 
     public float ClimbLadderSpeed;

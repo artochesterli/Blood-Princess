@@ -20,6 +20,7 @@ public class PassablePlatform : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
         CheckPlayer();
     }
 

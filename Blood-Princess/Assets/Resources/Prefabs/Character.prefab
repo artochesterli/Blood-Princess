@@ -2353,15 +2353,23 @@ MonoBehaviour:
   HitRight: 0
   RightDis: 0
   Right: {fileID: 0}
+  RightForceFieldDis: 0
+  RightForceField: {fileID: 0}
   HitLeft: 0
   LeftDis: 0
   Left: {fileID: 0}
+  LeftForceFieldDis: 0
+  LeftForceField: {fileID: 0}
   HitTop: 0
   TopDis: 0
   Top: {fileID: 0}
+  TopForceFieldDis: 0
+  TopForceField: {fileID: 0}
   HitGround: 0
   GroundDis: 0
   Ground: {fileID: 0}
+  GroundForceFieldDis: 0
+  GroundForceField: {fileID: 0}
   BodyWidth: 0.58
   BodyHeight: 1.28
   OriPos: {x: 0, y: 0}
@@ -2431,7 +2439,8 @@ MonoBehaviour:
   RollIgnoredLayers:
     serializedVersion: 2
     m_Bits: 5888
-  ClimbPlatformTime: 0.3
+  ClimbPlatformTime: 0.2
+  ClimbPlatformJumpOverSpeed: 5
   PassablePlatformLayer:
     serializedVersion: 2
     m_Bits: 2048
