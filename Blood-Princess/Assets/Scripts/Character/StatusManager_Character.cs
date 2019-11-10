@@ -15,6 +15,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     public GameObject CriticalEyeMark;
     public GameObject SpiritSlashInvulnerableMark;
     public GameObject ParryShieldMark;
+    public GameObject ParriedEffectPrefab;
 
     public Sprite EnergyOrbEmptySprite;
     public Sprite EnergyOrbFilledSprite;
@@ -209,9 +210,16 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void OnPlayerStartAttackAnticipation(PlayerStartAttackAnticipation e)
     {
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
         if(e.Attack.Type == CharacterAttackType.BattleArt)
         {
-
+            switch (e.Attack.ThisBattleArt.Type)
+            {
+                case BattleArtType.SpiritSlash:
+                    GainLoseEnergy(-AbilityData.SpiritSlashEnergyCost);
+                    break;
+            }
         }
 
     }
@@ -285,6 +293,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         if (InParryInvulnerability)
         {
+            GameObject.Instantiate(ParriedEffectPrefab, ParryShieldMark.transform.position, Quaternion.Euler(0, 0, 0));
             GainLoseEnergy(AbilityData.ParryEnergyGain);
         }
     }

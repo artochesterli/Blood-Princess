@@ -2153,6 +2153,7 @@ MonoBehaviour:
     m_Bits: 4864
   SelfSpeed: {x: 0, y: 0}
   ForcedSpeed: {x: 0, y: 0}
+  AttackStepSpeed: {x: 0, y: 0}
   HitRight: 0
   RightDis: 0
   Right: {fileID: 0}
@@ -2222,7 +2223,7 @@ MonoBehaviour:
   MaxHP: 30
   MaxEnergy: 1
   HitEnergyLostProportion: 0.5
-  MinimalEnergyLost: 0.2
+  MinimalEnergyLost: 0.3
   InterruptedTime: 0.3
   InterruptedMoveTime: 0.1
   InterruptedSpeedX: 10
@@ -2268,7 +2269,9 @@ MonoBehaviour:
   EnergyFill: {fileID: 7673634320709970720}
   CriticalEyeMark: {fileID: 1032249660650897308}
   SpiritSlashInvulnerableMark: {fileID: 8816080527838868728}
-  ParryShieldMark: {fileID: 0}
+  ParryShieldMark: {fileID: 8816080527838868728}
+  ParriedEffectPrefab: {fileID: 3603677667100345419, guid: 367f13df69dbf2944a0d720e211e557c,
+    type: 3}
   EnergyOrbEmptySprite: {fileID: 21300000, guid: e0f824bdd55db9a4f92f9ab2fee773e7,
     type: 3}
   EnergyOrbFilledSprite: {fileID: 21300000, guid: e6611fecc07cc024e9984503bff1c8f2,
@@ -2312,16 +2315,16 @@ MonoBehaviour:
   ParryAnticipationTime: 0.1
   ParryRecoveryTime: 0.2
   ParryEffectTime: 0.2
-  ParryEnergyGain: 0.4
+  ParryEnergyGain: 0.7
   SpiritSlashAnticipationTime: 0.45
   SpiritSlashStrikeTime: 0.1
   SpiritSlashRecoveryTime: 0.55
   SpiritSlashStepBackSpeed: 2
   SpiritSlashStepBackTime: 0.2
   SpiritSlashStepForwardSpeed: 10
-  SpiritSlashBaseDamage: 20
-  SpiritSlashBackStabDamageBonus: 0
-  SpiritSlashEnergyCost: 0
+  SpiritSlashBaseDamage: 25
+  SpiritSlashBackStabDamageBonus: 1
+  SpiritSlashEnergyCost: 0.4
   SpiritSlashImage: {fileID: 3683772998224471359, guid: d309ced642cf1e54fb1bd22f6c34a77f,
     type: 3}
   SpiritSlashOffset: {x: 1.4, y: -0.2}

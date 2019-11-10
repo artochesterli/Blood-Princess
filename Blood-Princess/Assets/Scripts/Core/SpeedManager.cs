@@ -16,6 +16,7 @@ public class SpeedManager : MonoBehaviour
 
     public Vector2 SelfSpeed;
     public Vector2 ForcedSpeed;
+    public Vector2 AttackStepSpeed;
 
     public bool HitRight;
     public float RightDis;
@@ -117,6 +118,41 @@ public class SpeedManager : MonoBehaviour
         {
             var Data = GetComponent<CharacterData>();
 
+
+            Vector2 temp = AttackStepSpeed;
+
+            if (temp.x > 0)
+            {
+                if(RightForceFieldDis < temp.x * Time.deltaTime)
+                {
+                    if (RightForceFieldDis > 0)
+                    {
+                        temp.x = RightForceFieldDis / Time.deltaTime;
+                    }
+                    else
+                    {
+                        temp.x = 0;
+                    }
+                    AttackStepSpeed.x = 0;
+                }
+            }
+            else if(temp.x < 0)
+            {
+                if (LeftForceFieldDis < -temp.x * Time.deltaTime)
+                {
+                    if(LeftForceFieldDis > 0)
+                    {
+                        temp.x = LeftForceFieldDis / Time.deltaTime;
+                    }
+                    else
+                    {
+                        temp.x = 0;
+                    }
+
+                    AttackStepSpeed.x = 0;
+                }
+            }
+
             bool RightStuckForceField = false;
             if(RightForceField && RightForceFieldDis < 0)
             {
@@ -186,7 +222,7 @@ public class SpeedManager : MonoBehaviour
     {
         CheckPushedOut();
 
-        Vector2 temp = SelfSpeed + ForcedSpeed;
+        Vector2 temp = SelfSpeed + ForcedSpeed + AttackStepSpeed;
 
         if (temp.y >= 0 && Top)
         {
@@ -197,16 +233,13 @@ public class SpeedManager : MonoBehaviour
                 if (TopDis > 0)
                 {
                     temp.y = -TopDis / Time.deltaTime;
-
-                    SelfSpeed.y = 0;
-                    ForcedSpeed.y = 0;
+                    ResetAllSpeed(false, true);
                     HitTop = true;
                 }
                 else if (Type == ColliderType.Solid || TopDis > -HitMargin)
                 {
                     temp.y = 0;
-                    SelfSpeed.y = 0;
-                    ForcedSpeed.y = 0;
+                    ResetAllSpeed(false, true);
                     HitTop = true;
                 }
                 else
@@ -233,16 +266,13 @@ public class SpeedManager : MonoBehaviour
                 if(GroundDis > 0)
                 {
                     temp.y = -GroundDis / Time.deltaTime;
-
-                    SelfSpeed.y = 0;
-                    ForcedSpeed.y = 0;
+                    ResetAllSpeed(false, true);
                     HitGround = true;
                 }
                 else if(Type == ColliderType.Solid || GroundDis > -HitMargin)
                 {
                     temp.y = 0;
-                    SelfSpeed.y = 0;
-                    ForcedSpeed.y = 0;
+                    ResetAllSpeed(false, true);
                     HitGround = true;
                 }
                 else
@@ -270,16 +300,13 @@ public class SpeedManager : MonoBehaviour
                 if (LeftDis > 0)
                 {
                     temp.x = -LeftDis / Time.deltaTime;
-
-                    SelfSpeed.x = 0;
-                    ForcedSpeed.x = 0;
+                    ResetAllSpeed(true, false);
                     HitLeft = true;
                 }
                 else if (Type == ColliderType.Solid || LeftDis > -HitMargin)
                 {
                     temp.x = 0;
-                    SelfSpeed.x = 0;
-                    ForcedSpeed.x = 0;
+                    ResetAllSpeed(true, false);
                     HitLeft = true;
                 }
                 else
@@ -308,16 +335,13 @@ public class SpeedManager : MonoBehaviour
                 if (RightDis > 0)
                 {
                     temp.x = -RightDis / Time.deltaTime;
-
-                    SelfSpeed.x = 0;
-                    ForcedSpeed.x = 0;
+                    ResetAllSpeed(true, false);
                     HitRight = true;
                 }
                 else if (Type == ColliderType.Solid || RightDis > -HitMargin)
                 {
                     temp.x = 0;
-                    SelfSpeed.x = 0;
-                    ForcedSpeed.x = 0;
+                    ResetAllSpeed(true, false);
                     HitRight = true;
                 }
                 else
@@ -599,5 +623,23 @@ public class SpeedManager : MonoBehaviour
         {
             return false;
         }
+    }
+
+    private void ResetAllSpeed(bool x, bool y)
+    {
+        if (x)
+        {
+            SelfSpeed.x = 0;
+            ForcedSpeed.x = 0;
+            AttackStepSpeed.x = 0;
+        }
+
+        if (y)
+        {
+            SelfSpeed.y = 0;
+            ForcedSpeed.y = 0;
+            AttackStepSpeed.y = 0;
+        }
+
     }
 }
