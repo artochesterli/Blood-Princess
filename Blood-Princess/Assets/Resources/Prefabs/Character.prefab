@@ -91,7 +91,6 @@ GameObject:
   - component: {fileID: 3954846298363181188}
   - component: {fileID: 8851010248020069177}
   - component: {fileID: 3255523696693713972}
-  - component: {fileID: 2429382180106390353}
   m_Layer: 5
   m_Name: Shield Breaker
   m_TagString: Untagged
@@ -158,26 +157,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Shield Breaker
---- !u!114 &2429382180106390353
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 650792151480677795}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40ea3ee5000c4714fae8c9c8740eeab4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Enhancement:
-    name: Shield Breaker
-    Icon: {fileID: 0}
-    Level: 1
-    EnhancementAttackType: 0
-    Type: 3
-  UnselectedColor: {r: 1, g: 1, b: 1, a: 1}
-  SelectedColor: {r: 0.15686275, g: 1, b: 0, a: 1}
 --- !u!1 &716981306990516992
 GameObject:
   m_ObjectHideFlags: 0
@@ -262,7 +241,6 @@ GameObject:
   - component: {fileID: 3447242502749844925}
   - component: {fileID: 6208683571346905192}
   - component: {fileID: 4587352725585441578}
-  - component: {fileID: 3625476036664033124}
   m_Layer: 5
   m_Name: Slot2
   m_TagString: Untagged
@@ -329,28 +307,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Nothing
---- !u!114 &3625476036664033124
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 827631582307114747}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 11d745b76d5e1f946929773665851185, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Player: {fileID: 4954734968556382954}
-  EquipedPassiveAbility:
-    name: 
-    Icon: {fileID: 0}
-    Level: 0
-    Type: 0
-  index: 1
-  UnselectedColor: {r: 1, g: 1, b: 1, a: 1}
-  HoveredColor: {r: 0.15686275, g: 1, b: 0, a: 1}
-  SelectedColor: {r: 0.9254902, g: 1, b: 0.050980393, a: 1}
 --- !u!1 &858815939850147249
 GameObject:
   m_ObjectHideFlags: 0
@@ -362,7 +318,6 @@ GameObject:
   - component: {fileID: 4222386100801306443}
   - component: {fileID: 5220591015799708924}
   - component: {fileID: 818812195029943261}
-  - component: {fileID: 3799720187415911095}
   m_Layer: 5
   m_Name: Executioner
   m_TagString: Untagged
@@ -429,25 +384,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Executioner
---- !u!114 &3799720187415911095
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 858815939850147249}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0fa1efcbb7de8b246999cf5acaaceb44, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PassiveAbility:
-    name: Executioner
-    Icon: {fileID: 0}
-    Level: 1
-    Type: 2
-  UnselectedColor: {r: 1, g: 1, b: 1, a: 1}
-  SelectedColor: {r: 0.15686275, g: 1, b: 0, a: 1}
 --- !u!1 &862823327446438327
 GameObject:
   m_ObjectHideFlags: 0
@@ -690,7 +626,6 @@ GameObject:
   - component: {fileID: 6171559434565601803}
   - component: {fileID: 1634472498226598413}
   - component: {fileID: 3489158280423985388}
-  - component: {fileID: 4705936786536375722}
   m_Layer: 5
   m_Name: Criticle Eye
   m_TagString: Untagged
@@ -757,26 +692,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Criticle Eye
---- !u!114 &4705936786536375722
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1594262016390204041}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40ea3ee5000c4714fae8c9c8740eeab4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Enhancement:
-    name: Critical Eye
-    Icon: {fileID: 0}
-    Level: 1
-    EnhancementAttackType: 0
-    Type: 1
-  UnselectedColor: {r: 1, g: 1, b: 1, a: 1}
-  SelectedColor: {r: 0.15686275, g: 1, b: 0, a: 1}
 --- !u!1 &1597669885490460857
 GameObject:
   m_ObjectHideFlags: 0
@@ -788,7 +703,6 @@ GameObject:
   - component: {fileID: 4735720364375817615}
   - component: {fileID: 7848869024265232222}
   - component: {fileID: 6601626410748356231}
-  - component: {fileID: 5021560251151727482}
   m_Layer: 5
   m_Name: Slot2
   m_TagString: Untagged
@@ -855,29 +769,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Nothing
---- !u!114 &5021560251151727482
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1597669885490460857}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5360f9f4dd44985429f7f0dcf25eea1e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Player: {fileID: 4954734968556382954}
-  EquipedEnhancement:
-    name: 
-    Icon: {fileID: 0}
-    Level: 0
-    EnhancementAttackType: 0
-    Type: 0
-  index: 1
-  UnselectedColor: {r: 1, g: 1, b: 1, a: 1}
-  HoveredColor: {r: 0.15686275, g: 1, b: 0, a: 1}
-  SelectedColor: {r: 0.9254902, g: 1, b: 0.050980393, a: 1}
 --- !u!1 &1708324134035088279
 GameObject:
   m_ObjectHideFlags: 0
@@ -967,7 +858,6 @@ GameObject:
   - component: {fileID: 6081593864374735229}
   - component: {fileID: 5389706509197602091}
   - component: {fileID: 4728029491118878514}
-  - component: {fileID: 8594033839623833634}
   m_Layer: 5
   m_Name: Slot1
   m_TagString: Untagged
@@ -1034,28 +924,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Nothing
---- !u!114 &8594033839623833634
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2145591707583164007}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 11d745b76d5e1f946929773665851185, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Player: {fileID: 4954734968556382954}
-  EquipedPassiveAbility:
-    name: 
-    Icon: {fileID: 0}
-    Level: 0
-    Type: 0
-  index: 0
-  UnselectedColor: {r: 1, g: 1, b: 1, a: 1}
-  HoveredColor: {r: 0.15686275, g: 1, b: 0, a: 1}
-  SelectedColor: {r: 0.9254902, g: 1, b: 0.050980393, a: 1}
 --- !u!1 &2428820735800012219
 GameObject:
   m_ObjectHideFlags: 0
@@ -1067,7 +935,6 @@ GameObject:
   - component: {fileID: 7892115773064259461}
   - component: {fileID: 4417599357014695570}
   - component: {fileID: 7847962186787581584}
-  - component: {fileID: 2058932552644210545}
   m_Layer: 5
   m_Name: CursedBlade
   m_TagString: Untagged
@@ -1134,25 +1001,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Cursed Blade
---- !u!114 &2058932552644210545
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2428820735800012219}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0fa1efcbb7de8b246999cf5acaaceb44, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PassiveAbility:
-    name: Cursed Blade
-    Icon: {fileID: 0}
-    Level: 1
-    Type: 4
-  UnselectedColor: {r: 1, g: 1, b: 1, a: 1}
-  SelectedColor: {r: 0.15686275, g: 1, b: 0, a: 1}
 --- !u!1 &3021846783070543874
 GameObject:
   m_ObjectHideFlags: 0
@@ -1467,7 +1315,6 @@ GameObject:
   - component: {fileID: 2112528229974567344}
   - component: {fileID: 1665023769552000018}
   - component: {fileID: 7122054765029337360}
-  - component: {fileID: 634171345622220346}
   m_Layer: 5
   m_Name: Harmony
   m_TagString: Untagged
@@ -1534,26 +1381,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Harmony
---- !u!114 &634171345622220346
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3797894018724084790}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40ea3ee5000c4714fae8c9c8740eeab4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Enhancement:
-    name: Harmony
-    Icon: {fileID: 0}
-    Level: 1
-    EnhancementAttackType: 0
-    Type: 2
-  UnselectedColor: {r: 1, g: 1, b: 1, a: 1}
-  SelectedColor: {r: 0.15686275, g: 1, b: 0, a: 1}
 --- !u!1 &3977777581746847312
 GameObject:
   m_ObjectHideFlags: 0
@@ -1970,7 +1797,6 @@ GameObject:
   - component: {fileID: 3619984343163930200}
   - component: {fileID: 2974313113124953405}
   - component: {fileID: 6545190540481010906}
-  - component: {fileID: 8824494870957786787}
   m_Layer: 5
   m_Name: Slot2
   m_TagString: Untagged
@@ -2037,29 +1863,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Nothing
---- !u!114 &8824494870957786787
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4789911333546908371}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58cb750940d805f4ca90cbbe9138eb08, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Player: {fileID: 4954734968556382954}
-  EquipedEnhancement:
-    name: 
-    Icon: {fileID: 0}
-    Level: 0
-    EnhancementAttackType: 0
-    Type: 0
-  index: 1
-  UnselectedColor: {r: 1, g: 1, b: 1, a: 1}
-  HoveredColor: {r: 0.15686275, g: 1, b: 0, a: 1}
-  SelectedColor: {r: 0.92442214, g: 1, b: 0.051886797, a: 1}
 --- !u!1 &4954734967981678427
 GameObject:
   m_ObjectHideFlags: 0
@@ -2386,7 +2189,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 172eb601400a15b43bd41b737ff9428a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InRecovery: 0
   CurrentGravity: 0
   JumpHoldingTimeCount: 0
   AttachedPassablePlatform: {fileID: 0}
@@ -2396,10 +2198,6 @@ MonoBehaviour:
   PassiveSkillInfo: {fileID: 3307014302454286480}
   RollCoolDownTimeCount: 0
   HitEnemies: []
-  BloodSlashEnhancements: []
-  DeadSlashEnhancements: []
-  EquipedPassiveAbilities: []
-  CurrentAttackType: 0
 --- !u!114 &4954734968556382944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2422,10 +2220,11 @@ MonoBehaviour:
   JumpSpeed: 8.3
   JumpHoldingTime: 0.2
   MaxHP: 30
-  MaxEnergy: 7
+  MaxEnergy: 1
+  HitEnergyLostProportion: 0.5
+  MinimalEnergyLost: 0.2
   InterruptedTime: 0.3
   InterruptedMoveTime: 0.1
-  InterruptedSpeed: 10
   InterruptedSpeedX: 10
   RollAnticipationTime: 0.1
   RollTime: 0.2
@@ -2467,9 +2266,9 @@ MonoBehaviour:
   Canvas: {fileID: 4954734967981678427}
   HPFill: {fileID: 3710162351775908928}
   EnergyFill: {fileID: 7673634320709970720}
-  EnergyMarks: {fileID: 7718897753089196614}
   CriticalEyeMark: {fileID: 1032249660650897308}
   SpiritSlashInvulnerableMark: {fileID: 8816080527838868728}
+  ParryShieldMark: {fileID: 0}
   EnergyOrbEmptySprite: {fileID: 21300000, guid: e0f824bdd55db9a4f92f9ab2fee773e7,
     type: 3}
   EnergyOrbFilledSprite: {fileID: 21300000, guid: e6611fecc07cc024e9984503bff1c8f2,
@@ -2498,37 +2297,35 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56df4c9e1cb507a42b6717fb1dcdaaa4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NormalSlashAnticipationTime: 0.12
-  NormalSlashStrikeTime: 0.1
-  NormalSlashRecoveryTime: 0.18
-  NormalSlashStepForwardSpeed: 8
-  NormalSlashBaseDamage: 10
-  NormalSlashEnergyGain: 1
-  NormalSlashCriticalEyeDamageBonus: 0.5
-  NormalSlashCriticalEyeEnergyGainBonus: 2
-  NormalSlashImage: {fileID: 7821179725081130998, guid: b3fb9bb73ec2550488f3d2d9bff4e88b,
+  SlashAnticipationTime: 0.15
+  SlashStrikeTime: 0.1
+  SlashRecoveryTime: 0.25
+  SlashStepForwardSpeed: 5
+  SlashBaseDamage: 10
+  SlashCriticalEyeDamageBonus: 0.5
+  SlashEnergyGain: 0.2
+  SlashEnergyLostInCriticalEye: 0.2
+  SlashImage: {fileID: 7821179725081130998, guid: b3fb9bb73ec2550488f3d2d9bff4e88b,
     type: 3}
-  NormalSlashOffset: {x: 1.1, y: -0.2}
-  NormalSlashHitBoxSize: {x: 1.44, y: 0.64}
-  NormalSlashAirUsable: 1
+  SlashOffset: {x: 1.1, y: -0.2}
+  SlashHitBoxSize: {x: 1.44, y: 0.64}
+  ParryAnticipationTime: 0.1
+  ParryRecoveryTime: 0.2
+  ParryEffectTime: 0.2
+  ParryEnergyGain: 0.4
   SpiritSlashAnticipationTime: 0.45
   SpiritSlashStrikeTime: 0.1
   SpiritSlashRecoveryTime: 0.55
-  SpiritSlashParriedRecoveryTime: 0.2
-  SpiritSlashParriedAnticipation: 0.3
   SpiritSlashStepBackSpeed: 2
   SpiritSlashStepBackTime: 0.2
   SpiritSlashStepForwardSpeed: 10
   SpiritSlashBaseDamage: 20
-  SpiritSlashFullEnergyDamageBonus: 1
-  SpiritSlashHeal: 0.2
+  SpiritSlashBackStabDamageBonus: 0
+  SpiritSlashEnergyCost: 0
   SpiritSlashImage: {fileID: 3683772998224471359, guid: d309ced642cf1e54fb1bd22f6c34a77f,
     type: 3}
   SpiritSlashOffset: {x: 1.4, y: -0.2}
   SpiritSlashHitBoxSize: {x: 2, y: 0.64}
-  SpiritSlashAirUseable: 0
-  MaxBattleArtEnhancementNumber: 2
-  MaxPassiveSkillNumber: 2
 --- !u!114 &8072353811691231456
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2570,7 +2367,6 @@ GameObject:
   - component: {fileID: 1064202892339366036}
   - component: {fileID: 2047538032485106341}
   - component: {fileID: 3097315338735002176}
-  - component: {fileID: 2632479649233086933}
   m_Layer: 5
   m_Name: AccurateBlade
   m_TagString: Untagged
@@ -2637,25 +2433,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Accurate Blade
---- !u!114 &2632479649233086933
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4956159027239734659}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0fa1efcbb7de8b246999cf5acaaceb44, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PassiveAbility:
-    name: Accurate Blade
-    Icon: {fileID: 0}
-    Level: 1
-    Type: 3
-  UnselectedColor: {r: 1, g: 1, b: 1, a: 1}
-  SelectedColor: {r: 0.15686275, g: 1, b: 0, a: 1}
 --- !u!1 &5357458694240549373
 GameObject:
   m_ObjectHideFlags: 0
@@ -2823,7 +2600,6 @@ GameObject:
   - component: {fileID: 1578306409243008586}
   - component: {fileID: 3169182248330111179}
   - component: {fileID: 1428414938356217711}
-  - component: {fileID: 6859762256694039776}
   m_Layer: 5
   m_Name: Dancer
   m_TagString: Untagged
@@ -2890,25 +2666,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Dancer
---- !u!114 &6859762256694039776
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6866339286799928065}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0fa1efcbb7de8b246999cf5acaaceb44, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PassiveAbility:
-    name: Dancer
-    Icon: {fileID: 0}
-    Level: 1
-    Type: 1
-  UnselectedColor: {r: 1, g: 1, b: 1, a: 1}
-  SelectedColor: {r: 0.15686275, g: 1, b: 0, a: 1}
 --- !u!1 &7224154892793919320
 GameObject:
   m_ObjectHideFlags: 0
@@ -2998,7 +2755,6 @@ GameObject:
   - component: {fileID: 1665705598704570312}
   - component: {fileID: 472576165293522513}
   - component: {fileID: 4932938137788482128}
-  - component: {fileID: 5508464607095976506}
   m_Layer: 5
   m_Name: Spirit Slash
   m_TagString: Untagged
@@ -3065,26 +2821,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Spirit Slash
---- !u!114 &5508464607095976506
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7249003829750371344}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 40ea3ee5000c4714fae8c9c8740eeab4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Enhancement:
-    name: Spirit Slash
-    Icon: {fileID: 0}
-    Level: 1
-    EnhancementAttackType: 0
-    Type: 4
-  UnselectedColor: {r: 1, g: 1, b: 1, a: 1}
-  SelectedColor: {r: 0.15686275, g: 1, b: 0, a: 1}
 --- !u!1 &7428047620221545947
 GameObject:
   m_ObjectHideFlags: 0
@@ -3398,7 +3134,6 @@ GameObject:
   - component: {fileID: 7066334555339326101}
   - component: {fileID: 2712691183262399727}
   - component: {fileID: 6631898268950005864}
-  - component: {fileID: 279375396446898327}
   m_Layer: 5
   m_Name: Slot1
   m_TagString: Untagged
@@ -3465,29 +3200,6 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Nothing
---- !u!114 &279375396446898327
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8971833592196045056}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58cb750940d805f4ca90cbbe9138eb08, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Player: {fileID: 4954734968556382954}
-  EquipedEnhancement:
-    name: 
-    Icon: {fileID: 0}
-    Level: 0
-    EnhancementAttackType: 0
-    Type: 0
-  index: 0
-  UnselectedColor: {r: 1, g: 1, b: 1, a: 1}
-  HoveredColor: {r: 0.15686275, g: 1, b: 0, a: 1}
-  SelectedColor: {r: 0.92442214, g: 1, b: 0.051886797, a: 1}
 --- !u!1 &9000953115717102410
 GameObject:
   m_ObjectHideFlags: 0
@@ -3499,7 +3211,6 @@ GameObject:
   - component: {fileID: 998393744501359817}
   - component: {fileID: 1466985638228649808}
   - component: {fileID: 3798697456577870566}
-  - component: {fileID: 8385125898360266868}
   m_Layer: 5
   m_Name: Slot1
   m_TagString: Untagged
@@ -3566,26 +3277,3 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Nothing
---- !u!114 &8385125898360266868
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 9000953115717102410}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5360f9f4dd44985429f7f0dcf25eea1e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Player: {fileID: 4954734968556382954}
-  EquipedEnhancement:
-    name: 
-    Icon: {fileID: 0}
-    Level: 0
-    EnhancementAttackType: 0
-    Type: 0
-  index: 0
-  UnselectedColor: {r: 1, g: 1, b: 1, a: 1}
-  HoveredColor: {r: 0.15686275, g: 1, b: 0, a: 1}
-  SelectedColor: {r: 0.9254902, g: 1, b: 0.050980393, a: 1}

@@ -157,35 +157,18 @@ public class Utility
         {
             return false;
         }
-        return Input.GetMouseButtonDown(0) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("NormalSlash"));
+        return Input.GetMouseButtonDown(0) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Slash"));
     }
 
-    public static bool InputFirstSkill()
-    {
-        if (ControlStateManager.CurrentControlState == ControlState.SkillManagement)
-        {
-            return false;
-        }
-        return Input.GetKeyDown(KeyCode.F) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("FirstSkill"));
-    }
-
-    public static bool InputSecondSkill()
-    {
-        if (ControlStateManager.CurrentControlState == ControlState.SkillManagement)
-        {
-            return false;
-        }
-        return Input.GetKeyDown(KeyCode.G) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("SecondSkill"));
-    }
-
-    public static bool InputSpiritSlash()
+    public static bool InputBattleArt()
     {
         if (ControlStateManager.CurrentControlState == ControlState.SkillManagement)
         {
             return false;
         }
 
-        return Input.GetMouseButtonDown(1) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("SpiritSlash"));
+        return Input.GetMouseButtonDown(1) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("BattleArt"));
+
     }
 
     public static bool InputRoll()
@@ -195,5 +178,14 @@ public class Utility
             return false;
         }
         return Input.GetKeyDown(KeyCode.LeftControl)|| (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Roll"));
+    }
+
+    public static bool InputParry()
+    {
+        if (ControlStateManager.CurrentControlState == ControlState.SkillManagement)
+        {
+            return false;
+        }
+        return Input.GetKeyDown(KeyCode.Q) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Parry"));
     }
 }

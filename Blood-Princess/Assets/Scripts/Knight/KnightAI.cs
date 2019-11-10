@@ -100,11 +100,6 @@ public abstract class KnightBehavior : FSM<KnightAI>.State
         Entity.GetComponent<SpeedManager>().SetBodyInfo(Offset, Size);
     }
 
-    protected bool PlayerInRecovery()
-    {
-        return Context.Player.GetComponent<CharacterAction>().InRecovery;
-    }
-
     protected void RectifyDirection()
     {
         if (GetXDiff() > 0)
@@ -625,10 +620,7 @@ public class KnightEngage : KnightBehavior
     private void OnCharacterGoingToAttack(PlayerStartAttackAnticipation e)
     {
         var Data = Entity.GetComponent<KnightData>();
-        if (e.Attack.Type == CharacterAttackType.SpiritSlash && Context.AttackCoolDownTimeCount > Data.CharacterSpiritSlashAttackCoolDown)
-        {
-            //Context.AttackCoolDownTimeCount = Data.CharacterSpiritSlashAttackCoolDown;
-        }
+
     }
 }
 

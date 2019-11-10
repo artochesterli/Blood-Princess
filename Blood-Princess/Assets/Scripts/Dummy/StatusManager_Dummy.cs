@@ -42,7 +42,7 @@ public class StatusManager_Dummy : StatusManagerBase, IHittable, IShield
 
             var Data = GetComponent<DummyData>();
 
-            if (HitAttack.Type != CharacterAttackType.NormalSlash)
+            if (HitAttack.Type != CharacterAttackType.Slash)
             {
                 CurrentHP -= HitAttack.Damage;
                 Interrupted = true;

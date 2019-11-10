@@ -188,7 +188,7 @@ public class SpeedManager : MonoBehaviour
 
         Vector2 temp = SelfSpeed + ForcedSpeed;
 
-        if (temp.y > 0 && Top)
+        if (temp.y >= 0 && Top)
         {
             ColliderType Type = Top.GetComponent<ColliderInfo>().Type;
 
@@ -224,7 +224,7 @@ public class SpeedManager : MonoBehaviour
             HitTop = false;
         }
 
-        if (temp.y < 0 && Ground)
+        if (temp.y <= 0 && Ground)
         {
             ColliderType Type = Ground.GetComponent<ColliderInfo>().Type;
 
@@ -261,7 +261,7 @@ public class SpeedManager : MonoBehaviour
             HitGround = false;
         }
 
-        if (temp.x < 0 && Left)
+        if (temp.x <= 0 && Left)
         {
             ColliderType Type = Left.GetComponent<ColliderInfo>().Type;
 
@@ -299,7 +299,7 @@ public class SpeedManager : MonoBehaviour
             HitLeft = false;
         }
 
-        if (temp.x > 0 && Right)
+        if (temp.x >= 0 && Right)
         {
             ColliderType Type = Right.GetComponent<ColliderInfo>().Type;
 
