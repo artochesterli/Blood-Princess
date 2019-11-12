@@ -7,13 +7,15 @@ using UnityEngine.SceneManagement;
 
 public class StatusManager_Character : StatusManagerBase, IHittable
 {
-    public float CurrentEnergy;
+    public int CurrentEnergy;
+    public int CurrentAdvancedEnergy;
 
     public GameObject Canvas;
     public GameObject HPFill;
     public GameObject EnergyFill;
+    public GameObject AdvancedEnergyFill;
     public GameObject CriticalEyeMark;
-    public GameObject SpiritSlashInvulnerableMark;
+
     public GameObject ParryShieldMark;
     public GameObject ParriedEffectPrefab;
 
@@ -25,6 +27,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     private bool InParryInvulnerability;
 
     private bool InCriticalEye;
+    private bool InSuperCriticalEye;
 
 
     private GameObject DamageText;
@@ -118,22 +121,9 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Data = GetComponent<CharacterData>();
         HPFill.GetComponent<Image>().fillAmount = (float)CurrentHP / Data.MaxHP;
 
-        EnergyFill.GetComponent<Image>().fillAmount = CurrentEnergy / Data.MaxEnergy;
+        EnergyFill.GetComponent<Image>().fillAmount = (float)CurrentEnergy / Data.MaxEnergy;
 
-        /*int count = 0;
-
-        foreach(Transform child in EnergyMarks.transform)
-        {
-            if (CurrentEnergy > count)
-            {
-                child.GetComponent<Image>().enabled = true;
-            }
-            else
-            {
-                child.GetComponent<Image>().enabled = false;
-            }
-            count++;
-        }*/
+        AdvancedEnergyFill.GetComponent<Image>().fillAmount = (float)CurrentAdvancedEnergy / Data.MaxEnergy;
 
     }
 
@@ -156,14 +146,31 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         {
             var Data = GetComponent<CharacterData>();
 
-            float EnergyLost = CurrentEnergy * Data.HitEnergyLostProportion;
+            bool Nulified = false;
 
-            if(EnergyLost < Data.MinimalEnergyLost)
+            if (CurrentAdvancedEnergy > 0)
+            {
+                Nulified = true;
+                HitAttack.Damage -= Mathf.RoundToInt(Data.MaxAdvancedEnergyDamageNulification * CurrentAdvancedEnergy / Data.MaxEnergy);
+
+                if(HitAttack.Damage < 0)
+                {
+                    HitAttack.Damage = 0;
+                }
+            }
+
+            CurrentAdvancedEnergy = 0;
+
+            int EnergyLost = Mathf.CeilToInt(CurrentEnergy * Data.HitEnergyLostProportion);
+
+            if (EnergyLost < Data.MinimalEnergyLost)
             {
                 EnergyLost = Data.MinimalEnergyLost;
             }
 
             GainLoseEnergy(-EnergyLost);
+
+            SetCriticalEye(false);
 
 
             DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
@@ -183,6 +190,15 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             }
             DamageText.GetComponent<Text>().text = Damage.ToString();
             DamageText.transform.parent = Canvas.transform;
+
+            if (Nulified)
+            {
+                DamageText.GetComponent<Text>().color = new Color(0.7372549f, 0.1686275f, 0.6732783f);
+            }
+            else
+            {
+                DamageText.GetComponent<Text>().color = Color.white;
+            }
 
 
             CurrentHP -= Damage;
@@ -210,6 +226,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void OnPlayerStartAttackAnticipation(PlayerStartAttackAnticipation e)
     {
+        var Data = GetComponent<CharacterData>();
         var AbilityData = GetComponent<CharacterAbilityData>();
 
         if(e.Attack.Type == CharacterAttackType.BattleArt)
@@ -217,7 +234,11 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             switch (e.Attack.ThisBattleArt.Type)
             {
                 case BattleArtType.SpiritSlash:
-                    GainLoseEnergy(-AbilityData.SpiritSlashEnergyCost);
+                    CurrentEnergy = CurrentAdvancedEnergy;
+                    if(CurrentAdvancedEnergy < Data.MaxEnergy)
+                    {
+                        SetCriticalEye(false);
+                    }
                     break;
             }
         }
@@ -240,16 +261,23 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     {
         var Data = GetComponent<CharacterData>();
         var AbilityData = GetComponent<CharacterAbilityData>();
+        var Action = GetComponent<CharacterAction>();
 
         if (e.HitEnemies.Count > 0)
         {
             if (e.Attack.Type == CharacterAttackType.Slash)
             {
-                if (!InCriticalEye)
+                GainLoseEnergy(AbilityData.SlashEnergyGain);
+            }
+            else if(e.Attack.Type == CharacterAttackType.BattleArt)
+            {
+                switch (Action.EquipedBattleArt.Type)
                 {
-                    GainLoseEnergy(AbilityData.SlashEnergyGain);
+                    case BattleArtType.SpiritSlash:
+                        GainAdvancedEnergy(AbilityData.SpiritSlashAdvancedEnergyGain);
+                        GainLoseEnergy(AbilityData.SpiritSlashAdvancedEnergyGain);
+                        break;
                 }
-
             }
         }
     }
@@ -305,7 +333,21 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void OnPlayerHitEnemy(PlayerHitEnemy e)
     {
-        
+        var Action = GetComponent<CharacterAction>();
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
+        if (e.OriginalAttack.Type == CharacterAttackType.BattleArt)
+        {
+            switch (Action.EquipedBattleArt.Type)
+            {
+                case BattleArtType.SpiritSlash:
+                    if(e.Enemy.transform.right.x >0 && e.OriginalAttack.Right || e.Enemy.transform.right.x < 0 && !e.OriginalAttack.Right)
+                    {
+                        e.UpdatedAttack.Damage += Mathf.RoundToInt(e.OriginalAttack.BaseDamage * AbilityData.SpiritSlashBackStabDamageBonus);
+                    }
+                    break;
+            }
+        }
     }
 
     private void OnPlayerBreakEnemyShield(PlayerBreakEnemyShield e)
@@ -333,29 +375,35 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         }
     }
 
-    private void GainLoseEnergy(float amount)
+    private void GainLoseEnergy(int amount)
     {
         var Data = GetComponent<CharacterData>();
         if(amount >= Data.MaxEnergy - CurrentEnergy)
         {
             CurrentEnergy = Data.MaxEnergy;
-            if (!InCriticalEye)
-            {
-                SetCriticalEye(true);
-            }
+            SetCriticalEye(true);
             return;
         }
         else if(amount <= -CurrentEnergy)
         {
             CurrentEnergy = 0;
-            if (InCriticalEye)
-            {
-                SetCriticalEye(false);
-            }
             return;
         }
 
         CurrentEnergy += amount;
+    }
+
+    private void GainAdvancedEnergy(int amount)
+    {
+        var Data = GetComponent<CharacterData>();
+
+        if(amount >= Data.MaxEnergy - CurrentAdvancedEnergy)
+        {
+            CurrentAdvancedEnergy = Data.MaxEnergy;
+            return;
+        }
+
+        CurrentAdvancedEnergy += amount;
     }
 
 

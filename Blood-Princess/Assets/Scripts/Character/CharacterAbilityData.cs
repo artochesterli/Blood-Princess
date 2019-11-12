@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class CharacterAbilityData : MonoBehaviour
 {
+
     public float SlashAnticipationTime;
     public float SlashStrikeTime;
     public float SlashRecoveryTime;
     public float SlashStepForwardSpeed;
     public int SlashBaseDamage;
     public float SlashCriticalEyeDamageBonus;
-    public float SlashEnergyGain;
-    public float SlashEnergyLostInCriticalEye;
+    public int SlashEnergyGain;
+    public int SlashAdvancedEnergyGainInCriticalEye;
 
+    public GameObject SlashImageCriticalEye;
     public GameObject SlashImage;
     public Vector2 SlashOffset;
     public Vector2 SlashHitBoxSize;
@@ -20,7 +22,7 @@ public class CharacterAbilityData : MonoBehaviour
     public float ParryAnticipationTime;
     public float ParryRecoveryTime;
     public float ParryEffectTime;
-    public float ParryEnergyGain;
+    public int ParryEnergyGain;
 
     public float SpiritSlashAnticipationTime;
     public float SpiritSlashStrikeTime;
@@ -30,7 +32,7 @@ public class CharacterAbilityData : MonoBehaviour
     public float SpiritSlashStepForwardSpeed;
     public int SpiritSlashBaseDamage;
     public float SpiritSlashBackStabDamageBonus;
-    public float SpiritSlashEnergyCost;
+    public int SpiritSlashAdvancedEnergyGain;
 
     public GameObject SpiritSlashImage;
     public Vector2 SpiritSlashOffset;

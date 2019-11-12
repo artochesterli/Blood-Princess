@@ -232,7 +232,7 @@ public class SpeedManager : MonoBehaviour
             {
                 if (TopDis > 0)
                 {
-                    temp.y = -TopDis / Time.deltaTime;
+                    temp.y = TopDis / Time.deltaTime;
                     ResetAllSpeed(false, true);
                     HitTop = true;
                 }
@@ -334,7 +334,7 @@ public class SpeedManager : MonoBehaviour
             {
                 if (RightDis > 0)
                 {
-                    temp.x = -RightDis / Time.deltaTime;
+                    temp.x = RightDis / Time.deltaTime;
                     ResetAllSpeed(true, false);
                     HitRight = true;
                 }

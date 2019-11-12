@@ -224,7 +224,7 @@ public abstract class KnightBehavior : FSM<KnightAI>.State
         }
         else
         {
-            Context.AttackCoolDownTimeCount = Data.FirstGetHitAttackCoolDown;
+            //Context.AttackCoolDownTimeCount = Data.FirstGetHitAttackCoolDown;
             Context.GetAttackedInThisRound = true;
         }
 
@@ -1008,14 +1008,16 @@ public class KnightGetInterrupted : KnightBehavior
     {
         var KnightSpriteData = Entity.GetComponent<KnightSpriteData>();
 
-        if (Context.LastState != KnightState.Recovery && Context.LastState != KnightState.Strike)
+        SetKnight(KnightSpriteData.Idle, KnightSpriteData.IdleOffset, KnightSpriteData.IdleSize);
+
+        /*if (Context.LastState != KnightState.Recovery && Context.LastState != KnightState.Strike)
         {
             SetKnight(KnightSpriteData.Idle, KnightSpriteData.IdleOffset, KnightSpriteData.IdleSize);
         }
         else
         {
             SetKnight(KnightSpriteData.Hit, KnightSpriteData.HitOffset, KnightSpriteData.HitSize);
-        }
+        }*/
     }
 
     private void CheckTime()
@@ -1024,7 +1026,13 @@ public class KnightGetInterrupted : KnightBehavior
 
         var Data = Entity.GetComponent<KnightData>();
 
-        if(Context.LastState == KnightState.Recovery || Context.LastState == KnightState.Strike)
+        if (TimeCount >= Data.KnockedBackTime)
+        {
+            TransitionTo<KnightEngage>();
+            return;
+        }
+
+        /*if (Context.LastState == KnightState.Recovery || Context.LastState == KnightState.Strike)
         {
             if(TimeCount >= Data.KnockedBackTime + Data.RecoveryKnockedBackStunTime)
             {
@@ -1043,7 +1051,7 @@ public class KnightGetInterrupted : KnightBehavior
                 TransitionTo<KnightEngage>();
                 return;
             }
-        }
+        }*/
 
 
     }

@@ -198,10 +198,10 @@ MonoBehaviour:
   AttackHitBoxSize: {x: 1.6, y: 0.64}
   SlashImage: {fileID: 8278314382299867915, guid: b563d54cff4162f42ac0f47b15402d9f,
     type: 3}
-  KnockedBackTime: 0.1
-  KnockedBackSpeed: 6
+  KnockedBackTime: 0.2
+  KnockedBackSpeed: 3
   RecoveryKnockedBackStunTime: 0.3
-  AttackCoolDown: 1
+  AttackCoolDown: 0.5
   MinChaseAttackChaseDistance: 2.5
   MaxChaseAttackChaseDistance: 5
   SingleAttackChance: 0.5
@@ -241,18 +241,27 @@ MonoBehaviour:
     m_Bits: 1792
   SelfSpeed: {x: 0, y: 0}
   ForcedSpeed: {x: 0, y: 0}
+  AttackStepSpeed: {x: 0, y: 0}
   HitRight: 0
   RightDis: 0
   Right: {fileID: 0}
+  RightForceFieldDis: 0
+  RightForceField: {fileID: 0}
   HitLeft: 0
   LeftDis: 0
   Left: {fileID: 0}
+  LeftForceFieldDis: 0
+  LeftForceField: {fileID: 0}
   HitTop: 0
   TopDis: 0
   Top: {fileID: 0}
+  TopForceFieldDis: 0
+  TopForceField: {fileID: 0}
   HitGround: 0
   GroundDis: 0
   Ground: {fileID: 0}
+  GroundForceFieldDis: 0
+  GroundForceField: {fileID: 0}
   BodyWidth: 1
   BodyHeight: 2
   OriPos: {x: 0, y: 0}

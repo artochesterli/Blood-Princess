@@ -167,12 +167,8 @@ public class InputInfo
 public class CharacterAction : MonoBehaviour
 {
     public float CurrentGravity;
-    public float JumpHoldingTimeCount;
     public GameObject AttachedPassablePlatform;
     public GameObject AttachedLadder;
-    public GameObject FirstSkillInfo;
-    public GameObject SecondSkillInfo;
-    public GameObject PassiveSkillInfo;
 
     public float RollCoolDownTimeCount;
 
@@ -597,8 +593,10 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
                 else
                 {
                     PerformJump(ImmediateInput);
+
                 }
                 return true;
+
             case InputType.Jump:
                 PerformJump(ImmediateInput);
                 return true;
@@ -1519,10 +1517,10 @@ public class SlashAnticipation : CharacterActionState
 
         int SlashDamage = AbilityData.SlashBaseDamage;
 
-        if (Status.GetCriticalEye())
+        /*if (Status.GetCriticalEye())
         {
             SlashDamage += Mathf.RoundToInt(AbilityData.SlashCriticalEyeDamageBonus * AbilityData.SlashBaseDamage);
-        }
+        }*/
 
         SetAttribute(AbilityData.SlashAnticipationTime, AbilityData.SlashStrikeTime, AbilityData.SlashRecoveryTime, SlashDamage, AbilityData.SlashOffset, AbilityData.SlashHitBoxSize);
 
@@ -1630,8 +1628,16 @@ public class SlashStrike : CharacterActionState
         var SpeedManager = Entity.GetComponent<SpeedManager>();
         var Data = Entity.GetComponent<CharacterData>();
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
+        var Status = Entity.GetComponent<StatusManager_Character>();
 
-        Image = AbilityData.SlashImage;
+        if (Status.GetCriticalEye())
+        {
+            Image = AbilityData.SlashImageCriticalEye;
+        }
+        else
+        {
+            Image = AbilityData.SlashImage;
+        }
 
         TimeCount = 0;
 
@@ -1842,7 +1848,7 @@ public class SpiritSlashAnticipation : CharacterActionState
         var Data = Entity.GetComponent<CharacterData>();
 
 
-        SetAttribute(AbilityData.SpiritSlashAnticipationTime, AbilityData.SpiritSlashStrikeTime, AbilityData.SpiritSlashRecoveryTime, AbilityData.SpiritSlashBaseDamage, AbilityData.SpiritSlashEnergyCost, AbilityData.SpiritSlashOffset, AbilityData.SpiritSlashHitBoxSize);
+        SetAttribute(AbilityData.SpiritSlashAnticipationTime, AbilityData.SpiritSlashStrikeTime, AbilityData.SpiritSlashRecoveryTime, AbilityData.SpiritSlashBaseDamage, 0, AbilityData.SpiritSlashOffset, AbilityData.SpiritSlashHitBoxSize);
 
         Context.CurrentAttack = new CharacterAttackInfo(Entity, CharacterAttackType.BattleArt, Entity.transform.right.x > 0, Damage, Damage, Damage, Offset, Offset, Size, Size, Anticipation, Anticipation, Strike, Strike, Recovery, Recovery, Context.EquipedBattleArt, EnergyCost, EnergyCost);
 
@@ -2366,6 +2372,8 @@ public class Roll: CharacterActionState
         {
             SpeedManager.SelfSpeed.x = -Data.RollSpeed;
         }
+
+        Context.RollCoolDownTimeCount = Entity.GetComponent<CharacterData>().RollCoolDown;
 
         Entity.GetComponent<StatusManager_Character>().SetRollInvulnerability(true);
 
