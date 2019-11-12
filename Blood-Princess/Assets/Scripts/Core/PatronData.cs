@@ -10,6 +10,9 @@ public class PatronData : MonoBehaviour
     public float DetectInterval;
     public float DetectPlayerShockTime;
 
+    public float DetectHeight;
+    public LayerMask DetectLayer;
+
 
     // Start is called before the first frame update
     void Start()

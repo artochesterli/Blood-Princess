@@ -201,7 +201,7 @@ MonoBehaviour:
   KnockedBackTime: 0.2
   KnockedBackSpeed: 3
   RecoveryKnockedBackStunTime: 0.3
-  AttackCoolDown: 0.7
+  AttackCoolDown: 1
   MinChaseAttackChaseDistance: 2.5
   MaxChaseAttackChaseDistance: 5
   SingleAttackChance: 0.5
@@ -224,6 +224,10 @@ MonoBehaviour:
   DetectAngle: 120
   DetectInterval: 5
   DetectPlayerShockTime: 0
+  DetectHeight: 5
+  DetectLayer:
+    serializedVersion: 2
+    m_Bits: 2305
 --- !u!114 &4305804637280514978
 MonoBehaviour:
   m_ObjectHideFlags: 0

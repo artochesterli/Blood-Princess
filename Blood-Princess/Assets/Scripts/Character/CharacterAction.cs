@@ -1037,7 +1037,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
     protected void PerformRoll(InputInfo Info)
     {
         ChangeDirection(Info);
-        TransitionTo<RollAnticipation>();
+        TransitionTo<Roll>();
     }
 
     protected void PerformJump(InputInfo Info)
