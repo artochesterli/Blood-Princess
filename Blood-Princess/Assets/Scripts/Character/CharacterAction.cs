@@ -1630,14 +1630,7 @@ public class SlashStrike : CharacterActionState
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
         var Status = Entity.GetComponent<StatusManager_Character>();
 
-        if (Status.GetCriticalEye())
-        {
-            Image = AbilityData.SlashImageCriticalEye;
-        }
-        else
-        {
-            Image = AbilityData.SlashImage;
-        }
+        Image = AbilityData.SlashImage;
 
         TimeCount = 0;
 
