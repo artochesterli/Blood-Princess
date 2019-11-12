@@ -10,28 +10,28 @@ using BehaviorDesigner.Runtime;
 /// </summary>
 public class RunTimer : Action
 {
-    public SharedBool PerformAction;
-    public SharedFloat MinTimer;
-    public SharedFloat MaxTimer;
-    public SharedFloat PerformanceTimer;
+	public SharedBool PerformAction;
+	public SharedFloat MinTimer;
+	public SharedFloat MaxTimer;
+	public SharedFloat PerformanceTimer;
 
-    public override void OnAwake()
-    {
-        PerformanceTimer.Value = Random.Range(MinTimer.Value, MaxTimer.Value);
-    }
+	public override void OnAwake()
+	{
+		PerformanceTimer.Value = Random.Range(MinTimer.Value, MaxTimer.Value);
+	}
 
-    public override TaskStatus OnUpdate()
-    {
-        if (PerformAction.Value) return TaskStatus.Success;
-        if (PerformanceTimer.Value >= 0f)
-        {
-            PerformanceTimer.Value -= Time.deltaTime;
-        }
-        else
-        {
-            PerformAction.Value = true;
-            PerformanceTimer = Random.Range(MinTimer.Value, MaxTimer.Value);
-        }
-        return TaskStatus.Running;
-    }
+	public override TaskStatus OnUpdate()
+	{
+		if (PerformAction.Value) return TaskStatus.Success;
+		if (PerformanceTimer.Value >= 0f)
+		{
+			PerformanceTimer.Value -= Time.deltaTime;
+		}
+		else
+		{
+			PerformAction.SetValue(true);
+			PerformanceTimer.Value = Random.Range(MinTimer.Value, MaxTimer.Value);
+		}
+		return TaskStatus.Running;
+	}
 }

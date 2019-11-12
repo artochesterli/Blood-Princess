@@ -9,79 +9,79 @@ using BehaviorDesigner.Runtime;
 [RequiredComponent(typeof(SpeedManager))]
 public class Attack : Action
 {
-    public SharedFloat Duration;
-    public SharedInt Damage;
-    public SharedVector2 HitBoxOffset;
-    public SharedVector2 HitBoxSize;
-    public SharedFloat ForwardStep;
-    public LayerMask PlayerLayer;
+	public SharedFloat Duration;
+	public SharedInt Damage;
+	public SharedVector2 HitBoxOffset;
+	public SharedVector2 HitBoxSize;
+	public SharedFloat ForwardStep;
+	public LayerMask PlayerLayer;
 
-    private KnightSpriteData m_KnightSpriteData;
-    private float m_Timer;
-    private EnemyAttackInfo AttackInfo;
-    private bool m_AttackHit;
+	private KnightSpriteData m_KnightSpriteData;
+	private float m_Timer;
+	private EnemyAttackInfo AttackInfo;
+	private bool m_AttackHit;
 
-    public override void OnAwake()
-    {
-        m_KnightSpriteData = GetComponent<KnightSpriteData>();
-    }
+	public override void OnAwake()
+	{
+		m_KnightSpriteData = GetComponent<KnightSpriteData>();
+	}
 
-    public override void OnStart()
-    {
-        m_Timer = Time.timeSinceLevelLoad + Duration.Value;
-        GetComponent<SpriteRenderer>().sprite = m_KnightSpriteData.Recovery;
-        m_AttackHit = false;
-        bool isRight = transform.eulerAngles.y == 0f;
-        AttackInfo = new EnemyAttackInfo(Owner.gameObject, isRight, Damage.Value, Damage.Value, HitBoxOffset.Value, HitBoxSize.Value);
-        GetComponent<SpeedManager>().SelfSpeed.x = transform.right.x * ForwardStep.Value;
-    }
+	public override void OnStart()
+	{
+		m_Timer = Time.timeSinceLevelLoad + Duration.Value;
+		GetComponent<SpriteRenderer>().sprite = m_KnightSpriteData.Recovery;
+		m_AttackHit = false;
+		bool isRight = transform.eulerAngles.y == 0f;
+		AttackInfo = new EnemyAttackInfo(Owner.gameObject, isRight, Damage.Value, Damage.Value, HitBoxOffset.Value, HitBoxSize.Value);
+		GetComponent<SpeedManager>().SelfSpeed.x = transform.right.x * ForwardStep.Value;
+	}
 
-    public override TaskStatus OnUpdate()
-    {
-        if (m_Timer <= Time.timeSinceLevelLoad)
-        {
-            return TaskStatus.Success;
-        }
-        CheckHitPlayer();
-        return TaskStatus.Running;
-    }
+	public override TaskStatus OnUpdate()
+	{
+		if (m_Timer <= Time.timeSinceLevelLoad)
+		{
+			return TaskStatus.Success;
+		}
+		CheckHitPlayer();
+		return TaskStatus.Running;
+	}
 
-    private void CheckHitPlayer()
-    {
-        if (!m_AttackHit && HitPlayer(AttackInfo))
-        {
-            m_AttackHit = true;
-            GetComponent<SpeedManager>().SelfSpeed.x = 0;
-        }
-    }
+	private void CheckHitPlayer()
+	{
+		if (!m_AttackHit && HitPlayer(AttackInfo))
+		{
+			m_AttackHit = true;
+			GetComponent<SpeedManager>().SelfSpeed.x = 0;
+		}
+	}
 
-    private bool HitPlayer(EnemyAttackInfo Attack)
-    {
-        Vector2 Offset = Attack.HitBoxOffset;
-        Offset.x = transform.right.x * Offset.x;
+	private bool HitPlayer(EnemyAttackInfo Attack)
+	{
+		Vector2 Offset = Attack.HitBoxOffset;
+		Offset.x = transform.right.x * Offset.x;
 
-        RaycastHit2D Hit = Physics2D.BoxCast(transform.position + (Vector3)Offset, Attack.HitBoxSize, 0, transform.right, 0, PlayerLayer);
+		RaycastHit2D Hit = Physics2D.BoxCast(transform.position + (Vector3)Offset, Attack.HitBoxSize, 0, transform.right, 0, PlayerLayer);
 
-        if (Hit)
-        {
-            Attack.Right = Owner.GetComponent<SpeedManager>().GetTruePos().x < Hit.collider.gameObject.GetComponent<SpeedManager>().GetTruePos().x;
-            Hit.collider.gameObject.GetComponent<IHittable>().OnHit(Attack);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+		if (Hit)
+		{
+			Attack.Right = Owner.GetComponent<SpeedManager>().GetTruePos().x < Hit.collider.gameObject.GetComponent<SpeedManager>().GetTruePos().x;
+			Hit.collider.gameObject.GetComponent<IHittable>().OnHit(Attack);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 
-    public override void OnDrawGizmos()
-    {
+	public override void OnDrawGizmos()
+	{
 #if UNITY_EDITOR
-        Rect boxCastRect = new Rect((Vector2)Owner.transform.position + HitBoxOffset.Value, HitBoxSize.Value);
-        boxCastRect.center = (Vector2)Owner.transform.position + HitBoxOffset.Value;
-        UnityEditor.Handles.DrawSolidRectangleWithOutline(boxCastRect,
-            Color.cyan, Color.white);
+		Rect boxCastRect = new Rect((Vector2)Owner.transform.position + HitBoxOffset.Value, HitBoxSize.Value);
+		boxCastRect.center = (Vector2)Owner.transform.position + HitBoxOffset.Value;
+		UnityEditor.Handles.DrawSolidRectangleWithOutline(boxCastRect,
+			new Color(0, 1, 1, 0.4f), Color.white);
 #endif
-    }
+	}
 
 }

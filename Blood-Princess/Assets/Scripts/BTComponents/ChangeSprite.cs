@@ -6,35 +6,36 @@ using BehaviorDesigner.Runtime;
 
 [RequiredComponent(typeof(KnightSpriteData))]
 [RequiredComponent(typeof(SpriteRenderer))]
-public class Anticipation : Action
+public class ChangeSprite : Action
 {
 	public SharedFloat Duration;
-	public SharedString AnimationTriggerName;
-
+	public Sprite Sprite;
 	private KnightSpriteData m_KnightSpriteData;
 	private SpriteRenderer m_SpriteRenderer;
 	private float m_Timer;
-	private GameObject m_Player;
 
 	public override void OnAwake()
 	{
+		base.OnAwake();
 		m_KnightSpriteData = GetComponent<KnightSpriteData>();
 		m_SpriteRenderer = GetComponent<SpriteRenderer>();
-		m_Player = GameObject.FindGameObjectWithTag("Player");
 	}
 
 	public override void OnStart()
 	{
+		base.OnStart();
 		m_Timer = Time.timeSinceLevelLoad + Duration.Value;
-		m_SpriteRenderer.sprite = m_KnightSpriteData.Anticipation;
+		m_SpriteRenderer.sprite = Sprite;
 	}
 
 	public override TaskStatus OnUpdate()
 	{
-		if (m_Timer <= Time.timeSinceLevelLoad)
+		if (m_Timer < Time.timeSinceLevelLoad)
 		{
+			m_SpriteRenderer.sprite = m_KnightSpriteData.Idle;
 			return TaskStatus.Success;
 		}
 		return TaskStatus.Running;
 	}
+
 }
