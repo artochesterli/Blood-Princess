@@ -1212,12 +1212,12 @@ public class Stand : CharacterActionState
             return;
         }
 
-        GroundStateReceiveImmediateInput(ref ImmediateInput);
-
         if (GroundStateActionTransitionCheck(ImmediateInput))
         {
             return;
         }
+        ImmediateInput = null;
+        GroundStateReceiveImmediateInput(ref ImmediateInput);
 
         if (CheckCharacterMove(true))
         {
@@ -1289,12 +1289,13 @@ public class GroundMove : CharacterActionState
             return;
         }
 
-        GroundStateReceiveImmediateInput(ref ImmediateInput);
-
         if (GroundStateActionTransitionCheck(ImmediateInput))
         {
             return;
         }
+
+        ImmediateInput = null;
+        GroundStateReceiveImmediateInput(ref ImmediateInput);
 
         if (!CheckCharacterMove(true))
         {

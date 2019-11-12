@@ -2301,7 +2301,7 @@ MonoBehaviour:
   RollAnticipationTime: 0.1
   RollTime: 0.2
   RollRecoveryTime: 0.2
-  RollCoolDown: 0.3
+  RollCoolDown: 0.5
   RollSpeed: 15
   PushedOutSpeed: 4.5
   NormalIgnoredLayers:
@@ -2392,7 +2392,7 @@ MonoBehaviour:
   ParryEnergyGain: 0
   SpiritSlashAnticipationTime: 0.45
   SpiritSlashStrikeTime: 0.1
-  SpiritSlashRecoveryTime: 0.55
+  SpiritSlashRecoveryTime: 0.35
   SpiritSlashStepBackSpeed: 2
   SpiritSlashStepBackTime: 0.2
   SpiritSlashStepForwardSpeed: 10

@@ -201,7 +201,7 @@ MonoBehaviour:
   KnockedBackTime: 0.2
   KnockedBackSpeed: 3
   RecoveryKnockedBackStunTime: 0.3
-  AttackCoolDown: 0.5
+  AttackCoolDown: 0.7
   MinChaseAttackChaseDistance: 2.5
   MaxChaseAttackChaseDistance: 5
   SingleAttackChance: 0.5

@@ -48,7 +48,7 @@ public class StatusManager_General : StatusManagerBase, IHittable
 
 		m_BehaviorTree.SendEvent("Attacked");
 
-		if (HitAttack.Type != CharacterAttackType.NormalSlash)
+		if (HitAttack.Type != CharacterAttackType.Slash)
 		{
 			Interrupted = true;
 		}
@@ -68,7 +68,7 @@ public class StatusManager_General : StatusManagerBase, IHittable
 		}
 		DamageText.GetComponent<Text>().text = HitAttack.Damage.ToString();
 		DamageText.transform.parent = Canvas.transform;
-		if (HitAttack.Type == CharacterAttackType.NormalSlash)
+		if (HitAttack.Type == CharacterAttackType.Slash)
 		{
 			DamageText.GetComponent<Text>().color = Color.red;
 		}
