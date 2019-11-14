@@ -1465,6 +1465,7 @@ public class SlashAnticipation : CharacterActionState
     private Vector2 Offset;
     private Vector2 Size;
 
+    private GameObject SlashEffect;
 
     private bool Grounded;
 
@@ -1482,6 +1483,7 @@ public class SlashAnticipation : CharacterActionState
         base.Update();
         if (CheckGetInterrupted())
         {
+            GameObject.Destroy(SlashEffect);
             TransitionTo<GetInterrupted>();
             return;
         }
@@ -1540,6 +1542,8 @@ public class SlashAnticipation : CharacterActionState
             Grounded = false;
         }
 
+        SlashEffect = null;
+
 
     }
 
@@ -1564,6 +1568,10 @@ public class SlashAnticipation : CharacterActionState
             TransitionTo<SlashStrike>();
             return;
         }
+        else if(TimeCount >= Context.CurrentAttack.AnticipationTime- AbilityData.SlashEffectPreGenerateTime && SlashEffect == null)
+        {
+            GenerateSlashEffect(Context.CurrentAttack);
+        }
     }
 
     private void SetAttribute(float anticipation, float strike, float recovery, int damage, Vector2 offset, Vector2 size)
@@ -1576,12 +1584,40 @@ public class SlashAnticipation : CharacterActionState
         Offset = offset;
         Size = size;
     }
+
+    private void GenerateSlashEffect(CharacterAttackInfo Attack)
+    {
+        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
+
+        float ScaleX = 1;
+        float EulerAngle = 0;
+
+        if (!Attack.Right)
+        {
+            ScaleX = -1;
+            EulerAngle = 180;
+        }
+
+        var Data = Entity.GetComponent<CharacterData>();
+
+        Vector2 Offset = Attack.HitBoxOffset;
+
+        if (!Attack.Right)
+        {
+            Offset.x = -Offset.x;
+        }
+
+        SlashEffect = GameObject.Instantiate(AbilityData.SlashEffect, (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0,EulerAngle, 0));
+        //SlashEffect.transform.localScale = new Vector3(ScaleX, 1, 1);
+        SlashEffect.transform.parent = Entity.transform;
+    }
 }
 
 public class SlashStrike : CharacterActionState
 {
     private float StepForwardSpeed;
     private GameObject Image;
+    private GameObject SlashEffect;
 
     private float TimeCount;
     private bool Grounded;
@@ -1620,6 +1656,8 @@ public class SlashStrike : CharacterActionState
     public override void OnExit()
     {
         base.OnExit();
+        var SpeedManager = Entity.GetComponent<SpeedManager>();
+        SpeedManager.AttackStepSpeed.x = 0;
         GameObject.Destroy(SlashImage);
         EventManager.instance.Fire(new PlayerEndAttackStrike(Context.CurrentAttack, Context.HitEnemies));
     }
@@ -1631,11 +1669,13 @@ public class SlashStrike : CharacterActionState
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
         var Status = Entity.GetComponent<StatusManager_Character>();
 
+        SlashEffect = AbilityData.SlashEffect;
         Image = AbilityData.SlashImage;
 
         TimeCount = 0;
 
-        GenerateSlashImage(Image, Context.CurrentAttack);
+        //GenerateSlashEffect(Context.CurrentAttack);
+        //GenerateSlashImage(Image, Context.CurrentAttack);
 
         Context.CurrentGravity = Data.NormalGravity;
 
@@ -1659,6 +1699,28 @@ public class SlashStrike : CharacterActionState
         CurrentSpriteSeries = SpriteData.LightRecoverySeries;
         SetCharacterSprite();
         Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightRecoveryOffset, SpriteData.LightRecoverySize);
+    }
+
+    private void GenerateSlashEffect(CharacterAttackInfo Attack)
+    {
+        float EulerAngle = 0;
+
+        if (!Attack.Right)
+        {
+            EulerAngle = 180;
+        }
+
+        var Data = Entity.GetComponent<CharacterData>();
+
+        Vector2 Offset = Attack.HitBoxOffset;
+
+        if (!Attack.Right)
+        {
+            Offset.x = -Offset.x;
+        }
+
+        GameObject Effect = GameObject.Instantiate(SlashEffect, (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
+        Effect.transform.parent = Entity.transform;
     }
 
     private void GenerateSlashImage(GameObject Image, CharacterAttackInfo Attack)
@@ -2291,6 +2353,7 @@ public class Roll: CharacterActionState
 {
     private float TimeCount;
     private float StateTime;
+    private GameObject RollEffect;
 
     private List<InputInfo> SavedInputList;
 
@@ -2309,6 +2372,7 @@ public class Roll: CharacterActionState
 
         if (CheckGetInterrupted())
         {
+            //GameObject.Destroy(RollEffect);
             TransitionTo<GetInterrupted>();
             return;
         }
@@ -2373,6 +2437,8 @@ public class Roll: CharacterActionState
 
         SavedInputList = new List<InputInfo>();
 
+        GenerateRollEffect();
+
     }
 
     private void SetAppearance()
@@ -2422,6 +2488,31 @@ public class Roll: CharacterActionState
                 return false;
             }
         }
+    }
+
+    private void GenerateRollEffect()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+        var SpeedManager = Entity.GetComponent<SpeedManager>();
+
+        float EulerAngle;
+        Vector2 Offset;
+
+        if (Entity.transform.right.x > 0)
+        {
+            EulerAngle = 0;
+            Offset =  new Vector2(-SpeedManager.BodyWidth / 2, -SpeedManager.BodyHeight / 2);
+        }
+        else
+        {
+            EulerAngle = 180;
+            Offset =  new Vector2(SpeedManager.BodyWidth / 2, -SpeedManager.BodyHeight / 2);
+        }
+
+        RollEffect = GameObject.Instantiate(Data.RollEffect, SpeedManager.GetTruePos() + Offset, Quaternion.Euler(0, EulerAngle, 0));
+
+        //RollEffect.transform.parent = Entity.transform;
+        
     }
 }
 

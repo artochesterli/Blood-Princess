@@ -146,10 +146,11 @@ namespace PCG
 				if (instantiatedObject.name.Contains("Knight"))
 					instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.2f;
 				else if (instantiatedObject.name.Contains("Enemy1"))
-					instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.5f;
+					instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.8f;
 				else if (instantiatedObject.name.Contains("Passable"))
 					instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.4f;
-
+				else if (instantiatedObject.name.Contains("Enemy2"))
+					instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.8f;
 			}
 		}
 

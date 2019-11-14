@@ -140,7 +140,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         bool IsInvulnerable = Invulnerable();
 
 
-        EventManager.instance.Fire(new PlayerGetHit(HitAttack));
+        EventManager.instance.Fire(new PlayerGetHit(HitAttack,InRollInvulnerability));
 
         if (!IsInvulnerable)
         {
