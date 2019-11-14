@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 4305804637280515000}
   - component: {fileID: 4305804637280514978}
   - component: {fileID: 4305804637280514979}
-  - component: {fileID: 1292655691164374894}
+  - component: {fileID: 2740503663709708477}
   m_Layer: 10
   m_Name: Knight
   m_TagString: Untagged
@@ -135,7 +135,7 @@ MonoBehaviour:
   Canvas: {fileID: 4305804638784953937}
   SharedCanvas: {fileID: 0}
   HPFill: {fileID: 2692453752014028249}
-  ShieldFill: {fileID: 8691323887206796470}
+  ShieldFill: {fileID: 0}
   NormalColor: {r: 1, g: 1, b: 1, a: 1}
   RageColor: {r: 0.36078432, g: 0.84313726, b: 0.972549, a: 1}
 --- !u!114 &4305804637280514982
@@ -164,8 +164,9 @@ MonoBehaviour:
   PatronLeftX: 0
   PatronRightX: 0
   CurrentAttackMode: 0
-  CurrentStamina: 0
-  CurrentPatience: 0
+  LastState: 0
+  AttackCoolDownTimeCount: 0
+  GetAttackedInThisRound: 0
 --- !u!114 &4305804637280515001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,41 +179,34 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11380993c27991a4085d2a592f6f4d4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHP: 50
-  MaxShield: 2
+  MaxHP: 80
   NormalMoveSpeed: 3.5
   KeepDisMoveSpeed: 1
   AttackStepForwardSpeed: 12
-  StepBackAndForthMinTime: 0.25
-  StepBackAndForthMaxTime: 0.5
-  SingleAttackAnticipationTime: 0.7
-  DoubleAttackFirstAnticipationTime: 0.7
-  DoubleAttackSecondAnticipationTime: 0.3
+  SingleAttackAnticipationTime: 0.55
+  DoubleAttackFirstAnticipationTime: 0.55
+  DoubleAttackSecondAnticipationTime: 0.2
   ChaseAttackAnticipationTime: 0.8
   ChaseAttackSpeed: 7
-  ChaseAttackTriggerDistance: 6
-  MaxChaseAttackDistance: 8
   AttackTime: 0.1
-  SingleAttackRecoveryTime: 0.5
+  SingleAttackRecoveryTime: 0.7
   DoubleAttackFirstRecoveryTime: 0.3
-  DoubleAttackSecondRecoveryTime: 0.5
+  DoubleAttackSecondRecoveryTime: 0.7
   Damage: 5
+  AttackAvailableHitBoxPercentage: 0.3
   AttackOffset: {x: 1.25, y: -0.2}
   AttackHitBoxSize: {x: 1.6, y: 0.64}
   SlashImage: {fileID: 8278314382299867915, guid: b563d54cff4162f42ac0f47b15402d9f,
     type: 3}
-  InterruptedTime: 0.6
-  InterruptedSpeed: 0
-  InterruptedMoveTime: 0.1
-  TacticDistance: 3.5
-  DangerDistance: 2.5
-  ChaseForAttackDistance: 1
-  TacticDecisionInterval: 1.5
-  AttackDecisionChance: 1
-  ShortDisSingleAttackChance: 0.6
-  LongDisSingleAttackChance: 0.4
-  MaxStamina: 1
-  MaxPatience: 2
+  KnockedBackTime: 0.2
+  KnockedBackSpeed: 3
+  RecoveryKnockedBackStunTime: 0.3
+  AttackCoolDown: 1
+  MinChaseAttackChaseDistance: 2.5
+  MaxChaseAttackChaseDistance: 5
+  SingleAttackChance: 0.5
+  FirstGetHitAttackCoolDown: 0.4
+  CharacterSpiritSlashAttackCoolDown: 0.2
 --- !u!114 &4305804637280515000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -230,6 +224,10 @@ MonoBehaviour:
   DetectAngle: 120
   DetectInterval: 5
   DetectPlayerShockTime: 0
+  DetectHeight: 5
+  DetectLayer:
+    serializedVersion: 2
+    m_Bits: 2305
 --- !u!114 &4305804637280514978
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -246,18 +244,28 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1792
   SelfSpeed: {x: 0, y: 0}
+  ForcedSpeed: {x: 0, y: 0}
+  AttackStepSpeed: {x: 0, y: 0}
   HitRight: 0
   RightDis: 0
   Right: {fileID: 0}
+  RightForceFieldDis: 0
+  RightForceField: {fileID: 0}
   HitLeft: 0
   LeftDis: 0
   Left: {fileID: 0}
+  LeftForceFieldDis: 0
+  LeftForceField: {fileID: 0}
   HitTop: 0
   TopDis: 0
   Top: {fileID: 0}
+  TopForceFieldDis: 0
+  TopForceField: {fileID: 0}
   HitGround: 0
   GroundDis: 0
   Ground: {fileID: 0}
+  GroundForceFieldDis: 0
+  GroundForceField: {fileID: 0}
   BodyWidth: 1
   BodyHeight: 2
   OriPos: {x: 0, y: 0}
@@ -286,7 +294,7 @@ MonoBehaviour:
   RecoverySize: {x: 1.201857, y: 1.083478}
   HitOffset: {x: -0.05119801, y: -0.08496404}
   HitSize: {x: 0.9847698, y: 1.189566}
---- !u!114 &1292655691164374894
+--- !u!114 &2740503663709708477
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -295,9 +303,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 4305804637280515003}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9777945ce8308994c9d49bd53a5b2889, type: 3}
+  m_Script: {fileID: 11500000, guid: 803b2eb48b73189489fd658edfe0cde5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Type: 2
   LeftPassable: 0
   RightPassable: 0
   TopPassable: 1
@@ -447,7 +456,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8677702887868664276}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_Children: []
   m_Father: {fileID: 4305804637280514981}
@@ -636,12 +645,6 @@ RectTransform:
 --- !u!1 &2692453752014028249 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7539878772270803227, guid: 21b59aee8a9c3c643bd59decc20cec00,
-    type: 3}
-  m_PrefabInstance: {fileID: 5620074140573832386}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &8691323887206796470 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3847000563473913972, guid: 21b59aee8a9c3c643bd59decc20cec00,
     type: 3}
   m_PrefabInstance: {fileID: 5620074140573832386}
   m_PrefabAsset: {fileID: 0}

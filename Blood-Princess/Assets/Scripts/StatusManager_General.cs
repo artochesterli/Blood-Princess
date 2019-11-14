@@ -8,6 +8,7 @@ using BehaviorDesigner.Runtime.Tasks;
 /// <summary>
 /// A Generalized Status Manager that Could be used by a general Enemy
 /// </summary>
+[RequireComponent(typeof(BehaviorTree))]
 public class StatusManager_General : StatusManagerBase, IHittable
 {
 	public int MaxHP = 100;
@@ -16,6 +17,7 @@ public class StatusManager_General : StatusManagerBase, IHittable
 	public GameObject HPFill;
 
 	private GameObject DamageText;
+	private BehaviorTree m_BehaviorTree;
 
 	private void Awake()
 	{
@@ -26,6 +28,7 @@ public class StatusManager_General : StatusManagerBase, IHittable
 		if (HPFill == null)
 			HPFill = Canvas.transform.GetChild(0).GetChild(0).gameObject;
 		CurrentHP = MaxHP;
+		m_BehaviorTree = GetComponent<BehaviorTree>();
 	}
 
 	// Update is called once per frame
@@ -43,7 +46,9 @@ public class StatusManager_General : StatusManagerBase, IHittable
 
 		CurrentHP -= HitAttack.Damage;
 
-		if (HitAttack.Type != CharacterAttackType.NormalSlash)
+		m_BehaviorTree.SendEvent("Attacked");
+
+		if (HitAttack.Type != CharacterAttackType.Slash)
 		{
 			Interrupted = true;
 		}
@@ -63,7 +68,7 @@ public class StatusManager_General : StatusManagerBase, IHittable
 		}
 		DamageText.GetComponent<Text>().text = HitAttack.Damage.ToString();
 		DamageText.transform.parent = Canvas.transform;
-		if (HitAttack.Type == CharacterAttackType.NormalSlash)
+		if (HitAttack.Type == CharacterAttackType.Slash)
 		{
 			DamageText.GetComponent<Text>().color = Color.red;
 		}

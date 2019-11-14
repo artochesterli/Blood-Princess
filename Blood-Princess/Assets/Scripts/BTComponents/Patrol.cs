@@ -8,10 +8,8 @@ using BehaviorDesigner.Runtime;
 public class Patrol : Action
 {
 	public SharedFloat Speed;
-	public SharedFloat ArrivalDistance;
 	public SharedFloat MinWayPointPauseDuration = 0f;
 	public SharedFloat MaxWayPointPauseDuration = 2f;
-	public SharedVector2List WayPoints;
 
 	private List<Vector2> m_TargetPositions;
 	private int m_WayPointIndex;
@@ -25,12 +23,7 @@ public class Patrol : Action
 		m_WayPointReachTimer = -1f;
 		m_SpeedManager = GetComponent<SpeedManager>();
 		Debug.Assert(m_SpeedManager != null, "There is no Speed Manager on GameObject: " + gameObject.name);
-		Debug.Assert(WayPoints.Value.Count > 0, "There are no way points on GameObject: " + gameObject.name);
 		m_TargetPositions = new List<Vector2>();
-		for (int i = 0; i < WayPoints.Value.Count; i++)
-		{
-			m_TargetPositions.Add(new Vector2(m_TruePosition.x + WayPoints.Value[i].x, m_TruePosition.y + WayPoints.Value[i].y));
-		}
 	}
 
 	public override void OnStart()
@@ -92,38 +85,21 @@ public class Patrol : Action
 
 	private bool _isOnLeftEdge()
 	{
-		RaycastHit2D hit = Physics2D.BoxCast(m_SpeedManager.GetTruePos() - new Vector2(1.5f, 1f), new Vector2(0.1f, 0.1f), 0f, Vector2.zero);
+		Vector2 castOrigin = m_SpeedManager.GetTruePos();
+		castOrigin.x -= m_SpeedManager.BodyWidth / 2f - 0.2f;
+		castOrigin.y -= m_SpeedManager.BodyHeight / 2f;
+		RaycastHit2D hit = Physics2D.BoxCast(castOrigin, new Vector2(0.1f, 0.1f), 0f, Vector2.zero);
 
 		return hit.collider == null && m_SpeedManager.HitGround;
 	}
 
 	private bool _isOnRightEdge()
 	{
-		RaycastHit2D hit = Physics2D.BoxCast(m_SpeedManager.GetTruePos() - new Vector2(-1.5f, 1f), new Vector2(0.1f, 0.1f), 0f, Vector2.zero);
+		Vector2 castOrigin = m_SpeedManager.GetTruePos();
+		castOrigin.x += m_SpeedManager.BodyWidth / 2f + 0.2f;
+		castOrigin.y -= m_SpeedManager.BodyHeight / 2f;
+		RaycastHit2D hit = Physics2D.BoxCast(castOrigin, new Vector2(0.1f, 0.1f), 0f, Vector2.zero);
 
 		return hit.collider == null && m_SpeedManager.HitGround;
-	}
-
-	public override void OnDrawGizmos()
-	{
-#if UNITY_EDITOR
-		if (WayPoints == null || WayPoints.Value == null)
-		{
-			return;
-		}
-		var oldColor = UnityEditor.Handles.color;
-		UnityEditor.Handles.color = Color.yellow;
-		for (int i = 0; i < WayPoints.Value.Count; i++)
-		{
-			if (WayPoints.Value[i] != null)
-			{
-				UnityEditor.Handles.SphereHandleCap(0, WayPoints.Value[i] + new Vector2(Owner.transform.position.x, Owner.transform.position.y),
-				Quaternion.identity,
-				0.5f,
-				EventType.Repaint);
-			}
-		}
-		UnityEditor.Handles.color = oldColor;
-#endif
 	}
 }

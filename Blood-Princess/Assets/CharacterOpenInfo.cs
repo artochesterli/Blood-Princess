@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PassableInfo : MonoBehaviour
+public class CharacterOpenInfo : MonoBehaviour
 {
-    public bool LeftPassable;
-    public bool RightPassable;
-    public bool TopPassable;
-    public bool BottomPassable;
+    public static GameObject Self;
+
+    private void Awake()
+    {
+        Self = gameObject;
+    }
 
     // Start is called before the first frame update
     void Start()

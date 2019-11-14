@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class StatusManager_Knight : StatusManagerBase, IHittable, IShield
+public class StatusManager_Knight : StatusManagerBase, IHittable
 {
     public int MaxShield { get; set; }
     public int CurrentShield { get; set; }
@@ -26,8 +26,6 @@ public class StatusManager_Knight : StatusManagerBase, IHittable, IShield
 	{
 		var Data = GetComponent<KnightData>();
 		CurrentHP = Data.MaxHP;
-        CurrentShield = Data.MaxShield;
-        MaxShield = Data.MaxShield;
 		if (SharedCanvas == null)
 			SharedCanvas = GameObject.Find("SharedCanvas");
 	}
@@ -47,21 +45,8 @@ public class StatusManager_Knight : StatusManagerBase, IHittable, IShield
 
         CharacterAttackInfo HitAttack = (CharacterAttackInfo)Attack;
 
-        if (!Interrupted)
-        {
-            CurrentShield -= HitAttack.ShieldBreak;
-            if (CurrentShield <= 0)
-            {
-                EventManager.instance.Fire(new PlayerBreakEnemyShield(HitAttack, gameObject));
-                CurrentShield = 0;
-                Interrupted = true;
-            }
-            else
-            {
-                Interrupted = false;
-            }
-            SetShieldFill((float)CurrentShield / Data.MaxShield);
-        }
+
+        Interrupted = true;
 
 
         DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
@@ -77,15 +62,15 @@ public class StatusManager_Knight : StatusManagerBase, IHittable, IShield
 
 		if (HitAttack.Right)
 		{
-			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 1);
+			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 0);
 		}
 		else
 		{
-			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 1);
+			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 0);
 		}
 		DamageText.GetComponent<Text>().text = HitAttack.Damage.ToString();
 		DamageText.transform.parent = Canvas.transform;
-		if (HitAttack.Type == CharacterAttackType.NormalSlash)
+		if (HitAttack.Type == CharacterAttackType.Slash)
 		{
 			DamageText.GetComponent<Text>().color = Color.red;
 		}
@@ -112,10 +97,4 @@ public class StatusManager_Knight : StatusManagerBase, IHittable, IShield
 	{
         HPFill.GetComponent<Image>().fillAmount = value;
 	}
-
-    public void SetShieldFill(float value)
-    {
-        ShieldFill.GetComponent<Image>().fillAmount = value;
-    }
-
 }

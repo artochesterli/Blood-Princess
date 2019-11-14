@@ -6,19 +6,16 @@ using BehaviorDesigner.Runtime.Tasks;
 
 public class CanAct : Conditional
 {
-    public SharedBool variable;
-    public SharedBool compareTo;
-    [BehaviorDesigner.Runtime.Tasks.Tooltip("Set variable to this if true")]
-    public SharedBool setTo;
+	public SharedBool variable;
+	public SharedBool compareTo;
 
-    public override TaskStatus OnUpdate()
-    {
-        if (variable.Value.Equals(compareTo.Value))
-        {
-            variable.Value = setTo.Value;
-            return TaskStatus.Success;
-        }
-        else
-            return TaskStatus.Failure;
-    }
+	public override TaskStatus OnUpdate()
+	{
+		if (variable.Value.Equals(compareTo.Value))
+		{
+			return TaskStatus.Success;
+		}
+		else
+			return TaskStatus.Failure;
+	}
 }
