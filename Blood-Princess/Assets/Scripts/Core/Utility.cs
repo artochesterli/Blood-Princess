@@ -189,3 +189,15 @@ public class Utility
         return Input.GetKeyDown(KeyCode.Q) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Parry"));
     }
 }
+
+[System.Serializable]
+public class ItemDatium
+{
+    public string Name;
+    public Sprite Sprite;
+    public float Interval;
+    public float VitalityDrain = 10f;
+    public float RestoreVitality = 10f;
+    public float RestoreOxygen = 0f;
+    public GameObject PlantedSeed;
+}
