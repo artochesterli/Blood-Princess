@@ -137,9 +137,11 @@ public class PlayerKillEnemy : GameEvent
 public class PlayerGetHit : GameEvent
 {
     public EnemyAttackInfo EnemyAttack;
-    public PlayerGetHit(EnemyAttackInfo attack)
+    public bool PlayerInRollInvulnerability;
+    public PlayerGetHit(EnemyAttackInfo attack, bool inroll)
     {
         EnemyAttack = attack;
+        PlayerInRollInvulnerability = inroll;
     }
 }
 

@@ -27,6 +27,7 @@ public class CharacterData : MonoBehaviour
     public float InterruptedMoveTime;
     public float InterruptedSpeedX;
 
+    public GameObject RollEffect;
     public float RollAnticipationTime;
     public float RollTime;
     public float RollRecoveryTime;
