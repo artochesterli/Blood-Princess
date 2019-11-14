@@ -8,30 +8,31 @@ using UnityEngine.SceneManagement;
 public class StatusManager_Character : StatusManagerBase, IHittable
 {
     public int CurrentEnergy;
+    public int CurrentAdvancedEnergy;
 
     public GameObject Canvas;
     public GameObject HPFill;
     public GameObject EnergyFill;
-    public GameObject EnergyMarks;
+    public GameObject AdvancedEnergyFill;
     public GameObject CriticalEyeMark;
-    public GameObject SpiritSlashInvulnerableMark;
+
+    public GameObject ParryShieldMark;
+    public GameObject ParriedEffectPrefab;
 
     public Sprite EnergyOrbEmptySprite;
     public Sprite EnergyOrbFilledSprite;
 
     private bool InRollInvulnerability;
 
-    private bool InSpiritSlashInvulnerability;
-    private bool SpiritSlashParried;
+    private bool InParryInvulnerability;
 
     private bool InCriticalEye;
+    private bool InSuperCriticalEye;
 
 
     private GameObject DamageText;
 
     private float TimeCount;
-
-    private bool GetHitAvailable;
 
     // Start is called before the first frame update
     void Start()
@@ -54,14 +55,6 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         EventManager.instance.AddHandler<PlayerKillEnemy>(OnPlayerKillEnemy);
         EventManager.instance.AddHandler<PlayerGetHit>(OnPlayerGetHit);
 
-        EventManager.instance.AddHandler<PlayerEquipEnhancement>(OnPlayerEquipEnhancement);
-        EventManager.instance.AddHandler<PlayerUnequipEnhancement>(OnPlayerUnequipEnhancement);
-        EventManager.instance.AddHandler<PlayerEquipPassiveAbility>(OnPlayerEquipPassiveAbility);
-        EventManager.instance.AddHandler<PlayerUnequipPassiveAbility>(OnPlayerUnequipPassiveAbility);
-        EventManager.instance.AddHandler<PlayerUpgradeEnhancement>(OnPlayerUpgradeEnhancement);
-        EventManager.instance.AddHandler<PlayerDowngradeEnhancement>(OnPlayerDowngradeEnhancement);
-        EventManager.instance.AddHandler<PlayerUpgradePassiveAbility>(OnPlayerUpgradePassiveAbility);
-        EventManager.instance.AddHandler<PlayerDowngradePassiveAbility>(OnPlayerDowngradePassiveAbility);
     }
 
     private void OnDestroy()
@@ -81,14 +74,6 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         EventManager.instance.RemoveHandler<PlayerKillEnemy>(OnPlayerKillEnemy);
         EventManager.instance.RemoveHandler<PlayerGetHit>(OnPlayerGetHit);
 
-        EventManager.instance.RemoveHandler<PlayerEquipEnhancement>(OnPlayerEquipEnhancement);
-        EventManager.instance.RemoveHandler<PlayerUnequipEnhancement>(OnPlayerUnequipEnhancement);
-        EventManager.instance.RemoveHandler<PlayerEquipPassiveAbility>(OnPlayerEquipPassiveAbility);
-        EventManager.instance.RemoveHandler<PlayerUnequipPassiveAbility>(OnPlayerUnequipPassiveAbility);
-        EventManager.instance.RemoveHandler<PlayerUpgradeEnhancement>(OnPlayerUpgradeEnhancement);
-        EventManager.instance.RemoveHandler<PlayerDowngradeEnhancement>(OnPlayerDowngradeEnhancement);
-        EventManager.instance.RemoveHandler<PlayerUpgradePassiveAbility>(OnPlayerUpgradePassiveAbility);
-        EventManager.instance.RemoveHandler<PlayerDowngradePassiveAbility>(OnPlayerDowngradePassiveAbility);
     }
 
     // Update is called once per frame
@@ -100,18 +85,16 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     }
 
-    public void SetSpiritSlashInvulnerability(bool value)
+    public void SetParryInvulnerability(bool value)
     {
-        InSpiritSlashInvulnerability = value;
-        if (InSpiritSlashInvulnerability)
-        {
-            SpiritSlashInvulnerableMark.GetComponent<SpriteRenderer>().enabled = true;
-            SpiritSlashInvulnerableMark.transform.position = GetComponent<SpeedManager>().GetTruePos();
-        }
-        else
-        {
-            SpiritSlashInvulnerableMark.GetComponent<SpriteRenderer>().enabled = false;
-        }
+        InParryInvulnerability = value;
+        ParryShieldMark.GetComponent<SpriteRenderer>().enabled = value;
+        ParryShieldMark.transform.position = GetComponent<SpeedManager>().GetTruePos();
+    }
+
+    public void SetRollInvulnerability(bool value)
+    {
+        InRollInvulnerability = value;
     }
 
     public bool GetCriticalEye()
@@ -122,14 +105,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     private void SetCriticalEye (bool value)
     {
         InCriticalEye = value;
-        if (InCriticalEye)
-        {
-            CriticalEyeMark.GetComponent<SpriteRenderer>().enabled = true;
-        }
-        else
-        {
-            CriticalEyeMark.GetComponent<SpriteRenderer>().enabled = false;
-        }
+        CriticalEyeMark.GetComponent<SpriteRenderer>().enabled = value;
     }
 
     private void Init()
@@ -147,20 +123,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         EnergyFill.GetComponent<Image>().fillAmount = (float)CurrentEnergy / Data.MaxEnergy;
 
-        /*int count = 0;
-
-        foreach(Transform child in EnergyMarks.transform)
-        {
-            if (CurrentEnergy > count)
-            {
-                child.GetComponent<Image>().enabled = true;
-            }
-            else
-            {
-                child.GetComponent<Image>().enabled = false;
-            }
-            count++;
-        }*/
+        AdvancedEnergyFill.GetComponent<Image>().fillAmount = (float)CurrentAdvancedEnergy / Data.MaxEnergy;
 
     }
 
@@ -181,11 +144,33 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         if (!IsInvulnerable)
         {
-            if (InCriticalEye)
+            var Data = GetComponent<CharacterData>();
+
+            bool Nulified = false;
+
+            if (CurrentAdvancedEnergy > 0)
             {
-                CurrentEnergy = 0;
-                SetCriticalEye(false);
+                Nulified = true;
+                HitAttack.Damage -= Mathf.RoundToInt(Data.MaxAdvancedEnergyDamageNulification * CurrentAdvancedEnergy / Data.MaxEnergy);
+
+                if(HitAttack.Damage < 0)
+                {
+                    HitAttack.Damage = 0;
+                }
             }
+
+            CurrentAdvancedEnergy = 0;
+
+            int EnergyLost = Mathf.CeilToInt(CurrentEnergy * Data.HitEnergyLostProportion);
+
+            if (EnergyLost < Data.MinimalEnergyLost)
+            {
+                EnergyLost = Data.MinimalEnergyLost;
+            }
+
+            GainLoseEnergy(-EnergyLost);
+
+            SetCriticalEye(false);
 
 
             DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
@@ -205,6 +190,15 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             }
             DamageText.GetComponent<Text>().text = Damage.ToString();
             DamageText.transform.parent = Canvas.transform;
+
+            if (Nulified)
+            {
+                DamageText.GetComponent<Text>().color = new Color(0.7372549f, 0.1686275f, 0.6732783f);
+            }
+            else
+            {
+                DamageText.GetComponent<Text>().color = Color.white;
+            }
 
 
             CurrentHP -= Damage;
@@ -227,12 +221,27 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private bool Invulnerable()
     {
-        return InRollInvulnerability || InSpiritSlashInvulnerability;
+        return InRollInvulnerability || InParryInvulnerability;
     }
 
     private void OnPlayerStartAttackAnticipation(PlayerStartAttackAnticipation e)
     {
-        SpiritSlashParried = false;
+        var Data = GetComponent<CharacterData>();
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
+        if(e.Attack.Type == CharacterAttackType.BattleArt)
+        {
+            switch (e.Attack.ThisBattleArt.Type)
+            {
+                case BattleArtType.SpiritSlash:
+                    CurrentEnergy = CurrentAdvancedEnergy;
+                    if(CurrentAdvancedEnergy < Data.MaxEnergy)
+                    {
+                        SetCriticalEye(false);
+                    }
+                    break;
+            }
+        }
 
     }
 
@@ -252,33 +261,22 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     {
         var Data = GetComponent<CharacterData>();
         var AbilityData = GetComponent<CharacterAbilityData>();
+        var Action = GetComponent<CharacterAction>();
 
         if (e.HitEnemies.Count > 0)
         {
-            if (e.Attack.Type == CharacterAttackType.NormalSlash)
+            if (e.Attack.Type == CharacterAttackType.Slash)
             {
-                if (InCriticalEye)
-                {
-                    GainEnergy(AbilityData.NormalSlashEnergyGain + AbilityData.NormalSlashCriticalEyeEnergyGainBonus);
-                    SetCriticalEye(false);
-                }
-                else
-                {
-                    GainEnergy(AbilityData.NormalSlashEnergyGain);
-                }
-
-                if(CurrentEnergy == Data.MaxEnergy)
-                {
-                    SetCriticalEye(true);
-                }
-
+                GainLoseEnergy(AbilityData.SlashEnergyGain);
             }
-            else if (e.Attack.Type == CharacterAttackType.SpiritSlash)
+            else if(e.Attack.Type == CharacterAttackType.BattleArt)
             {
-                SetCriticalEye(true);
-                if(CurrentEnergy == Data.MaxEnergy)
+                switch (Action.EquipedBattleArt.Type)
                 {
-                    Heal(Mathf.RoundToInt(e.HitEnemies.Count * AbilityData.SpiritSlashHeal * e.Attack.Damage));
+                    case BattleArtType.SpiritSlash:
+                        GainAdvancedEnergy(AbilityData.SpiritSlashAdvancedEnergyGain);
+                        GainLoseEnergy(AbilityData.SpiritSlashAdvancedEnergyGain);
+                        break;
                 }
             }
         }
@@ -286,10 +284,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void OnPlayerStartAttackRecovery(PlayerStartAttackRecovery e)
     {
-        if(e.Attack.Type == CharacterAttackType.SpiritSlash && SpiritSlashParried)
-        {
-            e.Attack.RecoveryTime = GetComponent<CharacterAbilityData>().SpiritSlashParriedRecoveryTime;
-        }
+
     }
 
     private void OnPlayerEndAttackRecovery(PlayerEndAttackRecovery e)
@@ -309,13 +304,13 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void OnPlayerStartRoll(PlayerStartRoll e)
     {
-        InRollInvulnerability = true;
+
 
     }
 
     private void OnPlayerEndRoll(PlayerEndRoll e)
     {
-        InRollInvulnerability = false;
+
     }
 
 
@@ -324,10 +319,10 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Action = GetComponent<CharacterAction>();
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        if (InSpiritSlashInvulnerability)
+        if (InParryInvulnerability)
         {
-            SpiritSlashParried = true;
-            Action.CurrentAttack.AnticipationTime = AbilityData.SpiritSlashParriedAnticipation;
+            GameObject.Instantiate(ParriedEffectPrefab, ParryShieldMark.transform.position, Quaternion.Euler(0, 0, 0));
+            GainLoseEnergy(AbilityData.ParryEnergyGain);
         }
     }
 
@@ -338,63 +333,26 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void OnPlayerHitEnemy(PlayerHitEnemy e)
     {
-        
+        var Action = GetComponent<CharacterAction>();
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
+        if (e.OriginalAttack.Type == CharacterAttackType.BattleArt)
+        {
+            switch (Action.EquipedBattleArt.Type)
+            {
+                case BattleArtType.SpiritSlash:
+                    if(e.Enemy.transform.right.x >0 && e.OriginalAttack.Right || e.Enemy.transform.right.x < 0 && !e.OriginalAttack.Right)
+                    {
+                        e.UpdatedAttack.Damage += Mathf.RoundToInt(e.OriginalAttack.BaseDamage * AbilityData.SpiritSlashBackStabDamageBonus);
+                    }
+                    break;
+            }
+        }
     }
 
     private void OnPlayerBreakEnemyShield(PlayerBreakEnemyShield e)
     {
 
-    }
-
-    private void OnPlayerEquipEnhancement(PlayerEquipEnhancement e)
-    {
-
-    }
-
-    private void OnPlayerUnequipEnhancement(PlayerUnequipEnhancement e)
-    {
-
-    }
-
-    private void OnPlayerUpgradeEnhancement(PlayerUpgradeEnhancement e)
-    {
-
-    }
-
-
-    private void OnPlayerDowngradeEnhancement(PlayerDowngradeEnhancement e)
-    {
-
-    }
-
-    private void OnPlayerEquipPassiveAbility(PlayerEquipPassiveAbility e)
-    {
-
-    }
-
-    private void OnPlayerUnequipPassiveAbility(PlayerUnequipPassiveAbility e)
-    {
-
-    }
-
-    private void OnPlayerUpgradePassiveAbility(PlayerUpgradePassiveAbility e)
-    {
-
-    }
-
-    private void OnPlayerDowngradePassiveAbility(PlayerDowngradePassiveAbility e)
-    {
-
-    }
-
-    private BattleArtEnhancement GetNullBattleArtEnhancement()
-    {
-        return new BattleArtEnhancement("", CharacterAttackType.Null, BattleArtEnhancementType.Null, 0);
-    }
-
-    private CharacterPassiveAbility GetNullPassiveAbility()
-    {
-        return new CharacterPassiveAbility("", CharacterPassiveAbilityType.Null, 0);
     }
 
 
@@ -417,15 +375,35 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         }
     }
 
-    private void GainEnergy(int amount)
+    private void GainLoseEnergy(int amount)
     {
         var Data = GetComponent<CharacterData>();
-        if(amount > Data.MaxEnergy - CurrentEnergy)
+        if(amount >= Data.MaxEnergy - CurrentEnergy)
         {
-            amount = Data.MaxEnergy - CurrentEnergy;
+            CurrentEnergy = Data.MaxEnergy;
+            SetCriticalEye(true);
+            return;
+        }
+        else if(amount <= -CurrentEnergy)
+        {
+            CurrentEnergy = 0;
+            return;
         }
 
         CurrentEnergy += amount;
+    }
+
+    private void GainAdvancedEnergy(int amount)
+    {
+        var Data = GetComponent<CharacterData>();
+
+        if(amount >= Data.MaxEnergy - CurrentAdvancedEnergy)
+        {
+            CurrentAdvancedEnergy = Data.MaxEnergy;
+            return;
+        }
+
+        CurrentAdvancedEnergy += amount;
     }
 
 

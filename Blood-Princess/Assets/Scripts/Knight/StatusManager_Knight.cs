@@ -70,7 +70,7 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 		}
 		DamageText.GetComponent<Text>().text = HitAttack.Damage.ToString();
 		DamageText.transform.parent = Canvas.transform;
-		if (HitAttack.Type == CharacterAttackType.NormalSlash)
+		if (HitAttack.Type == CharacterAttackType.Slash)
 		{
 			DamageText.GetComponent<Text>().color = Color.red;
 		}

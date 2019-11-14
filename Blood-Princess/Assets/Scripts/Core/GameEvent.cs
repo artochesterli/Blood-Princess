@@ -84,6 +84,16 @@ public class PlayerEndRoll : GameEvent
 
 }
 
+public class PlayerStartParry : GameEvent
+{
+
+}
+
+public class PlayerEndParry : GameEvent
+{
+
+}
+
 
 
 public class PlayerHitEnemy : GameEvent
@@ -130,80 +140,6 @@ public class PlayerGetHit : GameEvent
     public PlayerGetHit(EnemyAttackInfo attack)
     {
         EnemyAttack = attack;
-    }
-}
-
-
-
-public class PlayerEquipEnhancement : GameEvent
-{
-    public BattleArtEnhancement Enhancement;
-    public PlayerEquipEnhancement(BattleArtEnhancement enhancement)
-    {
-        Enhancement = enhancement;
-    }
-}
-
-public class PlayerUnequipEnhancement : GameEvent
-{
-    public BattleArtEnhancement Enhancement;
-    public PlayerUnequipEnhancement(BattleArtEnhancement enhancement)
-    {
-        Enhancement = enhancement;
-    }
-}
-
-public class PlayerEquipPassiveAbility : GameEvent
-{
-    public CharacterPassiveAbility PassiveAbility;
-    public PlayerEquipPassiveAbility(CharacterPassiveAbility ability)
-    {
-        PassiveAbility = ability;
-    }
-}
-
-public class PlayerUnequipPassiveAbility : GameEvent
-{
-    public CharacterPassiveAbility PassiveAbility;
-    public PlayerUnequipPassiveAbility(CharacterPassiveAbility ability)
-    {
-        PassiveAbility = ability;
-    }
-}
-
-public class PlayerUpgradeEnhancement : GameEvent
-{
-    public BattleArtEnhancement Enhancement;
-    public PlayerUpgradeEnhancement(BattleArtEnhancement enhancement)
-    {
-        Enhancement = enhancement;
-    }
-}
-
-public class PlayerDowngradeEnhancement : GameEvent
-{
-    public BattleArtEnhancement Enhancement;
-    public PlayerDowngradeEnhancement(BattleArtEnhancement enhancement)
-    {
-        Enhancement = enhancement;
-    }
-}
-
-public class PlayerUpgradePassiveAbility : GameEvent
-{
-    public CharacterPassiveAbility PassiveAbility;
-    public PlayerUpgradePassiveAbility(CharacterPassiveAbility ability)
-    {
-        PassiveAbility = ability;
-    }
-}
-
-public class PlayerDowngradePassiveAbility : GameEvent
-{
-    public CharacterPassiveAbility PassiveAbility;
-    public PlayerDowngradePassiveAbility(CharacterPassiveAbility ability)
-    {
-        PassiveAbility = ability;
     }
 }
 

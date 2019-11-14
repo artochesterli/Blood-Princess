@@ -18,9 +18,13 @@ public class CharacterData : MonoBehaviour
     public int MaxHP;
     public int MaxEnergy;
 
+    public int MaxAdvancedEnergyDamageNulification;
+
+    public float HitEnergyLostProportion;
+    public int MinimalEnergyLost;
+
     public float InterruptedTime;
     public float InterruptedMoveTime;
-    public float InterruptedSpeed;
     public float InterruptedSpeedX;
 
     public float RollAnticipationTime;
@@ -35,6 +39,7 @@ public class CharacterData : MonoBehaviour
     public LayerMask RollIgnoredLayers;
 
     public float ClimbPlatformTime;
+    public float ClimbPlatformJumpOverSpeed;
     public LayerMask PassablePlatformLayer;
 
     public float ClimbLadderSpeed;
