@@ -41,8 +41,6 @@ public class KnightData : MonoBehaviour
 
     public float FirstGetHitAttackCoolDown;
 
-    public float CharacterSpiritSlashAttackCoolDown;
-
     // Start is called before the first frame update
     void Start()
     {
