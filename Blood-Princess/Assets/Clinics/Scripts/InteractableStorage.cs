@@ -23,6 +23,9 @@ namespace Clinic
 		private void Start()
 		{
 			m_Inventory.OnAddItem(new Rug(m_ItemData));
+			m_Inventory.OnAddItem(new Wood(m_ItemData));
+			m_Inventory.OnAddItem(new Wood(m_ItemData));
+			m_Inventory.OnAddItem(new Charcoal(m_ItemData));
 		}
 
 		protected override void OnCancelInteract()

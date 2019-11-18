@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace Clinic
 {
@@ -51,7 +52,7 @@ namespace Clinic
 
 			if (Input.GetKeyDown(KeyCode.J))
 			{
-				m_Inventory.m_Items[m_CurrentSelectionIndex].OnSelect(GameObject.FindGameObjectWithTag("Player"));
+				m_Inventory.m_Items[m_CurrentSelectionIndex].OnSelect(gameObject);
 			}
 		}
 
@@ -62,7 +63,12 @@ namespace Clinic
 
 		public void OnAddItem(Item item, int index, int num = 1)
 		{
-			InventoryPanel.GetChild(index).GetComponent<Image>().sprite = item.Sprite;
+			InventoryPanel.GetChild(index).GetChild(1).GetComponent<Image>().sprite = item.Sprite;
+			InventoryPanel.GetChild(index).GetChild(1).GetComponent<Image>().color = Color.white;
+			if (num > 1)
+				InventoryPanel.GetChild(index).GetChild(2).GetComponent<TextMeshProUGUI>().text = num.ToString();
+			else
+				InventoryPanel.GetChild(index).GetChild(2).GetComponent<TextMeshProUGUI>().text = "";
 		}
 
 		public void OnOpenUI()

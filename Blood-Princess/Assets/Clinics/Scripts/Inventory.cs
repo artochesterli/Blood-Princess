@@ -37,7 +37,7 @@ namespace Clinic
 				{
 					m_Items[i].Number++;
 					if (inUI != null)
-						inUI.OnAddItem(item, i);
+						inUI.OnAddItem(item, i, m_Items[i].Number);
 					return true;
 				}
 			}
@@ -47,7 +47,7 @@ namespace Clinic
 				{
 					m_Items[i] = item;
 					if (inUI != null)
-						inUI.OnAddItem(item, i);
+						inUI.OnAddItem(item, i, m_Items[i].Number);
 					return true;
 				}
 			}
