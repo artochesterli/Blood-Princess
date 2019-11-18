@@ -53,7 +53,7 @@ namespace Clinic
 
 		public override void OnSelect(GameObject Player)
 		{
-
+			Debug.Log("On Selected Rug");
 		}
 	}
 }

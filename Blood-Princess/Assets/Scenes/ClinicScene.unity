@@ -6788,7 +6788,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4cf4d09ad6f666949a416cdc41bf5c59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxSlots: 15
+  MaxSlots: 18
 --- !u!114 &1601401673
 MonoBehaviour:
   m_ObjectHideFlags: 0

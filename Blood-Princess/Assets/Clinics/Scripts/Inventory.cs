@@ -10,7 +10,7 @@ namespace Clinic
 	{
 		public int MaxSlots = 15;
 		private ItemData ItemData;
-		private List<Item> m_Items;
+		public List<Item> m_Items { get; set; }
 
 		private void Awake()
 		{
