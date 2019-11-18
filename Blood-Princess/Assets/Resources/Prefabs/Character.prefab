@@ -2289,7 +2289,7 @@ MonoBehaviour:
   AirAcceleration: 25
   AirDeceleration: 50
   NormalGravity: 3
-  JumpSpeed: 8
+  JumpSpeed: 6
   JumpHoldingTime: 0.2
   MaxHP: 30
   MaxEnergy: 100
@@ -2377,7 +2377,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SlashAnticipationTime: 0.15
   SlashStrikeTime: 0.1
-  SlashRecoveryTime: 0.25
+  SlashRecoveryTime: 0.2
   SlashStepForwardSpeed: 5
   SlashBaseDamage: 10
   SlashCriticalEyeDamageBonus: 0.5

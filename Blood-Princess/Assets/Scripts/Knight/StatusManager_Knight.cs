@@ -5,22 +5,15 @@ using UnityEngine.UI;
 
 public class StatusManager_Knight : StatusManagerBase, IHittable
 {
-    public int MaxShield { get; set; }
-    public int CurrentShield { get; set; }
 
     public GameObject Canvas;
 	public GameObject SharedCanvas;
 	public GameObject HPFill;
-    public GameObject ShieldFill;
 
 	public Color NormalColor;
-	public Color RageColor;
 
 	private GameObject DamageText;
 
-	private float ShockEffectTimeCount;
-	private float ShockEffectTime = 0.2f;
-	private bool ShockEffectActivate;
 	// Start is called before the first frame update
 	void Start()
 	{
@@ -70,14 +63,7 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 		}
 		DamageText.GetComponent<Text>().text = HitAttack.Damage.ToString();
 		DamageText.transform.parent = Canvas.transform;
-		if (HitAttack.Type == CharacterAttackType.Slash)
-		{
-			DamageText.GetComponent<Text>().color = Color.red;
-		}
-		else
-		{
-			DamageText.GetComponent<Text>().color = Color.white;
-		}
+
 		DamageText.GetComponent<Text>().color = Color.white;
 
 		if (CurrentHP <= 0)

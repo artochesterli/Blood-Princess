@@ -52,8 +52,6 @@ public class KnightAI : MonoBehaviour
         GetPatronInfo();
         Player = CharacterOpenInfo.Self;
 
-        var Data = GetComponent<KnightData>();
-
         KnightAIFSM = new FSM<KnightAI>(this);
         KnightAIFSM.TransitionTo<KnightPatron>();
     }
@@ -163,13 +161,12 @@ public class KnightPatron : KnightBehavior
     private bool Moving;
     private bool MovingRight;
 
-
     private bool Initilized;
 
     public override void Init()
     {
         base.Init();
-        Initilized = true;
+        Initilized = false;
     }
 
     public override void OnEnter()
@@ -179,18 +176,17 @@ public class KnightPatron : KnightBehavior
         var Data = Entity.GetComponent<KnightData>();
         var PatronData = Entity.GetComponent<PatronData>();
 
-        if (!Initilized)
+        if (Initilized)
         {
             AIUtility.PatronSetUp(Entity, ref Moving, ref MovingRight, Context.PatronRightX, Context.PatronLeftX, Data.NormalMoveSpeed);
         }
         else
         {
+            Initilized = true;
             AIUtility.RandomPatronInit(Entity, PatronData.PatronStayTime, Context.PatronRightX, Context.PatronLeftX, Data.NormalMoveSpeed, ref Moving, ref MovingRight, ref TimeCount);
         }
         SetAppearance();
 
-
-        Initilized = false;
     }
 
     public override void Update()
@@ -250,7 +246,6 @@ public class KnightEngage : KnightBehavior
         base.OnEnter();
         SetUp();
         SetAppearance();
-        EventManager.instance.AddHandler<PlayerStartAttackAnticipation>(OnCharacterGoingToAttack);
     }
 
     public override void Update()
@@ -278,13 +273,6 @@ public class KnightEngage : KnightBehavior
     {
         base.OnExit();
         Context.LastState = KnightState.Engage;
-        EventManager.instance.RemoveHandler<PlayerStartAttackAnticipation>(OnCharacterGoingToAttack);
-    }
-
-    public override void CleanUp()
-    {
-        base.CleanUp();
-        EventManager.instance.RemoveHandler<PlayerStartAttackAnticipation>(OnCharacterGoingToAttack);
     }
 
     private void SetUp()
@@ -318,7 +306,6 @@ public class KnightEngage : KnightBehavior
     private void KeepDis()
     {
         var Data = Entity.GetComponent<KnightData>();
-
 
         var PlayerSpeedManager = Context.Player.GetComponent<SpeedManager>();
 
@@ -355,15 +342,7 @@ public class KnightEngage : KnightBehavior
 
     private void CheckAttackCoolDown()
     {
-        var Data = Entity.GetComponent<KnightData>();
-
         Context.AttackCoolDownTimeCount -= Time.deltaTime;
-    }
-
-    private void OnCharacterGoingToAttack(PlayerStartAttackAnticipation e)
-    {
-        var Data = Entity.GetComponent<KnightData>();
-
     }
 }
 
@@ -526,6 +505,7 @@ public class KnightAttackStrike : KnightBehavior
     {
         base.OnEnter();
         SetUp();
+        SetAppearance();
         GenerateSlashImage();
     }
 
@@ -566,9 +546,14 @@ public class KnightAttackStrike : KnightBehavior
         {
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = -Data.AttackStepForwardSpeed;
         }
-
-
     }
+
+    private void SetAppearance()
+    {
+        var KnightSpriteData = Entity.GetComponent<KnightSpriteData>();
+        SetKnight(KnightSpriteData.Recovery, KnightSpriteData.RecoveryOffset, KnightSpriteData.RecoverySize);
+    }
+
 
     private void GenerateSlashImage()
     {
@@ -603,8 +588,6 @@ public class KnightAttackStrike : KnightBehavior
 
     private void CheckHitPlayer()
     {
-        var Data = Entity.GetComponent<KnightData>();
-
         if (!AttackHit && AIUtility.HitPlayer(Entity.transform.position,Attack, Context.PlayerLayer))
         {
             AttackHit = true;

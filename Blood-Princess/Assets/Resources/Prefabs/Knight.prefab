@@ -118,7 +118,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.1452923, y: 1.2794554}
+  m_Size: {x: 1.145292, y: 1.279455}
   m_EdgeRadius: 0
 --- !u!114 &4305804637280514983
 MonoBehaviour:
@@ -135,9 +135,7 @@ MonoBehaviour:
   Canvas: {fileID: 4305804638784953937}
   SharedCanvas: {fileID: 0}
   HPFill: {fileID: 2692453752014028249}
-  ShieldFill: {fileID: 0}
   NormalColor: {r: 1, g: 1, b: 1, a: 1}
-  RageColor: {r: 0.36078432, g: 0.84313726, b: 0.972549, a: 1}
 --- !u!114 &4305804637280514982
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206,7 +204,6 @@ MonoBehaviour:
   MaxChaseAttackChaseDistance: 5
   SingleAttackChance: 0.5
   FirstGetHitAttackCoolDown: 0.4
-  CharacterSpiritSlashAttackCoolDown: 0.2
 --- !u!114 &4305804637280515000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -221,9 +218,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Patron: 0
   PatronStayTime: 1
-  DetectAngle: 120
-  DetectInterval: 5
-  DetectPlayerShockTime: 0
   DetectHeight: 5
   DetectLayer:
     serializedVersion: 2
@@ -290,7 +284,7 @@ MonoBehaviour:
   IdleSize: {x: 1.145292, y: 1.279455}
   AnticipationOffset: {x: 0.03013802, y: -0.1468625}
   AnticipationSize: {x: 1.165413, y: 1.108066}
-  RecoveryOffset: {x: -0.005919456, y: -0.1664045}
+  RecoveryOffset: {x: -0.005919456, y: -0.1468625}
   RecoverySize: {x: 1.201857, y: 1.083478}
   HitOffset: {x: -0.05119801, y: -0.08496404}
   HitSize: {x: 0.9847698, y: 1.189566}
@@ -498,7 +492,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -608503495
-  m_SortingLayer: 3
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: e6611fecc07cc024e9984503bff1c8f2, type: 3}
   m_Color: {r: 0.36078432, g: 0.84313726, b: 0.972549, a: 1}

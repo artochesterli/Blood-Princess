@@ -104,6 +104,16 @@ public class SpeedManager : MonoBehaviour
         }
     }
 
+    public void MoveToPoint(Vector2 v)
+    {
+        Vector2 Offset = OriPos;
+        if (transform.right.x < 0)
+        {
+            Offset.x = -Offset.x;
+        }
+        transform.position = v - Offset;
+    }
+
     public void SetBodyInfo(Vector2 Offset,Vector2 BodySize)
     {
         OriPos = Offset;
@@ -390,174 +400,6 @@ public class SpeedManager : MonoBehaviour
         }
 
 
-
-        /*if (temp.y > 0 && Top)
-        {
-            ColliderType Type = Top.GetComponent<ColliderInfo>().Type;
-
-            if (TopDis < temp.y * Time.deltaTime)
-            {
-                if (TopDis > 0)
-                {
-                    temp.y = TopDis / Time.deltaTime;
-                    ResetAllSpeed(false, true);
-                    HitTop = true;
-                }
-                else if (Type == ColliderType.Solid)
-                {
-                    if(TopDis > -HitMargin)
-                    {
-                        temp.y = TopDis / Time.deltaTime;
-                    }
-                    else
-                    {
-                        temp.y = -HitMargin / Time.deltaTime;
-                    }
-
-                    ResetAllSpeed(false, true);
-                    HitTop = true;
-                }
-                else
-                {
-                    HitTop = false;
-                }
-            }
-            else
-            {
-                HitTop = false;
-            }
-        }
-        else
-        {
-            HitTop = false;
-        }
-
-        if (temp.y < 0 && Ground)
-        {
-            ColliderType Type = Ground.GetComponent<ColliderInfo>().Type;
-
-            if (GroundDis < -temp.y * Time.deltaTime)
-            {
-                if(GroundDis > 0)
-                {
-                    temp.y = -GroundDis / Time.deltaTime;
-                    ResetAllSpeed(false, true);
-                    HitGround = true;
-                }
-                else if(Type == ColliderType.Solid)
-                {
-                    if(GroundDis > -HitMargin)
-                    {
-                        temp.y = GroundDis / Time.deltaTime;
-                    }
-                    else
-                    {
-                        temp.y = HitMargin / Time.deltaTime;
-                    }
-
-                    ResetAllSpeed(false, true);
-                    HitGround = true;
-                }
-                else
-                {
-                    HitGround = false;
-                }
-
-            }
-            else
-            {
-                HitGround = false;
-            }
-        }
-        else
-        {
-            HitGround = false;
-        }
-
-        if (temp.x < 0 && Left)
-        {
-            ColliderType Type = Left.GetComponent<ColliderInfo>().Type;
-
-            if (LeftDis < -temp.x * Time.deltaTime)
-            {
-                if (LeftDis > 0)
-                {
-                    temp.x = -LeftDis / Time.deltaTime;
-                    ResetAllSpeed(true, false);
-                    HitLeft = true;
-                }
-                else if (Type == ColliderType.Solid)
-                {
-                    if(LeftDis > -HitMargin)
-                    {
-                        temp.x = -LeftDis / Time.deltaTime;
-                    }
-                    else
-                    {
-                        temp.x = HitMargin / Time.deltaTime;
-                    }
-
-                    ResetAllSpeed(true, false);
-                    HitLeft = true;
-                }
-                else
-                {
-                    HitLeft = false;
-                }
-
-            }
-            else
-            {
-                HitLeft = false;
-
-            }
-        }
-        else
-        {
-            HitLeft = false;
-        }
-
-        if (temp.x > 0 && Right)
-        {
-            ColliderType Type = Right.GetComponent<ColliderInfo>().Type;
-
-            if (RightDis < temp.x * Time.deltaTime)
-            {
-                if (RightDis > 0)
-                {
-                    temp.x = RightDis / Time.deltaTime;
-                    ResetAllSpeed(true, false);
-                    HitRight = true;
-                }
-                else if (Type == ColliderType.Solid)
-                {
-                    if(RightDis > -HitMargin)
-                    {
-                        temp.x = RightDis / Time.deltaTime;
-                    }
-                    else
-                    {
-                        temp.x = -HitMargin/ Time.deltaTime;
-                    }
-
-                    ResetAllSpeed(true, false);
-                    HitRight = true;
-                }
-                else
-                {
-                    HitRight = false;
-                }
-
-            }
-            else
-            {
-                HitRight = false;
-            }
-        }
-        else
-        {
-            HitRight = false;
-        }*/
 
         transform.position += (Vector3)temp* Time.deltaTime;
     }
