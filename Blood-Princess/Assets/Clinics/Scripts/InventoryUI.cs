@@ -51,6 +51,7 @@ namespace Clinic
 			{
 				InventoryPanel.GetChild(index).GetChild(1).GetComponent<Image>().sprite = null;
 				InventoryPanel.GetChild(index).GetChild(1).GetComponent<Image>().color = new Color(1, 1, 1, 0);
+				InventoryPanel.GetChild(index).GetChild(2).GetComponent<TextMeshProUGUI>().text = "";
 			}
 			else
 			{
@@ -208,6 +209,7 @@ namespace Clinic
 				{
 					if (m_CanPlace(BuildPosition, DecorationItem, BaseBuildingGrid))
 					{
+						m_Place(BuildPosition, DecorationItem, BaseBuildingGrid);
 						GameObject.Instantiate(DecorationItem.ItemInstance);
 						Context.m_Inventory.OnRemoveItem(DecorationItem);
 						TransitionTo<InventoryClosedState>();
@@ -242,6 +244,7 @@ namespace Clinic
 				int row = DecorationItem.OccupySize.GetLength(0);
 				int column = DecorationItem.OccupySize.GetLength(1);
 
+				bool canPlace = m_CanPlace(Pos, DecorationItem, BaseBuildingGrid);
 				for (int i = 0; i < row; i++)
 				{
 					for (int j = 0; j < column; j++)
@@ -254,7 +257,7 @@ namespace Clinic
 							continue;
 						}
 
-						if (targetGrid.GridName == DecorationItem.OccupySize[i, j])
+						if (targetGrid.GridName == DecorationItem.OccupySize[i, j] && canPlace)
 						{
 							targetGrid.gameObject.GetComponent<SpriteRenderer>().color = Color.green;
 						}
@@ -262,6 +265,43 @@ namespace Clinic
 						{
 							targetGrid.gameObject.GetComponent<SpriteRenderer>().color = Color.red;
 						}
+					}
+				}
+				//for (int i = 0; i < row; i++)
+				//{
+				//	for (int j = 0; j < column; j++)
+				//	{
+				//		Grid targetGrid = BaseBuildingGrid.Grids[Pos.x + i, Pos.y + j];
+				//		// If the Grid was pre-occupied(i.e black), continue and do not change color
+				//		// If the Grid was the same type as required, then green, other wise, red
+				//		if (targetGrid.gameObject.GetComponent<SpriteRenderer>().color == Color.black)
+				//		{
+				//			continue;
+				//		}
+
+				//		if (targetGrid.GridName == DecorationItem.OccupySize[i, j])
+				//		{
+				//			targetGrid.gameObject.GetComponent<SpriteRenderer>().color = Color.green;
+				//		}
+				//		else
+				//		{
+				//			targetGrid.gameObject.GetComponent<SpriteRenderer>().color = Color.red;
+				//		}
+				//	}
+				//}
+
+			}
+
+			private void m_Place(Vector2Int Pos, DecorationItem di, BaseBuildingGrid bbg)
+			{
+				int row = di.OccupySize.GetLength(0);
+				int column = di.OccupySize.GetLength(1);
+
+				for (int i = 0; i < row; i++)
+				{
+					for (int j = 0; j < column; j++)
+					{
+						bbg.Grids[Pos.x + i, Pos.y + j].gameObject.GetComponent<SpriteRenderer>().color = Color.black;
 					}
 				}
 			}
@@ -282,16 +322,9 @@ namespace Clinic
 				{
 					for (int j = 0; j < column; j++)
 					{
-						if (bbg.Grids[Pos.x + i, Pos.y + j].gameObject.GetComponent<SpriteRenderer>().color != Color.green)
+						if (bbg.Grids[Pos.x + i, Pos.y + j].gameObject.GetComponent<SpriteRenderer>().color != Color.green &&
+							bbg.Grids[Pos.x + i, Pos.y + j].gameObject.GetComponent<SpriteRenderer>().color != Color.white)
 							return false;
-					}
-				}
-
-				for (int i = 0; i < row; i++)
-				{
-					for (int j = 0; j < column; j++)
-					{
-						bbg.Grids[Pos.x + i, Pos.y + j].gameObject.GetComponent<SpriteRenderer>().color = Color.black;
 					}
 				}
 				return true;

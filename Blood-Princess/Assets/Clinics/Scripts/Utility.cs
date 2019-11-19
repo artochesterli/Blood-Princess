@@ -27,6 +27,26 @@ namespace Clinic
 			float y = 2f * halfY;
 			return new Vector2(x, y);
 		}
+
+		public static Item NewItemFromString(string Name)
+		{
+			switch (Name.ToLower())
+			{
+				case "wood":
+					return new Wood(Resources.Load<ItemData>("ItemData"));
+				case "cloth":
+					return new Cloth(Resources.Load<ItemData>("ItemData"));
+				case "charcoal":
+					return new Charcoal(Resources.Load<ItemData>("ItemData"));
+				case "rug":
+					return new Rug(Resources.Load<ItemData>("ItemData"));
+				case "tub":
+					return new Rug(Resources.Load<ItemData>("ItemData"));
+				case "scroll":
+					return new Scroll(Resources.Load<ItemData>("ItemData"));
+			}
+			return null;
+		}
 	}
 
 	[System.Serializable]
@@ -34,6 +54,15 @@ namespace Clinic
 	{
 		public string Name;
 		public Sprite Sprite;
+		public List<CraftMaterial> CraftMaterials;
+	}
+
+	[System.Serializable]
+	public class CraftMaterial
+	{
+		public string Name;
+		public Sprite Sprite;
+		public int Amount = 1;
 	}
 
 	public abstract class Grid

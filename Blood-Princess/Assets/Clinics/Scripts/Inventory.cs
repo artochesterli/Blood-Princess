@@ -59,24 +59,26 @@ namespace Clinic
 		/// Remove an item in the inventory
 		/// </summary>
 		/// <param name="item"></param>
-		public void OnRemoveItem(Item item)
+		public void OnRemoveItem(Item item, int num = 1)
 		{
 			InventoryUI inUI = GetComponent<InventoryUI>();
 			for (int i = 0; i < m_Items.Count; i++)
 			{
 				if (m_Items[i].GetType().Equals(item.GetType()))
 				{
-					m_Items[i].Number--;
+					m_Items[i].Number -= num;
 					if (inUI != null)
 						inUI.OnRemoveItem(item, i, m_Items[i].Number, m_Items[i].Number <= 0);
 					if (m_Items[i].Number <= 0)
 					{
-						m_Items.RemoveAt(i);
+						m_Items[i] = new EmptyItem(ItemData);
 					}
 					return;
 				}
 			}
 		}
+
+
 	}
 
 }

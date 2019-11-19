@@ -8,5 +8,14 @@ namespace Clinic
 	public class ItemData : ScriptableObject
 	{
 		public List<ItemDatium> Items;
+		public ItemDatium GetItem(string Name)
+		{
+			foreach (var item in Items)
+			{
+				if (item.Name.ToLower() == Name.ToLower())
+					return item;
+			}
+			return null;
+		}
 	}
 }

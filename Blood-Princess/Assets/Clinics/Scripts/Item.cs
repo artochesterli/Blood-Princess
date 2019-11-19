@@ -6,7 +6,7 @@ namespace Clinic
 {
 	public abstract class Item
 	{
-		public string Name;
+		public string Name = "";
 		public int Number = 1;
 		public Sprite Sprite;
 		protected ItemDatium m_ID;
@@ -91,6 +91,14 @@ namespace Clinic
 		{
 		}
 	}
+
+	public class Cloth : MaterialItem
+	{
+		public Cloth(ItemData id) : base(id)
+		{
+		}
+	}
+
 
 	public class Charcoal : MaterialItem
 	{
