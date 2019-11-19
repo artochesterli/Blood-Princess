@@ -13,6 +13,7 @@ namespace Clinic
 
 		protected virtual string theName { get { return this.GetType().Name; } }
 		public virtual void OnSelect(GameObject Player) { }
+		public GameObject ItemInstance;
 
 		public Item(ItemData id)
 		{
@@ -48,7 +49,7 @@ namespace Clinic
 		/// <summary>
 		/// OccupySize.x means rows occupies, y means columns occupies
 		/// </summary>
-		public virtual Vector2 OccupySize { get; }
+		public virtual string[,] OccupySize { get; }
 		public DecorationItem(ItemData id) : base(id)
 		{
 		}
@@ -60,11 +61,27 @@ namespace Clinic
 		{
 		}
 
-		public override Vector2 OccupySize => base.OccupySize;
+		public override string[,] OccupySize => new string[1, 4] { { "GroundGrid", "GroundGrid", "GroundGrid", "GroundGrid" } };
 
 		public override void OnSelect(GameObject Player)
 		{
-			Debug.Log("On Selected Rug");
+			Player.GetComponent<InventoryUI>().OnUseDecoration(this);
+			ItemInstance = GameObject.Instantiate(Resources.Load("D_Rug") as GameObject);
+		}
+	}
+
+	public class Scroll : DecorationItem
+	{
+		public Scroll(ItemData id) : base(id)
+		{
+		}
+
+		public override string[,] OccupySize => new string[4, 1] { { "WallGrid" }, { "WallGrid" }, { "WallGrid" }, { "GroundGrid" } };
+
+		public override void OnSelect(GameObject Player)
+		{
+			Player.GetComponent<InventoryUI>().OnUseDecoration(this);
+			ItemInstance = GameObject.Instantiate(Resources.Load("D_Scroll") as GameObject);
 		}
 	}
 

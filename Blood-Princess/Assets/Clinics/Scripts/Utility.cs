@@ -41,6 +41,7 @@ namespace Clinic
 		public Vector2Int BoardPosition;
 		public Vector2 WorldPosition;
 		public GameObject gameObject;
+		public string GridName => GetType().Name;
 
 		public Grid(Vector2Int boardPosition)
 		{

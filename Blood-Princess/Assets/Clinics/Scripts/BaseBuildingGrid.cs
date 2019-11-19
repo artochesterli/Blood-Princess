@@ -9,8 +9,10 @@ namespace Clinic
 		public Grid[,] Grids;
 		public int ColumnNum = 12;
 		public int RowNum = 4;
+
 		private Vector2 WallGridSize { get { return Utility.WallTileSize(); } }
 		private Vector2 GroundGridSize { get { return Utility.GroundTileSize(); } }
+		private MaterialItem m_MaterialItem;
 
 		private void Awake()
 		{
@@ -38,6 +40,8 @@ namespace Clinic
 
 			}
 		}
+
+
 	}
 }
 
