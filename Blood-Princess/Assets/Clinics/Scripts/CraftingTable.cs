@@ -146,7 +146,7 @@ namespace Clinic
 				}
 
 				Context.Selection.GetComponent<RectTransform>().position = Context.CraftingPanel.transform.GetChild(index).GetComponent<RectTransform>().position;
-				m_CurrentCraftMaterialsNeeded = Context.m_ItemData.GetItem(Context.CraftingPanel.transform.GetChild(index).GetComponent<TextMeshProUGUI>().text).CraftMaterials;
+				m_CurrentCraftMaterialsNeeded = ((CraftableItemDatium)Context.m_ItemData.GetItem(Context.CraftingPanel.transform.GetChild(index).GetComponent<TextMeshProUGUI>().text)).CraftMaterials;
 				m_CanMakeCurrentSelection = true;
 				foreach (var craftMaterial in m_CurrentCraftMaterialsNeeded)
 				{

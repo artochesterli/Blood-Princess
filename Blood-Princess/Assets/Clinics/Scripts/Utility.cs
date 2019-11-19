@@ -54,7 +54,18 @@ namespace Clinic
 	{
 		public string Name;
 		public Sprite Sprite;
+	}
+
+	[System.Serializable]
+	public class CraftableItemDatium : ItemDatium
+	{
 		public List<CraftMaterial> CraftMaterials;
+	}
+
+	[System.Serializable]
+	public class SeedItemDatium : ItemDatium
+	{
+
 	}
 
 	[System.Serializable]

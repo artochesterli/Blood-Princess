@@ -26,6 +26,8 @@ namespace Clinic
 			m_Inventory.OnAddItem(new Wood(m_ItemData));
 			m_Inventory.OnAddItem(new Cloth(m_ItemData));
 			m_Inventory.OnAddItem(new Cloth(m_ItemData));
+			m_Inventory.OnAddItem(new OakSeed(m_ItemData));
+			m_Inventory.OnAddItem(new AppleSeed(m_ItemData));
 			m_Inventory.OnAddItem(new Scroll(m_ItemData));
 		}
 

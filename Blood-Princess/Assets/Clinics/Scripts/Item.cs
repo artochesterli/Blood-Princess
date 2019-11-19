@@ -17,15 +17,12 @@ namespace Clinic
 
 		public Item(ItemData id)
 		{
-			foreach (ItemDatium i in id.Items)
+			ItemDatium i = id.GetItem(theName);
+			if (i != null)
 			{
-				if (i.Name == theName)
-				{
-					Name = i.Name;
-					Sprite = i.Sprite;
-					m_ID = i;
-					break;
-				}
+				Name = i.Name;
+				Sprite = i.Sprite;
+				m_ID = i;
 			}
 		}
 	}
@@ -33,6 +30,27 @@ namespace Clinic
 	public class EmptyItem : Item
 	{
 		public EmptyItem(ItemData id) : base(id)
+		{
+		}
+	}
+
+	public abstract class SeedItem : Item
+	{
+		public SeedItem(ItemData id) : base(id)
+		{
+		}
+	}
+
+	public class OakSeed : SeedItem
+	{
+		public OakSeed(ItemData id) : base(id)
+		{
+		}
+	}
+
+	public class AppleSeed : SeedItem
+	{
+		public AppleSeed(ItemData id) : base(id)
 		{
 		}
 	}

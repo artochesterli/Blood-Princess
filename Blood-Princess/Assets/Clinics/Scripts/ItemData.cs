@@ -8,9 +8,22 @@ namespace Clinic
 	public class ItemData : ScriptableObject
 	{
 		public List<ItemDatium> Items;
+		public List<CraftableItemDatium> CraftableItems;
+		public List<SeedItemDatium> SeedItems;
+
 		public ItemDatium GetItem(string Name)
 		{
 			foreach (var item in Items)
+			{
+				if (item.Name.ToLower() == Name.ToLower())
+					return item;
+			}
+			foreach (var item in CraftableItems)
+			{
+				if (item.Name.ToLower() == Name.ToLower())
+					return item;
+			}
+			foreach (var item in SeedItems)
 			{
 				if (item.Name.ToLower() == Name.ToLower())
 					return item;
