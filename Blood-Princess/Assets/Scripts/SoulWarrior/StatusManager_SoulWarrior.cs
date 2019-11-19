@@ -9,6 +9,8 @@ public class StatusManager_SoulWarrior : StatusManagerBase, IHittable
     public GameObject SharedCanvas;
     public GameObject HPFill;
 
+    public CharacterAttackInfo CurrentTakenAttack;
+
     private GameObject DamageText;
 
     // Start is called before the first frame update
@@ -32,24 +34,18 @@ public class StatusManager_SoulWarrior : StatusManagerBase, IHittable
 
         var Data = GetComponent<SoulWarriorData>();
 
-        CharacterAttackInfo HitAttack = (CharacterAttackInfo)Attack;
-
+        CurrentTakenAttack = (CharacterAttackInfo)Attack;
 
         Interrupted = true;
 
 
         DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
 
-
-        GetComponent<SoulWarriorAI>().Player = HitAttack.Source;
-
-
-        CurrentHP -= HitAttack.Damage;
+        CurrentHP -= CurrentTakenAttack.Damage;
 
         SetHPFill((float)CurrentHP / Data.MaxHP);
 
-
-        if (HitAttack.Right)
+        if (CurrentTakenAttack.Right)
         {
             DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 0);
         }
@@ -57,7 +53,7 @@ public class StatusManager_SoulWarrior : StatusManagerBase, IHittable
         {
             DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 0);
         }
-        DamageText.GetComponent<Text>().text = HitAttack.Damage.ToString();
+        DamageText.GetComponent<Text>().text = CurrentTakenAttack.Damage.ToString();
         DamageText.transform.parent = Canvas.transform;
 
         DamageText.GetComponent<Text>().color = Color.white;

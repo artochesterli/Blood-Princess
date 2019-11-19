@@ -10326,7 +10326,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a7a111b7926d4d47b59935861176fa3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHP: 1000
+  MaxHP: 10000
   NormalMoveSpeed: 4
   AttackStepForwardSpeed: 5
   SlashAnticipationTime: 0.7
@@ -10338,7 +10338,7 @@ MonoBehaviour:
   SlashDamage: 3
   MagicDamage: 3
   BlinkPrepareTime: 0.1
-  SlashAvailableHitBoxPercentage: 0.3
+  SlashAvailableHitBoxPercentage: 0.5
   SlashOffset: {x: 1.2, y: 0}
   SlashHitBoxSize: {x: 1.44, y: 0.64}
   SlashImage: {fileID: 5778873285884925108, guid: e0d9531edd69fdc4fbf5a991039ff31d,
@@ -16039,7 +16039,7 @@ PrefabInstance:
     - target: {fileID: 2072297363477874203, guid: fba2cdbd563fda24b995312312d61e5e,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.5
+      value: -5.5
       objectReference: {fileID: 0}
     - target: {fileID: 2072297363477874203, guid: fba2cdbd563fda24b995312312d61e5e,
         type: 3}
@@ -16897,7 +16897,7 @@ PrefabInstance:
     - target: {fileID: 2072297363477874203, guid: fba2cdbd563fda24b995312312d61e5e,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.5
+      value: -5.5
       objectReference: {fileID: 0}
     - target: {fileID: 2072297363477874203, guid: fba2cdbd563fda24b995312312d61e5e,
         type: 3}
@@ -18342,7 +18342,7 @@ PrefabInstance:
     - target: {fileID: 2072297363477874203, guid: fba2cdbd563fda24b995312312d61e5e,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.5
+      value: -5.5
       objectReference: {fileID: 0}
     - target: {fileID: 2072297363477874203, guid: fba2cdbd563fda24b995312312d61e5e,
         type: 3}
@@ -18781,7 +18781,7 @@ PrefabInstance:
     - target: {fileID: 4241796267569343812, guid: 6f99c3bcf38f6e44797063474eb9c00c,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -9
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 4241796267569343812, guid: 6f99c3bcf38f6e44797063474eb9c00c,
         type: 3}

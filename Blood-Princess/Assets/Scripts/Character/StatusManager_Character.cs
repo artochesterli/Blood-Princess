@@ -9,6 +9,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 {
     public int CurrentEnergy;
     public int CurrentAdvancedEnergy;
+    public EnemyAttackInfo CurrentTakenAttack;
 
     public GameObject Canvas;
     public GameObject HPFill;
@@ -134,53 +135,39 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     {
         base.OnHit(Attack);
 
-        EnemyAttackInfo HitAttack = (EnemyAttackInfo)Attack;
+        CurrentTakenAttack = (EnemyAttackInfo)Attack;
 
 
         bool IsInvulnerable = Invulnerable();
 
-
-        EventManager.instance.Fire(new PlayerGetHit(HitAttack,InRollInvulnerability));
+        EventManager.instance.Fire(new PlayerGetHit(CurrentTakenAttack,InRollInvulnerability));
 
         if (!IsInvulnerable)
         {
             var Data = GetComponent<CharacterData>();
 
-            bool Nulified = false;
 
-            if (CurrentAdvancedEnergy > 0)
+            int AdvancedEnergyLost = Mathf.RoundToInt(CurrentAdvancedEnergy * Data.HitEnergyLostProportion);
+
+            if(AdvancedEnergyLost < Data.MinimalEnergyLost)
             {
-                Nulified = true;
-                HitAttack.Damage -= Mathf.RoundToInt(Data.MaxAdvancedEnergyDamageNulification * CurrentAdvancedEnergy / Data.MaxEnergy);
-
-                if(HitAttack.Damage < 0)
-                {
-                    HitAttack.Damage = 0;
-                }
+                AdvancedEnergyLost = Data.MinimalEnergyLost;
             }
 
-            CurrentAdvancedEnergy = 0;
+            GainLoseAdvancedEnergy(-AdvancedEnergyLost);
 
-            int EnergyLost = Mathf.CeilToInt(CurrentEnergy * Data.HitEnergyLostProportion);
-
-            if (EnergyLost < Data.MinimalEnergyLost)
-            {
-                EnergyLost = Data.MinimalEnergyLost;
-            }
-
-            GainLoseEnergy(-EnergyLost);
+            CurrentEnergy = CurrentAdvancedEnergy;
 
             SetCriticalEye(false);
 
-
             DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
 
-            int Damage = HitAttack.Damage;
+            int Damage = CurrentTakenAttack.Damage;
 
             Interrupted = true;
 
 
-            if (HitAttack.Right)
+            if (CurrentTakenAttack.Right)
             {
                 DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 1);
             }
@@ -191,14 +178,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             DamageText.GetComponent<Text>().text = Damage.ToString();
             DamageText.transform.parent = Canvas.transform;
 
-            if (Nulified)
-            {
-                DamageText.GetComponent<Text>().color = new Color(0.7372549f, 0.1686275f, 0.6732783f);
-            }
-            else
-            {
-                DamageText.GetComponent<Text>().color = Color.white;
-            }
+            DamageText.GetComponent<Text>().color = Color.white;
 
 
             CurrentHP -= Damage;
@@ -274,7 +254,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                 switch (Action.EquipedBattleArt.Type)
                 {
                     case BattleArtType.SpiritSlash:
-                        GainAdvancedEnergy(AbilityData.SpiritSlashAdvancedEnergyGain);
+                        GainLoseAdvancedEnergy(AbilityData.SpiritSlashAdvancedEnergyGain);
                         GainLoseEnergy(AbilityData.SpiritSlashAdvancedEnergyGain);
                         break;
                 }
@@ -393,13 +373,18 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         CurrentEnergy += amount;
     }
 
-    private void GainAdvancedEnergy(int amount)
+    private void GainLoseAdvancedEnergy(int amount)
     {
         var Data = GetComponent<CharacterData>();
 
-        if(amount >= Data.MaxEnergy - CurrentAdvancedEnergy)
+        if (amount >= Data.MaxEnergy - CurrentAdvancedEnergy)
         {
             CurrentAdvancedEnergy = Data.MaxEnergy;
+            return;
+        }
+        else if(amount <= -CurrentAdvancedEnergy)
+        {
+            CurrentAdvancedEnergy = 0;
             return;
         }
 

@@ -2802,7 +2802,7 @@ public class GetInterrupted : CharacterActionState
         Entity.GetComponent<IHittable>().Interrupted = false;
         Context.CurrentGravity = Data.NormalGravity;
 
-        EnemyAttackInfo Temp = (EnemyAttackInfo)Entity.GetComponent<IHittable>().HitAttack;
+        EnemyAttackInfo Temp = Entity.GetComponent<StatusManager_Character>().CurrentTakenAttack;
         SpeedManager.SelfSpeed = Vector2.zero;
         if (Temp.Right)
         {

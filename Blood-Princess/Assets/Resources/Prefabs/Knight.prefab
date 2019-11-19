@@ -163,8 +163,8 @@ MonoBehaviour:
   PatronRightX: 0
   CurrentAttackMode: 0
   LastState: 0
+  CurrentState: 0
   AttackCoolDownTimeCount: 0
-  GetAttackedInThisRound: 0
 --- !u!114 &4305804637280515001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -181,17 +181,19 @@ MonoBehaviour:
   NormalMoveSpeed: 3.5
   KeepDisMoveSpeed: 1
   AttackStepForwardSpeed: 12
-  SingleAttackAnticipationTime: 0.55
-  DoubleAttackFirstAnticipationTime: 0.55
+  SingleAttackAnticipationTime: 0.4
+  DoubleAttackFirstAnticipationTime: 0.4
   DoubleAttackSecondAnticipationTime: 0.2
-  ChaseAttackAnticipationTime: 0.8
+  ChaseAttackAnticipationTime: 0.6
   ChaseAttackSpeed: 7
   AttackTime: 0.1
   SingleAttackRecoveryTime: 0.7
   DoubleAttackFirstRecoveryTime: 0.3
   DoubleAttackSecondRecoveryTime: 0.7
   Damage: 5
-  AttackAvailableHitBoxPercentage: 0.3
+  StepBackTime: 0
+  StepBackSpeed: 0
+  AttackAvailableHitBoxPercentage: 0.5
   AttackOffset: {x: 1.25, y: -0.2}
   AttackHitBoxSize: {x: 1.6, y: 0.64}
   SlashImage: {fileID: 8278314382299867915, guid: b563d54cff4162f42ac0f47b15402d9f,
@@ -203,7 +205,11 @@ MonoBehaviour:
   MinChaseAttackChaseDistance: 2.5
   MaxChaseAttackChaseDistance: 5
   SingleAttackChance: 0.5
-  FirstGetHitAttackCoolDown: 0.4
+  DoubleAttackChance: 0.5
+  BlinkChance: 0.3
+  BlinkPrepareTime: 0.1
+  BlinkForChaseAttackDis: 3
+  BlinkForwardChance: 0
 --- !u!114 &4305804637280515000
 MonoBehaviour:
   m_ObjectHideFlags: 0

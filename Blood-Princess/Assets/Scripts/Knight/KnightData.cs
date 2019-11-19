@@ -22,6 +22,9 @@ public class KnightData : MonoBehaviour
     public float DoubleAttackSecondRecoveryTime;
     public int Damage;
 
+    public float StepBackTime;
+    public float StepBackSpeed;
+
     public float AttackAvailableHitBoxPercentage;
     public Vector2 AttackOffset;
     public Vector2 AttackHitBoxSize;
@@ -38,8 +41,13 @@ public class KnightData : MonoBehaviour
     public float MaxChaseAttackChaseDistance;
 
     public float SingleAttackChance;
+    public float DoubleAttackChance;
 
-    public float FirstGetHitAttackCoolDown;
+    public float BlinkChance;
+
+    public float BlinkPrepareTime;
+    public float BlinkForChaseAttackDis;
+    public float BlinkForwardChance;
 
     // Start is called before the first frame update
     void Start()

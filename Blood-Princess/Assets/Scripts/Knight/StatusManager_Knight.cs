@@ -10,15 +10,19 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 	public GameObject SharedCanvas;
 	public GameObject HPFill;
 
-	public Color NormalColor;
+    public CharacterAttackInfo CurrentTakenAttack;
+
+    public Color NormalColor;
 
 	private GameObject DamageText;
+
 
 	// Start is called before the first frame update
 	void Start()
 	{
 		var Data = GetComponent<KnightData>();
-		CurrentHP = Data.MaxHP;
+        CurrentTakenAttack = null;
+        CurrentHP = Data.MaxHP;
 		if (SharedCanvas == null)
 			SharedCanvas = GameObject.Find("SharedCanvas");
 	}
@@ -33,27 +37,31 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 	{
 		base.OnHit(Attack);
 
-
         var Data = GetComponent<KnightData>();
 
-        CharacterAttackInfo HitAttack = (CharacterAttackInfo)Attack;
+        CurrentTakenAttack = (CharacterAttackInfo)Attack;
 
+        var AI = GetComponent<KnightAI>();
 
-        Interrupted = true;
+        if (AI.CurrentState != KnightState.Anticipation && AI.CurrentState != KnightState.Strike && AI.CurrentState != KnightState.BlinkPrepare)
+        {
+            Interrupted = true;
+        }
+        else
+        {
+            Interrupted = false;
+        }
 
 
         DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
 
 
-		GetComponent<KnightAI>().Player = HitAttack.Source;
-
-
-		CurrentHP -= HitAttack.Damage;
+		CurrentHP -= CurrentTakenAttack.Damage;
 
         SetHPFill((float)CurrentHP / Data.MaxHP);
 
 
-		if (HitAttack.Right)
+		if (CurrentTakenAttack.Right)
 		{
 			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 0);
 		}
@@ -61,7 +69,7 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 		{
 			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 0);
 		}
-		DamageText.GetComponent<Text>().text = HitAttack.Damage.ToString();
+		DamageText.GetComponent<Text>().text = CurrentTakenAttack.Damage.ToString();
 		DamageText.transform.parent = Canvas.transform;
 
 		DamageText.GetComponent<Text>().color = Color.white;

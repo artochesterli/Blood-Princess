@@ -5,7 +5,6 @@ using UnityEngine;
 interface IHittable
 {
 	bool Interrupted { get; set; }
-	AttackInfo HitAttack { get; set; }
 
 	bool OnHit(AttackInfo Attack);
 }
@@ -20,7 +19,6 @@ public class StatusManagerBase : MonoBehaviour, IHittable
 {
 	public int CurrentHP { get; set; }
 
-	public AttackInfo HitAttack { get; set; }
 	public bool Interrupted { get; set; }
 	// Start is called before the first frame update
 	void Start()
@@ -36,7 +34,6 @@ public class StatusManagerBase : MonoBehaviour, IHittable
 
 	public virtual bool OnHit(AttackInfo Attack)
 	{
-		HitAttack = Attack;
 		return CurrentHP <= 0;
 	}
 }

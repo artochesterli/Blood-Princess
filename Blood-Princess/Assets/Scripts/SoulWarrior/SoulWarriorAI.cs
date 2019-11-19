@@ -753,11 +753,9 @@ public class SoulWarriorBlink : SoulWarriorBehavior
         var SelfSpeedManager = Entity.GetComponent<SpeedManager>();
         var PlayerSpeedManager = Context.Player.GetComponent<SpeedManager>();
 
-        float AttackHitDis = Data.SlashOffset.x - Data.SlashHitBoxSize.x / 2 + Data.SlashHitBoxSize.x * Data.SlashAvailableHitBoxPercentage;
-
         bool BlinkToRight;
 
-        if (AIUtility.GetXDiff(Context.Player,Entity) < 0)
+        if (AIUtility.GetXDiff(Context.Player, Entity) < 0)
         {
             BlinkToRight = false;
         }
@@ -766,16 +764,17 @@ public class SoulWarriorBlink : SoulWarriorBehavior
             BlinkToRight = true;
         }
 
-        AttackHitDis += - (SelfSpeedManager.GetTruePos().x - Entity.transform.position.x);
+        float AttackHitDis = (Data.SlashHitBoxSize.x + Data.AttackStepForwardSpeed * Data.SlashStrikeTime) * Data.SlashAvailableHitBoxPercentage;
 
-        float AttackDis = AttackHitDis + Data.AttackStepForwardSpeed * Data.SlashStrikeTime + PlayerSpeedManager.BodyWidth/2;
+        float AttackHitBoxBorderToTruePos = Data.SlashOffset.x - Data.SlashHitBoxSize.x / 2 - (SelfSpeedManager.GetTruePos().x - Entity.transform.position.x) * Entity.transform.right.x;
+
 
         float BlinkPosX;
 
         if (BlinkToRight)
         {
             Entity.transform.eulerAngles = new Vector3(0, 180, 0);
-            BlinkPosX = PlayerSpeedManager.GetTruePos().x + AttackDis;
+            BlinkPosX = PlayerSpeedManager.GetTruePos().x + PlayerSpeedManager.BodyWidth/2 + AttackHitDis + AttackHitBoxBorderToTruePos;
             if (BlinkPosX > Context.DetectRightX)
             {
                 BlinkPosX = Context.DetectRightX;
@@ -784,8 +783,8 @@ public class SoulWarriorBlink : SoulWarriorBehavior
         else
         {
             Entity.transform.eulerAngles = new Vector3(0, 0, 0);
-            BlinkPosX = PlayerSpeedManager.GetTruePos().x - AttackDis;
-            if(BlinkPosX < Context.DetectLeftX)
+            BlinkPosX = PlayerSpeedManager.GetTruePos().x - PlayerSpeedManager.BodyWidth / 2 - AttackHitDis - AttackHitBoxBorderToTruePos;
+            if (BlinkPosX < Context.DetectLeftX)
             {
                 BlinkPosX = Context.DetectLeftX;
             }
@@ -828,7 +827,7 @@ public class SoulWarriorGetInterrupted : SoulWarriorBehavior
 
     private void SetUp()
     {
-        CharacterAttackInfo Temp = (CharacterAttackInfo)Entity.GetComponent<IHittable>().HitAttack;
+        CharacterAttackInfo Temp = Entity.GetComponent<StatusManager_SoulWarrior>().CurrentTakenAttack;
 
         var Data = Entity.GetComponent<SoulWarriorData>();
         var Status = Entity.GetComponent<StatusManager_SoulWarrior>();
