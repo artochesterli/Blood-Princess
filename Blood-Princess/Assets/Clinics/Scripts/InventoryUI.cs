@@ -101,6 +101,7 @@ namespace Clinic
 		private class InventoryOpenState : InventoryUIState
 		{
 			private int m_CurrentSelectionIndex = 0;
+			private bool m_FirstFrameSkip = false;
 			public override void OnEnter()
 			{
 				base.OnEnter();
@@ -108,11 +109,17 @@ namespace Clinic
 				Context.m_SelectionCursor = Instantiate(Resources.Load("SelectionFrame") as GameObject, Context.InventoryPanel.parent);
 				m_MoveCursorToIndex(0);
 				m_CurrentSelectionIndex = 0;
+				m_FirstFrameSkip = false;
 			}
 
 			public override void Update()
 			{
 				base.Update();
+				if (!m_FirstFrameSkip)
+				{
+					m_FirstFrameSkip = true;
+					return;
+				}
 				m_MoveCursor();
 			}
 
