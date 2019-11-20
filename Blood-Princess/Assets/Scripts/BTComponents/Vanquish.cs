@@ -9,6 +9,7 @@ using DG.Tweening;
 public class Vanquish : Action
 {
 	public SharedFloat Duration;
+	public SharedFloat FadeToAmount;
 
 	private SpriteRenderer m_SpriteRenderer;
 	private float m_Timer;
@@ -23,7 +24,7 @@ public class Vanquish : Action
 	{
 		base.OnStart();
 		m_Timer = Time.timeSinceLevelLoad + Duration.Value;
-		m_SpriteRenderer.DOFade(0f, Duration.Value);
+		m_SpriteRenderer.DOFade(FadeToAmount.Value, Duration.Value);
 	}
 
 	public override TaskStatus OnUpdate()
