@@ -92,7 +92,8 @@ public class StatusManager_General : StatusManagerBase, IHittable
 
 	private void m_OnHitPlayer(PlayerGetHit ev)
 	{
-		m_BehaviorTree.SetVariableValue("PlayerHit", true);
+		if (!ev.PlayerInRollInvulnerability)
+			m_BehaviorTree.SetVariableValue("PlayerHit", true);
 	}
 
 	private void OnEnable()
