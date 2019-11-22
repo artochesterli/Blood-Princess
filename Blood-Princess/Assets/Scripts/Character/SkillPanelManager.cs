@@ -6,7 +6,7 @@ using UnityEngine.UI;
 interface ISkillSlot
 {
     SkillSlotState State { get; set; }
-    bool IsEnhancementSlot { get; set; }
+    AbilityType Type { get; set; }
     void Equip(CharacterAbility Ability);
     void UpgradeAbility();
     void DowngradeAbility();
@@ -31,19 +31,25 @@ public enum SkillSlotState
     Selected
 }
 
+public enum AbilityType
+{
+    BattleArt,
+    PassiveAbility
+}
+
 public enum SkillPanelState
 {
     SelectSlot,
-    SelectEnhancement,
-    SelectPassiveSkill
+    SelectBattleArt,
+    SelectPassiveAbility
 }
 
 public class SkillPanelManager : MonoBehaviour
 {
     public SkillPanelState State;
     public List<GameObject> SlotList;
-    public List<GameObject> EnhancementSelectionList;
-    public List<GameObject> PassiveSkillSelectionList;
+    public List<GameObject> BattleArtSelectionList;
+    public List<GameObject> PassiveAbilitySelectionList;
     public GameObject SkillPointText;
 
     public int SkillPoint;
@@ -53,8 +59,8 @@ public class SkillPanelManager : MonoBehaviour
     public int Lv3Cost;
 
     private int SelectedSlot;
-    private int SelectedEnhancement;
-    private int SelectedPassiveSkill;
+    private int SelectedBattleArt;
+    private int SelectedPassiveAbility;
 
     // Start is called before the first frame update
     void Start()
@@ -112,7 +118,7 @@ public class SkillPanelManager : MonoBehaviour
 
     private void CheckUpgrade()
     {
-        if (Utility.InputUpgrade() && State == SkillPanelState.SelectSlot)
+        if (Utility.InputUpgrade() && State == SkillPanelState.SelectSlot && SlotList[SelectedSlot].GetComponent<ISkillSlot>().Type == AbilityType.BattleArt)
         {
             bool AbleToUpgrade = SlotList[SelectedSlot].GetComponent<ISkillSlot>().IsAbilityEquiped();
             int Level = SlotList[SelectedSlot].GetComponent<ISkillSlot>().GetAbilityLevel();
@@ -143,7 +149,7 @@ public class SkillPanelManager : MonoBehaviour
 
     private void CheckDowngrade()
     {
-        if (Utility.InputDowngrade() && State == SkillPanelState.SelectSlot)
+        if (Utility.InputDowngrade() && State == SkillPanelState.SelectSlot && SlotList[SelectedSlot].GetComponent<ISkillSlot>().Type == AbilityType.BattleArt)
         {
             bool AbleToDowngrade = SlotList[SelectedSlot].GetComponent<ISkillSlot>().IsAbilityEquiped();
             int Level = SlotList[SelectedSlot].GetComponent<ISkillSlot>().GetAbilityLevel();
@@ -208,19 +214,17 @@ public class SkillPanelManager : MonoBehaviour
     {
         if (Utility.InputSelectBack())
         {
+            SlotList[SelectedSlot].GetComponent<ISkillSlot>().State = SkillSlotState.Hovered;
+            SlotList[SelectedSlot].GetComponent<ISkillSlot>().SetAppearance();
             switch (State)
             {
-                case SkillPanelState.SelectEnhancement:
-                    //EnhancementSelectionList[SelectedEnhancement].GetComponent<EnhancementSelectionInfo>().Selected = false;
-                    //EnhancementSelectionList[SelectedEnhancement].GetComponent<EnhancementSelectionInfo>().SetAppearance();
-                    SlotList[SelectedSlot].GetComponent<ISkillSlot>().SetState(SkillSlotState.Hovered);
-                    SlotList[SelectedSlot].GetComponent<ISkillSlot>().SetAppearance();
+                case SkillPanelState.SelectBattleArt:
+                    BattleArtSelectionList[SelectedBattleArt].GetComponent<BattleArtSelection>().Selected = false;
+                    BattleArtSelectionList[SelectedBattleArt].GetComponent<BattleArtSelection>().SetAppearance();
                     break;
-                case SkillPanelState.SelectPassiveSkill:
-                    //PassiveSkillSelectionList[SelectedPassiveSkill].GetComponent<PassiveSkillSelectionInfo>().Selected = false;
-                    //PassiveSkillSelectionList[SelectedPassiveSkill].GetComponent<PassiveSkillSelectionInfo>().SetAppearance();
-                    SlotList[SelectedSlot].GetComponent<ISkillSlot>().State = SkillSlotState.Hovered;
-                    SlotList[SelectedSlot].GetComponent<ISkillSlot>().SetAppearance();
+                case SkillPanelState.SelectPassiveAbility:
+                    PassiveAbilitySelectionList[SelectedPassiveAbility].GetComponent<PassiveAbilitySelection>().Selected = false;
+                    PassiveAbilitySelectionList[SelectedPassiveAbility].GetComponent<PassiveAbilitySelection>().SetAppearance();
                     break;
             }
             State = SkillPanelState.SelectSlot;
@@ -254,32 +258,34 @@ public class SkillPanelManager : MonoBehaviour
                 SlotList[SelectedSlot].GetComponent<ISkillSlot>().State = SkillSlotState.Hovered;
                 SlotList[SelectedSlot].GetComponent<ISkillSlot>().SetAppearance();
                 break;
-            case SkillPanelState.SelectEnhancement:
 
-                //EnhancementSelectionList[SelectedEnhancement].GetComponent<EnhancementSelectionInfo>().Selected = false;
-                //EnhancementSelectionList[SelectedEnhancement].GetComponent<EnhancementSelectionInfo>().SetAppearance();
+            case SkillPanelState.SelectBattleArt:
 
-                SelectedEnhancement = (SelectedEnhancement + value) % EnhancementSelectionList.Count;
-                if (SelectedEnhancement < 0)
+                BattleArtSelectionList[SelectedBattleArt].GetComponent<BattleArtSelection>().Selected = false;
+                BattleArtSelectionList[SelectedBattleArt].GetComponent<BattleArtSelection>().SetAppearance();
+
+                SelectedBattleArt = (SelectedBattleArt + value) % BattleArtSelectionList.Count;
+                if (SelectedBattleArt < 0)
                 {
-                    SelectedEnhancement += EnhancementSelectionList.Count;
+                    SelectedBattleArt += BattleArtSelectionList.Count;
                 }
 
-                //EnhancementSelectionList[SelectedEnhancement].GetComponent<EnhancementSelectionInfo>().Selected = true;
-                //EnhancementSelectionList[SelectedEnhancement].GetComponent<EnhancementSelectionInfo>().SetAppearance();
+                BattleArtSelectionList[SelectedBattleArt].GetComponent<BattleArtSelection>().Selected = true;
+                BattleArtSelectionList[SelectedBattleArt].GetComponent<BattleArtSelection>().SetAppearance();
                 break;
-            case SkillPanelState.SelectPassiveSkill:
-                //PassiveSkillSelectionList[SelectedPassiveSkill].GetComponent<PassiveSkillSelectionInfo>().Selected = false;
-                //PassiveSkillSelectionList[SelectedPassiveSkill].GetComponent<PassiveSkillSelectionInfo>().SetAppearance();
 
-                SelectedPassiveSkill = (SelectedPassiveSkill + value) % PassiveSkillSelectionList.Count;
-                if(SelectedPassiveSkill < 0)
+            case SkillPanelState.SelectPassiveAbility:
+                PassiveAbilitySelectionList[SelectedPassiveAbility].GetComponent<PassiveAbilitySelection>().Selected = false;
+                PassiveAbilitySelectionList[SelectedPassiveAbility].GetComponent<PassiveAbilitySelection>().SetAppearance();
+
+                SelectedPassiveAbility = (SelectedPassiveAbility + value) % PassiveAbilitySelectionList.Count;
+                if(SelectedPassiveAbility < 0)
                 {
-                    SelectedPassiveSkill += PassiveSkillSelectionList.Count;
+                    SelectedPassiveAbility += PassiveAbilitySelectionList.Count;
                 }
 
-                //PassiveSkillSelectionList[SelectedPassiveSkill].GetComponent<PassiveSkillSelectionInfo>().Selected = true;
-                //PassiveSkillSelectionList[SelectedPassiveSkill].GetComponent<PassiveSkillSelectionInfo>().SetAppearance();
+                PassiveAbilitySelectionList[SelectedPassiveAbility].GetComponent<PassiveAbilitySelection>().Selected = true;
+                PassiveAbilitySelectionList[SelectedPassiveAbility].GetComponent<PassiveAbilitySelection>().SetAppearance();
                 break;
         }
     }
@@ -297,23 +303,23 @@ public class SkillPanelManager : MonoBehaviour
                     SlotList[SelectedSlot].GetComponent<ISkillSlot>().SetState(SkillSlotState.Selected);
                     SlotList[SelectedSlot].GetComponent<ISkillSlot>().SetAppearance();
 
-                    if (SlotList[SelectedSlot].GetComponent<ISkillSlot>().IsEnhancementSlot)
+                    if (SlotList[SelectedSlot].GetComponent<ISkillSlot>().Type == AbilityType.BattleArt)
                     {
-                        State = SkillPanelState.SelectEnhancement;
-                        SelectedEnhancement = 0;
-                        //EnhancementSelectionList[SelectedEnhancement].GetComponent<EnhancementSelectionInfo>().Selected = true;
-                        //EnhancementSelectionList[SelectedEnhancement].GetComponent<EnhancementSelectionInfo>().SetAppearance();
+                        State = SkillPanelState.SelectBattleArt;
+                        SelectedBattleArt = 0;
+                        BattleArtSelectionList[SelectedBattleArt].GetComponent<BattleArtSelection>().Selected = true;
+                        BattleArtSelectionList[SelectedBattleArt].GetComponent<BattleArtSelection>().SetAppearance();
                     }
                     else
                     {
-                        State = SkillPanelState.SelectPassiveSkill;
-                        SelectedPassiveSkill = 0;
-                        //PassiveSkillSelectionList[SelectedPassiveSkill].GetComponent<PassiveSkillSelectionInfo>().Selected = true;
-                        //PassiveSkillSelectionList[SelectedPassiveSkill].GetComponent<PassiveSkillSelectionInfo>().SetAppearance();
+                        State = SkillPanelState.SelectPassiveAbility;
+                        SelectedPassiveAbility = 0;
+                        PassiveAbilitySelectionList[SelectedPassiveAbility].GetComponent<PassiveAbilitySelection>().Selected = true;
+                        PassiveAbilitySelectionList[SelectedPassiveAbility].GetComponent<PassiveAbilitySelection>().SetAppearance();
                     }
 
                     break;
-                case SkillPanelState.SelectEnhancement:
+                case SkillPanelState.SelectBattleArt:
 
                     if (SkillPoint >= EquipCost && !SlotList[SelectedSlot].GetComponent<ISkillSlot>().IsAbilityEquiped())
                     {
@@ -322,17 +328,18 @@ public class SkillPanelManager : MonoBehaviour
 
                         State = SkillPanelState.SelectSlot;
 
-                        //EnhancementSelectionList[SelectedEnhancement].GetComponent<EnhancementSelectionInfo>().Selected = false;
-                        //EnhancementSelectionList[SelectedEnhancement].GetComponent<EnhancementSelectionInfo>().SetAppearance();
+                        BattleArtSelectionList[SelectedBattleArt].GetComponent<BattleArtSelection>().Selected = false;
+                        BattleArtSelectionList[SelectedBattleArt].GetComponent<BattleArtSelection>().SetAppearance();
 
                         SlotList[SelectedSlot].GetComponent<ISkillSlot>().SetState(SkillSlotState.Hovered);
                         SlotList[SelectedSlot].GetComponent<ISkillSlot>().SetAppearance();
-                        //SlotList[SelectedSlot].GetComponent<ISkillSlot>().Equip(EnhancementSelectionList[SelectedEnhancement].GetComponent<EnhancementSelectionInfo>().Enhancement);
+
+                        SlotList[SelectedSlot].GetComponent<ISkillSlot>().Equip(BattleArtSelectionList[SelectedBattleArt].GetComponent<BattleArtSelection>().Ability);
                         SlotList[SelectedSlot].GetComponent<ISkillSlot>().SetSlot();
                     }
 
                     break;
-                case SkillPanelState.SelectPassiveSkill:
+                case SkillPanelState.SelectPassiveAbility:
 
                     if (SkillPoint >= EquipCost && !SlotList[SelectedSlot].GetComponent<ISkillSlot>().IsAbilityEquiped())
                     {
@@ -341,12 +348,12 @@ public class SkillPanelManager : MonoBehaviour
 
                         State = SkillPanelState.SelectSlot;
 
-                        //PassiveSkillSelectionList[SelectedPassiveSkill].GetComponent<PassiveSkillSelectionInfo>().Selected = false;
-                        //PassiveSkillSelectionList[SelectedPassiveSkill].GetComponent<PassiveSkillSelectionInfo>().SetAppearance();
+                        PassiveAbilitySelectionList[SelectedPassiveAbility].GetComponent<PassiveAbilitySelection>().Selected = false;
+                        PassiveAbilitySelectionList[SelectedPassiveAbility].GetComponent<PassiveAbilitySelection>().SetAppearance();
 
                         SlotList[SelectedSlot].GetComponent<ISkillSlot>().SetState(SkillSlotState.Hovered);
                         SlotList[SelectedSlot].GetComponent<ISkillSlot>().SetAppearance();
-                        //SlotList[SelectedSlot].GetComponent<ISkillSlot>().Equip(PassiveSkillSelectionList[SelectedPassiveSkill].GetComponent<PassiveSkillSelectionInfo>().PassiveAbility);
+                        SlotList[SelectedSlot].GetComponent<ISkillSlot>().Equip(PassiveAbilitySelectionList[SelectedPassiveAbility].GetComponent<PassiveAbilitySelection>().Ability);
                         SlotList[SelectedSlot].GetComponent<ISkillSlot>().SetSlot();
                     }
                     break;

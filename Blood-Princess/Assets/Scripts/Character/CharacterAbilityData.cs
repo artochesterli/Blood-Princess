@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class CharacterAbilityData : MonoBehaviour
 {
+    public int BaseDamage;
 
     public float SlashAnticipationTime;
     public float SlashStrikeTime;
     public float SlashRecoveryTime;
     public float SlashStepForwardSpeed;
-    public int SlashBaseDamage;
-    public float SlashCriticalEyeDamageBonus;
+    public float SlashDamageFactor;
+
     public int SlashEnergyGain;
-    public int SlashAdvancedEnergyGainInCriticalEye;
 
     public float SlashEffectPreGenerateTime;
     public GameObject SlashEffect;
@@ -25,18 +25,38 @@ public class CharacterAbilityData : MonoBehaviour
     public float ParryEffectTime;
     public int ParryEnergyGain;
 
-    public float SpiritSlashAnticipationTime;
-    public float SpiritSlashStrikeTime;
-    public float SpiritSlashRecoveryTime;
-    public float SpiritSlashStepBackSpeed;
-    public float SpiritSlashStepBackTime;
-    public float SpiritSlashStepForwardSpeed;
-    public int SpiritSlashBaseDamage;
-    public float SpiritSlashBackStabDamageBonus;
-    public int SpiritSlashAdvancedEnergyGain;
+    public float PowerSlashAnticipationTime;
+    public float PowerSlashStrikeTime;
+    public float PowerSlashRecoveryTime;
+    public float PowerSlashStepForwardSpeed;
+    public float PowerSlashDamageFactor;
 
-    public GameObject SpiritSlashImage;
-    public Vector2 SpiritSlashOffset;
-    public Vector2 SpiritSlashHitBoxSize;
+    public float PowerSlashDamageEnhancementFactor; 
+    public int PowerSlashMaxEnhancementTime;
+    public float PowerSlashExecutionHPCondition;
+    public float PowerSlashExecutionDamageFactor;
+
+    public float HarmonySlashAnticipationTime;
+    public float HarmonySlashStrikeTime;
+    public float HarmonySlashRecoveryTime;
+    public float HarmonySlashStepBackSpeed;
+    public float HarmonySlashStepBackTime;
+    public float HarmonySlashStepForwardSpeed;
+    public float HarmonySlashDamageFactor;
+    public int HarmonySlashAdvancedEnergyGain;
+
+    public float HarmonySlashFullAdvancedEnergyDamageBonus;
+    public float HarmonySlashSlashDamageBonusFactor;
+    public int HarmonySlashMaxSlashDamageBonusTime;
+
+    public GameObject HarmonySlashImage;
+    public Vector2 HarmonySlashOffset;
+    public Vector2 HarmonySlashHitBoxSize;
+
+    public float OneMindDamageEnhancementFactor;
+    public int OneMindMaxDamageEnhancementTime;
+
+    public float DancerDamageFactor;
+    public Vector2 DancerHitBoxSize;
 
 }

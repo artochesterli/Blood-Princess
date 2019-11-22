@@ -111,22 +111,122 @@ public abstract class CharacterAbility
     public int Level;
 }
 
-public class BattleArt : CharacterAbility
+public abstract class BattleArt : CharacterAbility
 {
     public BattleArtType Type;
-    public BattleArt(string s, BattleArtType type, int level = 1, Sprite icon = null)
+}
+
+public abstract class PassiveAbility : CharacterAbility
+{
+    public PassiveAbilityType Type;
+}
+
+public class PowerSlash : BattleArt
+{
+    public PowerSlash(int level = 1)
     {
-        name = s;
-        Type = type;
+        name = "Power Slash";
+        Type = BattleArtType.PowerSlash;
         Level = level;
-        Icon = icon;
     }
 }
 
+public class HarmonySlash : BattleArt
+{
+    public HarmonySlash(int level = 1)
+    {
+        name = "Harmony Slash";
+        Type = BattleArtType.HarmonySlash;
+        Level = level;
+    }
+}
+
+public class SpiritBolt : BattleArt
+{
+
+}
+
+public class SpiritFall : BattleArt
+{
+
+}
+
+public class SpiritShadow : BattleArt
+{
+
+}
+
+public class SlashArt : PassiveAbility
+{
+
+}
+
+public class AssassinHeart : PassiveAbility
+{
+
+}
+
+public class SpellStrike : PassiveAbility
+{
+
+}
+
+public class OneMind : PassiveAbility
+{
+
+}
+
+public class Dancer : PassiveAbility
+{
+
+}
+
+public class StepMaster : PassiveAbility
+{
+
+}
+
+public class Insanity : PassiveAbility
+{
+
+}
+
+public enum Direction
+{
+    Left,
+    Right,
+    Up,
+    Down,
+    None
+}
 
 public enum BattleArtType
 {
-    SpiritSlash
+    PowerSlash,
+    HarmonySlash,
+    SpiritBolt,
+    SpiritFall,
+    SpiritShadow
+
+}
+
+public enum PassiveAbilityType
+{
+    SlashArt,
+    AssassinHeart,
+    SpellStrike,
+    OneMind,
+    Dancer,
+    StepMaster,
+    Insanity
+
+}
+
+public enum DamageType
+{
+    Normal,
+    Strike,
+    Spell
 }
 
 public enum CharacterAttackType
@@ -176,8 +276,10 @@ public class CharacterAction : MonoBehaviour
     public List<GameObject> HitEnemies;
 
     public BattleArt EquipedBattleArt;
+    public List<PassiveAbility> EquipedPassiveAbility;
 
     public Dictionary<BattleArtType, string> BattleArtNameInfo;
+    public Dictionary<PassiveAbilityType, string> PassiveAbilityNameInfo;
 
     private FSM<CharacterAction> CharacterActionFSM;
 
@@ -203,7 +305,7 @@ public class CharacterAction : MonoBehaviour
     {
         BattleArtNameInfo = new Dictionary<BattleArtType, string>();
 
-        BattleArtNameInfo.Add(BattleArtType.SpiritSlash, "Spirit Slash");
+        BattleArtNameInfo.Add(BattleArtType.HarmonySlash, "Spirit Slash");
     }
 
     // <summary>
@@ -231,7 +333,14 @@ public class CharacterAction : MonoBehaviour
     {
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        EquipedBattleArt = new BattleArt(BattleArtNameInfo[BattleArtType.SpiritSlash], BattleArtType.SpiritSlash);
+        EquipedBattleArt = new HarmonySlash();
+
+        EquipedPassiveAbility = new List<PassiveAbility>();
+
+        EquipedPassiveAbility.Add(null);
+        EquipedPassiveAbility.Add(null);
+        EquipedPassiveAbility.Add(null);
+
     }
 
     private void UpdateRollCoolDown()
@@ -976,7 +1085,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         {
             switch (Context.EquipedBattleArt.Type)
             {
-                case BattleArtType.SpiritSlash:
+                case BattleArtType.HarmonySlash:
                     return CheckGrounded();
             }
 
@@ -1027,9 +1136,9 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
     {
         switch (Context.EquipedBattleArt.Type)
         {
-            case BattleArtType.SpiritSlash:
+            case BattleArtType.HarmonySlash:
                 ChangeDirection(Info);
-                TransitionTo<SpiritSlashAnticipation>();
+                TransitionTo<HarmonySlashAnticipation>();
                 break;
         }
     }
@@ -1518,7 +1627,7 @@ public class SlashAnticipation : CharacterActionState
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
         var Data = Entity.GetComponent<CharacterData>();
 
-        int SlashDamage = AbilityData.SlashBaseDamage;
+        int SlashDamage = Mathf.RoundToInt(AbilityData.BaseDamage * AbilityData.SlashDamageFactor);
 
         /*if (Status.GetCriticalEye())
         {
@@ -1853,7 +1962,7 @@ public class SlashRecovery : CharacterActionState
 
 }
 
-public class SpiritSlashAnticipation : CharacterActionState
+public class HarmonySlashAnticipation : CharacterActionState
 {
     private float TimeCount;
 
@@ -1903,15 +2012,16 @@ public class SpiritSlashAnticipation : CharacterActionState
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
         var Data = Entity.GetComponent<CharacterData>();
 
-
-        SetAttribute(AbilityData.SpiritSlashAnticipationTime, AbilityData.SpiritSlashStrikeTime, AbilityData.SpiritSlashRecoveryTime, AbilityData.SpiritSlashBaseDamage, 0, AbilityData.SpiritSlashOffset, AbilityData.SpiritSlashHitBoxSize);
+        int HarmonySlashDamage = Mathf.RoundToInt(AbilityData.BaseDamage * AbilityData.HarmonySlashDamageFactor);
+        
+        SetAttribute(AbilityData.HarmonySlashAnticipationTime, AbilityData.HarmonySlashStrikeTime, AbilityData.HarmonySlashRecoveryTime, HarmonySlashDamage, 0, AbilityData.HarmonySlashOffset, AbilityData.HarmonySlashHitBoxSize);
 
         Context.CurrentAttack = new CharacterAttackInfo(Entity, CharacterAttackType.BattleArt, Entity.transform.right.x > 0, Damage, Damage, Damage, Offset, Offset, Size, Size, Anticipation, Anticipation, Strike, Strike, Recovery, Recovery, Context.EquipedBattleArt, EnergyCost, EnergyCost);
 
         Context.HitEnemies = new List<GameObject>();
 
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
-        Entity.GetComponent<SpeedManager>().AttackStepSpeed.x = -Entity.transform.right.x * AbilityData.SpiritSlashStepBackSpeed;
+        Entity.GetComponent<SpeedManager>().AttackStepSpeed.x = -Entity.transform.right.x * AbilityData.HarmonySlashStepBackSpeed;
 
     }
 
@@ -1945,10 +2055,10 @@ public class SpiritSlashAnticipation : CharacterActionState
 
         if (TimeCount >= Context.CurrentAttack.AnticipationTime)
         {
-            TransitionTo<SpiritSlashStrike>();
+            TransitionTo<HarmonySlashStrike>();
             return;
         }
-        else if(TimeCount >= AbilityData.SpiritSlashStepBackTime)
+        else if(TimeCount >= AbilityData.HarmonySlashStepBackTime)
         {
             Entity.GetComponent<SpeedManager>().AttackStepSpeed.x = 0;
         }
@@ -1957,7 +2067,7 @@ public class SpiritSlashAnticipation : CharacterActionState
 
 }
 
-public class SpiritSlashStrike : CharacterActionState
+public class HarmonySlashStrike : CharacterActionState
 {
     private float StepForwardSpeed;
     private GameObject Image;
@@ -2000,10 +2110,10 @@ public class SpiritSlashStrike : CharacterActionState
 
         TimeCount = 0;
 
-        Image = AbilityData.SpiritSlashImage;
+        Image = AbilityData.HarmonySlashImage;
         GenerateSlashImage(Image, Context.CurrentAttack);
 
-        SpeedManager.AttackStepSpeed.x = AbilityData.SpiritSlashStepForwardSpeed* Entity.transform.right.x;
+        SpeedManager.AttackStepSpeed.x = AbilityData.HarmonySlashStepForwardSpeed* Entity.transform.right.x;
 
     }
 
@@ -2043,16 +2153,17 @@ public class SpiritSlashStrike : CharacterActionState
         TimeCount += Time.deltaTime;
         if (TimeCount > Context.CurrentAttack.StrikeTime)
         {
-            TransitionTo<SpiritSlashRecovery>();
+            TransitionTo<HarmonySlashRecovery>();
             return;
         }
     }
 }
 
-public class SpiritSlashRecovery : CharacterActionState
+public class HarmonySlashRecovery : CharacterActionState
 {
     private float TimeCount;
     private List<InputInfo> SavedInputList;
+    private InputInfo ImmediateInput;
 
     public override void OnEnter()
     {
@@ -2071,6 +2182,7 @@ public class SpiritSlashRecovery : CharacterActionState
             TransitionTo<GetInterrupted>();
             return;
         }
+
 
         ManageSavedInputList(SavedInputList);
         RecoveryStateReceiveSavedInput(SavedInputList);

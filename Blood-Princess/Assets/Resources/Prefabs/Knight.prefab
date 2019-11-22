@@ -181,15 +181,15 @@ MonoBehaviour:
   NormalMoveSpeed: 3.5
   KeepDisMoveSpeed: 1
   AttackStepForwardSpeed: 12
-  SingleAttackAnticipationTime: 0.4
-  DoubleAttackFirstAnticipationTime: 0.4
+  SingleAttackAnticipationTime: 0.5
+  DoubleAttackFirstAnticipationTime: 0.5
   DoubleAttackSecondAnticipationTime: 0.2
-  ChaseAttackAnticipationTime: 0.6
+  ChaseAttackAnticipationTime: 0.8
   ChaseAttackSpeed: 7
   AttackTime: 0.1
   SingleAttackRecoveryTime: 0.7
-  DoubleAttackFirstRecoveryTime: 0.3
-  DoubleAttackSecondRecoveryTime: 0.7
+  DoubleAttackFirstRecoveryTime: 0.2
+  DoubleAttackSecondRecoveryTime: 1.2
   Damage: 5
   StepBackTime: 0
   StepBackSpeed: 0
@@ -200,6 +200,7 @@ MonoBehaviour:
     type: 3}
   KnockedBackTime: 0.2
   KnockedBackSpeed: 3
+  GetHitOnBackKnockedTime: 0.4
   RecoveryKnockedBackStunTime: 0.3
   AttackCoolDown: 1
   MinChaseAttackChaseDistance: 2.5

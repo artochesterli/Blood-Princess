@@ -238,6 +238,7 @@ public class KnightBlinkPrepare : KnightBehavior
     public override void OnEnter()
     {
         base.OnEnter();
+        Context.CurrentState = KnightState.BlinkPrepare;
         SetUp();
         SetAppearance();
     }
@@ -763,6 +764,7 @@ public class KnightAttackRecovery : KnightBehavior
 public class KnightGetInterrupted : KnightBehavior
 {
     private float TimeCount;
+    private float StateTime;
     private bool GetHitOnBack;
 
     public override void OnEnter()
@@ -779,6 +781,7 @@ public class KnightGetInterrupted : KnightBehavior
 
         if (CheckGetInterrupted())
         {
+            AIUtility.RectifyDirection(Context.Player, Entity);
             TransitionToInterrupted();
             return;
         }
@@ -801,18 +804,21 @@ public class KnightGetInterrupted : KnightBehavior
         var Status = Entity.GetComponent<StatusManager_Knight>();
 
         Status.Interrupted = false;
+        Context.AttackCoolDownTimeCount = 0;
 
         if (Temp.Right)
         {
             if (Entity.transform.right.x < 0)
             {
                 GetHitOnBack = false;
-                Context.AttackCoolDownTimeCount = 0;
+                StateTime = KnightData.KnockedBackTime;
             }
             else
             {
+                StateTime = KnightData.KnockedBackTime + KnightData.GetHitOnBackKnockedTime;
                 GetHitOnBack = true;
             }
+
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = KnightData.KnockedBackSpeed;
         }
         else
@@ -820,11 +826,12 @@ public class KnightGetInterrupted : KnightBehavior
             if (Entity.transform.right.x > 0)
             {
                 GetHitOnBack = false;
-                Context.AttackCoolDownTimeCount = 0;
+                StateTime = KnightData.KnockedBackTime;
             }
             else
             {
                 GetHitOnBack = true;
+                StateTime = KnightData.KnockedBackTime + KnightData.GetHitOnBackKnockedTime;
             }
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = -KnightData.KnockedBackSpeed;
         }
@@ -852,27 +859,39 @@ public class KnightGetInterrupted : KnightBehavior
 
         var Data = Entity.GetComponent<KnightData>();
 
-        if (TimeCount >= Data.KnockedBackTime)
+        if (GetHitOnBack)
         {
-            if (!GetHitOnBack)
+            if(TimeCount >= StateTime)
             {
-                float Chance = Random.Range(0.0f, 1.0f);
-                if (Chance < Data.BlinkChance)
-                {
-                    TransitionTo<KnightBlinkPrepare>();
-                }
-                else
-                {
-                    TransitionTo<KnightEngage>();
-                }
+                Transition();
             }
-            else
+            else if(TimeCount >= Data.KnockedBackTime)
             {
-                TransitionTo<KnightEngage>();
+                Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
             }
-            return;
         }
+        else
+        {
+            if (TimeCount >= StateTime)
+            {
+                Transition();
+            }
+        }
+    }
 
+    private void Transition()
+    {
+        var Data = Entity.GetComponent<KnightData>();
+
+        float Chance = Random.Range(0.0f, 1.0f);
+        if (Chance < Data.BlinkChance)
+        {
+            TransitionTo<KnightBlinkPrepare>();
+        }
+        else
+        {
+            TransitionTo<KnightEngage>();
+        }
     }
 }
 

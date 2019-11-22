@@ -18,10 +18,8 @@ public class CharacterData : MonoBehaviour
     public int MaxHP;
     public int MaxEnergy;
 
-    public int MaxAdvancedEnergyDamageNulification;
-
-    public float HitEnergyLostProportion;
-    public int MinimalEnergyLost;
+    public int HitEnergyLost;
+    public int HitAdvancedEnergyLost;
 
     public float InterruptedTime;
     public float InterruptedMoveTime;
