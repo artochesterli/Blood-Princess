@@ -2,13 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Direction
-{
-    Right,
-    Left,
-    Top,
-    Bottom
-}
+
 
 public class SpeedManager : MonoBehaviour
 {
@@ -408,12 +402,12 @@ public class SpeedManager : MonoBehaviour
     {
 
         RaycastHit2D[] HitList= Physics2D.BoxCastAll(GetTruePos() + (BodyHeight / 2 + DetectDis / 2) * Vector2.down, new Vector2(BodyWidth - 2 * HitMargin, DetectDis), 0, Vector2.down, 0, ~IgnoredLayers);
-        RaycastHit2D hit = GetClosestHit(true, HitList, Direction.Bottom);
-        RaycastHit2D forcefieldhit = GetClosestHit(false, HitList, Direction.Bottom);
+        RaycastHit2D hit = GetClosestHit(true, HitList, Direction.Down);
+        RaycastHit2D forcefieldhit = GetClosestHit(false, HitList, Direction.Down);
 
         if (hit.collider!=null)
         {
-            GroundDis = GetHitDis(hit, Direction.Bottom);
+            GroundDis = GetHitDis(hit, Direction.Down);
             Ground = hit.collider.gameObject;
         }
         else
@@ -424,7 +418,7 @@ public class SpeedManager : MonoBehaviour
 
         if(forcefieldhit.collider != null)
         {
-            GroundForceFieldDis = GetHitDis(forcefieldhit, Direction.Bottom);
+            GroundForceFieldDis = GetHitDis(forcefieldhit, Direction.Down);
             GroundForceField = forcefieldhit.collider.gameObject;
         }
         else
@@ -439,12 +433,12 @@ public class SpeedManager : MonoBehaviour
     {
 
         RaycastHit2D[] HitList= Physics2D.BoxCastAll(GetTruePos() + (DetectDis / 2 + BodyHeight / 2) * Vector2.up, new Vector2(BodyWidth - 2 * HitMargin, DetectDis), 0, Vector2.up, 0, ~IgnoredLayers);
-        RaycastHit2D hit = GetClosestHit(true, HitList, Direction.Top);
-        RaycastHit2D forcefieldhit = GetClosestHit(false, HitList, Direction.Top);
+        RaycastHit2D hit = GetClosestHit(true, HitList, Direction.Up);
+        RaycastHit2D forcefieldhit = GetClosestHit(false, HitList, Direction.Up);
 
         if (hit.collider!=null)
         {
-            TopDis = GetHitDis(hit, Direction.Top);
+            TopDis = GetHitDis(hit, Direction.Up);
             Top = hit.collider.gameObject;
         }
         else
@@ -455,7 +449,7 @@ public class SpeedManager : MonoBehaviour
 
         if (forcefieldhit.collider != null)
         {
-            TopForceFieldDis = GetHitDis(forcefieldhit, Direction.Top);
+            TopForceFieldDis = GetHitDis(forcefieldhit, Direction.Up);
             TopForceField = forcefieldhit.collider.gameObject;
         }
         else
@@ -574,7 +568,7 @@ public class SpeedManager : MonoBehaviour
                             Hit = HitList[i];
                         }
                         break;
-                    case Direction.Top:
+                    case Direction.Up:
 
                         if (Info.Type == ColliderType.ForceField && !Info.BottomPassable)
                         {
@@ -587,7 +581,7 @@ public class SpeedManager : MonoBehaviour
                             Hit = HitList[i];
                         }
                         break;
-                    case Direction.Bottom:
+                    case Direction.Down:
                         if (Info.Type == ColliderType.ForceField && !Info.TopPassable)
                         {
                             MinForceFieldDis = Dis;
@@ -628,10 +622,10 @@ public class SpeedManager : MonoBehaviour
             case Direction.Left:
                 Dis = (GetTruePos().x - BodyWidth / 2) - (Obj.transform.position.x + Obj.GetComponent<BoxCollider2D>().offset.x+ Obj.GetComponent<BoxCollider2D>().size.x / 2 * Obj.transform.localScale.x);
                 break;
-            case Direction.Top:
+            case Direction.Up:
                 Dis = (Obj.transform.position.y + Obj.GetComponent<BoxCollider2D>().offset.y - Obj.GetComponent<BoxCollider2D>().size.y / 2 * Obj.transform.localScale.y) - (GetTruePos().y + BodyHeight / 2);
                 break;
-            case Direction.Bottom:
+            case Direction.Down:
                 Dis = (GetTruePos().y - BodyHeight / 2) - (Obj.transform.position.y + Obj.GetComponent<BoxCollider2D>().offset.y + Obj.GetComponent<BoxCollider2D>().size.y / 2 * Obj.transform.localScale.y);
                 break;
         }
@@ -646,10 +640,10 @@ public class SpeedManager : MonoBehaviour
                 case Direction.Left:
                     Dis -= Obj.GetComponent<SpeedManager>().SelfSpeed.x * Time.deltaTime;
                     break;
-                case Direction.Top:
+                case Direction.Up:
                     Dis -= Obj.GetComponent<SpeedManager>().SelfSpeed.y * Time.deltaTime;
                     break;
-                case Direction.Bottom:
+                case Direction.Down:
                     Dis -= Obj.GetComponent<SpeedManager>().SelfSpeed.y * Time.deltaTime;
                     break;
             }

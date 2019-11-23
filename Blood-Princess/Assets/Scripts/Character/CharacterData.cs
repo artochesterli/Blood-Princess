@@ -13,7 +13,6 @@ public class CharacterData : MonoBehaviour
     public float AirDeceleration;
     public float NormalGravity;
     public float JumpSpeed;
-    public float JumpHoldingTime;
 
     public int MaxHP;
     public int MaxEnergy;

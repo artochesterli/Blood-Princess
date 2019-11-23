@@ -834,11 +834,11 @@ public class SoulWarriorGetInterrupted : SoulWarriorBehavior
 
         Status.Interrupted = false;
 
-        if (Temp.Right)
+        if (Temp.Dir == Direction.Right)
         {
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = Data.KnockedBackSpeed;
         }
-        else
+        else if(Temp.Dir == Direction.Left)
         {
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = -Data.KnockedBackSpeed;
         }

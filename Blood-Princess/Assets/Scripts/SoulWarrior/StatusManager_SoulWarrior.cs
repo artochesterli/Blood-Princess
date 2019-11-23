@@ -45,7 +45,7 @@ public class StatusManager_SoulWarrior : StatusManagerBase, IHittable
 
         SetHPFill((float)CurrentHP / Data.MaxHP);
 
-        if (CurrentTakenAttack.Right)
+        if (CurrentTakenAttack.Dir == Direction.Right)
         {
             DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 0);
         }

@@ -185,14 +185,12 @@ MonoBehaviour:
   DoubleAttackFirstAnticipationTime: 0.5
   DoubleAttackSecondAnticipationTime: 0.2
   ChaseAttackAnticipationTime: 0.8
-  ChaseAttackSpeed: 7
+  ChaseAttackSpeed: 15
   AttackTime: 0.1
-  SingleAttackRecoveryTime: 0.7
+  SingleAttackRecoveryTime: 0.5
   DoubleAttackFirstRecoveryTime: 0.2
-  DoubleAttackSecondRecoveryTime: 1.2
+  DoubleAttackSecondRecoveryTime: 0.8
   Damage: 5
-  StepBackTime: 0
-  StepBackSpeed: 0
   AttackAvailableHitBoxPercentage: 0.5
   AttackOffset: {x: 1.25, y: -0.2}
   AttackHitBoxSize: {x: 1.6, y: 0.64}
@@ -200,9 +198,9 @@ MonoBehaviour:
     type: 3}
   KnockedBackTime: 0.2
   KnockedBackSpeed: 3
+  KnockedRecoveryTime: 0.3
   GetHitOnBackKnockedTime: 0.4
-  RecoveryKnockedBackStunTime: 0.3
-  AttackCoolDown: 1
+  AttackCoolDown: 0.6
   MinChaseAttackChaseDistance: 2.5
   MaxChaseAttackChaseDistance: 5
   SingleAttackChance: 0.5
@@ -210,7 +208,6 @@ MonoBehaviour:
   BlinkChance: 0.3
   BlinkPrepareTime: 0.1
   BlinkForChaseAttackDis: 3
-  BlinkForwardChance: 0
 --- !u!114 &4305804637280515000
 MonoBehaviour:
   m_ObjectHideFlags: 0

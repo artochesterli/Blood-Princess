@@ -2216,11 +2216,10 @@ MonoBehaviour:
   AirDeceleration: 50
   NormalGravity: 4
   JumpSpeed: 12
-  JumpHoldingTime: 0
   MaxHP: 30
   MaxEnergy: 100
-  HitEnergyLost: 0
-  HitAdvancedEnergyLost: 0
+  HitEnergyLost: 50
+  HitAdvancedEnergyLost: 30
   InterruptedTime: 0.3
   InterruptedMoveTime: 0.1
   InterruptedSpeedX: 10
@@ -2301,12 +2300,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   BaseDamage: 10
-  SlashAnticipationTime: 0.15
+  SlashAnticipationTime: 0.1
   SlashStrikeTime: 0.1
   SlashRecoveryTime: 0.2
   SlashStepForwardSpeed: 5
   SlashDamageFactor: 1
-  SlashEnergyGain: 20
+  SlashEnergyGain: 10
   SlashEffectPreGenerateTime: 0.05
   SlashEffect: {fileID: 3178284683611736721, guid: 2a1caf9f2e86f96418fe279d441db4a0,
     type: 3}
@@ -2318,6 +2317,20 @@ MonoBehaviour:
   ParryRecoveryTime: 0.2
   ParryEffectTime: 0.2
   ParryEnergyGain: 0
+  PowerSlashAnticipationTime: 0.45
+  PowerSlashStrikeTime: 0.1
+  PowerSlashRecoveryTime: 0.35
+  PowerSlashStepForwardSpeed: 5
+  PowerSlashDamageFactor: 3
+  PowerSlashAdvancedEnergyGain: 30
+  PowerSlashDamageEnhancementFactor: 0.2
+  PowerSlashMaxEnhancementTime: 5
+  PowerSlashExecutionHPCondition: 0.5
+  PowerSlashExecutionDamageFactor: 2
+  PowerSlashImage: {fileID: 3683772998224471359, guid: d309ced642cf1e54fb1bd22f6c34a77f,
+    type: 3}
+  PowerSlashOffset: {x: 1.4, y: -0.2}
+  PowerSlashHitBoxSize: {x: 2, y: 0.64}
   HarmonySlashAnticipationTime: 0.45
   HarmonySlashStrikeTime: 0.1
   HarmonySlashRecoveryTime: 0.35
@@ -2327,12 +2340,17 @@ MonoBehaviour:
   HarmonySlashDamageFactor: 2.5
   HarmonySlashAdvancedEnergyGain: 40
   HarmonySlashFullAdvancedEnergyDamageBonus: 1
-  HarmonySlashFullAdvancedEnergySlashDamageBonus: 0.1
-  HarmonySlashFullAdvancedEnergyMaxSlashDamageBonusTime: 5
-  HarmonySlashImage: {fileID: 3683772998224471359, guid: d309ced642cf1e54fb1bd22f6c34a77f,
+  HarmonySlashSlashDamageBonusFactor: 0.1
+  HarmonySlashMaxSlashDamageBonusTime: 5
+  HarmonySlashImage: {fileID: 878158435681328017, guid: 546bd29818b3f3842986f80548fd132e,
     type: 3}
   HarmonySlashOffset: {x: 1.4, y: -0.2}
   HarmonySlashHitBoxSize: {x: 2, y: 0.64}
+  OneMindDamageEnhancementFactor: 0.05
+  OneMindMaxDamageEnhancementTime: 20
+  DancerDamageFactor: 0.5
+  DancerHitBoxSize: {x: 0.3, y: 1}
+  InsanityAdvancedEnergyGain: 2
 --- !u!114 &8072353811691231456
 MonoBehaviour:
   m_ObjectHideFlags: 0

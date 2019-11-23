@@ -21,6 +21,7 @@ public class SkillSlot : MonoBehaviour, ISkillSlot
     void Start()
     {
         Type = ThisType;
+        SetSlot();
     }
 
     // Update is called once per frame
@@ -31,6 +32,7 @@ public class SkillSlot : MonoBehaviour, ISkillSlot
 
     public void Equip(CharacterAbility Ability)
     {
+        CurrentAbility = Ability;
         switch (Type)
         {
             case AbilityType.BattleArt:
@@ -50,6 +52,10 @@ public class SkillSlot : MonoBehaviour, ISkillSlot
     public void DowngradeAbility()
     {
         CurrentAbility.Level--;
+        if(CurrentAbility.Level == 0)
+        {
+            RemoveAbility();
+        }
     }
 
     public void RemoveAbility()

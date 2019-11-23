@@ -30,11 +30,16 @@ public class CharacterAbilityData : MonoBehaviour
     public float PowerSlashRecoveryTime;
     public float PowerSlashStepForwardSpeed;
     public float PowerSlashDamageFactor;
+    public int PowerSlashAdvancedEnergyGain;
 
     public float PowerSlashDamageEnhancementFactor; 
     public int PowerSlashMaxEnhancementTime;
     public float PowerSlashExecutionHPCondition;
     public float PowerSlashExecutionDamageFactor;
+
+    public GameObject PowerSlashImage;
+    public Vector2 PowerSlashOffset;
+    public Vector2 PowerSlashHitBoxSize;
 
     public float HarmonySlashAnticipationTime;
     public float HarmonySlashStrikeTime;
@@ -58,5 +63,7 @@ public class CharacterAbilityData : MonoBehaviour
 
     public float DancerDamageFactor;
     public Vector2 DancerHitBoxSize;
+
+    public int InsanityAdvancedEnergyGain;
 
 }

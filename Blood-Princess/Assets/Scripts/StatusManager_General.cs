@@ -58,7 +58,7 @@ public class StatusManager_General : StatusManagerBase, IHittable
 		}
 
 
-		if (HitAttack.Right)
+		if (HitAttack.Dir == Direction.Right)
 		{
 			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 1);
 		}

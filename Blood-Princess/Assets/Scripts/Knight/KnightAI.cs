@@ -18,7 +18,8 @@ public enum KnightState
     Strike,
     Recovery,
     BlinkPrepare,
-    Interrupted
+    Interrupted,
+    InterruptedRecovery
 }
 
 public class KnightAI : MonoBehaviour
@@ -806,32 +807,30 @@ public class KnightGetInterrupted : KnightBehavior
         Status.Interrupted = false;
         Context.AttackCoolDownTimeCount = 0;
 
-        if (Temp.Right)
+        StateTime = KnightData.KnockedBackTime;
+
+        if (Temp.Dir == Direction.Right)
         {
             if (Entity.transform.right.x < 0)
             {
                 GetHitOnBack = false;
-                StateTime = KnightData.KnockedBackTime;
             }
             else
             {
-                StateTime = KnightData.KnockedBackTime + KnightData.GetHitOnBackKnockedTime;
                 GetHitOnBack = true;
             }
 
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = KnightData.KnockedBackSpeed;
         }
-        else
+        else if(Temp.Dir == Direction.Left)
         {
             if (Entity.transform.right.x > 0)
             {
                 GetHitOnBack = false;
-                StateTime = KnightData.KnockedBackTime;
             }
             else
             {
                 GetHitOnBack = true;
-                StateTime = KnightData.KnockedBackTime + KnightData.GetHitOnBackKnockedTime;
             }
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = -KnightData.KnockedBackSpeed;
         }
@@ -857,25 +856,97 @@ public class KnightGetInterrupted : KnightBehavior
     {
         TimeCount += Time.deltaTime;
 
+        if (TimeCount >= StateTime)
+        {
+            Transition();
+        }
+    }
+
+    private void Transition()
+    {
         var Data = Entity.GetComponent<KnightData>();
 
         if (GetHitOnBack)
         {
-            if(TimeCount >= StateTime)
-            {
-                Transition();
-            }
-            else if(TimeCount >= Data.KnockedBackTime)
-            {
-                Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
-            }
+            TransitionTo<KnightKnockedRecovery>();
         }
         else
         {
-            if (TimeCount >= StateTime)
+
+            float Chance = Random.Range(0.0f, 1.0f);
+            if (Chance < Data.BlinkChance)
             {
-                Transition();
+                TransitionTo<KnightBlinkPrepare>();
             }
+            else
+            {
+                TransitionTo<KnightEngage>();
+            }
+        }
+
+    }
+}
+
+public class KnightKnockedRecovery : KnightBehavior
+{
+    private float TimeCount;
+    private float StateTime;
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        Context.CurrentState = KnightState.InterruptedRecovery;
+        SetUp();
+        SetAppearance();
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        AIUtility.RectifyDirection(Context.Player, Entity);
+
+        if (CheckGetInterrupted())
+        {
+            TransitionTo<KnightGetInterrupted>();
+            return;
+        }
+
+        CheckTime();
+    }
+
+    public override void OnExit()
+    {
+        base.OnExit();
+        Context.LastState = KnightState.InterruptedRecovery;
+    }
+
+    private void SetUp()
+    {
+        var KnightData = Entity.GetComponent<KnightData>();
+        var Status = Entity.GetComponent<StatusManager_Knight>();
+
+        AIUtility.RectifyDirection(Context.Player, Entity);
+
+        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+
+        TimeCount = 0;
+        StateTime = KnightData.KnockedRecoveryTime;
+    }
+
+    private void SetAppearance()
+    {
+        var KnightSpriteData = Entity.GetComponent<KnightSpriteData>();
+        SetKnight(KnightSpriteData.Idle, KnightSpriteData.IdleOffset, KnightSpriteData.IdleSize);
+
+    }
+
+    private void CheckTime()
+    {
+        TimeCount += Time.deltaTime;
+
+        if (TimeCount >= StateTime)
+        {
+            Transition();
         }
     }
 
@@ -884,6 +955,7 @@ public class KnightGetInterrupted : KnightBehavior
         var Data = Entity.GetComponent<KnightData>();
 
         float Chance = Random.Range(0.0f, 1.0f);
+
         if (Chance < Data.BlinkChance)
         {
             TransitionTo<KnightBlinkPrepare>();

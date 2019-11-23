@@ -20,6 +20,7 @@ public class StatusManager_Dummy : StatusManagerBase, IHittable, IShield
     void Start()
     {
         var Data = GetComponent<DummyData>();
+        MaxHP = Data.MaxHP;
         CurrentHP = Data.MaxHP;
         CurrentShield = Data.MaxShield;
     }
@@ -65,7 +66,7 @@ public class StatusManager_Dummy : StatusManagerBase, IHittable, IShield
                 }
             }
 
-            if (HitAttack.Right)
+            if (HitAttack.Dir == Direction.Right)
             {
                 DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 1);
             }

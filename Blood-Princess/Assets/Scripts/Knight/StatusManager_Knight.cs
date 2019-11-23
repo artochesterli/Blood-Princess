@@ -22,6 +22,7 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 	{
 		var Data = GetComponent<KnightData>();
         CurrentTakenAttack = null;
+        MaxHP = Data.MaxHP;
         CurrentHP = Data.MaxHP;
 		if (SharedCanvas == null)
 			SharedCanvas = GameObject.Find("SharedCanvas");
@@ -61,7 +62,7 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
         SetHPFill((float)CurrentHP / Data.MaxHP);
 
 
-		if (CurrentTakenAttack.Right)
+		if (CurrentTakenAttack.Dir == Direction.Right)
 		{
 			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 0);
 		}
