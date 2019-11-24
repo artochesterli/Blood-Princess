@@ -1904,6 +1904,11 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 5
       objectReference: {fileID: 0}
+    - target: {fileID: 4216396845970244827, guid: 21b59aee8a9c3c643bd59decc20cec00,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 21b59aee8a9c3c643bd59decc20cec00, type: 3}
 --- !u!4 &218669046 stripped
@@ -10300,11 +10305,11 @@ GameObject:
   - component: {fileID: 1168141819}
   - component: {fileID: 1168141818}
   - component: {fileID: 1168141817}
+  - component: {fileID: 1168141824}
   - component: {fileID: 1168141816}
   - component: {fileID: 1168141822}
   - component: {fileID: 1168141821}
   - component: {fileID: 1168141820}
-  - component: {fileID: 1168141824}
   - component: {fileID: 1168141823}
   - component: {fileID: 1168141825}
   m_Layer: 10
@@ -10328,18 +10333,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   MaxHP: 10000
   NormalMoveSpeed: 4
-  AttackStepForwardSpeed: 5
-  SlashAnticipationTime: 0.7
+  AttackStepForwardSpeed: 10
+  SlashAnticipationTime: 0.5
   SlashStrikeTime: 0.1
-  SlashRecoveryTime: 0.7
-  MagicAnticipationTime: 0.7
+  SlashRecoveryTime: 0.5
+  MagicAnticipationTime: 0.5
   MagicStrikeTime: 0.1
-  MagicRecoveryTime: 0.7
-  SlashDamage: 3
+  MagicRecoveryTime: 0.5
+  SlashDamage: 5
   MagicDamage: 3
   BlinkPrepareTime: 0.1
   SlashAvailableHitBoxPercentage: 0.5
-  SlashOffset: {x: 1.2, y: 0}
+  SlashOffset: {x: 1.4, y: 0}
   SlashHitBoxSize: {x: 1.44, y: 0.64}
   SlashImage: {fileID: 5778873285884925108, guid: e0d9531edd69fdc4fbf5a991039ff31d,
     type: 3}
@@ -10350,7 +10355,7 @@ MonoBehaviour:
     type: 3}
   KnockedBackTime: 0.2
   KnockedBackSpeed: 3
-  AttackCoolDown: 2
+  AttackCoolDown: 1
 --- !u!61 &1168141817
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -10364,18 +10369,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.002634287, y: 0.001741171}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.1125, y: 0.9625}
-    newSize: {x: 0.89, y: 0.77}
+    oldSize: {x: 0.5692308, y: 1.5476923}
+    newSize: {x: 3.7, y: 10.06}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.1125, y: 0.9625}
+  m_Size: {x: 0.580379, y: 1.549093}
   m_EdgeRadius: 0
 --- !u!212 &1168141818
 SpriteRenderer:
@@ -10415,12 +10420,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 55ca721ed348c8b409d58bc52f889985, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cccc1aca152c22f4d9cccd655adb6f2c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.89, y: 0.77}
+  m_Size: {x: 3.7, y: 10.06}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -10434,7 +10439,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1168141815}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 31, y: -3.52, z: 0}
+  m_LocalPosition: {x: 31, y: -3.225, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2070663420}
@@ -10536,12 +10541,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47f07676374c3e746b05642d4c5b470d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Idle: {fileID: 21300000, guid: 55ca721ed348c8b409d58bc52f889985, type: 3}
-  Attack: {fileID: 21300000, guid: 71f02f4748bd5274990032682de24958, type: 3}
-  IdleOffset: {x: 0, y: 0}
-  IdleSize: {x: 1.1125, y: 0.9625}
-  AttackOffset: {x: 0, y: 0}
-  AttackSize: {x: 1.1125, y: 0.9625}
+  Idle: {fileID: 21300000, guid: cccc1aca152c22f4d9cccd655adb6f2c, type: 3}
+  MagicAnticipation: {fileID: 21300000, guid: a0e574deb1cac9843b66168261f7e4e9, type: 3}
+  MagicRecovery: {fileID: 21300000, guid: ec063e1a9e1862b44b44224f75eb87aa, type: 3}
+  SlashAnticipation: {fileID: 21300000, guid: 2dd2caf02b1911a48815031e2c0bcb1c, type: 3}
+  SlashRecovery: {fileID: 21300000, guid: c9ff30324454c944590f80e4064af855, type: 3}
+  Hit: {fileID: 21300000, guid: cccc1aca152c22f4d9cccd655adb6f2c, type: 3}
+  IdleOffset: {x: 0.002634287, y: 0.001741171}
+  IdleSize: {x: 0.580379, y: 1.549093}
+  MagicAnticipationOffset: {x: 0.002634287, y: 0.001741171}
+  MagicAnticipationSize: {x: 0.580379, y: 1.549093}
+  MagicRecoveryOffset: {x: -0.008122921, y: 0.001741171}
+  MagicRecoverySize: {x: 0.4620504, y: 1.549093}
+  SlashAnticipationOffset: {x: 0.0311451, y: -0.01654959}
+  SlashAnticipationSize: {x: 0.5405865, y: 1.512511}
+  SlashRecoveryOffset: {x: 0.1901112, y: -0.05750632}
+  SlashRecoverySize: {x: 0.9076672, y: 1.430598}
+  HitOffset: {x: 0.002634287, y: 0.001741171}
+  HitSize: {x: 0.580379, y: 1.549093}
 --- !u!114 &1168141825
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18855,7 +18872,7 @@ PrefabInstance:
     - target: {fileID: 4305804637280515003, guid: 6dc116148174896459ef435bd864d5cf,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4305804637280514981, guid: 6dc116148174896459ef435bd864d5cf,
         type: 3}

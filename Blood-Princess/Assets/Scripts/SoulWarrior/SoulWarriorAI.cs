@@ -317,7 +317,7 @@ public class SoulWarriorSlashAnticipation : SoulWarriorBehavior
     private void SetAppearance()
     {
         var SpriteData = Entity.GetComponent<SoulWarriorSpriteData>();
-        SetSoulWarrior(SpriteData.Attack, SpriteData.AttackOffset, SpriteData.AttackSize);
+        SetSoulWarrior(SpriteData.SlashAnticipation, SpriteData.SlashAnticipationOffset, SpriteData.SlashAnticipationSize);
 
         Context.AttackMark.SetActive(true);
     }
@@ -371,7 +371,7 @@ public class SoulWarriorSlashStrike : SoulWarriorBehavior
     private void SetAppearance()
     {
         var SpriteData = Entity.GetComponent<SoulWarriorSpriteData>();
-        SetSoulWarrior(SpriteData.Idle, SpriteData.IdleOffset, SpriteData.IdleSize);
+        SetSoulWarrior(SpriteData.SlashRecovery, SpriteData.SlashRecoveryOffset, SpriteData.SlashRecoverySize);
 
         Context.AttackMark.SetActive(false);
     }
@@ -479,7 +479,7 @@ public class SoulWarriorSlashRecovery : SoulWarriorBehavior
     private void SetAppearance()
     {
         var SpriteData = Entity.GetComponent<SoulWarriorSpriteData>();
-        SetSoulWarrior(SpriteData.Idle, SpriteData.IdleOffset, SpriteData.IdleSize);
+        SetSoulWarrior(SpriteData.SlashRecovery, SpriteData.SlashRecoveryOffset, SpriteData.SlashRecoverySize);
     }
 
     private void CheckTime()
@@ -546,7 +546,7 @@ public class SoulWarriorMagicAnticipation : SoulWarriorBehavior
     private void SetAppearance()
     {
         var SpriteData = Entity.GetComponent<SoulWarriorSpriteData>();
-        SetSoulWarrior(SpriteData.Attack, SpriteData.AttackOffset, SpriteData.AttackSize);
+        SetSoulWarrior(SpriteData.MagicAnticipation, SpriteData.MagicAnticipationOffset, SpriteData.MagicAnticipationSize);
     }
 
     private void CheckTime()
@@ -608,7 +608,7 @@ public class SoulWarriorMagicStrike : SoulWarriorBehavior
     private void SetAppearance()
     {
         var SpriteData = Entity.GetComponent<SoulWarriorSpriteData>();
-        SetSoulWarrior(SpriteData.Idle, SpriteData.IdleOffset, SpriteData.IdleSize);
+        SetSoulWarrior(SpriteData.MagicRecovery, SpriteData.MagicRecoveryOffset, SpriteData.MagicRecoverySize);
     }
 
     private void CheckTime()
@@ -681,7 +681,7 @@ public class SoulWarriorMagicRecovery : SoulWarriorBehavior
     private void SetAppearance()
     {
         var SpriteData = Entity.GetComponent<SoulWarriorSpriteData>();
-        SetSoulWarrior(SpriteData.Idle, SpriteData.IdleOffset, SpriteData.IdleSize);
+        SetSoulWarrior(SpriteData.MagicRecovery, SpriteData.MagicRecoveryOffset, SpriteData.MagicRecoverySize);
     }
 
     private void CheckTime()
@@ -850,7 +850,7 @@ public class SoulWarriorGetInterrupted : SoulWarriorBehavior
     private void SetAppearance()
     {
         var SpriteData = Entity.GetComponent<SoulWarriorSpriteData>();
-        SetSoulWarrior(SpriteData.Idle, SpriteData.IdleOffset, SpriteData.IdleSize);
+        SetSoulWarrior(SpriteData.Hit, SpriteData.HitOffset, SpriteData.HitSize);
     }
 
     private void CheckTime()
