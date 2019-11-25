@@ -8,14 +8,18 @@ using UnityEngine.SceneManagement;
 public class StatusManager_Character : StatusManagerBase, IHittable
 {
     public int CurrentEnergy;
-    public int CurrentAdvancedEnergy;
+    public int CurrentMaxEnergy;
+    public int CurrentSeal;
+    public int CurrentBaseDamage;
+
     public EnemyAttackInfo CurrentTakenAttack;
 
     public GameObject Canvas;
     public GameObject HPFill;
     public GameObject EnergyFill;
-    public GameObject AdvancedEnergyFill;
-    public GameObject CriticalEyeMark;
+    public GameObject EnergyFullMark;
+    public GameObject SealFill;
+    public GameObject SealMarks;
 
     public GameObject ParryShieldMark;
     public GameObject ParriedEffectPrefab;
@@ -27,7 +31,8 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private bool InParryInvulnerability;
 
-    private bool InCriticalEye;
+    private bool EnergyFull;
+    private bool Awaken;
 
     private GameObject DamageText;
 
@@ -135,21 +140,31 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         InRollInvulnerability = value;
     }
 
-    public bool GetCriticalEye()
+    public bool IsEnergyFull()
     {
-        return InCriticalEye;
+        return EnergyFull;
     }
 
-    private void SetCriticalEye (bool value)
+    private void SetEnergyFull(bool value)
     {
-        InCriticalEye = value;
-        CriticalEyeMark.GetComponent<SpriteRenderer>().enabled = value;
+        EnergyFull = value;
+        EnergyFullMark.GetComponent<SpriteRenderer>().enabled = value;
+    }
+
+    private void SetAwaken(bool value)
+    {
+        Awaken = value;
     }
 
     private void Init()
     {
         var Data = GetComponent<CharacterData>();
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
         CurrentHP = Data.MaxHP;
+        CurrentMaxEnergy = Data.MaxEnergy;
+        CurrentSeal = Data.SealNumber;
+        CurrentBaseDamage = AbilityData.BaseDamage;
         CurrentEnergy = 0;
 
     }
@@ -160,9 +175,19 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Data = GetComponent<CharacterData>();
         HPFill.GetComponent<Image>().fillAmount = (float)CurrentHP / Data.MaxHP;
 
-        EnergyFill.GetComponent<Image>().fillAmount = (float)CurrentEnergy / Data.MaxEnergy;
+        EnergyFill.GetComponent<Image>().fillAmount = (float)CurrentEnergy / (Data.MaxEnergy + Data.SealNumber*Data.SealBreakEnergyCap);
 
-        AdvancedEnergyFill.GetComponent<Image>().fillAmount = (float)CurrentAdvancedEnergy / Data.MaxEnergy;
+        SealFill.GetComponent<Image>().fillAmount = (float)(CurrentSeal* Data.SealBreakEnergyCap)/ (Data.MaxEnergy + Data.SealNumber * Data.SealBreakEnergyCap);
+
+        for (int i = 0; i <= CurrentSeal && i > 0; i++)
+        {
+            SealMarks.transform.GetChild(Data.SealNumber - i - 1).gameObject.SetActive(true);
+        }
+
+        for(int i= CurrentSeal; i < Data.SealNumber + 1 && i< 3; i++)
+        {
+            SealMarks.transform.GetChild(Data.SealNumber - i - 1).gameObject.SetActive(false);
+        }
 
     }
 
@@ -199,14 +224,12 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                 OneMindLoseEnhancement();
             }
 
-            GainLoseAdvancedEnergy(-Data.HitAdvancedEnergyLost);
-            GainLoseEnergy(-Data.HitEnergyLost);
-            if(CurrentEnergy < CurrentAdvancedEnergy)
-            {
-                CurrentEnergy = CurrentAdvancedEnergy;
-            }
+            CurrentEnergy = 0;
+            GainLoseSeal(true);
+            SetEnergyFull(false);
+            SetAwaken(false);
 
-            SetCriticalEye(false);
+
 
             DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
 
@@ -273,11 +296,14 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         }
         else if (e.Attack.ThisBattleArt != null)
         {
-            CurrentEnergy = CurrentAdvancedEnergy;
+            CurrentEnergy = 0;
+            SetEnergyFull(false);
+
+            /*CurrentEnergy = CurrentAdvancedEnergy;
             if (CurrentAdvancedEnergy < Data.MaxEnergy)
             {
                 SetCriticalEye(false);
-            }
+            }*/
 
             switch (e.Attack.ThisBattleArt.Type)
             {
@@ -317,14 +343,25 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                 case DamageType.Spell:
                     break;
                 case DamageType.Strike:
-                    PowerSlashIncreaseEnhancement();
+                    if (PowerSlashBattleArt != null)
+                    {
+                        PowerSlashIncreaseEnhancement();
+                    }
                     break;
             }
 
 
             if (e.Attack.Type == CharacterAttackType.Slash)
             {
-                GainLoseEnergy(AbilityData.SlashEnergyGain);
+                if (Awaken)
+                {
+                    GainLoseEnergy(AbilityData.SlashEnergyAwakenGain);
+                }
+                else
+                {
+                    GainLoseEnergy(AbilityData.SlashEnergyGain);
+                }
+
                 if (InsanityPassiveAbility != null)
                 {
                     InsanityGetAdvancedEnergy();
@@ -335,16 +372,18 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                 switch (Action.EquipedBattleArt.Type)
                 {
                     case BattleArtType.PowerSlash:
-                        GainLoseAdvancedEnergy(AbilityData.PowerSlashAdvancedEnergyGain);
+                        //GainLoseAdvancedEnergy(AbilityData.PowerSlashAdvancedEnergyGain);
                         break;
                     
                     case BattleArtType.HarmonySlash:
                         HarmonySlashIncreaseSlashEnhancement();
-                        GainLoseAdvancedEnergy(AbilityData.HarmonySlashAdvancedEnergyGain);
+                        //GainLoseAdvancedEnergy(AbilityData.HarmonySlashAdvancedEnergyGain);
                         break;
                 }
 
-                CurrentEnergy = CurrentAdvancedEnergy;
+                GainLoseSeal(false);
+
+                //CurrentEnergy = CurrentAdvancedEnergy;
             }
         }
     }
@@ -447,10 +486,10 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     private void GainLoseEnergy(int amount)
     {
         var Data = GetComponent<CharacterData>();
-        if(amount >= Data.MaxEnergy - CurrentEnergy)
+        if(amount >= CurrentMaxEnergy - CurrentEnergy)
         {
-            CurrentEnergy = Data.MaxEnergy;
-            SetCriticalEye(true);
+            CurrentEnergy = CurrentMaxEnergy;
+            SetEnergyFull(true);
             return;
         }
         else if(amount <= -CurrentEnergy)
@@ -462,7 +501,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         CurrentEnergy += amount;
     }
 
-    private void GainLoseAdvancedEnergy(int amount)
+    /*private void GainLoseAdvancedEnergy(int amount)
     {
         var Data = GetComponent<CharacterData>();
 
@@ -479,6 +518,38 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         }
 
         CurrentAdvancedEnergy += amount;
+    }*/
+
+    private void GainLoseSeal(bool Gain)
+    {
+        var Data = GetComponent<CharacterData>();
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
+        if (Gain)
+        {
+            if(CurrentSeal >= Data.SealNumber)
+            {
+                return;
+            }
+            CurrentSeal++;
+            CurrentMaxEnergy -= Data.SealBreakEnergyCap;
+            SetAwaken(false);
+        }
+        else
+        {
+            if(CurrentSeal <= 0)
+            {
+                return;
+            }
+            CurrentSeal--;
+            CurrentMaxEnergy += Data.SealBreakEnergyCap;
+            if(CurrentSeal <= 0)
+            {
+                SetAwaken(true);
+            }
+        }
+
+        CurrentBaseDamage = AbilityData.BaseDamage + Data.BaseDamageEnhancementWithSeal[CurrentSeal];
     }
 
     private void OnEquipBattleArt(PlayerEquipBattleArt e)
@@ -645,7 +716,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Data = GetComponent<CharacterData>();
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        if(HarmonySlashBattleArt.Level >= 2 && CurrentAdvancedEnergy == Data.MaxEnergy)
+        if(HarmonySlashBattleArt.Level >= 2 )
         {
             Attack.Damage += Mathf.RoundToInt(AbilityData.BaseDamage * AbilityData.HarmonySlashFullAdvancedEnergyDamageBonus);
         }
@@ -656,7 +727,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Data = GetComponent<CharacterData>();
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        if(HarmonySlashBattleArt.Level >= 3 && CurrentAdvancedEnergy == Data.MaxEnergy)
+        if(HarmonySlashBattleArt.Level >= 3 )
         {
             HarmonySlashSlashEnhancementCount++;
             if(HarmonySlashSlashEnhancementCount > AbilityData.HarmonySlashMaxSlashDamageBonusTime)
@@ -783,16 +854,12 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     {
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        GainLoseAdvancedEnergy(AbilityData.InsanityAdvancedEnergyGain);
-        if(CurrentEnergy < CurrentAdvancedEnergy)
-        {
-            CurrentEnergy = CurrentAdvancedEnergy;
-        }
+        //GainLoseAdvancedEnergy(AbilityData.InsanityAdvancedEnergyGain);
+
     }
 
     private void InsanityEnergyLost()
     {
-        CurrentAdvancedEnergy = 0;
         CurrentEnergy = 0;
     }
 }

@@ -446,7 +446,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         var Data = Entity.GetComponent<CharacterData>();
         var Status = Entity.GetComponent<StatusManager_Character>();
 
-        if (Status.GetCriticalEye())
+        if (Status.IsEnergyFull())
         {
             Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[3];
         }
@@ -1123,7 +1123,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
     protected bool CheckPerformBattleArt(InputInfo Info)
     {
         var Status = Entity.GetComponent<StatusManager_Character>();
-        if (Info.Type == InputType.BattleArt && Status.GetCriticalEye() && Context.EquipedBattleArt != null)
+        if (Info.Type == InputType.BattleArt && Status.IsEnergyFull() && Context.EquipedBattleArt != null)
         {
             switch (Context.EquipedBattleArt.Type)
             {
@@ -1608,7 +1608,7 @@ public class SlashAnticipation : CharacterActionState
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
         var Data = Entity.GetComponent<CharacterData>();
 
-        int SlashDamage = Mathf.RoundToInt(AbilityData.BaseDamage * AbilityData.SlashDamageFactor);
+        int SlashDamage = Mathf.RoundToInt(Status.CurrentBaseDamage * AbilityData.SlashDamageFactor);
 
         Direction dir;
         if(Entity.transform.right.x > 0)
@@ -1681,7 +1681,6 @@ public class SlashAnticipation : CharacterActionState
 public class SlashStrike : CharacterActionState
 {
     private float StepForwardSpeed;
-    private GameObject Image;
     private GameObject SlashEffect;
 
     private float TimeCount;
@@ -1736,7 +1735,6 @@ public class SlashStrike : CharacterActionState
         var Status = Entity.GetComponent<StatusManager_Character>();
 
         SlashEffect = AbilityData.SlashEffect;
-        Image = AbilityData.SlashImage;
 
         TimeCount = 0;
 
@@ -1767,9 +1765,10 @@ public class SlashStrike : CharacterActionState
     private void GenerateSlashEffect(CharacterAttackInfo Attack)
     {
         var Data = Entity.GetComponent<CharacterData>();
+        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
 
         float EulerAngle = 0;
-        Vector2 Offset = Attack.HitBoxOffset;
+        Vector2 Offset = AbilityData.SlashEffectOffset;
 
         if (Attack.Dir == Direction.Left)
         {
@@ -1948,7 +1947,7 @@ public class HarmonySlashAnticipation : CharacterActionState
             dir = Direction.Left;
         }
 
-        int HarmonySlashDamage = Mathf.RoundToInt(AbilityData.BaseDamage * AbilityData.HarmonySlashDamageFactor);
+        int HarmonySlashDamage = Mathf.RoundToInt(Status.CurrentBaseDamage * AbilityData.HarmonySlashDamageFactor);
         
         SetAttribute(AbilityData.HarmonySlashAnticipationTime, AbilityData.HarmonySlashStrikeTime, AbilityData.HarmonySlashRecoveryTime, HarmonySlashDamage, AbilityData.HarmonySlashOffset, AbilityData.HarmonySlashHitBoxSize);
 
@@ -2005,7 +2004,7 @@ public class HarmonySlashAnticipation : CharacterActionState
 public class HarmonySlashStrike : CharacterActionState
 {
     private float StepForwardSpeed;
-    private GameObject Image;
+    private GameObject Effect;
 
     private float TimeCount;
 
@@ -2045,8 +2044,8 @@ public class HarmonySlashStrike : CharacterActionState
 
         TimeCount = 0;
 
-        Image = AbilityData.HarmonySlashImage;
-        GenerateSlashImage(Image, Context.CurrentAttack);
+        Effect = AbilityData.HarmonySlashEffect;
+        GenerateSlashEffect(Effect, Context.CurrentAttack);
 
         SpeedManager.AttackStepSpeed.x = AbilityData.HarmonySlashStepForwardSpeed* Entity.transform.right.x;
 
@@ -2061,13 +2060,16 @@ public class HarmonySlashStrike : CharacterActionState
         Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyRecoveryOffset, SpriteData.HeavyRecoverySize);
     }
 
-    private void GenerateSlashImage(GameObject Image, CharacterAttackInfo Attack)
+
+
+    private void GenerateSlashEffect(GameObject Effect, CharacterAttackInfo Attack)
     {
 
         var Data = Entity.GetComponent<CharacterData>();
+        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
 
         float EulerAngle = 0;
-        Vector2 Offset = Attack.HitBoxOffset;
+        Vector2 Offset = AbilityData.HarmonySlashEffectOffset;
 
         if (Attack.Dir == Direction.Left)
         {
@@ -2075,7 +2077,7 @@ public class HarmonySlashStrike : CharacterActionState
             Offset.x = -Offset.x;
         }
 
-        SlashImage = GameObject.Instantiate(Image, (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
+        SlashImage = GameObject.Instantiate(Effect, (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
         SlashImage.transform.parent = Entity.transform;
     }
 
@@ -2221,7 +2223,7 @@ public class PowerSlashAnticipation : CharacterActionState
             dir = Direction.Left;
         }
 
-        int PowerSlashDamage = Mathf.RoundToInt(AbilityData.BaseDamage * AbilityData.PowerSlashDamageFactor);
+        int PowerSlashDamage = Mathf.RoundToInt(Status.CurrentBaseDamage * AbilityData.PowerSlashDamageFactor);
 
         SetAttribute(AbilityData.PowerSlashAnticipationTime, AbilityData.PowerSlashStrikeTime, AbilityData.PowerSlashRecoveryTime, PowerSlashDamage, AbilityData.PowerSlashOffset, AbilityData.PowerSlashHitBoxSize);
 
@@ -2271,7 +2273,7 @@ public class PowerSlashAnticipation : CharacterActionState
 public class PowerSlashStrike : CharacterActionState
 {
     private float StepForwardSpeed;
-    private GameObject Image;
+    private GameObject Effect;
 
     private float TimeCount;
 
@@ -2311,8 +2313,8 @@ public class PowerSlashStrike : CharacterActionState
 
         TimeCount = 0;
 
-        Image = AbilityData.PowerSlashImage;
-        GenerateSlashImage(Image, Context.CurrentAttack);
+        Effect = AbilityData.PowerSlashEffect;
+        GenerateSlashEffect(Effect, Context.CurrentAttack);
 
         SpeedManager.AttackStepSpeed.x = AbilityData.PowerSlashStepForwardSpeed * Entity.transform.right.x;
 
@@ -2327,13 +2329,14 @@ public class PowerSlashStrike : CharacterActionState
         Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyRecoveryOffset, SpriteData.HeavyRecoverySize);
     }
 
-    private void GenerateSlashImage(GameObject Image, CharacterAttackInfo Attack)
+    private void GenerateSlashEffect(GameObject Image, CharacterAttackInfo Attack)
     {
 
         var Data = Entity.GetComponent<CharacterData>();
+        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
 
         float EulerAngle = 0;
-        Vector2 Offset = Attack.HitBoxOffset;
+        Vector2 Offset = AbilityData.PowerSlashEffectOffset;
 
         if (Attack.Dir == Direction.Left)
         {
@@ -3008,7 +3011,7 @@ public class GetInterrupted : CharacterActionState
         SetUp();
 
         SetAppearance();
-        RecoveryStateReceiveSavedInput(SavedInputList);
+        //RecoveryStateReceiveSavedInput(SavedInputList);
 
         GameObject.Destroy(SlashImage);
     }
@@ -3057,13 +3060,13 @@ public class GetInterrupted : CharacterActionState
         {
             Entity.transform.eulerAngles = new Vector3(0, 180, 0);
 
-            SpeedManager.SelfSpeed.x = Data.InterruptedSpeedX;
+            SpeedManager.SelfSpeed.x = Data.InterruptedSpeed;
         }
         else
         {
             Entity.transform.eulerAngles = new Vector3(0, 0, 0);
 
-            SpeedManager.SelfSpeed.x = -Data.InterruptedSpeedX;
+            SpeedManager.SelfSpeed.x = -Data.InterruptedSpeed;
 
         }
 
@@ -3094,13 +3097,6 @@ public class GetInterrupted : CharacterActionState
                 }
             }
 
-        }
-        else if(TimeCount >= Data.InterruptedMoveTime)
-        {
-            if (CheckGrounded())
-            {
-                Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
-            }
         }
     }
 }

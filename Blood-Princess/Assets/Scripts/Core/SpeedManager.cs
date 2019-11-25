@@ -59,12 +59,6 @@ public class SpeedManager : MonoBehaviour
     {
         MoveExecuted = false;
 
-        CheckGroundDis();
-        CheckLeftWallDis();
-        CheckRightWallDis();
-        CheckTopDis();
-
-        //RectifySpeed();
         Move();
 
         MoveExecuted = true;
@@ -226,6 +220,9 @@ public class SpeedManager : MonoBehaviour
 
     private void Move()
     {
+        CheckLeftWallDis();
+        CheckRightWallDis();
+
         CheckPushedOut();
 
         Vector2 temp = SelfSpeed + ForcedSpeed + AttackStepSpeed;
@@ -234,6 +231,96 @@ public class SpeedManager : MonoBehaviour
         bool StuckInGround = false;
         bool StuckInRight = false;
         bool StuckInLeft = false;
+
+        if (Right)
+        {
+            ColliderType Type = Right.GetComponent<ColliderInfo>().Type;
+            if (temp.x >= 0 && RightDis < temp.x * Time.deltaTime && RightDis > -Zero)
+            {
+                temp.x = RightDis / Time.deltaTime;
+                HitRight = true;
+                ResetSpeed(true, true);
+            }
+            else if (RightDis < -Zero && Type == ColliderType.Solid)
+            {
+                HitRight = true;
+                StuckInRight = true;
+            }
+            else
+            {
+                HitRight = false;
+            }
+        }
+        else
+        {
+            HitRight = false;
+        }
+
+        if (Left)
+        {
+            ColliderType Type = Left.GetComponent<ColliderInfo>().Type;
+            if (temp.x <= 0 && LeftDis < -temp.x * Time.deltaTime && LeftDis > -Zero)
+            {
+                temp.x = -LeftDis / Time.deltaTime;
+                HitLeft = true;
+                ResetSpeed(true, false);
+            }
+            else if (LeftDis < -Zero && Type == ColliderType.Solid)
+            {
+                HitLeft = true;
+                StuckInLeft = true;
+            }
+            else
+            {
+                HitLeft = false;
+            }
+        }
+        else
+        {
+            HitLeft = false;
+        }
+
+
+        if (StuckInRight && StuckInLeft)
+        {
+            temp.y = 0;
+            ResetSpeed(true, true);
+            ResetSpeed(true, false);
+        }
+        else if (StuckInRight && !StuckInLeft)
+        {
+            transform.position += Vector3.right * RightDis;
+            temp.x = 0;
+
+            /*if (-RightDis < StuckPushOutSpeed * Time.deltaTime)
+            {
+                temp.x = RightDis / Time.deltaTime;
+            }
+            else
+            {
+                temp.x = -StuckPushOutSpeed;
+            }*/
+            ResetSpeed(true, true);
+        }
+        else if (!StuckInRight && StuckInLeft)
+        {
+            transform.position += Vector3.left * LeftDis;
+            temp.x = 0;
+
+            /*if (-LeftDis < StuckPushOutSpeed * Time.deltaTime)
+            {
+                temp.x = -LeftDis / Time.deltaTime;
+            }
+            else
+            {
+                temp.x = StuckPushOutSpeed;
+            }*/
+            ResetSpeed(true, false);
+        }
+
+        CheckGroundDis();
+        CheckTopDis();
+
 
         if (Top)
         {
@@ -283,53 +370,7 @@ public class SpeedManager : MonoBehaviour
             HitGround = false;
         }
 
-        if (Right)
-        {
-            ColliderType Type = Right.GetComponent<ColliderInfo>().Type;
-            if (temp.x >= 0 && RightDis < temp.x * Time.deltaTime && RightDis > -Zero)
-            {
-                temp.x = RightDis / Time.deltaTime;
-                HitRight = true;
-                ResetSpeed(true, true);
-            }
-            else if (RightDis < -Zero && Type == ColliderType.Solid)
-            {
-                HitRight = true;
-                StuckInRight = true;
-            }
-            else
-            {
-                HitRight = false;
-            }
-        }
-        else
-        {
-            HitRight = false;
-        }
 
-        if (Left)
-        {
-            ColliderType Type = Left.GetComponent<ColliderInfo>().Type;
-            if (temp.x <= 0 && LeftDis < -temp.x * Time.deltaTime && LeftDis > -Zero)
-            {
-                temp.x = -LeftDis / Time.deltaTime;
-                HitLeft = true;
-                ResetSpeed(true,false);
-            }
-            else if(LeftDis < -Zero && Type == ColliderType.Solid)
-            {
-                HitLeft = true;
-                StuckInLeft = true;
-            }
-            else
-            {
-                HitLeft = false;
-            }
-        }
-        else
-        {
-            HitLeft = false;
-        }
 
         if(StuckInTop && StuckInGround)
         {
@@ -362,36 +403,6 @@ public class SpeedManager : MonoBehaviour
             ResetSpeed(false, false);
         }
 
-        if (StuckInRight && StuckInLeft)
-        {
-            temp.y = 0;
-            ResetSpeed(true, true);
-            ResetSpeed(true, false);
-        }
-        else if (StuckInRight && !StuckInLeft)
-        {
-            if (-RightDis < StuckPushOutSpeed * Time.deltaTime)
-            {
-                temp.x = RightDis / Time.deltaTime;
-            }
-            else
-            {
-                temp.x = -StuckPushOutSpeed;
-            }
-            ResetSpeed(true, true);
-        }
-        else if (!StuckInRight && StuckInLeft)
-        {
-            if (-LeftDis < StuckPushOutSpeed * Time.deltaTime)
-            {
-                temp.x = -LeftDis / Time.deltaTime;
-            }
-            else
-            {
-                temp.x = StuckPushOutSpeed;
-            }
-            ResetSpeed(true, false);
-        }
 
 
 

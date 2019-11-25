@@ -521,7 +521,7 @@ public class KnightAttackAnticipation : KnightBehavior
 
         var SpeedManager = Entity.GetComponent<SpeedManager>();
 
-        float AttackHitDis = Data.AttackOffset.x - Data.AttackHitBoxSize.x / 2 + Data.AttackHitBoxSize.x * Data.AttackAvailableHitBoxPercentage;
+        float AttackHitDis = (Data.AttackHitBoxSize.x + Data.AttackStepForwardSpeed * Data.AttackTime) * Data.AttackAvailableHitBoxPercentage;
 
         if (Entity.transform.right.x > 0)
         {
@@ -600,11 +600,6 @@ public class KnightAttackStrike : KnightBehavior
     public override void Update()
     {
         base.Update();
-        if (CheckGetInterrupted())
-        {
-            TransitionToInterrupted();
-            return;
-        }
         CheckHitPlayer();
         CheckTime();
     }

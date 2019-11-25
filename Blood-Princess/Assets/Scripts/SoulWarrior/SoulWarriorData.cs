@@ -35,6 +35,8 @@ public class SoulWarriorData : MonoBehaviour
     public float KnockedBackTime;
     public float KnockedBackSpeed;
 
+    public float InterruptedRecoveryTime;
+
     public float AttackCoolDown;
 
     // Start is called before the first frame update

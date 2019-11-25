@@ -13,12 +13,12 @@ public class CharacterAbilityData : MonoBehaviour
     public float SlashDamageFactor;
 
     public int SlashEnergyGain;
+    public int SlashEnergyAwakenGain;
 
-    public float SlashEffectPreGenerateTime;
     public GameObject SlashEffect;
-    public GameObject SlashImage;
     public Vector2 SlashOffset;
     public Vector2 SlashHitBoxSize;
+    public Vector2 SlashEffectOffset;
 
     public float ParryAnticipationTime;
     public float ParryRecoveryTime;
@@ -37,9 +37,10 @@ public class CharacterAbilityData : MonoBehaviour
     public float PowerSlashExecutionHPCondition;
     public float PowerSlashExecutionDamageFactor;
 
-    public GameObject PowerSlashImage;
+    public GameObject PowerSlashEffect;
     public Vector2 PowerSlashOffset;
     public Vector2 PowerSlashHitBoxSize;
+    public Vector2 PowerSlashEffectOffset;
 
     public float HarmonySlashAnticipationTime;
     public float HarmonySlashStrikeTime;
@@ -54,9 +55,10 @@ public class CharacterAbilityData : MonoBehaviour
     public float HarmonySlashSlashDamageBonusFactor;
     public int HarmonySlashMaxSlashDamageBonusTime;
 
-    public GameObject HarmonySlashImage;
+    public GameObject HarmonySlashEffect;
     public Vector2 HarmonySlashOffset;
     public Vector2 HarmonySlashHitBoxSize;
+    public Vector2 HarmonySlashEffectOffset;
 
     public float OneMindDamageEnhancementFactor;
     public int OneMindMaxDamageEnhancementTime;

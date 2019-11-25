@@ -7111,7 +7111,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 804190615}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.7, z: 0}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 0.29999998, y: 0.29999998, z: 0.29999998}
   m_Children: []
   m_Father: {fileID: 1168141819}
@@ -10355,6 +10355,7 @@ MonoBehaviour:
     type: 3}
   KnockedBackTime: 0.2
   KnockedBackSpeed: 3
+  InterruptedRecoveryTime: 0.3
   AttackCoolDown: 1
 --- !u!61 &1168141817
 BoxCollider2D:
@@ -10479,6 +10480,7 @@ MonoBehaviour:
   PatronRightX: 0
   AttackCoolDownTimeCount: 0
   LastState: 0
+  CurrentState: 0
 --- !u!114 &1168141821
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10546,7 +10548,7 @@ MonoBehaviour:
   MagicRecovery: {fileID: 21300000, guid: ec063e1a9e1862b44b44224f75eb87aa, type: 3}
   SlashAnticipation: {fileID: 21300000, guid: 2dd2caf02b1911a48815031e2c0bcb1c, type: 3}
   SlashRecovery: {fileID: 21300000, guid: c9ff30324454c944590f80e4064af855, type: 3}
-  Hit: {fileID: 21300000, guid: cccc1aca152c22f4d9cccd655adb6f2c, type: 3}
+  Hit: {fileID: 21300000, guid: f6dba4c55b950244db394aa1ee0fca04, type: 3}
   IdleOffset: {x: 0.002634287, y: 0.001741171}
   IdleSize: {x: 0.580379, y: 1.549093}
   MagicAnticipationOffset: {x: 0.002634287, y: 0.001741171}
@@ -10557,8 +10559,8 @@ MonoBehaviour:
   SlashAnticipationSize: {x: 0.5405865, y: 1.512511}
   SlashRecoveryOffset: {x: 0.1901112, y: -0.05750632}
   SlashRecoverySize: {x: 0.9076672, y: 1.430598}
-  HitOffset: {x: 0.002634287, y: 0.001741171}
-  HitSize: {x: 0.580379, y: 1.549093}
+  HitOffset: {x: -0.06569862, y: -0.03584176}
+  HitSize: {x: 0.7033768, y: 1.473927}
 --- !u!114 &1168141825
 MonoBehaviour:
   m_ObjectHideFlags: 0
