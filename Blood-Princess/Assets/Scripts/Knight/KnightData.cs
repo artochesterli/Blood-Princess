@@ -23,6 +23,12 @@ public class KnightData : MonoBehaviour
     public int Damage;
 
     public float AttackAvailableHitBoxPercentage;
+
+    public Vector2 SingleAttackOffset;
+    public Vector2 SingleAttackHitBoxSize;
+    public Vector2 DoubleAttackOffset;
+    public Vector2 DoubleAttackHitBoxSize;
+
     public Vector2 AttackOffset;
     public Vector2 AttackHitBoxSize;
     public GameObject SlashImage;

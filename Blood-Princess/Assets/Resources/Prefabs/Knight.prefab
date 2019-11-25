@@ -11,12 +11,12 @@ GameObject:
   - component: {fileID: 4305804637280514981}
   - component: {fileID: 4305804637280514980}
   - component: {fileID: 4305804637280514976}
+  - component: {fileID: 4305804637280514979}
   - component: {fileID: 4305804637280514983}
   - component: {fileID: 4305804637280514982}
   - component: {fileID: 4305804637280515001}
   - component: {fileID: 4305804637280515000}
   - component: {fileID: 4305804637280514978}
-  - component: {fileID: 4305804637280514979}
   - component: {fileID: 2740503663709708477}
   m_Layer: 10
   m_Name: Knight
@@ -107,7 +107,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.03110218, y: -0.04340017}
+  m_Offset: {x: -0.02244043, y: -0.01046336}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.4090319, y: 0.51949316}
@@ -118,8 +118,38 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.145292, y: 1.279455}
+  m_Size: {x: 0.6997366, y: 1.628977}
   m_EdgeRadius: 0
+--- !u!114 &4305804637280514979
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4305804637280515003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c285976d443d7d7438df8d8b19ca0b65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Idle: {fileID: 21300000, guid: 16f0096eb9b7f784380ab93c0b6cd94d, type: 3}
+  SingleAnticipation: {fileID: 21300000, guid: f8d866dc32c63af4aa966e421b3a1aaa, type: 3}
+  SingleRecovery: {fileID: 21300000, guid: 61db62d200fc83f49a1c747200df81da, type: 3}
+  DoubleAnticipation: {fileID: 21300000, guid: 19420f6ec9d90b3459b1fbbffdeb851d, type: 3}
+  DoubleRecovery: {fileID: 21300000, guid: fc8a1aa74a4527c4398b58660f064962, type: 3}
+  Hit: {fileID: 21300000, guid: 81af56627d57aad4490b4360f3fe91a4, type: 3}
+  IdleOffset: {x: -0.02244043, y: -0.01046336}
+  IdleSize: {x: 0.6997366, y: 1.628977}
+  SingleAnticipationOffset: {x: -0.02244043, y: -0.03069508}
+  SingleAnticipationSize: {x: 0.6997366, y: 1.588513}
+  SingleRecoveryOffset: {x: 0.2902708, y: -0.09435928}
+  SingleRecoverySize: {x: 1.062482, y: 1.461185}
+  DoubleAnticipationOffset: {x: 0.03813314, y: -0.05415523}
+  DoubleAnticipationSize: {x: 0.7511854, y: 1.541593}
+  DoubleRecoveryOffset: {x: 0.7185571, y: -0.2057655}
+  DoubleRecoverySize: {x: 1.178118, y: 1.238372}
+  HitOffset: {x: -0.07739353, y: -0.07772124}
+  HitSize: {x: 0.7489967, y: 1.494461}
 --- !u!114 &4305804637280514983
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,7 +210,7 @@ MonoBehaviour:
   MaxHP: 80
   NormalMoveSpeed: 3.5
   KeepDisMoveSpeed: 1
-  AttackStepForwardSpeed: 12
+  AttackStepForwardSpeed: 8
   SingleAttackAnticipationTime: 0.5
   DoubleAttackFirstAnticipationTime: 0.5
   DoubleAttackSecondAnticipationTime: 0.2
@@ -192,6 +222,10 @@ MonoBehaviour:
   DoubleAttackSecondRecoveryTime: 0.8
   Damage: 5
   AttackAvailableHitBoxPercentage: 0.5
+  SingleAttackOffset: {x: 1.5, y: -0.2}
+  SingleAttackHitBoxSize: {x: 1.6, y: 0.64}
+  DoubleAttackOffset: {x: 1.7, y: -0.2}
+  DoubleAttackHitBoxSize: {x: 1.6, y: 0.64}
   AttackOffset: {x: 1.25, y: -0.2}
   AttackHitBoxSize: {x: 1.6, y: 0.64}
   SlashImage: {fileID: 8278314382299867915, guid: b563d54cff4162f42ac0f47b15402d9f,
@@ -268,30 +302,6 @@ MonoBehaviour:
   BodyHeight: 2
   OriPos: {x: 0, y: 0}
   MoveExecuted: 0
---- !u!114 &4305804637280514979
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4305804637280515003}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c285976d443d7d7438df8d8b19ca0b65, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Idle: {fileID: 21300000, guid: f03a3239324528541b1afefbe40f61ca, type: 3}
-  Anticipation: {fileID: 21300000, guid: 63b039eb844f8bc4f99d93c4e2427cc7, type: 3}
-  Recovery: {fileID: 21300000, guid: ba5e0bf2332e5964ebe5283937070fba, type: 3}
-  Hit: {fileID: 21300000, guid: f5853962b2e371f41927ca86dbfcb40b, type: 3}
-  IdleOffset: {x: 0.03110218, y: -0.04340017}
-  IdleSize: {x: 1.145292, y: 1.279455}
-  AnticipationOffset: {x: 0.03013802, y: -0.1468625}
-  AnticipationSize: {x: 1.165413, y: 1.108066}
-  RecoveryOffset: {x: -0.005919456, y: -0.1468625}
-  RecoverySize: {x: 1.201857, y: 1.083478}
-  HitOffset: {x: -0.05119801, y: -0.08496404}
-  HitSize: {x: 0.9847698, y: 1.189566}
 --- !u!114 &2740503663709708477
 MonoBehaviour:
   m_ObjectHideFlags: 0

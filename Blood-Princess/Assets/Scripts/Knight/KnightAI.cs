@@ -489,7 +489,15 @@ public class KnightAttackAnticipation : KnightBehavior
     private void SetAppearance()
     {
         var KnightSpriteData = Entity.GetComponent<KnightSpriteData>();
-        SetKnight(KnightSpriteData.Anticipation, KnightSpriteData.AnticipationOffset, KnightSpriteData.AnticipationSize);
+        if(Context.CurrentAttackMode == KnightAttackMode.DoubleFirst || Context.CurrentAttackMode == KnightAttackMode.Chase)
+        {
+            SetKnight(KnightSpriteData.DoubleAnticipation, KnightSpriteData.DoubleAnticipationOffset, KnightSpriteData.DoubleAnticipationSize);
+        }
+        else
+        {
+            SetKnight(KnightSpriteData.SingleAnticipation, KnightSpriteData.SingleAnticipationOffset, KnightSpriteData.SingleAnticipationSize);
+        }
+
     }
 
     private void SetUp()
@@ -634,7 +642,14 @@ public class KnightAttackStrike : KnightBehavior
     private void SetAppearance()
     {
         var KnightSpriteData = Entity.GetComponent<KnightSpriteData>();
-        SetKnight(KnightSpriteData.Recovery, KnightSpriteData.RecoveryOffset, KnightSpriteData.RecoverySize);
+        if (Context.CurrentAttackMode == KnightAttackMode.DoubleFirst || Context.CurrentAttackMode == KnightAttackMode.Chase)
+        {
+            SetKnight(KnightSpriteData.DoubleRecovery, KnightSpriteData.DoubleRecoveryOffset, KnightSpriteData.DoubleRecoverySize);
+        }
+        else
+        {
+            SetKnight(KnightSpriteData.SingleRecovery, KnightSpriteData.SingleRecoveryOffset, KnightSpriteData.SingleRecoverySize);
+        }
     }
 
 
@@ -735,7 +750,14 @@ public class KnightAttackRecovery : KnightBehavior
     private void SetAppearance()
     {
         var KnightSpriteData = Entity.GetComponent<KnightSpriteData>();
-        SetKnight(KnightSpriteData.Recovery, KnightSpriteData.RecoveryOffset, KnightSpriteData.RecoverySize);
+        if (Context.CurrentAttackMode == KnightAttackMode.DoubleFirst || Context.CurrentAttackMode == KnightAttackMode.Chase)
+        {
+            SetKnight(KnightSpriteData.DoubleRecovery, KnightSpriteData.DoubleRecoveryOffset, KnightSpriteData.DoubleRecoverySize);
+        }
+        else
+        {
+            SetKnight(KnightSpriteData.SingleRecovery, KnightSpriteData.SingleRecoveryOffset, KnightSpriteData.SingleRecoverySize);
+        }
     }
 
     private void CheckTime()
@@ -836,14 +858,7 @@ public class KnightGetInterrupted : KnightBehavior
     private void SetAppearance()
     {
         var KnightSpriteData = Entity.GetComponent<KnightSpriteData>();
-        if (GetHitOnBack)
-        {
-            SetKnight(KnightSpriteData.Hit, KnightSpriteData.HitOffset, KnightSpriteData.HitSize);
-        }
-        else
-        {
-            SetKnight(KnightSpriteData.Idle, KnightSpriteData.IdleOffset, KnightSpriteData.IdleSize);
-        }
+        SetKnight(KnightSpriteData.Hit, KnightSpriteData.HitOffset, KnightSpriteData.HitSize);
 
     }
 

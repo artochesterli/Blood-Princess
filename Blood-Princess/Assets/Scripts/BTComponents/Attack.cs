@@ -31,7 +31,7 @@ public class Attack : Action
 	{
 		m_Timer = Time.timeSinceLevelLoad + Duration.Value;
 		if (AttackSprite == null)
-			GetComponent<SpriteRenderer>().sprite = m_KnightSpriteData.Recovery;
+			GetComponent<SpriteRenderer>().sprite = m_KnightSpriteData.SingleRecovery;
 		else
 			GetComponent<SpriteRenderer>().sprite = AttackSprite;
 		m_AttackHit = false;

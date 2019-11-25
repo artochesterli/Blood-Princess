@@ -27,7 +27,7 @@ public class Anticipation : Action
 	{
 		m_Timer = Time.timeSinceLevelLoad + Duration.Value;
 		if (ChangedSprite == null)
-			m_SpriteRenderer.sprite = m_KnightSpriteData.Anticipation;
+			m_SpriteRenderer.sprite = m_KnightSpriteData.SingleAnticipation;
 		else
 			m_SpriteRenderer.sprite = ChangedSprite;
 	}
