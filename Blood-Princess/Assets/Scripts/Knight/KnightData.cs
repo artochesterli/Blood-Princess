@@ -20,6 +20,7 @@ public class KnightData : MonoBehaviour
     public float SingleAttackRecoveryTime;
     public float DoubleAttackFirstRecoveryTime;
     public float DoubleAttackSecondRecoveryTime;
+    public float ChaseAttackRecoveryTime;
     public int Damage;
 
     public float AttackAvailableHitBoxPercentage;
@@ -28,10 +29,9 @@ public class KnightData : MonoBehaviour
     public Vector2 SingleAttackHitBoxSize;
     public Vector2 DoubleAttackOffset;
     public Vector2 DoubleAttackHitBoxSize;
-
-    public Vector2 AttackOffset;
-    public Vector2 AttackHitBoxSize;
     public GameObject SlashImage;
+    public GameObject SingleSlashImage;
+    public GameObject DoubleSlashImage;
 
     public float KnockedBackTime;
     public float KnockedBackSpeed;

@@ -415,7 +415,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
     public override void OnEnter()
     {
         base.OnEnter();
-        Debug.Log(this.GetType().Name);
+        //Debug.Log(this.GetType().Name);
 
     }
 
