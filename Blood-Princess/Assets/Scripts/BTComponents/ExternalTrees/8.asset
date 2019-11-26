@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b23f08d2ae4cba14087c1ed36193d82b, type: 3}
+  m_Name: 8
+  m_EditorClassIdentifier: 
+  mBehaviorSource:
+    behaviorName: 8
+    behaviorDescription: "\u5EF6\u8FDF\u65A9"
+    mTaskData:
+      types: []
+      parentIndex: 
+      startIndex: 
+      variableStartIndex: 
+      JSONSerialization: "{\n\t\"EntryTask\":{\n\t\t\"Type\":\"BehaviorDesigner.Runtime.Tasks.EntryTask\",\n\t\t\"NodeData\":{\n\t\t\t\"Offset\":\"(-1637.86572,2019.75732)\"\n\t\t},\n\t\t\"ID\":0,\n\t\t\"Name\":\"Entry\",\n\t\t\"Instant\":true\n\t},\n\t\"RootTask\":{\n\t\t\"Type\":\"BehaviorDesigner.Runtime.Tasks.Sequence\",\n\t\t\"NodeData\":{\n\t\t\t\"Offset\":\"(0.989902735,155.45636)\"\n\t\t},\n\t\t\"ID\":1,\n\t\t\"Name\":\"8\",\n\t\t\"Instant\":true,\n\t\t\"AbortTypeabortType\":\"None\",\n\t\t\"Children\":[{\n\t\t\t\"Type\":\"LookAtObject\",\n\t\t\t\"NodeData\":{\n\t\t\t\t\"Offset\":\"(-592.9346,123.01709)\"\n\t\t\t},\n\t\t\t\"ID\":2,\n\t\t\t\"Name\":\"Look
+        At Object\",\n\t\t\t\"Instant\":true,\n\t\t\t\"SharedGameObjectTarget\":{\n\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedGameObject\",\n\t\t\t\t\"Name\":null\n\t\t\t},\n\t\t\t\"SharedFloatDuration\":{\n\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\t\t\"Name\":null,\n\t\t\t\t\"SinglemValue\":0\n\t\t\t}\n\t\t},{\n\t\t\t\"Type\":\"GenerateOneTimeOrb\",\n\t\t\t\"NodeData\":{\n\t\t\t\t\"Offset\":\"(-519.787354,204.540039)\"\n\t\t\t},\n\t\t\t\"ID\":3,\n\t\t\t\"Name\":\"Generate
+        One Time Orb\",\n\t\t\t\"Instant\":true,\n\t\t\t\"SharedColorOrbColor\":{\n\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedColor\",\n\t\t\t\t\"Name\":null,\n\t\t\t\t\"ColormValue\":\"RGBA(0.000,
+        0.000, 0.000, 1.000)\"\n\t\t\t},\n\t\t\t\"SharedVector2Offset\":{\n\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedVector2\",\n\t\t\t\t\"Name\":null,\n\t\t\t\t\"Vector2mValue\":\"(0,2)\"\n\t\t\t},\n\t\t\t\"SharedFloatUpTime\":{\n\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\t\t\"Name\":null,\n\t\t\t\t\"SinglemValue\":0.3\n\t\t\t}\n\t\t},{\n\t\t\t\"Type\":\"BehaviorDesigner.Runtime.Tasks.Parallel\",\n\t\t\t\"NodeData\":{\n\t\t\t\t\"Offset\":\"(-417.382568,121.090332)\"\n\t\t\t},\n\t\t\t\"ID\":4,\n\t\t\t\"Name\":\"Anticipate
+        Anticipation\",\n\t\t\t\"Instant\":true,\n\t\t\t\"AbortTypeabortType\":\"None\",\n\t\t\t\"Children\":[{\n\t\t\t\t\"Type\":\"ChangeSprite\",\n\t\t\t\t\"NodeData\":{\n\t\t\t\t\t\"Offset\":\"(-57.3199,202.906418)\"\n\t\t\t\t},\n\t\t\t\t\"ID\":5,\n\t\t\t\t\"Name\":\"Change
+        2 Ant Sprite\",\n\t\t\t\t\"Instant\":true,\n\t\t\t\t\"SharedFloatDuration\":{\n\t\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\t\t\t\"Name\":null,\n\t\t\t\t\t\"SinglemValue\":0.8\n\t\t\t\t},\n\t\t\t\t\"SpriteSprite\":0\n\t\t\t},{\n\t\t\t\t\"Type\":\"LookAtObject\",\n\t\t\t\t\"NodeData\":{\n\t\t\t\t\t\"Offset\":\"(86.840126,199.3291)\"\n\t\t\t\t},\n\t\t\t\t\"ID\":6,\n\t\t\t\t\"Name\":\"Look
+        At Object\",\n\t\t\t\t\"Instant\":true,\n\t\t\t\t\"SharedGameObjectTarget\":{\n\t\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedGameObject\",\n\t\t\t\t\t\"Name\":null\n\t\t\t\t},\n\t\t\t\t\"SharedFloatDuration\":{\n\t\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\t\t\t\"Name\":null,\n\t\t\t\t\t\"SinglemValue\":0.8\n\t\t\t\t}\n\t\t\t}]\n\t\t},{\n\t\t\t\"Type\":\"Anticipation\",\n\t\t\t\"NodeData\":{\n\t\t\t\t\"Offset\":\"(-238.711182,119.964111)\"\n\t\t\t},\n\t\t\t\"ID\":7,\n\t\t\t\"Name\":\"Anticipation\",\n\t\t\t\"Instant\":true,\n\t\t\t\"SharedFloatDuration\":{\n\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\t\t\"Name\":null,\n\t\t\t\t\"SinglemValue\":0.3\n\t\t\t},\n\t\t\t\"SharedSpriteChangedSprite\":{\n\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedSprite\",\n\t\t\t\t\"Name\":null\n\t\t\t}\n\t\t},{\n\t\t\t\"Type\":\"GenerateVFX\",\n\t\t\t\"NodeData\":{\n\t\t\t\t\"Offset\":\"(-127.854492,123.282471)\"\n\t\t\t},\n\t\t\t\"ID\":8,\n\t\t\t\"Name\":\"Generate
+        VFX\",\n\t\t\t\"Instant\":true,\n\t\t\t\"SharedGameObjectVFXPrefab\":{\n\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedGameObject\",\n\t\t\t\t\"Name\":null,\n\t\t\t\t\"GameObjectmValue\":1\n\t\t\t},\n\t\t\t\"SharedVector2VFXOffset\":{\n\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedVector2\",\n\t\t\t\t\"Name\":null,\n\t\t\t\t\"Vector2mValue\":\"(3.24,-1)\"\n\t\t\t},\n\t\t\t\"SharedVector3VFXEulerAngle\":{\n\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedVector3\",\n\t\t\t\t\"Name\":null,\n\t\t\t\t\"Vector3mValue\":\"(0,0,0)\"\n\t\t\t},\n\t\t\t\"SharedBoolRelative\":{\n\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedBool\",\n\t\t\t\t\"Name\":null,\n\t\t\t\t\"BooleanmValue\":true\n\t\t\t}\n\t\t},{\n\t\t\t\"Type\":\"Attack\",\n\t\t\t\"NodeData\":{\n\t\t\t\t\"Offset\":\"(-3.98969269,122.3689)\"\n\t\t\t},\n\t\t\t\"ID\":9,\n\t\t\t\"Name\":\"HeavyAttack\",\n\t\t\t\"Instant\":true,\n\t\t\t\"SharedFloatDuration\":{\n\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\t\t\"Name\":null,\n\t\t\t\t\"SinglemValue\":0.1\n\t\t\t},\n\t\t\t\"SharedIntDamage\":{\n\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedInt\",\n\t\t\t\t\"Name\":\"AttackDamage\",\n\t\t\t\t\"IsShared\":true,\n\t\t\t\t\"Int32mValue\":8\n\t\t\t},\n\t\t\t\"SharedVector2HitBoxOffset\":{\n\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedVector2\",\n\t\t\t\t\"Name\":null,\n\t\t\t\t\"Vector2mValue\":\"(1.67,0)\"\n\t\t\t},\n\t\t\t\"SharedVector2HitBoxSize\":{\n\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedVector2\",\n\t\t\t\t\"Name\":null,\n\t\t\t\t\"Vector2mValue\":\"(3.18,2.6)\"\n\t\t\t},\n\t\t\t\"SharedFloatForwardStep\":{\n\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\t\t\"Name\":null,\n\t\t\t\t\"SinglemValue\":15\n\t\t\t},\n\t\t\t\"LayerMaskPlayerLayer\":256,\n\t\t\t\"SharedSpriteAttackSprite\":{\n\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedSprite\",\n\t\t\t\t\"Name\":null\n\t\t\t}\n\t\t},{\n\t\t\t\"Type\":\"SetSpeedX\",\n\t\t\t\"NodeData\":{\n\t\t\t\t\"Offset\":\"(137.646851,127.747559)\"\n\t\t\t},\n\t\t\t\"ID\":10,\n\t\t\t\"Name\":\"Set
+        Speed X\",\n\t\t\t\"Instant\":true,\n\t\t\t\"SharedFloatSpeedX\":{\n\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\t\t\"Name\":null,\n\t\t\t\t\"SinglemValue\":0\n\t\t\t},\n\t\t\t\"SharedFloatDuration\":{\n\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\t\t\"Name\":null,\n\t\t\t\t\"SinglemValue\":0\n\t\t\t}\n\t\t},{\n\t\t\t\"Type\":\"Recovery\",\n\t\t\t\"NodeData\":{\n\t\t\t\t\"Offset\":\"(266.126221,132.4992)\"\n\t\t\t},\n\t\t\t\"ID\":11,\n\t\t\t\"Name\":\"Recovery\",\n\t\t\t\"Instant\":true,\n\t\t\t\"SharedFloatDuration\":{\n\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\t\t\"Name\":null,\n\t\t\t\t\"SinglemValue\":0.2\n\t\t\t}\n\t\t}]\n\t},\n\t\"Variables\":[{\n\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\"Name\":\"RecoveryTime\",\n\t\t\"IsShared\":true,\n\t\t\"SinglemValue\":0.2\n\t},{\n\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedInt\",\n\t\t\"Name\":\"AttackDamage\",\n\t\t\"IsShared\":true,\n\t\t\"Int32mValue\":8\n\t}]\n}"
+      fieldSerializationData:
+        typeName: []
+        fieldNameHash: 
+        startIndex: 
+        dataPosition: 
+        unityObjects:
+        - {fileID: 21300000, guid: 4e27286c7abdfc243bdb72e6f426bed9, type: 3}
+        - {fileID: 1487841166753783419, guid: c9fa0218c73fb9d49a44f75db080cef1, type: 3}
+        byteData: 
+        byteDataArray: 
+      Version: 1.6.3
