@@ -10,6 +10,7 @@ public class TeleportTo : Action
 	public SharedVector2 Offset;
 	public SharedVector2 WorldPosition;
 	public SharedBool ToWorldPositionInsteadofTarget;
+	public SharedBool RelativeToSelf;
 	public SharedBool RelativeToTarget;
 	public SharedBool IgnoreX;
 	public SharedBool IgnoreY;
@@ -24,6 +25,11 @@ public class TeleportTo : Action
 	public override void OnStart()
 	{
 		base.OnStart();
+		if (RelativeToSelf.Value)
+		{
+			Owner.transform.position += (Vector3)Offset.Value;
+			return;
+		}
 		if (ToWorldPositionInsteadofTarget.Value)
 		{
 			Owner.transform.position = WorldPosition.Value;

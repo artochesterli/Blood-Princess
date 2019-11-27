@@ -48,12 +48,12 @@ namespace PCG
 		private void _setupBoard(int length)
 		{
 			IntVector2 startPosition = new IntVector2(1, _height / 2);
-			Room entrance = new Room(startPosition, "8", _seed, 5, ref _board, _boardGameObject);
+			Room entrance = new Room(startPosition, "L", _seed, 5, ref _board, _boardGameObject);
 			startPosition = entrance.RoomExit.BoardPosition;
 			startPosition.x += 1;
 			for (int i = 0; i < length; i++)
 			{
-				Room newRoom = new Room(startPosition, "8", _seed, 3, ref _board, _boardGameObject);
+				Room newRoom = new Room(startPosition, "L", _seed, 3, ref _board, _boardGameObject);
 				// Calculate the new Room's starting position and entry type
 				startPosition = newRoom.RoomExit.BoardPosition;
 				startPosition.x += 1;
