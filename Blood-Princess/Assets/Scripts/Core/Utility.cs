@@ -26,6 +26,11 @@ public class Utility
     }
 
 
+    public static int GetEffectValue(int Power, int Potency)
+    {
+        return Mathf.CeilToInt(Power * Potency/100.0f);
+    }
+
 
     public static bool InputOpenCloseSkillPanel()
     {

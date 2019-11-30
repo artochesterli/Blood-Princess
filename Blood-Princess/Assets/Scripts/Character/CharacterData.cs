@@ -16,13 +16,9 @@ public class CharacterData : MonoBehaviour
 
     public int MaxHP;
     public int MaxEnergy;
-    public int SealNumber;
+    public int MaxSealNumber;
     public int SealBreakEnergyCap;
-    public List<int> BaseDamageEnhancementWithSeal;
-
-
-    public int HitEnergyLost;
-    public int HitAdvancedEnergyLost;
+    public List<int> PowerIncrementWithSeal;
 
     public float InterruptedTime;
     public float InterruptedSpeed;

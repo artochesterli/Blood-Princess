@@ -11,11 +11,13 @@ public abstract class AttackInfo
 public class CharacterAttackInfo : AttackInfo
 {
     public CharacterAttackType Type;
-    public DamageType DamType;
     public Direction Dir;
-    public int Damage;
-    public int BaseDamage;
-    public int OriginalDamage;
+    public int Power;
+    public int BasePower;
+    public int Potency;
+    public int BasePotency;
+    public int InterruptLevel;
+    public int BaseInterruptLevel;
 
     public float AnticipationTime;
     public float BaseAnticipationTime;
@@ -31,16 +33,18 @@ public class CharacterAttackInfo : AttackInfo
 
     public BattleArt ThisBattleArt;
 
-    public CharacterAttackInfo(GameObject source, CharacterAttackType type, DamageType damtype, Direction dir, int damage, int basedamage, int originaldamage,
+    public CharacterAttackInfo(GameObject source, CharacterAttackType type, Direction dir, int power, int basepower, int potency, int basepotency, int interruptlevel, int baseinterruptlevel,
         Vector2 offset, Vector2 baseoffset, Vector2 size, Vector2 basesize, float anticipation = 0, float baseanticipation = 0, float strike = 0, float basestrike = 0, float recovery = 0, float baserecovery = 0, BattleArt thisbattleart = null)
     {
         Source = source;
-        DamType = damtype;
         Type = type;
         Dir = dir;
-        Damage = damage;
-        BaseDamage = basedamage;
-        OriginalDamage = originaldamage;
+        Power = power;
+        BasePower = basepower;
+        Potency = potency;
+        BasePotency = basepotency;
+        InterruptLevel = interruptlevel;
+        BaseInterruptLevel = baseinterruptlevel;
 
         AnticipationTime = anticipation;
         BaseAnticipationTime = baseanticipation;
@@ -61,11 +65,13 @@ public class CharacterAttackInfo : AttackInfo
     {
         Source = Attack.Source;
         Type = Attack.Type;
-        DamType = Attack.DamType;
         Dir = Attack.Dir;
-        Damage = Attack.Damage;
-        BaseDamage = Attack.BaseDamage;
-        OriginalDamage = Attack.OriginalDamage;
+        Power = Attack.Power;
+        BasePower = Attack.BasePower;
+        Potency = Attack.Potency;
+        BasePotency = Attack.BasePotency;
+        InterruptLevel = Attack.InterruptLevel;
+        BaseInterruptLevel = Attack.BaseInterruptLevel;
 
         AnticipationTime = Attack.AnticipationTime;
         BaseAnticipationTime = Attack.BaseAnticipationTime;
@@ -120,121 +126,110 @@ public abstract class PassiveAbility : CharacterAbility
 
 public class PowerSlash : BattleArt
 {
+    public int IncrementCount;
+
     public PowerSlash(int level = 1)
     {
         name = "Power Slash";
         Type = BattleArtType.PowerSlash;
         Level = level;
+
+        IncrementCount = 0;
     }
 }
 
-public class HarmonySlash : BattleArt
+public class CrossSlash : BattleArt
 {
-    public HarmonySlash(int level = 1)
+    public int StrikeCount;
+    public int StrikeHitCount;
+
+    public CrossSlash(int level = 1)
     {
-        name = "Harmony Slash";
-        Type = BattleArtType.HarmonySlash;
+        name = "Cross Slash";
+        Type = BattleArtType.CrossSlash;
+        Level = level;
+
+        StrikeCount = 0;
+        StrikeHitCount = 0;
+    }
+}
+
+public class Harmony : PassiveAbility
+{
+    public Harmony(int level = 1)
+    {
+        name = "Harmony";
+        Type = PassiveAbilityType.Harmony;
         Level = level;
     }
 }
 
-public class SpiritBolt : BattleArt
+public class SpiritMaster : PassiveAbility
 {
-    public SpiritBolt(int level = 1)
+    public SpiritMaster(int level = 1)
     {
-        name = "Spirit Bolt";
-        Type = BattleArtType.SpiritBolt;
+        name = "Spirit Master";
+        Type = PassiveAbilityType.SpiritMaster;
         Level = level;
     }
 }
 
-public class SpiritFall : BattleArt
+public class UltimateAwakening : PassiveAbility
 {
-    public SpiritFall(int level = 1)
+    public UltimateAwakening(int level = 1)
     {
-        name = "Spirit Fall";
-        Type = BattleArtType.SpiritFall;
+        name = "Ultimate Awakening";
+        Type = PassiveAbilityType.UltimateAwakening;
         Level = level;
     }
 }
 
-public class SpiritShadow : BattleArt
+public class CriticalEye : PassiveAbility
 {
-    public SpiritShadow(int level = 1)
+    public CriticalEye(int level = 1)
     {
-        name = "Spirit Shadow";
-        Type = BattleArtType.SpiritShadow;
+        name = "Critical Eye";
+        Type = PassiveAbilityType.CriticalEye;
         Level = level;
     }
 }
 
-public class SlashArt : PassiveAbility
+public class BattleArtMaster : PassiveAbility
 {
-    public SlashArt(int level = 1)
+    public BattleArtMaster(int level = 1)
     {
-        name = "Slash Art";
-        Type = PassiveAbilityType.SlashArt;
-        Level = level;
-    }
-}
-
-public class AssassinHeart : PassiveAbility
-{
-    public AssassinHeart(int level = 1)
-    {
-        name = "Assassin's Heart";
-        Type = PassiveAbilityType.AssassinHeart;
-        Level = level;
-    }
-}
-
-public class SpellStrike : PassiveAbility
-{
-    public SpellStrike(int level = 1)
-    {
-        name = "Spell Strike";
-        Type = PassiveAbilityType.SpellStrike;
+        name = "BattleArt Master";
+        Type = PassiveAbilityType.BattleArtMaster;
         Level = level;
     }
 }
 
 public class OneMind : PassiveAbility
 {
+    public int IncrementCount;
+
     public OneMind(int level = 1)
     {
         name = "One Mind";
         Type = PassiveAbilityType.OneMind;
         Level = level;
+
+        IncrementCount = 0;
     }
 }
 
 public class Dancer : PassiveAbility
 {
+    public CharacterAttackInfo DancerAttack;
+    public List<GameObject> HitEnemies;
+
     public Dancer(int level = 1)
     {
         name = "Dancer";
         Type = PassiveAbilityType.Dancer;
         Level = level;
-    }
-}
 
-public class StepMaster : PassiveAbility
-{
-    public StepMaster(int level = 1)
-    {
-        name = "Step Master";
-        Type = PassiveAbilityType.StepMaster;
-        Level = level;
-    }
-}
-
-public class Insanity : PassiveAbility
-{
-    public Insanity(int level = 1)
-    {
-        name = "Insanity";
-        Type = PassiveAbilityType.Insanity;
-        Level = level;
+        HitEnemies = new List<GameObject>();
     }
 }
 
@@ -250,30 +245,18 @@ public enum Direction
 public enum BattleArtType
 {
     PowerSlash,
-    HarmonySlash,
-    SpiritBolt,
-    SpiritFall,
-    SpiritShadow
-
+    CrossSlash,
 }
 
 public enum PassiveAbilityType
 {
-    SlashArt,
-    AssassinHeart,
-    SpellStrike,
+    Harmony,
+    SpiritMaster,
+    UltimateAwakening,
+    CriticalEye,
+    BattleArtMaster,
     OneMind,
-    Dancer,
-    StepMaster,
-    Insanity
-
-}
-
-public enum DamageType
-{
-    Normal,
-    Strike,
-    Spell
+    Dancer
 }
 
 public enum CharacterAttackType
@@ -281,10 +264,7 @@ public enum CharacterAttackType
     Slash,
     Dancer,
     PowerSlash,
-    HarmonySlash,
-    SpiritBolt,
-    SpiritFall,
-    SpiritShadow
+    CrossSlash
 }
 
 public enum InputType
@@ -401,7 +381,6 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
 {
     protected GameObject Entity;
 
-    protected GameObject SlashImage;
     protected List<Sprite> CurrentSpriteSeries;
 
     protected const float DetectPassablePlatformDis = 0.01f;
@@ -1129,14 +1108,8 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             {
                 case BattleArtType.PowerSlash:
                     return CheckGrounded();
-                case BattleArtType.HarmonySlash:
+                case BattleArtType.CrossSlash:
                     return CheckGrounded();
-                case BattleArtType.SpiritBolt:
-                    return true;
-                case BattleArtType.SpiritFall:
-                    return CheckGrounded();
-                case BattleArtType.SpiritShadow:
-                    return true;
             }
 
             return true;
@@ -1190,10 +1163,10 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
                 ChangeDirection(Info);
                 TransitionTo<PowerSlashAnticipation>();
                 break;
-
-            case BattleArtType.HarmonySlash:
+            
+            case BattleArtType.CrossSlash:
                 ChangeDirection(Info);
-                TransitionTo<HarmonySlashAnticipation>();
+                TransitionTo<CrossSlashAnticipation>();
                 break;
         }
     }
@@ -1551,7 +1524,9 @@ public class SlashAnticipation : CharacterActionState
     private float Strike;
     private float Recovery;
 
-    private int Damage;
+    private int Power;
+    private int Potency;
+    private int InterruptLevel;
     private Vector2 Offset;
     private Vector2 Size;
 
@@ -1608,8 +1583,6 @@ public class SlashAnticipation : CharacterActionState
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
         var Data = Entity.GetComponent<CharacterData>();
 
-        int SlashDamage = Mathf.RoundToInt(Status.CurrentBaseDamage * AbilityData.SlashDamageFactor);
-
         Direction dir;
         if(Entity.transform.right.x > 0)
         {
@@ -1621,9 +1594,9 @@ public class SlashAnticipation : CharacterActionState
         }
 
 
-        SetAttribute(AbilityData.SlashAnticipationTime, AbilityData.SlashStrikeTime, AbilityData.SlashRecoveryTime, SlashDamage, AbilityData.SlashOffset, AbilityData.SlashHitBoxSize);
+        SetAttribute(AbilityData.SlashAnticipationTime, AbilityData.SlashStrikeTime, AbilityData.SlashRecoveryTime, Status.CurrentPower, AbilityData.SlashPotency, AbilityData.SlashInterruptLevel, AbilityData.SlashOffset, AbilityData.SlashHitBoxSize);
 
-        Context.CurrentAttack = new CharacterAttackInfo(Entity, CharacterAttackType.Slash, DamageType.Normal, dir, Damage, Damage, Damage, Offset, Offset, Size, Size, Anticipation, Anticipation, Strike, Strike, Recovery, Recovery);
+        Context.CurrentAttack = new CharacterAttackInfo(Entity, CharacterAttackType.Slash,  dir, Power, Power, Potency, Potency, InterruptLevel, InterruptLevel, Offset, Offset, Size, Size, Anticipation, Anticipation, Strike, Strike, Recovery, Recovery);
 
         Context.HitEnemies = new List<GameObject>();
 
@@ -1666,13 +1639,15 @@ public class SlashAnticipation : CharacterActionState
         }
     }
 
-    private void SetAttribute(float anticipation, float strike, float recovery, int damage, Vector2 offset, Vector2 size)
+    private void SetAttribute(float anticipation, float strike, float recovery, int power, int potency, int interruptlevel, Vector2 offset, Vector2 size)
     {
         Anticipation = anticipation;
         Strike = strike;
         Recovery = recovery;
 
-        Damage = damage;
+        Power = power;
+        Potency = potency;
+        InterruptLevel = interruptlevel;
         Offset = offset;
         Size = size;
     }
@@ -1682,6 +1657,12 @@ public class SlashStrike : CharacterActionState
 {
     private float StepForwardSpeed;
     private GameObject SlashEffect;
+
+    private Vector2 Offset;
+    private Vector2 HitBoxSize;
+
+    private Vector2 CurrentOffset;
+    private Vector2 CurrentHitBoxSize;
 
     private float TimeCount;
     private bool Grounded;
@@ -1714,8 +1695,9 @@ public class SlashStrike : CharacterActionState
             }
         }
 
-        HitEnemy(Context.CurrentAttack, Context.HitEnemies);
         CheckTime();
+        HitEnemy(Context.CurrentAttack, Context.HitEnemies);
+
     }
 
     public override void OnExit()
@@ -1723,7 +1705,6 @@ public class SlashStrike : CharacterActionState
         base.OnExit();
         var SpeedManager = Entity.GetComponent<SpeedManager>();
         SpeedManager.AttackStepSpeed.x = 0;
-        GameObject.Destroy(SlashImage);
         EventManager.instance.Fire(new PlayerEndAttackStrike(Context.CurrentAttack, Context.HitEnemies));
     }
 
@@ -1739,6 +1720,13 @@ public class SlashStrike : CharacterActionState
         TimeCount = 0;
 
         Context.CurrentGravity = Data.NormalGravity;
+
+        Offset = AbilityData.SlashOffset;
+        HitBoxSize = AbilityData.SlashHitBoxSize;
+        CurrentOffset = Offset;
+        CurrentOffset.x = 0;
+        CurrentHitBoxSize = HitBoxSize;
+        CurrentHitBoxSize.x = 0;
 
         if (CheckGrounded())
         {
@@ -1783,11 +1771,20 @@ public class SlashStrike : CharacterActionState
     private void CheckTime()
     {
         TimeCount += Time.deltaTime;
+        SetAttackHitBox();
         if (TimeCount > Context.CurrentAttack.StrikeTime)
         {
             TransitionTo<SlashRecovery>();
             return;
         }
+    }
+
+    private void SetAttackHitBox()
+    {
+        CurrentHitBoxSize.x = Mathf.Lerp(0, HitBoxSize.x, TimeCount / Context.CurrentAttack.StrikeTime);
+        CurrentOffset.x = Offset.x- HitBoxSize.x/2 + CurrentHitBoxSize.x / 2;
+        Context.CurrentAttack.HitBoxSize = CurrentHitBoxSize;
+        Context.CurrentAttack.HitBoxOffset = CurrentOffset;
     }
 
 }
@@ -1888,7 +1885,7 @@ public class SlashRecovery : CharacterActionState
 
 }
 
-public class HarmonySlashAnticipation : CharacterActionState
+public class CrossSlashAnticipation : CharacterActionState
 {
     private float TimeCount;
 
@@ -1896,15 +1893,21 @@ public class HarmonySlashAnticipation : CharacterActionState
     private float Strike;
     private float Recovery;
 
-    private int Damage;
+    private int Power;
+    private int Potency;
+    private int InterruptLevel;
+
     private Vector2 Offset;
     private Vector2 Size;
+
+    private CrossSlash crossSlash;
 
     public override void OnEnter()
     {
         base.OnEnter();
         SetUp();
         SetAppearance();
+
         EventManager.instance.Fire(new PlayerStartAttackAnticipation(Context.CurrentAttack));
     }
 
@@ -1947,28 +1950,23 @@ public class HarmonySlashAnticipation : CharacterActionState
             dir = Direction.Left;
         }
 
-        int HarmonySlashDamage = Mathf.RoundToInt(Status.CurrentBaseDamage * AbilityData.HarmonySlashDamageFactor);
-        
-        SetAttribute(AbilityData.HarmonySlashAnticipationTime, AbilityData.HarmonySlashStrikeTime, AbilityData.HarmonySlashRecoveryTime, HarmonySlashDamage, AbilityData.HarmonySlashOffset, AbilityData.HarmonySlashHitBoxSize);
 
-        Context.CurrentAttack = new CharacterAttackInfo(Entity, CharacterAttackType.HarmonySlash, DamageType.Strike, dir, Damage, Damage, Damage, Offset, Offset, Size, Size, Anticipation, Anticipation, Strike, Strike, Recovery, Recovery, Context.EquipedBattleArt);
+        SetAttribute(AbilityData.CrossSlashAnticipationTime, AbilityData.CrossSlashStrikeTime, AbilityData.CrossSlashRecoveryTime, Status.CurrentPower, AbilityData.CrossSlashPotency, AbilityData.CrossSlashInterruptLevel, AbilityData.CrossSlashOffset, AbilityData.CrossSlashHitBoxSize);
 
         Context.HitEnemies = new List<GameObject>();
 
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
-        Entity.GetComponent<SpeedManager>().AttackStepSpeed.x = -Entity.transform.right.x * AbilityData.HarmonySlashStepBackSpeed;
 
-    }
+        crossSlash = (CrossSlash)Context.EquipedBattleArt;
 
-    private void SetAttribute(float anticipation, float strike, float recovery, int damage, Vector2 offset, Vector2 size)
-    {
-        Anticipation = anticipation;
-        Strike = strike;
-        Recovery = recovery;
+        crossSlash.StrikeCount++;
 
-        Damage = damage;
-        Offset = offset;
-        Size = size;
+        if(crossSlash.StrikeCount > 1)
+        {
+            Power = Context.CurrentAttack.Power;
+        }
+
+        Context.CurrentAttack = new CharacterAttackInfo(Entity, CharacterAttackType.CrossSlash, dir, Power, Power, Potency, Potency, InterruptLevel, InterruptLevel, Offset, Offset, Size, Size, Anticipation, Anticipation, Strike, Strike, Recovery, Recovery, Context.EquipedBattleArt);
     }
 
     private void SetAppearance()
@@ -1989,23 +1987,31 @@ public class HarmonySlashAnticipation : CharacterActionState
 
         if (TimeCount >= Context.CurrentAttack.AnticipationTime)
         {
-            TransitionTo<HarmonySlashStrike>();
+            TransitionTo<CrossSlashStrike>();
             return;
-        }
-        else if(TimeCount >= AbilityData.HarmonySlashStepBackTime)
-        {
-            Entity.GetComponent<SpeedManager>().AttackStepSpeed.x = 0;
         }
     }
 
+    private void SetAttribute(float anticipation, float strike, float recovery, int power, int potency, int interruptlevel, Vector2 offset, Vector2 size)
+    {
+        Anticipation = anticipation;
+        Strike = strike;
+        Recovery = recovery;
 
+        Power = power;
+        Potency = potency;
+        InterruptLevel = interruptlevel;
+        Offset = offset;
+        Size = size;
+    }
 }
 
-public class HarmonySlashStrike : CharacterActionState
+public class CrossSlashStrike : CharacterActionState
 {
     private float StepForwardSpeed;
-    private GameObject Effect;
+    private GameObject SlashEffect;
 
+    private CrossSlash crossSlash;
     private float TimeCount;
 
     public override void OnEnter()
@@ -2021,18 +2027,19 @@ public class HarmonySlashStrike : CharacterActionState
         base.Update();
         if (CheckGetInterrupted())
         {
+            crossSlash.StrikeCount = 0;
+            crossSlash.StrikeHitCount = 0;
             TransitionTo<GetInterrupted>();
             return;
         }
 
-        HitEnemy(Context.CurrentAttack,Context.HitEnemies);
+        HitEnemy(Context.CurrentAttack, Context.HitEnemies);
         CheckTime();
     }
 
     public override void OnExit()
     {
         base.OnExit();
-        GameObject.Destroy(SlashImage);
         EventManager.instance.Fire(new PlayerEndAttackStrike(Context.CurrentAttack, Context.HitEnemies));
     }
 
@@ -2041,13 +2048,16 @@ public class HarmonySlashStrike : CharacterActionState
         var SpeedManager = Entity.GetComponent<SpeedManager>();
         var Data = Entity.GetComponent<CharacterData>();
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
+        var Status = Entity.GetComponent<StatusManager_Character>();
 
         TimeCount = 0;
 
-        Effect = AbilityData.HarmonySlashEffect;
-        GenerateSlashEffect(Effect, Context.CurrentAttack);
+        SlashEffect = AbilityData.CrossSlashEffect;
+        GenerateSlashEffect(SlashEffect, Context.CurrentAttack);
 
-        SpeedManager.AttackStepSpeed.x = AbilityData.HarmonySlashStepForwardSpeed* Entity.transform.right.x;
+        SpeedManager.AttackStepSpeed.x = AbilityData.CrossSlashStepForwardSpeed * Entity.transform.right.x;
+
+        crossSlash = (CrossSlash)Context.EquipedBattleArt;
 
     }
 
@@ -2060,16 +2070,13 @@ public class HarmonySlashStrike : CharacterActionState
         Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyRecoveryOffset, SpriteData.HeavyRecoverySize);
     }
 
-
-
     private void GenerateSlashEffect(GameObject Effect, CharacterAttackInfo Attack)
     {
-
         var Data = Entity.GetComponent<CharacterData>();
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
 
         float EulerAngle = 0;
-        Vector2 Offset = AbilityData.HarmonySlashEffectOffset;
+        Vector2 Offset = AbilityData.CrossSlashEffectOffset;
 
         if (Attack.Dir == Direction.Left)
         {
@@ -2077,22 +2084,38 @@ public class HarmonySlashStrike : CharacterActionState
             Offset.x = -Offset.x;
         }
 
-        SlashImage = GameObject.Instantiate(Effect, (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
-        SlashImage.transform.parent = Entity.transform;
+        SlashEffect = GameObject.Instantiate(Effect, (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
+        SlashEffect.transform.parent = Entity.transform;
     }
 
     private void CheckTime()
     {
+        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
+
+        int MaxStrike = AbilityData.CrossSlashStrikeNumber_Normal;
+        if(crossSlash.Level >= 2)
+        {
+            MaxStrike = AbilityData.CrossSlashStrikeNumber_Upgraded;
+        }
+
         TimeCount += Time.deltaTime;
+
         if (TimeCount > Context.CurrentAttack.StrikeTime)
         {
-            TransitionTo<HarmonySlashRecovery>();
+            if(crossSlash.StrikeCount == MaxStrike)
+            {
+                TransitionTo<CrossSlashRecovery>();
+            }
+            else
+            {
+                TransitionTo<CrossSlashAnticipation>();
+            }
             return;
         }
     }
 }
 
-public class HarmonySlashRecovery : CharacterActionState
+public class CrossSlashRecovery : CharacterActionState
 {
     private float TimeCount;
     private List<InputInfo> SavedInputList;
@@ -2136,7 +2159,7 @@ public class HarmonySlashRecovery : CharacterActionState
         TimeCount += Time.deltaTime;
         if (TimeCount > Context.CurrentAttack.RecoveryTime)
         {
-            if (!RecoveryEndTransitionCheck(SavedInputList,true))
+            if (!RecoveryEndTransitionCheck(SavedInputList, true))
             {
                 TransitionTo<Stand>();
             }
@@ -2152,6 +2175,11 @@ public class HarmonySlashRecovery : CharacterActionState
         TimeCount = 0;
 
         SavedInputList = new List<InputInfo>();
+
+        CrossSlash crossSlash = (CrossSlash)Context.EquipedBattleArt;
+
+        crossSlash.StrikeCount = 0;
+        crossSlash.StrikeHitCount = 0;
     }
 
     private void SetAppearance()
@@ -2172,7 +2200,9 @@ public class PowerSlashAnticipation : CharacterActionState
     private float Strike;
     private float Recovery;
 
-    private int Damage;
+    private int Power;
+    private int Potency;
+    private int InterruptLevel;
     private Vector2 Offset;
     private Vector2 Size;
 
@@ -2223,11 +2253,9 @@ public class PowerSlashAnticipation : CharacterActionState
             dir = Direction.Left;
         }
 
-        int PowerSlashDamage = Mathf.RoundToInt(Status.CurrentBaseDamage * AbilityData.PowerSlashDamageFactor);
+        SetAttribute(AbilityData.PowerSlashAnticipationTime, AbilityData.PowerSlashStrikeTime, AbilityData.PowerSlashRecoveryTime,Status.CurrentPower , AbilityData.PowerSlashPotency, AbilityData.PowerSlashInterruptLevel, AbilityData.PowerSlashOffset, AbilityData.PowerSlashHitBoxSize);
 
-        SetAttribute(AbilityData.PowerSlashAnticipationTime, AbilityData.PowerSlashStrikeTime, AbilityData.PowerSlashRecoveryTime, PowerSlashDamage, AbilityData.PowerSlashOffset, AbilityData.PowerSlashHitBoxSize);
-
-        Context.CurrentAttack = new CharacterAttackInfo(Entity, CharacterAttackType.PowerSlash, DamageType.Strike, dir, Damage, Damage, Damage, Offset, Offset, Size, Size, Anticipation, Anticipation, Strike, Strike, Recovery, Recovery, Context.EquipedBattleArt);
+        Context.CurrentAttack = new CharacterAttackInfo(Entity, CharacterAttackType.PowerSlash, dir, Power, Power, Potency, Potency,InterruptLevel,InterruptLevel, Offset, Offset, Size, Size, Anticipation, Anticipation, Strike, Strike, Recovery, Recovery, Context.EquipedBattleArt);
 
         Context.HitEnemies = new List<GameObject>();
 
@@ -2235,13 +2263,15 @@ public class PowerSlashAnticipation : CharacterActionState
 
     }
 
-    private void SetAttribute(float anticipation, float strike, float recovery, int damage, Vector2 offset, Vector2 size)
+    private void SetAttribute(float anticipation, float strike, float recovery, int power, int potency, int interruptlevel, Vector2 offset, Vector2 size)
     {
         Anticipation = anticipation;
         Strike = strike;
         Recovery = recovery;
 
-        Damage = damage;
+        Power = power;
+        Potency = potency;
+        InterruptLevel = interruptlevel;
         Offset = offset;
         Size = size;
     }
@@ -2273,7 +2303,7 @@ public class PowerSlashAnticipation : CharacterActionState
 public class PowerSlashStrike : CharacterActionState
 {
     private float StepForwardSpeed;
-    private GameObject Effect;
+    private GameObject SlashEffect;
 
     private float TimeCount;
 
@@ -2301,7 +2331,6 @@ public class PowerSlashStrike : CharacterActionState
     public override void OnExit()
     {
         base.OnExit();
-        GameObject.Destroy(SlashImage);
         EventManager.instance.Fire(new PlayerEndAttackStrike(Context.CurrentAttack, Context.HitEnemies));
     }
 
@@ -2313,8 +2342,8 @@ public class PowerSlashStrike : CharacterActionState
 
         TimeCount = 0;
 
-        Effect = AbilityData.PowerSlashEffect;
-        GenerateSlashEffect(Effect, Context.CurrentAttack);
+        SlashEffect = AbilityData.PowerSlashEffect;
+        GenerateSlashEffect(SlashEffect, Context.CurrentAttack);
 
         SpeedManager.AttackStepSpeed.x = AbilityData.PowerSlashStepForwardSpeed * Entity.transform.right.x;
 
@@ -2344,8 +2373,8 @@ public class PowerSlashStrike : CharacterActionState
             Offset.x = -Offset.x;
         }
 
-        SlashImage = GameObject.Instantiate(Image, (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
-        SlashImage.transform.parent = Entity.transform;
+        SlashEffect = GameObject.Instantiate(Image, (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
+        SlashEffect.transform.parent = Entity.transform;
     }
 
     private void CheckTime()
@@ -3011,9 +3040,6 @@ public class GetInterrupted : CharacterActionState
         SetUp();
 
         SetAppearance();
-        //RecoveryStateReceiveSavedInput(SavedInputList);
-
-        GameObject.Destroy(SlashImage);
     }
 
     public override void Update()

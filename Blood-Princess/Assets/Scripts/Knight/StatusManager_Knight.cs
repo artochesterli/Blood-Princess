@@ -56,8 +56,9 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 
         DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
 
+        int Damage = Utility.GetEffectValue(CurrentTakenAttack.Power, CurrentTakenAttack.Potency);
 
-		CurrentHP -= CurrentTakenAttack.Damage;
+        CurrentHP -= Damage;
 
         SetHPFill((float)CurrentHP / Data.MaxHP);
 
@@ -70,7 +71,7 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 		{
 			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 0);
 		}
-		DamageText.GetComponent<Text>().text = CurrentTakenAttack.Damage.ToString();
+		DamageText.GetComponent<Text>().text = Damage.ToString();
 		DamageText.transform.parent = Canvas.transform;
 
 		DamageText.GetComponent<Text>().color = Color.white;

@@ -16,26 +16,26 @@ public class PassiveAbilitySelection : MonoBehaviour
     {
         switch (Type)
         {
-            case PassiveAbilityType.SlashArt:
-                Ability = new SlashArt();
+            case PassiveAbilityType.Harmony:
+                Ability = new Harmony();
                 break;
-            case PassiveAbilityType.AssassinHeart:
-                Ability = new AssassinHeart();
+            case PassiveAbilityType.SpiritMaster:
+                Ability = new SpiritMaster();
+                break;
+            case PassiveAbilityType.UltimateAwakening:
+                Ability = new UltimateAwakening();
+                break;
+            case PassiveAbilityType.CriticalEye:
+                Ability = new CriticalEye();
+                break;
+            case PassiveAbilityType.BattleArtMaster:
+                Ability = new BattleArtMaster();
                 break;
             case PassiveAbilityType.Dancer:
                 Ability = new Dancer();
                 break;
             case PassiveAbilityType.OneMind:
                 Ability = new OneMind();
-                break;
-            case PassiveAbilityType.Insanity:
-                Ability = new Insanity();
-                break;
-            case PassiveAbilityType.StepMaster:
-                Ability = new StepMaster();
-                break;
-            case PassiveAbilityType.SpellStrike:
-                Ability = new SpellStrike();
                 break;
         }
     }

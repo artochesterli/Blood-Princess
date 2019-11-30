@@ -20,17 +20,8 @@ public class BattleArtSelection : MonoBehaviour, ISkillSelection
             case BattleArtType.PowerSlash:
                 Ability = new PowerSlash();
                 break;
-            case BattleArtType.HarmonySlash:
-                Ability = new HarmonySlash();
-                break;
-            case BattleArtType.SpiritBolt:
-                Ability = new SpiritBolt();
-                break;
-            case BattleArtType.SpiritFall:
-                Ability = new SpiritFall();
-                break;
-            case BattleArtType.SpiritShadow:
-                Ability = new SpiritShadow();
+            case BattleArtType.CrossSlash:
+                Ability = new CrossSlash();
                 break;
         }
     }

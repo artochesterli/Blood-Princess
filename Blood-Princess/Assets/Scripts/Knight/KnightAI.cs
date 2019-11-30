@@ -442,7 +442,6 @@ public class KnightAttackAnticipation : KnightBehavior
     private float StateTime;
 
     private float DistanceTraveled;
-    private float AttackReachRange;
 
     public override void OnEnter()
     {
@@ -527,21 +526,6 @@ public class KnightAttackAnticipation : KnightBehavior
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
         DistanceTraveled = 0;
 
-        var SpeedManager = Entity.GetComponent<SpeedManager>();
-
-        float AttackHitDis = (Data.DoubleAttackHitBoxSize.x + Data.AttackStepForwardSpeed * Data.AttackTime) * Data.AttackAvailableHitBoxPercentage;
-
-        if (Entity.transform.right.x > 0)
-        {
-            AttackHitDis -= (SpeedManager.GetTruePos().x + SpeedManager.BodyWidth / 2) - Entity.transform.position.x;
-        }
-        else
-        {
-            AttackHitDis -= Entity.transform.position.x - (SpeedManager.GetTruePos().x - SpeedManager.BodyWidth / 2);
-        }
-
-        AttackReachRange = AttackHitDis + Data.AttackStepForwardSpeed * Data.AttackTime;
-
 
 
     }
@@ -576,11 +560,17 @@ public class KnightAttackAnticipation : KnightBehavior
 
             float XDiff = AIUtility.GetXDiff(Context.Player,Entity);
 
+            var SpeedManager = Entity.GetComponent<SpeedManager>();
+
+            float AttackHitDis = (Data.DoubleAttackHitBoxSize.x + Data.AttackStepForwardSpeed * Data.AttackTime) * Data.AttackAvailableHitBoxPercentage;
+
+            float AttackHitBoxBorderToTruePos = Data.DoubleAttackOffset.x - Data.DoubleAttackHitBoxSize.x / 2 - (SpeedManager.GetTruePos().x - Entity.transform.position.x) * Entity.transform.right.x;
+
             if (!AIUtility.PlayerInDetectRange(Entity, Context.Player, Context.DetectRightX, Context.DetectLeftX, PatronData.DetectHeight, PatronData.DetectLayer, false))
             {
                 TransitionTo<KnightPatron>();
             }
-            else if (TraveledEnough || XDiff > 0 && Entity.transform.right.x < 0 || XDiff < 0 && Entity.transform.right.x > 0 || AIUtility.GetBorderDis(Context.Player,Entity) <= AttackReachRange)
+            else if (TraveledEnough || XDiff > 0 && Entity.transform.right.x < 0 || XDiff < 0 && Entity.transform.right.x > 0 || Mathf.Abs(AIUtility.GetXDiff(Context.Player, Entity)) - Context.Player.GetComponent<SpeedManager>().BodyWidth / 2 <= AttackHitDis + AttackHitBoxBorderToTruePos)
             {
                 TransitionTo<KnightAttackStrike>();
             }

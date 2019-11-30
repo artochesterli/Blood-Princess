@@ -10251,7 +10251,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a7a111b7926d4d47b59935861176fa3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHP: 10000
+  MaxHP: 35
   NormalMoveSpeed: 4
   AttackStepForwardSpeed: 10
   SlashAnticipationTime: 0.5
@@ -15623,7 +15623,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!61 &1862657459
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -18884,73 +18884,6 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 963194227}
-    - target: {fileID: 4305804637280515001, guid: 6dc116148174896459ef435bd864d5cf,
-        type: 3}
-      propertyPath: MaxHP
-      value: 1000
-      objectReference: {fileID: 0}
-    - target: {fileID: 4305804637280515001, guid: 6dc116148174896459ef435bd864d5cf,
-        type: 3}
-      propertyPath: SingleAttackOffset.x
-      value: 0.865
-      objectReference: {fileID: 0}
-    - target: {fileID: 4305804637280515001, guid: 6dc116148174896459ef435bd864d5cf,
-        type: 3}
-      propertyPath: SingleAttackOffset.y
-      value: 0.081
-      objectReference: {fileID: 0}
-    - target: {fileID: 4305804637280515001, guid: 6dc116148174896459ef435bd864d5cf,
-        type: 3}
-      propertyPath: SingleAttackHitBoxSize.x
-      value: 1.627778
-      objectReference: {fileID: 0}
-    - target: {fileID: 4305804637280515001, guid: 6dc116148174896459ef435bd864d5cf,
-        type: 3}
-      propertyPath: SingleAttackHitBoxSize.y
-      value: 1.71
-      objectReference: {fileID: 0}
-    - target: {fileID: 4305804637280515001, guid: 6dc116148174896459ef435bd864d5cf,
-        type: 3}
-      propertyPath: DoubleAttackOffset.x
-      value: 1.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 4305804637280515001, guid: 6dc116148174896459ef435bd864d5cf,
-        type: 3}
-      propertyPath: DoubleAttackOffset.y
-      value: -0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 4305804637280515001, guid: 6dc116148174896459ef435bd864d5cf,
-        type: 3}
-      propertyPath: DoubleAttackHitBoxSize.x
-      value: 1.68
-      objectReference: {fileID: 0}
-    - target: {fileID: 4305804637280515001, guid: 6dc116148174896459ef435bd864d5cf,
-        type: 3}
-      propertyPath: DoubleAttackHitBoxSize.y
-      value: 1.038
-      objectReference: {fileID: 0}
-    - target: {fileID: 4305804637280515001, guid: 6dc116148174896459ef435bd864d5cf,
-        type: 3}
-      propertyPath: SingleSlashImage
-      value: 
-      objectReference: {fileID: 1279818167935236560, guid: cd2fd8ad18c36ac4ea270cdbcb4a8c8c,
-        type: 3}
-    - target: {fileID: 4305804637280515001, guid: 6dc116148174896459ef435bd864d5cf,
-        type: 3}
-      propertyPath: DoubleSlashImage
-      value: 
-      objectReference: {fileID: 4303735459540028926, guid: 6b9f20946377e044b96aa85537ee0684,
-        type: 3}
-    - target: {fileID: 4305804637280515001, guid: 6dc116148174896459ef435bd864d5cf,
-        type: 3}
-      propertyPath: AttackStepForwardSpeed
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 4305804637280515001, guid: 6dc116148174896459ef435bd864d5cf,
-        type: 3}
-      propertyPath: ChaseAttackRecoveryTime
-      value: 0.6
-      objectReference: {fileID: 0}
     - target: {fileID: 4305804637280514980, guid: 6dc116148174896459ef435bd864d5cf,
         type: 3}
       propertyPath: m_Sprite
@@ -18960,36 +18893,6 @@ PrefabInstance:
     - target: {fileID: 4305804637280514980, guid: 6dc116148174896459ef435bd864d5cf,
         type: 3}
       propertyPath: m_WasSpriteAssigned
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4305804637280514976, guid: 6dc116148174896459ef435bd864d5cf,
-        type: 3}
-      propertyPath: m_SpriteTilingProperty.pivot.x
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 4305804637280514976, guid: 6dc116148174896459ef435bd864d5cf,
-        type: 3}
-      propertyPath: m_SpriteTilingProperty.pivot.y
-      value: 0.65
-      objectReference: {fileID: 0}
-    - target: {fileID: 4305804637280514976, guid: 6dc116148174896459ef435bd864d5cf,
-        type: 3}
-      propertyPath: m_SpriteTilingProperty.oldSize.x
-      value: 2.9493372
-      objectReference: {fileID: 0}
-    - target: {fileID: 4305804637280514976, guid: 6dc116148174896459ef435bd864d5cf,
-        type: 3}
-      propertyPath: m_SpriteTilingProperty.oldSize.y
-      value: 1.3277777
-      objectReference: {fileID: 0}
-    - target: {fileID: 4305804637280514976, guid: 6dc116148174896459ef435bd864d5cf,
-        type: 3}
-      propertyPath: m_Size.x
-      value: 0.6997366
-      objectReference: {fileID: 0}
-    - target: {fileID: 8610078950764400665, guid: 6dc116148174896459ef435bd864d5cf,
-        type: 3}
-      propertyPath: m_AnchoredPosition.y
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -19103,12 +19006,12 @@ PrefabInstance:
     - target: {fileID: 5340953039180328781, guid: d0f3f49c60c7ace45a184b94a55a6604,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -4.5
+      value: 3.5
       objectReference: {fileID: 0}
     - target: {fileID: 5340953039180328781, guid: d0f3f49c60c7ace45a184b94a55a6604,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -1.5
+      value: 0.9
       objectReference: {fileID: 0}
     - target: {fileID: 5340953039180328781, guid: d0f3f49c60c7ace45a184b94a55a6604,
         type: 3}

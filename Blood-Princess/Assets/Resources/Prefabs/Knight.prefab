@@ -83,12 +83,12 @@ SpriteRenderer:
   m_SortingLayerID: 2107308129
   m_SortingLayer: 1
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: f03a3239324528541b1afefbe40f61ca, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 16f0096eb9b7f784380ab93c0b6cd94d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.0077778, y: 1.6966667}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -110,9 +110,9 @@ BoxCollider2D:
   m_Offset: {x: -0.02244043, y: -0.01046336}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.4090319, y: 0.51949316}
-    oldSize: {x: 2.8, y: 2.8}
-    newSize: {x: 1, y: 1}
+    pivot: {x: 0.67684585, y: 0.5}
+    oldSize: {x: 1.0077778, y: 1.6966667}
+    newSize: {x: 1.0077778, y: 1.6966667}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
@@ -146,8 +146,8 @@ MonoBehaviour:
   SingleRecoverySize: {x: 1.062482, y: 1.461185}
   DoubleAnticipationOffset: {x: 0.03813314, y: -0.05415523}
   DoubleAnticipationSize: {x: 0.7511854, y: 1.541593}
-  DoubleRecoveryOffset: {x: 0.7185571, y: -0.2057655}
-  DoubleRecoverySize: {x: 1.178118, y: 1.238372}
+  DoubleRecoveryOffset: {x: 0.4243917, y: -0.2057655}
+  DoubleRecoverySize: {x: 0.9942646, y: 1.210866}
   HitOffset: {x: -0.07739353, y: -0.07772124}
   HitSize: {x: 0.7489967, y: 1.494461}
 --- !u!114 &4305804637280514983
@@ -207,10 +207,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 11380993c27991a4085d2a592f6f4d4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MaxHP: 80
+  MaxHP: 200
   NormalMoveSpeed: 3.5
   KeepDisMoveSpeed: 1
-  AttackStepForwardSpeed: 8
+  AttackStepForwardSpeed: 12
   SingleAttackAnticipationTime: 0.5
   DoubleAttackFirstAnticipationTime: 0.5
   DoubleAttackSecondAnticipationTime: 0.2
@@ -220,15 +220,18 @@ MonoBehaviour:
   SingleAttackRecoveryTime: 0.5
   DoubleAttackFirstRecoveryTime: 0.2
   DoubleAttackSecondRecoveryTime: 0.8
+  ChaseAttackRecoveryTime: 0.6
   Damage: 5
   AttackAvailableHitBoxPercentage: 0.5
-  SingleAttackOffset: {x: 1.5, y: -0.2}
-  SingleAttackHitBoxSize: {x: 1.6, y: 0.64}
-  DoubleAttackOffset: {x: 1.7, y: -0.2}
-  DoubleAttackHitBoxSize: {x: 1.6, y: 0.64}
-  AttackOffset: {x: 1.25, y: -0.2}
-  AttackHitBoxSize: {x: 1.6, y: 0.64}
+  SingleAttackOffset: {x: 0.865, y: 0.081}
+  SingleAttackHitBoxSize: {x: 1.627778, y: 1.71}
+  DoubleAttackOffset: {x: 1.25, y: -0.3}
+  DoubleAttackHitBoxSize: {x: 1.68, y: 1.038}
   SlashImage: {fileID: 8278314382299867915, guid: b563d54cff4162f42ac0f47b15402d9f,
+    type: 3}
+  SingleSlashImage: {fileID: 1279818167935236560, guid: cd2fd8ad18c36ac4ea270cdbcb4a8c8c,
+    type: 3}
+  DoubleSlashImage: {fileID: 4303735459540028926, guid: 6b9f20946377e044b96aa85537ee0684,
     type: 3}
   KnockedBackTime: 0.2
   KnockedBackSpeed: 3
@@ -635,6 +638,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4216396845970244827, guid: 21b59aee8a9c3c643bd59decc20cec00,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 21b59aee8a9c3c643bd59decc20cec00, type: 3}

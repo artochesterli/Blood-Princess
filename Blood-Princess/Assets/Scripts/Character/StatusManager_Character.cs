@@ -10,7 +10,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     public int CurrentEnergy;
     public int CurrentMaxEnergy;
     public int CurrentSeal;
-    public int CurrentBaseDamage;
+    public int CurrentPower;
 
     public EnemyAttackInfo CurrentTakenAttack;
 
@@ -38,33 +38,16 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
 
     private PowerSlash PowerSlashBattleArt;
-    private int PowerSlashEnhancementCount;
+    private CrossSlash CrossSlashBattleArt;
 
-    private HarmonySlash HarmonySlashBattleArt;
-    private int HarmonySlashSlashEnhancementCount;
-
-    private SpiritBolt SpiritBoltBattleArt;
-
-    private SpiritFall SpiritFallBattleArt;
-
-    private SpiritShadow SpiritShadowBattleArt;
-
-    private SlashArt SlashArtPassiveAbility;
-
-    private AssassinHeart AssassinHeartPassiveAbility;
-
-    private SpellStrike SpellStrikePassiveAbility;
-
+    private Harmony HarmonyPassiveAbility;
+    private SpiritMaster SpiritMasterPassiveAbility;
+    private UltimateAwakening UltimateAwakeningPassiveAbility;
+    private CriticalEye CriticalEyePassiveAbility;
+    private BattleArtMaster BattleArtMasterPassiveAbility;
     private OneMind OneMindPassiveAbility;
-    private int OneMindEnhancementCount;
-
     private Dancer DancerPassiveAbility;
-    private CharacterAttackInfo DancerAttack;
-    private List<GameObject> DancerHitEnemies = new List<GameObject>();
 
-    private StepMaster StepMasterPassiveAbility;
-
-    private Insanity InsanityPassiveAbility;
 
     // Start is called before the first frame update
     void Start()
@@ -121,7 +104,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         var Action = GetComponent<CharacterAction>();
 
-        if (DancerPassiveAbility != null && InRollInvulnerability)
+        if (InRollInvulnerability)
         {
             CheckDancerHitEnemy();
         }
@@ -163,8 +146,8 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         CurrentHP = Data.MaxHP;
         CurrentMaxEnergy = Data.MaxEnergy;
-        CurrentSeal = Data.SealNumber;
-        CurrentBaseDamage = AbilityData.BaseDamage;
+        CurrentSeal = Data.MaxSealNumber;
+        CurrentPower = AbilityData.BasePower;
         CurrentEnergy = 0;
 
     }
@@ -175,18 +158,18 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Data = GetComponent<CharacterData>();
         HPFill.GetComponent<Image>().fillAmount = (float)CurrentHP / Data.MaxHP;
 
-        EnergyFill.GetComponent<Image>().fillAmount = (float)CurrentEnergy / (Data.MaxEnergy + Data.SealNumber*Data.SealBreakEnergyCap);
+        EnergyFill.GetComponent<Image>().fillAmount = (float)CurrentEnergy / (Data.MaxEnergy + Data.MaxSealNumber*Data.SealBreakEnergyCap);
 
-        SealFill.GetComponent<Image>().fillAmount = (float)(CurrentSeal* Data.SealBreakEnergyCap)/ (Data.MaxEnergy + Data.SealNumber * Data.SealBreakEnergyCap);
+        SealFill.GetComponent<Image>().fillAmount = (float)(CurrentSeal* Data.SealBreakEnergyCap)/ (Data.MaxEnergy + Data.MaxSealNumber * Data.SealBreakEnergyCap);
 
-        for (int i = 0; i <= CurrentSeal && i > 0; i++)
+        for (int i = 1; i <= CurrentSeal; i++)
         {
-            SealMarks.transform.GetChild(Data.SealNumber - i - 1).gameObject.SetActive(true);
+            SealMarks.transform.GetChild(Data.MaxSealNumber - i).gameObject.SetActive(true);
         }
 
-        for(int i= CurrentSeal; i < Data.SealNumber + 1 && i< 3; i++)
+        for(int i= CurrentSeal+1 ; i <= Data.MaxSealNumber; i++)
         {
-            SealMarks.transform.GetChild(Data.SealNumber - i - 1).gameObject.SetActive(false);
+            SealMarks.transform.GetChild(Data.MaxSealNumber - i).gameObject.SetActive(false);
         }
 
     }
@@ -209,27 +192,16 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         {
             var Data = GetComponent<CharacterData>();
 
-            if(PowerSlashBattleArt != null)
-            {
-                PowerSlashLoseEnhancement();
-            }
+            PowerSlashLoseIncrement();
 
-            if(HarmonySlashBattleArt != null)
-            {
-                HarmonySlashLoseSlashEnhancement();
-            }
-
-            if (OneMindPassiveAbility != null)
-            {
-                OneMindLoseEnhancement();
-            }
+            SpiritMasterGainSeal();
+            UltimateAwakenGainSeal();
+            OneMindLoseIncrement();
 
             CurrentEnergy = 0;
-            GainLoseSeal(true);
+            GainLoseSeal(1);
             SetEnergyFull(false);
             SetAwaken(false);
-
-
 
             DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
 
@@ -280,41 +252,27 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         if(e.Attack.Type == CharacterAttackType.Slash)
         {
-            if(OneMindPassiveAbility != null)
-            {
-                OneMindEnhanceSlash(e.Attack);
-            }
-
-            if (HarmonySlashBattleArt != null)
-            {
-                HarmonySlashEnhanceSlash(e.Attack);
-            }
-            if (SlashArtPassiveAbility != null)
-            {
-                SlashArtEffect(e.Attack);
-            }
+            OneMindIncrementSlashPotency(e.Attack);
         }
         else if (e.Attack.ThisBattleArt != null)
         {
             CurrentEnergy = 0;
             SetEnergyFull(false);
 
-            /*CurrentEnergy = CurrentAdvancedEnergy;
-            if (CurrentAdvancedEnergy < Data.MaxEnergy)
-            {
-                SetCriticalEye(false);
-            }*/
-
             switch (e.Attack.ThisBattleArt.Type)
             {
                 case BattleArtType.PowerSlash:
-                    PowerSlashEnhanceDamage(e.Attack);
+                    PowerSlashIncrementPotency(e.Attack);
                     break;
-                case BattleArtType.HarmonySlash:
-                    HarmonySlashFullEnergyBonus(e.Attack);
+                case BattleArtType.CrossSlash:
+                    CrossSlashLastStrikeBonus(e.Attack);
                     break;
             }
+
+            BattleArtMasterBonus(e.Attack);
         }
+
+        CriticalEyeBonus(e.Attack);
 
     }
 
@@ -336,21 +294,6 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         if (e.HitEnemies.Count > 0)
         {
-            switch (e.Attack.DamType)
-            {
-                case DamageType.Normal:
-                    break;
-                case DamageType.Spell:
-                    break;
-                case DamageType.Strike:
-                    if (PowerSlashBattleArt != null)
-                    {
-                        PowerSlashIncreaseEnhancement();
-                    }
-                    break;
-            }
-
-
             if (e.Attack.Type == CharacterAttackType.Slash)
             {
                 if (Awaken)
@@ -362,30 +305,39 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                     GainLoseEnergy(AbilityData.SlashEnergyGain);
                 }
 
-                if (InsanityPassiveAbility != null)
-                {
-                    InsanityGetAdvancedEnergy();
-                }
+                SpiritMasterEnergyGainBonus();
             }
             else if(e.Attack.ThisBattleArt != null)
             {
                 switch (Action.EquipedBattleArt.Type)
                 {
                     case BattleArtType.PowerSlash:
-                        //GainLoseAdvancedEnergy(AbilityData.PowerSlashAdvancedEnergyGain);
+                        PowerSlashGainEnergy();
+                        PowerSlashSelfIncrement();
                         break;
-                    
-                    case BattleArtType.HarmonySlash:
-                        HarmonySlashIncreaseSlashEnhancement();
-                        //GainLoseAdvancedEnergy(AbilityData.HarmonySlashAdvancedEnergyGain);
+                    case BattleArtType.CrossSlash:
+                        CrossSlashCountHit();
+                        CrossSlashBreakSeal();
                         break;
                 }
 
-                GainLoseSeal(false);
+                HarmonyHeal();
 
-                //CurrentEnergy = CurrentAdvancedEnergy;
+                EndStrikeBreakSeal();
             }
         }
+    }
+
+    private void EndStrikeBreakSeal()
+    {
+        if(CrossSlashBattleArt != null && CrossSlashBattleArt.StrikeHitCount > 1)
+        {
+
+
+            return;
+        }
+
+        GainLoseSeal(-1);
     }
 
     private void OnPlayerStartAttackRecovery(PlayerStartAttackRecovery e)
@@ -401,10 +353,8 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     private void OnPlayerStartRoll(PlayerStartRoll e)
     {
         InRollInvulnerability = true;
-        if(DancerPassiveAbility != null)
-        {
-            SetUpDancer();
-        }
+
+        SetUpDancer();
     }
 
     private void OnPlayerEndRoll(PlayerEndRoll e)
@@ -438,24 +388,8 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Action = GetComponent<CharacterAction>();
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        if (OneMindPassiveAbility != null)
-        {
-            OneMindIncreaseEnhancement();
-        }
-
-        if (e.OriginalAttack.ThisBattleArt != null)
-        {
-            switch (Action.EquipedBattleArt.Type)
-            {
-                case BattleArtType.PowerSlash:
-                    PowerSlashExecutionBonus(e.UpdatedAttack,e.Enemy);
-                    break;
-
-                case BattleArtType.HarmonySlash:
-
-                    break;
-            }
-        }
+        OneMindGainIncrement();
+        
     }
 
     private void OnPlayerBreakEnemyShield(PlayerBreakEnemyShield e)
@@ -501,55 +435,35 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         CurrentEnergy += amount;
     }
 
-    /*private void GainLoseAdvancedEnergy(int amount)
-    {
-        var Data = GetComponent<CharacterData>();
-
-        if (amount >= Data.MaxEnergy - CurrentAdvancedEnergy)
-        {
-            CurrentAdvancedEnergy = Data.MaxEnergy;
-            SetCriticalEye(true);
-            return;
-        }
-        else if(amount <= -CurrentAdvancedEnergy)
-        {
-            CurrentAdvancedEnergy = 0;
-            return;
-        }
-
-        CurrentAdvancedEnergy += amount;
-    }*/
-
-    private void GainLoseSeal(bool Gain)
+    private void GainLoseSeal(int amount)
     {
         var Data = GetComponent<CharacterData>();
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        if (Gain)
+        if(amount > 0)
         {
-            if(CurrentSeal >= Data.SealNumber)
+            CurrentSeal += amount;
+            if(CurrentSeal > Data.MaxSealNumber)
             {
-                return;
+                CurrentSeal = Data.MaxSealNumber;
             }
-            CurrentSeal++;
-            CurrentMaxEnergy -= Data.SealBreakEnergyCap;
+
             SetAwaken(false);
         }
-        else
+        else if(amount < 0)
         {
+            CurrentSeal += amount;
             if(CurrentSeal <= 0)
             {
-                return;
-            }
-            CurrentSeal--;
-            CurrentMaxEnergy += Data.SealBreakEnergyCap;
-            if(CurrentSeal <= 0)
-            {
+                CurrentSeal = 0;
                 SetAwaken(true);
             }
         }
 
-        CurrentBaseDamage = AbilityData.BaseDamage + Data.BaseDamageEnhancementWithSeal[CurrentSeal];
+        CurrentMaxEnergy = Data.MaxEnergy + Data.SealBreakEnergyCap * (Data.MaxSealNumber - CurrentSeal);
+        CurrentPower = AbilityData.BasePower + Data.PowerIncrementWithSeal[CurrentSeal];
+
+        UltimateAwakeningBonus();
     }
 
     private void OnEquipBattleArt(PlayerEquipBattleArt e)
@@ -558,20 +472,11 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         switch (e.ThisBattleArt.Type)
         {
-            case BattleArtType.HarmonySlash:
-                HarmonySlashBattleArt = (HarmonySlash)e.ThisBattleArt;
-                break;
             case BattleArtType.PowerSlash:
                 PowerSlashBattleArt = (PowerSlash)e.ThisBattleArt;
                 break;
-            case BattleArtType.SpiritBolt:
-                SpiritBoltBattleArt = (SpiritBolt)e.ThisBattleArt;
-                break;
-            case BattleArtType.SpiritFall:
-                SpiritFallBattleArt = (SpiritFall)e.ThisBattleArt;
-                break;
-            case BattleArtType.SpiritShadow:
-                SpiritShadowBattleArt = (SpiritShadow)e.ThisBattleArt;
+            case BattleArtType.CrossSlash:
+                CrossSlashBattleArt = (CrossSlash)e.ThisBattleArt;
                 break;
         }
 
@@ -583,23 +488,14 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Action = GetComponent<CharacterAction>();
         switch (e.ThisBattleArt.Type)
         {
-            case BattleArtType.HarmonySlash:
-                HarmonySlashLoseSlashEnhancement();
-                HarmonySlashBattleArt = null;
-                break;
             case BattleArtType.PowerSlash:
-                PowerSlashLoseEnhancement();
+                PowerSlashLoseIncrement();
                 PowerSlashBattleArt = null;
                 break;
-            case BattleArtType.SpiritBolt:
-                SpiritBoltBattleArt = null;
+            case BattleArtType.CrossSlash:
+                CrossSlashBattleArt = null;
                 break;
-            case BattleArtType.SpiritFall:
-                SpiritFallBattleArt = null;
-                break;
-            case BattleArtType.SpiritShadow:
-                SpiritShadowBattleArt = null;
-                break;
+
         }
 
         Action.EquipedBattleArt = null;
@@ -611,26 +507,26 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         switch (e.ThisPassiveAbility.Type)
         {
-            case PassiveAbilityType.SlashArt:
-                SlashArtPassiveAbility = (SlashArt)e.ThisPassiveAbility;
+            case PassiveAbilityType.Harmony:
+                HarmonyPassiveAbility = (Harmony)e.ThisPassiveAbility;
                 break;
-            case PassiveAbilityType.AssassinHeart:
-                AssassinHeartPassiveAbility = (AssassinHeart)e.ThisPassiveAbility;
+            case PassiveAbilityType.SpiritMaster:
+                SpiritMasterPassiveAbility = (SpiritMaster)e.ThisPassiveAbility;
                 break;
-            case PassiveAbilityType.SpellStrike:
-                SpellStrikePassiveAbility = (SpellStrike)e.ThisPassiveAbility;
+            case PassiveAbilityType.UltimateAwakening:
+                UltimateAwakeningPassiveAbility = (UltimateAwakening)e.ThisPassiveAbility;
+                break;
+            case PassiveAbilityType.CriticalEye:
+                CriticalEyePassiveAbility = (CriticalEye)e.ThisPassiveAbility;
+                break;
+            case PassiveAbilityType.BattleArtMaster:
+                BattleArtMasterPassiveAbility = (BattleArtMaster)e.ThisPassiveAbility;
                 break;
             case PassiveAbilityType.OneMind:
                 OneMindPassiveAbility = (OneMind)e.ThisPassiveAbility;
                 break;
             case PassiveAbilityType.Dancer:
                 DancerPassiveAbility = (Dancer)e.ThisPassiveAbility;
-                break;
-            case PassiveAbilityType.StepMaster:
-                StepMasterPassiveAbility = (StepMaster)e.ThisPassiveAbility;
-                break;
-            case PassiveAbilityType.Insanity:
-                InsanityPassiveAbility = (Insanity)e.ThisPassiveAbility;
                 break;
         }
 
@@ -643,27 +539,28 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         switch (e.ThisPassiveAbility.Type)
         {
-            case PassiveAbilityType.SlashArt:
-                SlashArtPassiveAbility = null;
+            case PassiveAbilityType.Harmony:
+                HarmonyPassiveAbility = null;
                 break;
-            case PassiveAbilityType.AssassinHeart:
-                AssassinHeartPassiveAbility = null;
+            case PassiveAbilityType.SpiritMaster:
+                SpiritMasterPassiveAbility = null;
                 break;
-            case PassiveAbilityType.SpellStrike:
-                SpellStrikePassiveAbility = null;
+            case PassiveAbilityType.UltimateAwakening:
+                UltimateAwakeningLoseBonus();
+                UltimateAwakeningPassiveAbility = null;
+                break;
+            case PassiveAbilityType.CriticalEye:
+                CriticalEyePassiveAbility = null;
+                break;
+            case PassiveAbilityType.BattleArtMaster:
+                BattleArtMasterPassiveAbility = null;
                 break;
             case PassiveAbilityType.OneMind:
-                OneMindLoseEnhancement();
+                OneMindLoseIncrement();
                 OneMindPassiveAbility = null;
                 break;
             case PassiveAbilityType.Dancer:
                 DancerPassiveAbility = null;
-                break;
-            case PassiveAbilityType.StepMaster:
-                StepMasterPassiveAbility = null;
-                break;
-            case PassiveAbilityType.Insanity:
-                InsanityPassiveAbility = null;
                 break;
         }
 
@@ -672,139 +569,287 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     //Power Slash
 
-    private void PowerSlashIncreaseEnhancement()
+    private void PowerSlashSelfIncrement()
     {
+        if (PowerSlashBattleArt == null)
+        {
+            return;
+        }
+
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        if (PowerSlashBattleArt.Level >= 2)
+        if(PowerSlashBattleArt.Level >= 2)
         {
-            PowerSlashEnhancementCount++;
-            if(PowerSlashEnhancementCount > AbilityData.PowerSlashMaxEnhancementTime)
+            PowerSlashBattleArt.IncrementCount++;
+
+            int MaxIncrement = AbilityData.PowerSlashMaxIncrement_Normal;
+            if(PowerSlashBattleArt.Level == 3)
             {
-                PowerSlashEnhancementCount = AbilityData.PowerSlashMaxEnhancementTime;
+                MaxIncrement = AbilityData.PowerSlashMaxIncrement_Upgraded;
+            }
+
+            if(PowerSlashBattleArt.IncrementCount > MaxIncrement)
+            {
+                PowerSlashBattleArt.IncrementCount = MaxIncrement;
             }
         }
     }
 
-    private void PowerSlashEnhanceDamage(CharacterAttackInfo Attack)
+    private void PowerSlashIncrementPotency(CharacterAttackInfo Attack)
     {
-        var AbilityData = GetComponent<CharacterAbilityData>();
-
-        Attack.Damage += Mathf.RoundToInt(AbilityData.PowerSlashDamageEnhancementFactor * PowerSlashEnhancementCount*AbilityData.BaseDamage);
-    }
-
-    private void PowerSlashExecutionBonus(CharacterAttackInfo Attack, GameObject Enemy)
-    {
-        var AbilityData = GetComponent<CharacterAbilityData>();
-        float Proportion = Enemy.GetComponent<IHittable>().CurrentHP / (float)Enemy.GetComponent<IHittable>().MaxHP;
-
-        if(Proportion <= AbilityData.PowerSlashExecutionHPCondition && PowerSlashEnhancementCount == AbilityData.PowerSlashMaxEnhancementTime)
+        if (PowerSlashBattleArt == null)
         {
-            Attack.Damage += Mathf.RoundToInt(AbilityData.PowerSlashExecutionDamageFactor * AbilityData.BaseDamage);
+            return;
+        }
+
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
+        Attack.Potency += AbilityData.PowerSlashPotencyIncrement * PowerSlashBattleArt.IncrementCount;
+    }
+   
+    private void PowerSlashGainEnergy()
+    {
+        if (PowerSlashBattleArt == null)
+        {
+            return;
+        }
+
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
+        if (PowerSlashBattleArt.Level == 3 && PowerSlashBattleArt.IncrementCount == AbilityData.PowerSlashMaxIncrement_Upgraded)
+        {
+            GainLoseEnergy(AbilityData.PowerSlashMaxIncrementEnergyGain);
         }
     }
 
-    private void PowerSlashLoseEnhancement()
+    private void PowerSlashLoseIncrement()
     {
-        PowerSlashEnhancementCount = 0;
+        if (PowerSlashBattleArt == null)
+        {
+            return;
+        }
+
+        PowerSlashBattleArt.IncrementCount = 0;
+
     }
 
-    //Harmony Slash
+    //Cross Slash
 
-    private void HarmonySlashFullEnergyBonus(CharacterAttackInfo Attack)
+    private void CrossSlashBreakSeal()
     {
+        if(CrossSlashBattleArt == null)
+        {
+            return;
+        }
+
+        var AbilityData = GetComponent<CharacterAbilityData>();
+        if(CrossSlashBattleArt.Level == 3 && CrossSlashBattleArt.StrikeHitCount == AbilityData.CrossSlashStrikeNumber_Upgraded)
+        {
+            GainLoseSeal(-AbilityData.CrossSlashSealBreakBonus);
+        }
+    }
+
+    private void CrossSlashLastStrikeBonus(CharacterAttackInfo Attack)
+    {
+        if (CrossSlashBattleArt == null)
+        {
+            return;
+        }
+
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
+        int LastStrike = AbilityData.CrossSlashStrikeNumber_Normal;
+        if(CrossSlashBattleArt.Level >= 2)
+        {
+            LastStrike = AbilityData.CrossSlashStrikeNumber_Upgraded;
+        }
+
+        if(Awaken && CrossSlashBattleArt.StrikeCount == LastStrike)
+        {
+            Attack.Potency += AbilityData.CrossSlashAwakenPotencyBonus;
+        }
+    }
+
+    private void CrossSlashCountHit()
+    {
+        if (CrossSlashBattleArt == null)
+        {
+            return;
+        }
+
+        CrossSlashBattleArt.StrikeHitCount++;
+    }
+
+    //Harmony
+
+    private void HarmonyHeal()
+    {
+        if (HarmonyPassiveAbility == null)
+        {
+            return;
+        }
+
+        var AbilityData = GetComponent<CharacterAbilityData>();
+        Heal(Utility.GetEffectValue(CurrentPower, AbilityData.HarmonyHealPotency));
+    }
+
+    //SpiritMaster
+
+    private void SpiritMasterEnergyGainBonus()
+    {
+        if(SpiritMasterPassiveAbility == null)
+        {
+            return;
+        }
+
+        var AbilityData = GetComponent<CharacterAbilityData>();
+        GainLoseEnergy(AbilityData.SpiritMasterExtraEnergyGainListWithSeal[CurrentSeal]);
+    }
+
+    private void SpiritMasterGainSeal()
+    {
+        if(SpiritMasterPassiveAbility == null)
+        {
+            return;
+        }
+
         var Data = GetComponent<CharacterData>();
+        GainLoseSeal(Data.MaxSealNumber);
+    }
+
+    //UltimateAwakening
+
+    private void UltimateAwakeningBonus()
+    {
+        if (UltimateAwakeningPassiveAbility == null)
+        {
+            return;
+        }
+
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        if(HarmonySlashBattleArt.Level >= 2 )
+        if (Awaken)
         {
-            Attack.Damage += Mathf.RoundToInt(AbilityData.BaseDamage * AbilityData.HarmonySlashFullAdvancedEnergyDamageBonus);
+            CurrentPower += AbilityData.UltimateAwakeningExtraPower;
         }
     }
 
-    private void HarmonySlashIncreaseSlashEnhancement()
+    private void UltimateAwakeningLoseBonus()
     {
+        if (UltimateAwakeningPassiveAbility == null)
+        {
+            return;
+        }
+
+        var AbilityData = GetComponent<CharacterAbilityData>();
+
+        if (Awaken)
+        {
+            CurrentPower -= AbilityData.UltimateAwakeningExtraPower;
+        }
+    }
+
+    private void UltimateAwakenGainSeal()
+    {
+        if (UltimateAwakeningPassiveAbility == null)
+        {
+            return;
+        }
+
         var Data = GetComponent<CharacterData>();
-        var AbilityData = GetComponent<CharacterAbilityData>();
+        GainLoseSeal(Data.MaxSealNumber);
+    }
 
-        if(HarmonySlashBattleArt.Level >= 3 )
+
+
+    //CriticalEye
+
+    private void CriticalEyeBonus(CharacterAttackInfo Attack)
+    {
+        if(CriticalEyePassiveAbility == null)
         {
-            HarmonySlashSlashEnhancementCount++;
-            if(HarmonySlashSlashEnhancementCount > AbilityData.HarmonySlashMaxSlashDamageBonusTime)
-            {
-                HarmonySlashSlashEnhancementCount = AbilityData.HarmonySlashMaxSlashDamageBonusTime;
-            }
+            return;
+        }
+
+        var AbilityData = GetComponent<CharacterAbilityData>();
+        if (Attack.Potency >= AbilityData.CriticalEyePotencyRequired)
+        {
+            Attack.Potency += AbilityData.CriticalEyeExtraPotency;
         }
     }
 
-    private void HarmonySlashEnhanceSlash(CharacterAttackInfo Attack)
+    //BattleArtMaster
+
+    private void BattleArtMasterBonus(CharacterAttackInfo Attack)
     {
-        var AbilityData = GetComponent<CharacterAbilityData>();
-
-        Attack.Damage += Mathf.RoundToInt(HarmonySlashSlashEnhancementCount * AbilityData.HarmonySlashSlashDamageBonusFactor*AbilityData.BaseDamage);
-    }
-
-    private void HarmonySlashLoseSlashEnhancement()
-    {
-        HarmonySlashSlashEnhancementCount = 0;
-    }
-
-    //Slash Art
-
-    private void SlashArtEffect(CharacterAttackInfo Attack)
-    {
-        if (CurrentEnergy == GetComponent<CharacterData>().MaxEnergy)
+        if(BattleArtMasterPassiveAbility == null)
         {
-            Attack.DamType = DamageType.Strike;
+            return;
         }
-    }
 
-    //Assassin's Heart
-
-    private void AssassinHeartEnhancement(CharacterAttackInfo Attack)
-    {
-
+        var AbilityData = GetComponent<CharacterAbilityData>();
+        Attack.Potency += AbilityData.BattleArtMasterExtraPotency;
     }
 
     //One Mind
 
-    private void OneMindIncreaseEnhancement()
+    private void OneMindGainIncrement()
     {
+        if(OneMindPassiveAbility == null)
+        {
+            return;
+        }
+
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        OneMindEnhancementCount++;
-        if(OneMindEnhancementCount > AbilityData.OneMindMaxDamageEnhancementTime)
+        OneMindPassiveAbility.IncrementCount++;
+        if(OneMindPassiveAbility.IncrementCount > AbilityData.OneMindMaxIncrement)
         {
-            OneMindEnhancementCount = AbilityData.OneMindMaxDamageEnhancementTime;
+            OneMindPassiveAbility.IncrementCount = AbilityData.OneMindMaxIncrement;
         }
     }
 
-    private void OneMindEnhanceSlash(CharacterAttackInfo Attack)
+    private void OneMindIncrementSlashPotency(CharacterAttackInfo Attack)
     {
+        if (OneMindPassiveAbility == null)
+        {
+            return;
+        }
+
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        Attack.Damage += Mathf.RoundToInt(AbilityData.OneMindDamageEnhancementFactor * OneMindEnhancementCount * AbilityData.BaseDamage);
+        Attack.Potency += AbilityData.OneMindSlashPotencyIncrement * OneMindPassiveAbility.IncrementCount;
+
     }
 
-    private void OneMindLoseEnhancement()
+    private void OneMindLoseIncrement()
     {
-        OneMindEnhancementCount = 0;
+        if (OneMindPassiveAbility == null)
+        {
+            return;
+        }
+
+        OneMindPassiveAbility.IncrementCount = 0;
     }
 
     //Dancer
 
     private void CheckDancerHitEnemy()
     {
+        if (DancerPassiveAbility == null)
+        {
+            return;
+        }
+
         var Data = GetComponent<CharacterData>();
         var AbilityData = GetComponent<CharacterAbilityData>();
         var SpeedManager = GetComponent<SpeedManager>();
 
         Vector2 Dir = Vector2.right;
-        if(DancerAttack.Dir == Direction.Left)
+        if(DancerPassiveAbility.DancerAttack.Dir == Direction.Left)
         {
             Dir = Vector2.left;
         }
-
 
         RaycastHit2D[] AllHits = Physics2D.BoxCastAll(SpeedManager.GetTruePos(), AbilityData.DancerHitBoxSize, 0, Dir, 0, Data.EnemyLayer);
         if (AllHits.Length > 0)
@@ -813,14 +858,14 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             {
                 GameObject Enemy = AllHits[i].collider.gameObject;
 
-                if (!DancerHitEnemies.Contains(Enemy))
+                if (!DancerPassiveAbility.HitEnemies.Contains(Enemy))
                 {
-                    CharacterAttackInfo UpdatedAttack = new CharacterAttackInfo(DancerAttack);
+                    CharacterAttackInfo UpdatedAttack = new CharacterAttackInfo(DancerPassiveAbility.DancerAttack);
 
-                    EventManager.instance.Fire(new PlayerHitEnemy(DancerAttack, UpdatedAttack, Enemy));
+                    EventManager.instance.Fire(new PlayerHitEnemy(DancerPassiveAbility.DancerAttack, UpdatedAttack, Enemy));
 
                     Enemy.GetComponent<IHittable>().OnHit(UpdatedAttack);
-                    DancerHitEnemies.Add(Enemy);
+                    DancerPassiveAbility.HitEnemies.Add(Enemy);
                 }
             }
         }
@@ -828,12 +873,15 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void SetUpDancer()
     {
+        if(DancerPassiveAbility == null)
+        {
+            return;
+        }
+
         var AbilityData = GetComponent<CharacterAbilityData>();
         var SpeedManager = GetComponent<SpeedManager>();
 
-        DancerHitEnemies.Clear();
-
-        int DancerDamage = Mathf.RoundToInt(AbilityData.BaseDamage * AbilityData.DancerDamageFactor);
+        DancerPassiveAbility.HitEnemies.Clear();
 
         Direction dir;
         if (transform.right.x > 0)
@@ -845,21 +893,6 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             dir = Direction.Left;
         }
 
-        DancerAttack = new CharacterAttackInfo(gameObject, CharacterAttackType.Dancer, DamageType.Normal, dir, DancerDamage, DancerDamage, DancerDamage, SpeedManager.OriPos, SpeedManager.OriPos, AbilityData.DancerHitBoxSize, AbilityData.DancerHitBoxSize);
-    }
-
-    //Insanity
-
-    private void InsanityGetAdvancedEnergy()
-    {
-        var AbilityData = GetComponent<CharacterAbilityData>();
-
-        //GainLoseAdvancedEnergy(AbilityData.InsanityAdvancedEnergyGain);
-
-    }
-
-    private void InsanityEnergyLost()
-    {
-        CurrentEnergy = 0;
+        DancerPassiveAbility.DancerAttack = new CharacterAttackInfo(gameObject, CharacterAttackType.Dancer, dir, CurrentPower,CurrentPower,AbilityData.DancerPotency,AbilityData.DancerPotency,AbilityData.DancerInterruptLevel,AbilityData.DancerInterruptLevel, SpeedManager.OriPos, SpeedManager.OriPos, AbilityData.DancerHitBoxSize, AbilityData.DancerHitBoxSize);
     }
 }

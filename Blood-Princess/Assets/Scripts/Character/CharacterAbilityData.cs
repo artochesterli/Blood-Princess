@@ -4,13 +4,14 @@ using UnityEngine;
 
 public class CharacterAbilityData : MonoBehaviour
 {
-    public int BaseDamage;
+    public int BasePower;
 
     public float SlashAnticipationTime;
     public float SlashStrikeTime;
     public float SlashRecoveryTime;
     public float SlashStepForwardSpeed;
-    public float SlashDamageFactor;
+    public int SlashPotency;
+    public int SlashInterruptLevel;
 
     public int SlashEnergyGain;
     public int SlashEnergyAwakenGain;
@@ -29,43 +30,53 @@ public class CharacterAbilityData : MonoBehaviour
     public float PowerSlashStrikeTime;
     public float PowerSlashRecoveryTime;
     public float PowerSlashStepForwardSpeed;
-    public float PowerSlashDamageFactor;
-    public int PowerSlashAdvancedEnergyGain;
+    public int PowerSlashPotency;
+    public int PowerSlashInterruptLevel;
 
-    public float PowerSlashDamageEnhancementFactor; 
-    public int PowerSlashMaxEnhancementTime;
-    public float PowerSlashExecutionHPCondition;
-    public float PowerSlashExecutionDamageFactor;
+    public int PowerSlashPotencyIncrement;
+    public int PowerSlashMaxIncrement_Normal;
+    public int PowerSlashMaxIncrement_Upgraded;
+    public int PowerSlashMaxIncrementEnergyGain;
 
     public GameObject PowerSlashEffect;
+    public Vector2 PowerSlashEffectOffset;
     public Vector2 PowerSlashOffset;
     public Vector2 PowerSlashHitBoxSize;
-    public Vector2 PowerSlashEffectOffset;
 
-    public float HarmonySlashAnticipationTime;
-    public float HarmonySlashStrikeTime;
-    public float HarmonySlashRecoveryTime;
-    public float HarmonySlashStepBackSpeed;
-    public float HarmonySlashStepBackTime;
-    public float HarmonySlashStepForwardSpeed;
-    public float HarmonySlashDamageFactor;
-    public int HarmonySlashAdvancedEnergyGain;
 
-    public float HarmonySlashFullAdvancedEnergyDamageBonus;
-    public float HarmonySlashSlashDamageBonusFactor;
-    public int HarmonySlashMaxSlashDamageBonusTime;
+    public float CrossSlashAnticipationTime;
+    public float CrossSlashStrikeTime;
+    public float CrossSlashRecoveryTime;
+    public float CrossSlashStepForwardSpeed;
+    public int CrossSlashStrikeNumber_Normal;
+    public int CrossSlashStrikeNumber_Upgraded;
+    public int CrossSlashPotency;
+    public int CrossSlashInterruptLevel;
 
-    public GameObject HarmonySlashEffect;
-    public Vector2 HarmonySlashOffset;
-    public Vector2 HarmonySlashHitBoxSize;
-    public Vector2 HarmonySlashEffectOffset;
+    public int CrossSlashAwakenPotencyBonus;
+    public int CrossSlashSealBreakBonus;
 
-    public float OneMindDamageEnhancementFactor;
-    public int OneMindMaxDamageEnhancementTime;
+    public GameObject CrossSlashEffect;
+    public Vector2 CrossSlashEffectOffset;
+    public Vector2 CrossSlashOffset;
+    public Vector2 CrossSlashHitBoxSize;
 
-    public float DancerDamageFactor;
+    public int HarmonyHealPotency;
+
+    public List<int> SpiritMasterExtraEnergyGainListWithSeal;
+
+    public int UltimateAwakeningExtraPower;
+
+    public int CriticalEyeExtraPotency;
+    public int CriticalEyePotencyRequired;
+
+    public int BattleArtMasterExtraPotency;
+
+    public int OneMindSlashPotencyIncrement;
+    public int OneMindMaxIncrement;
+
+    public int DancerPotency;
+    public int DancerInterruptLevel;
     public Vector2 DancerHitBoxSize;
-
-    public int InsanityAdvancedEnergyGain;
 
 }
