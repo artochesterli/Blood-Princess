@@ -20,6 +20,7 @@ public class StatusManager_Dummy : StatusManagerBase, IHittable, IShield
     void Start()
     {
         var Data = GetComponent<DummyData>();
+        MaxHP = Data.MaxHP;
         CurrentHP = Data.MaxHP;
         CurrentShield = Data.MaxShield;
     }
@@ -42,30 +43,17 @@ public class StatusManager_Dummy : StatusManagerBase, IHittable, IShield
 
             var Data = GetComponent<DummyData>();
 
+            Interrupted = true;
+
+            int Damage = Utility.GetEffectValue(HitAttack.Power, HitAttack.Potency);
+
             if (HitAttack.Type != CharacterAttackType.Slash)
             {
-                CurrentHP -= HitAttack.Damage;
-                Interrupted = true;
-            }
-            else
-            {
-                if (CurrentShield > 0)
-                {
-                    CurrentShield -= HitAttack.Damage;
-                    if (CurrentShield < 0)
-                    {
-                        CurrentShield = 0;
-                    }
-                    Interrupted = false;
-                }
-                else
-                {
-                    CurrentHP -= HitAttack.Damage;
-                    Interrupted = true;
-                }
+                CurrentHP -= Damage;
+                
             }
 
-            if (HitAttack.Right)
+            if (HitAttack.Dir == Direction.Right)
             {
                 DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 1);
             }
@@ -73,7 +61,7 @@ public class StatusManager_Dummy : StatusManagerBase, IHittable, IShield
             {
                 DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 1);
             }
-            DamageText.GetComponent<Text>().text = HitAttack.Damage.ToString();
+            DamageText.GetComponent<Text>().text = Damage.ToString();
             if (Interrupted)
             {
                 DamageText.GetComponent<Text>().color = Color.red;

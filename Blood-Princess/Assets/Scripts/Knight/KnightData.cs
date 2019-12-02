@@ -20,17 +20,25 @@ public class KnightData : MonoBehaviour
     public float SingleAttackRecoveryTime;
     public float DoubleAttackFirstRecoveryTime;
     public float DoubleAttackSecondRecoveryTime;
+    public float ChaseAttackRecoveryTime;
     public int Damage;
 
     public float AttackAvailableHitBoxPercentage;
-    public Vector2 AttackOffset;
-    public Vector2 AttackHitBoxSize;
+
+    public Vector2 SingleAttackOffset;
+    public Vector2 SingleAttackHitBoxSize;
+    public Vector2 DoubleAttackOffset;
+    public Vector2 DoubleAttackHitBoxSize;
     public GameObject SlashImage;
+    public GameObject SingleSlashImage;
+    public GameObject DoubleSlashImage;
 
     public float KnockedBackTime;
     public float KnockedBackSpeed;
+    public float BackHitStuckTime;
 
-    public float RecoveryKnockedBackStunTime;
+    public float KnockedRecoveryTime;
+    public float GetHitOnBackKnockedTime;
 
     public float AttackCoolDown;
 
@@ -38,10 +46,15 @@ public class KnightData : MonoBehaviour
     public float MaxChaseAttackChaseDistance;
 
     public float SingleAttackChance;
+    public float DoubleAttackChance;
 
-    public float FirstGetHitAttackCoolDown;
+    public float BlinkChance;
 
-    public float CharacterSpiritSlashAttackCoolDown;
+    public float BlinkPrepareTime;
+    public float BlinkForChaseAttackDis;
+
+    public int NormalResistance;
+    public int AttackResistance;
 
     // Start is called before the first frame update
     void Start()

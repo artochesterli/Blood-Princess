@@ -9,7 +9,7 @@ using BehaviorDesigner.Runtime;
 public class Anticipation : Action
 {
 	public SharedFloat Duration;
-	public SharedSprite ChangedSprite;
+	public Sprite ChangedSprite;
 
 	private KnightSpriteData m_KnightSpriteData;
 	private SpriteRenderer m_SpriteRenderer;
@@ -26,11 +26,10 @@ public class Anticipation : Action
 	public override void OnStart()
 	{
 		m_Timer = Time.timeSinceLevelLoad + Duration.Value;
-		if (ChangedSprite != null && ChangedSprite.Value != null)
-			m_SpriteRenderer.sprite = ChangedSprite.Value;
+		if (ChangedSprite == null)
+			m_SpriteRenderer.sprite = m_KnightSpriteData.SingleAnticipation;
 		else
-			m_SpriteRenderer.sprite = m_KnightSpriteData.Anticipation;
-
+			m_SpriteRenderer.sprite = ChangedSprite;
 	}
 
 	public override TaskStatus OnUpdate()

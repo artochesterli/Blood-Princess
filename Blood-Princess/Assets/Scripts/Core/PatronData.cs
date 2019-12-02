@@ -6,9 +6,6 @@ public class PatronData : MonoBehaviour
 {
     public bool Patron;
     public float PatronStayTime;
-    public float DetectAngle;
-    public float DetectInterval;
-    public float DetectPlayerShockTime;
 
     public float DetectHeight;
     public LayerMask DetectLayer;

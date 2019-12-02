@@ -44,7 +44,9 @@ public class StatusManager_General : StatusManagerBase, IHittable
 
 		CharacterAttackInfo HitAttack = (CharacterAttackInfo)Attack;
 
-		CurrentHP -= HitAttack.Damage;
+        int Damage = Utility.GetEffectValue(HitAttack.Power, HitAttack.Potency);
+
+		CurrentHP -= Damage;
 
 		m_BehaviorTree.SendEvent("Attacked");
 
@@ -58,7 +60,7 @@ public class StatusManager_General : StatusManagerBase, IHittable
 		}
 
 
-		if (HitAttack.Right)
+		if (HitAttack.Dir == Direction.Right)
 		{
 			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 1);
 		}
@@ -66,7 +68,7 @@ public class StatusManager_General : StatusManagerBase, IHittable
 		{
 			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 1);
 		}
-		DamageText.GetComponent<Text>().text = HitAttack.Damage.ToString();
+		DamageText.GetComponent<Text>().text = Damage.ToString();
 		DamageText.transform.parent = Canvas.transform;
 		if (HitAttack.Type == CharacterAttackType.Slash)
 		{
