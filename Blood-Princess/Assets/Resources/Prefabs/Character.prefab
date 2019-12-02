@@ -526,7 +526,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -608503495
-  m_SortingLayer: 3
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: e6611fecc07cc024e9984503bff1c8f2, type: 3}
   m_Color: {r: 0.9433962, g: 0.9433962, b: 0.9433962, a: 1}
@@ -2120,7 +2120,7 @@ SpriteRenderer:
   m_SortingLayerID: -2115827669
   m_SortingLayer: 2
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 2580388cc7a011848afce1e1e63fa17e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: feaec7d138c627446bcc3a2844dcb484, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -2144,18 +2144,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.1373789, y: -0.07266343}
+  m_Offset: {x: 0.07987654, y: -0.1138214}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 2.1538463, y: 2.1538463}
+    oldSize: {x: 0.76823527, y: 1.5329412}
     newSize: {x: 0.58, y: 1.28}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.5550218, y: 1.2418563}
+  m_Size: {x: 0.5182312, y: 1.305299}
   m_EdgeRadius: 0
 --- !u!114 &4954734968556382946
 MonoBehaviour:
@@ -2170,47 +2170,47 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   IdleSeries:
-  - {fileID: 21300000, guid: 2580388cc7a011848afce1e1e63fa17e, type: 3}
-  - {fileID: 21300000, guid: 42424e8f67ec5d54c869cd18680923f9, type: 3}
-  - {fileID: 21300000, guid: db1b6273449cd2f4a9d5236b5902795a, type: 3}
-  - {fileID: 21300000, guid: 8c4165b5d7d7a9b46932010a2afc30be, type: 3}
+  - {fileID: 21300000, guid: feaec7d138c627446bcc3a2844dcb484, type: 3}
+  - {fileID: 21300000, guid: feaec7d138c627446bcc3a2844dcb484, type: 3}
+  - {fileID: 21300000, guid: feaec7d138c627446bcc3a2844dcb484, type: 3}
+  - {fileID: 21300000, guid: feaec7d138c627446bcc3a2844dcb484, type: 3}
   LightAnticipationSeries:
-  - {fileID: 21300000, guid: b9c9d19c40238e443a958559b51d050c, type: 3}
-  - {fileID: 21300000, guid: 53438d7ec73a0124499107ced1a3ecda, type: 3}
-  - {fileID: 21300000, guid: 4ce4fbeb56ca28643aedb2417db6d4e7, type: 3}
-  - {fileID: 21300000, guid: 90b60220c8161214a85f47612695c027, type: 3}
+  - {fileID: 21300000, guid: 2fe730c0855aea340933bcd740e59c7f, type: 3}
+  - {fileID: 21300000, guid: 2fe730c0855aea340933bcd740e59c7f, type: 3}
+  - {fileID: 21300000, guid: 2fe730c0855aea340933bcd740e59c7f, type: 3}
+  - {fileID: 21300000, guid: 2fe730c0855aea340933bcd740e59c7f, type: 3}
   LightRecoverySeries:
-  - {fileID: 21300000, guid: c494475413b1fdf488cb608906ea4e80, type: 3}
-  - {fileID: 21300000, guid: 38209ce1e13c40048843fcf529678e90, type: 3}
-  - {fileID: 21300000, guid: 66c1b51632ceddb44a4e9505d0e9bfd9, type: 3}
-  - {fileID: 21300000, guid: 58fb549740de3a54f8138604955bcbbb, type: 3}
+  - {fileID: 21300000, guid: 636bc6122cbf445459f5451b5f0b33dd, type: 3}
+  - {fileID: 21300000, guid: 636bc6122cbf445459f5451b5f0b33dd, type: 3}
+  - {fileID: 21300000, guid: 636bc6122cbf445459f5451b5f0b33dd, type: 3}
+  - {fileID: 21300000, guid: 636bc6122cbf445459f5451b5f0b33dd, type: 3}
   HeavyAnticipationSeries:
-  - {fileID: 21300000, guid: fdf4e0cc332d730459974fad687ca48d, type: 3}
-  - {fileID: 21300000, guid: b48211483f4a0214893e9aefc662ea04, type: 3}
-  - {fileID: 21300000, guid: ab4a4e0be91d3f543aaae4f2190883bf, type: 3}
-  - {fileID: 21300000, guid: 453307f058c2f144382d67273b7ff386, type: 3}
+  - {fileID: 21300000, guid: 2fe730c0855aea340933bcd740e59c7f, type: 3}
+  - {fileID: 21300000, guid: 2fe730c0855aea340933bcd740e59c7f, type: 3}
+  - {fileID: 21300000, guid: 2fe730c0855aea340933bcd740e59c7f, type: 3}
+  - {fileID: 21300000, guid: 2fe730c0855aea340933bcd740e59c7f, type: 3}
   HeavyRecoverySeries:
-  - {fileID: 21300000, guid: 5a68d45cc93097c4897e39d51a32611a, type: 3}
-  - {fileID: 21300000, guid: 2bbe66546ae37ac449ef7fb7f1fafeae, type: 3}
-  - {fileID: 21300000, guid: 9da6e012546a4964280886aedb919106, type: 3}
-  - {fileID: 21300000, guid: 0aa5a366db443f241babae989f35d7f0, type: 3}
+  - {fileID: 21300000, guid: 636bc6122cbf445459f5451b5f0b33dd, type: 3}
+  - {fileID: 21300000, guid: 636bc6122cbf445459f5451b5f0b33dd, type: 3}
+  - {fileID: 21300000, guid: 636bc6122cbf445459f5451b5f0b33dd, type: 3}
+  - {fileID: 21300000, guid: 636bc6122cbf445459f5451b5f0b33dd, type: 3}
   HitSeries:
-  - {fileID: 21300000, guid: c9298183007fe54489c1e035cb37c009, type: 3}
-  - {fileID: 21300000, guid: 4263d11b07e9599428c85b465fbbbbc9, type: 3}
-  - {fileID: 21300000, guid: 90e185899f9834c47be5ca6e1b36d680, type: 3}
-  - {fileID: 21300000, guid: 5a56198ef39d97b438b334abed42064e, type: 3}
-  IdleOffset: {x: 0.1373789, y: -0.07266343}
-  IdleSize: {x: 0.5550218, y: 1.241856}
-  LightAnticipationOffset: {x: 0.09890866, y: -0.07266343}
-  LightAnticipationSize: {x: 0.6142259, y: 1.241856}
-  LightRecoveryOffset: {x: 0.07331681, y: -0.07266343}
-  LightRecoverySize: {x: 0.6368566, y: 1.241856}
-  HeavyAnticipationOffset: {x: 0.1635947, y: -0.07266343}
-  HeavyAnticipationSize: {x: 0.6860991, y: 1.241856}
-  HeavyRecoveryOffset: {x: 0.1635947, y: -0.07266343}
-  HeavyRecoverySize: {x: 0.6860991, y: 1.241856}
-  HitOffset: {x: 0.1256096, y: -0.07266343}
-  HitSize: {x: 0.6101289, y: 1.241856}
+  - {fileID: 21300000, guid: feaec7d138c627446bcc3a2844dcb484, type: 3}
+  - {fileID: 21300000, guid: feaec7d138c627446bcc3a2844dcb484, type: 3}
+  - {fileID: 21300000, guid: feaec7d138c627446bcc3a2844dcb484, type: 3}
+  - {fileID: 21300000, guid: feaec7d138c627446bcc3a2844dcb484, type: 3}
+  IdleOffset: {x: 0.07987654, y: -0.1138214}
+  IdleSize: {x: 0.5182312, y: 1.305299}
+  LightAnticipationOffset: {x: 0.06, y: -0.1915005}
+  LightAnticipationSize: {x: 0.5179188, y: 1.147614}
+  LightRecoveryOffset: {x: 0.0682863, y: -0.05481064}
+  LightRecoverySize: {x: 0.5077012, y: 1.420351}
+  HeavyAnticipationOffset: {x: 0.06, y: -0.1915005}
+  HeavyAnticipationSize: {x: 0.5179188, y: 1.147614}
+  HeavyRecoveryOffset: {x: 0.0682863, y: -0.05481064}
+  HeavyRecoverySize: {x: 0.5077012, y: 1.420351}
+  HitOffset: {x: 0.07987654, y: -0.1138214}
+  HitSize: {x: 0.5182312, y: 1.305299}
 --- !u!114 &4954734968556382949
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2289,7 +2289,7 @@ MonoBehaviour:
   AirAcceleration: 25
   AirDeceleration: 50
   NormalGravity: 3
-  JumpSpeed: 8.3
+  JumpSpeed: 8
   JumpHoldingTime: 0.2
   MaxHP: 30
   MaxEnergy: 100
@@ -2299,6 +2299,8 @@ MonoBehaviour:
   InterruptedTime: 0.3
   InterruptedMoveTime: 0.1
   InterruptedSpeedX: 10
+  RollEffect: {fileID: 1598599796852971296, guid: 7d29a0c45f552a848bf6a387b5076ed2,
+    type: 3}
   RollAnticipationTime: 0.1
   RollTime: 0.2
   RollRecoveryTime: 0.2
@@ -2381,7 +2383,8 @@ MonoBehaviour:
   SlashCriticalEyeDamageBonus: 0.5
   SlashEnergyGain: 20
   SlashAdvancedEnergyGainInCriticalEye: 10
-  SlashImageCriticalEye: {fileID: 5367861512340675372, guid: 51a3bf9aa6525314c9423f08412871fa,
+  SlashEffectPreGenerateTime: 0.05
+  SlashEffect: {fileID: 3178284683611736721, guid: 2a1caf9f2e86f96418fe279d441db4a0,
     type: 3}
   SlashImage: {fileID: 7821179725081130998, guid: b3fb9bb73ec2550488f3d2d9bff4e88b,
     type: 3}

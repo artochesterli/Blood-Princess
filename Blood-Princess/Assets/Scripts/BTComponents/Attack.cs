@@ -15,7 +15,7 @@ public class Attack : Action
 	public SharedVector2 HitBoxSize;
 	public SharedFloat ForwardStep;
 	public LayerMask PlayerLayer;
-	public Sprite AttackSprite;
+	public SharedSprite AttackSprite;
 
 	private KnightSpriteData m_KnightSpriteData;
 	private float m_Timer;
@@ -30,10 +30,10 @@ public class Attack : Action
 	public override void OnStart()
 	{
 		m_Timer = Time.timeSinceLevelLoad + Duration.Value;
-		if (AttackSprite == null)
+		if (AttackSprite == null || AttackSprite.Value == null)
 			GetComponent<SpriteRenderer>().sprite = m_KnightSpriteData.Recovery;
 		else
-			GetComponent<SpriteRenderer>().sprite = AttackSprite;
+			GetComponent<SpriteRenderer>().sprite = AttackSprite.Value;
 		m_AttackHit = false;
 		bool isRight = transform.eulerAngles.y == 0f;
 		AttackInfo = new EnemyAttackInfo(Owner.gameObject, isRight, Damage.Value, Damage.Value, HitBoxOffset.Value, HitBoxSize.Value);

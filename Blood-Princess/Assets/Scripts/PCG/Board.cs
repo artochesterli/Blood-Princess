@@ -48,12 +48,12 @@ namespace PCG
 		private void _setupBoard(int length)
 		{
 			IntVector2 startPosition = new IntVector2(1, _height / 2);
-			Room entrance = new Room(startPosition, "8", _seed, 5, ref _board, _boardGameObject);
+			Room entrance = new Room(startPosition, "L", _seed, 5, ref _board, _boardGameObject);
 			startPosition = entrance.RoomExit.BoardPosition;
 			startPosition.x += 1;
 			for (int i = 0; i < length; i++)
 			{
-				Room newRoom = new Room(startPosition, "8", _seed, 3, ref _board, _boardGameObject);
+				Room newRoom = new Room(startPosition, "L", _seed, 3, ref _board, _boardGameObject);
 				// Calculate the new Room's starting position and entry type
 				startPosition = newRoom.RoomExit.BoardPosition;
 				startPosition.x += 1;
@@ -146,10 +146,11 @@ namespace PCG
 				if (instantiatedObject.name.Contains("Knight"))
 					instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.2f;
 				else if (instantiatedObject.name.Contains("Enemy1"))
-					instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.5f;
+					instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.8f;
 				else if (instantiatedObject.name.Contains("Passable"))
 					instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.4f;
-
+				else if (instantiatedObject.name.Contains("Enemy2"))
+					instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.8f;
 			}
 		}
 

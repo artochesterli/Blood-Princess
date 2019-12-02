@@ -90,6 +90,21 @@ public class StatusManager_General : StatusManagerBase, IHittable
 		}
 	}
 
+	private void m_OnHitPlayer(PlayerGetHit ev)
+	{
+		if (!ev.PlayerInRollInvulnerability)
+			m_BehaviorTree.SetVariableValue("PlayerHit", true);
+	}
+
+	private void OnEnable()
+	{
+		EventManager.instance.AddHandler<PlayerGetHit>(m_OnHitPlayer);
+	}
+
+	private void OnDisable()
+	{
+		EventManager.instance.RemoveHandler<PlayerGetHit>(m_OnHitPlayer);
+	}
 
 	private void SetFill()
 	{

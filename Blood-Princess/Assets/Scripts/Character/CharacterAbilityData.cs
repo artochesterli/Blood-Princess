@@ -14,7 +14,8 @@ public class CharacterAbilityData : MonoBehaviour
     public int SlashEnergyGain;
     public int SlashAdvancedEnergyGainInCriticalEye;
 
-    public GameObject SlashImageCriticalEye;
+    public float SlashEffectPreGenerateTime;
+    public GameObject SlashEffect;
     public GameObject SlashImage;
     public Vector2 SlashOffset;
     public Vector2 SlashHitBoxSize;
