@@ -35,6 +35,7 @@ public class KnightData : MonoBehaviour
 
     public float KnockedBackTime;
     public float KnockedBackSpeed;
+    public float BackHitStuckTime;
 
     public float KnockedRecoveryTime;
     public float GetHitOnBackKnockedTime;

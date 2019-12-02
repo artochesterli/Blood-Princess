@@ -10,7 +10,7 @@ public class CharacterAbilityData : MonoBehaviour
     public float SlashStrikeTime;
     public float SlashRecoveryTime;
     public float SlashStepForwardSpeed;
-    public int SlashPotency;
+    public List<int> SlashPotencyList;
     public int SlashInterruptLevel;
 
     public int SlashEnergyGain;
@@ -30,13 +30,12 @@ public class CharacterAbilityData : MonoBehaviour
     public float PowerSlashStrikeTime;
     public float PowerSlashRecoveryTime;
     public float PowerSlashStepForwardSpeed;
-    public int PowerSlashPotency;
+    public List<int> PowerSlashPotencyList;
     public int PowerSlashInterruptLevel;
 
-    public int PowerSlashPotencyIncrement;
-    public int PowerSlashMaxIncrement_Normal;
-    public int PowerSlashMaxIncrement_Upgraded;
-    public int PowerSlashMaxIncrementEnergyGain;
+    public int PowerSlashAwakenPotencyBonus_Normal;
+    public int PowerSlashAwakenPotencyBonus_Upgraded;
+    public int PowerSlashEnergyGain;
 
     public GameObject PowerSlashEffect;
     public Vector2 PowerSlashEffectOffset;
@@ -49,8 +48,8 @@ public class CharacterAbilityData : MonoBehaviour
     public float CrossSlashRecoveryTime;
     public float CrossSlashStepForwardSpeed;
     public int CrossSlashStrikeNumber_Normal;
-    public int CrossSlashStrikeNumber_Upgraded;
-    public int CrossSlashPotency;
+    public int CrossSlashStrikeNumber_Awaken;
+    public List<int> CrossSlashPotencyList;
     public int CrossSlashInterruptLevel;
 
     public int CrossSlashAwakenPotencyBonus;
@@ -65,7 +64,7 @@ public class CharacterAbilityData : MonoBehaviour
 
     public List<int> SpiritMasterExtraEnergyGainListWithSeal;
 
-    public int UltimateAwakeningExtraPower;
+    public int UltimateAwakeningExtraPotency;
 
     public int CriticalEyeExtraPotency;
     public int CriticalEyePotencyRequired;

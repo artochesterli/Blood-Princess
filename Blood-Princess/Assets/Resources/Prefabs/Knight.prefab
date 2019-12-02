@@ -233,8 +233,9 @@ MonoBehaviour:
     type: 3}
   DoubleSlashImage: {fileID: 4303735459540028926, guid: 6b9f20946377e044b96aa85537ee0684,
     type: 3}
-  KnockedBackTime: 0.2
-  KnockedBackSpeed: 3
+  KnockedBackTime: 0.1
+  KnockedBackSpeed: 6
+  BackHitStuckTime: 0.2
   KnockedRecoveryTime: 0.3
   GetHitOnBackKnockedTime: 0.4
   AttackCoolDown: 0.6

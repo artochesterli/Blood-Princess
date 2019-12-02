@@ -849,6 +849,7 @@ public class KnightGetInterrupted : KnightBehavior
             }
             else
             {
+                StateTime += KnightData.BackHitStuckTime;
                 GetHitOnBack = true;
             }
 
@@ -858,10 +859,12 @@ public class KnightGetInterrupted : KnightBehavior
         {
             if (Entity.transform.right.x > 0)
             {
+
                 GetHitOnBack = false;
             }
             else
             {
+                StateTime += KnightData.BackHitStuckTime;
                 GetHitOnBack = true;
             }
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = -KnightData.KnockedBackSpeed;
@@ -873,17 +876,31 @@ public class KnightGetInterrupted : KnightBehavior
     private void SetAppearance()
     {
         var KnightSpriteData = Entity.GetComponent<KnightSpriteData>();
-        SetKnight(KnightSpriteData.Hit, KnightSpriteData.HitOffset, KnightSpriteData.HitSize);
+
+        if (GetHitOnBack)
+        {
+            SetKnight(KnightSpriteData.Hit, KnightSpriteData.HitOffset, KnightSpriteData.HitSize);
+        }
+        else
+        {
+            SetKnight(KnightSpriteData.Idle, KnightSpriteData.IdleOffset, KnightSpriteData.IdleSize);
+        }
 
     }
 
     private void CheckTime()
     {
+        var KnightData = Entity.GetComponent<KnightData>();
+
         TimeCount += Time.deltaTime;
 
         if (TimeCount >= StateTime)
         {
             Transition();
+        }
+        else if(TimeCount >= KnightData.KnockedBackTime && GetHitOnBack)
+        {
+            Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
         }
     }
 

@@ -9,8 +9,8 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 {
     public int CurrentEnergy;
     public int CurrentMaxEnergy;
-    public int CurrentSeal;
     public int CurrentPower;
+    public List<bool> CurrentSealState;
 
     public EnemyAttackInfo CurrentTakenAttack;
 
@@ -108,7 +108,6 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         {
             CheckDancerHitEnemy();
         }
-
     }
 
     public void SetParryInvulnerability(bool value)
@@ -139,14 +138,33 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         Awaken = value;
     }
 
+    public int GetCurrentSealSpot()
+    {
+        int ans = 0;
+        while(ans < CurrentSealState.Count)
+        {
+            if (CurrentSealState[ans])
+            {
+                return ans;
+            }
+            ans++;
+        }
+        return ans;
+    }
+
     private void Init()
     {
         var Data = GetComponent<CharacterData>();
         var AbilityData = GetComponent<CharacterAbilityData>();
 
         CurrentHP = Data.MaxHP;
-        CurrentMaxEnergy = Data.MaxEnergy;
-        CurrentSeal = Data.MaxSealNumber;
+        CurrentMaxEnergy = Data.SealSpotEnergyCap[0];
+        CurrentSealState = new List<bool>();
+        for(int i = 0; i < Data.SealSpotEnergyCap.Count; i++)
+        {
+            CurrentSealState.Add(true);
+        }
+
         CurrentPower = AbilityData.BasePower;
         CurrentEnergy = 0;
 
@@ -158,18 +176,22 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Data = GetComponent<CharacterData>();
         HPFill.GetComponent<Image>().fillAmount = (float)CurrentHP / Data.MaxHP;
 
-        EnergyFill.GetComponent<Image>().fillAmount = (float)CurrentEnergy / (Data.MaxEnergy + Data.MaxSealNumber*Data.SealBreakEnergyCap);
+        EnergyFill.GetComponent<Image>().fillAmount = (float)CurrentEnergy / Data.MaxEnergy;
 
-        SealFill.GetComponent<Image>().fillAmount = (float)(CurrentSeal* Data.SealBreakEnergyCap)/ (Data.MaxEnergy + Data.MaxSealNumber * Data.SealBreakEnergyCap);
-
-        for (int i = 1; i <= CurrentSeal; i++)
+        if(GetCurrentSealSpot() == Data.SealSpotEnergyCap.Count)
         {
-            SealMarks.transform.GetChild(Data.MaxSealNumber - i).gameObject.SetActive(true);
+            SealFill.GetComponent<Image>().fillAmount = 0;
+        }
+        else
+        {
+            SealFill.GetComponent<Image>().fillAmount = (float)(Data.MaxEnergy - Data.SealSpotEnergyCap[GetCurrentSealSpot()]) / Data.MaxEnergy;
         }
 
-        for(int i= CurrentSeal+1 ; i <= Data.MaxSealNumber; i++)
+
+
+        for(int i = 0; i < CurrentSealState.Count; i++)
         {
-            SealMarks.transform.GetChild(Data.MaxSealNumber - i).gameObject.SetActive(false);
+            SealMarks.transform.GetChild(i).gameObject.SetActive(CurrentSealState[i]);
         }
 
     }
@@ -262,10 +284,10 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             switch (e.Attack.ThisBattleArt.Type)
             {
                 case BattleArtType.PowerSlash:
-                    PowerSlashIncrementPotency(e.Attack);
+                    PowerSlashAwakenBonus(e.Attack);
                     break;
                 case BattleArtType.CrossSlash:
-                    CrossSlashLastStrikeBonus(e.Attack);
+
                     break;
             }
 
@@ -313,11 +335,9 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                 {
                     case BattleArtType.PowerSlash:
                         PowerSlashGainEnergy();
-                        PowerSlashSelfIncrement();
                         break;
                     case BattleArtType.CrossSlash:
                         CrossSlashCountHit();
-                        CrossSlashBreakSeal();
                         break;
                 }
 
@@ -330,11 +350,12 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void EndStrikeBreakSeal()
     {
-        if(CrossSlashBattleArt != null && CrossSlashBattleArt.StrikeHitCount > 1)
+        if(CrossSlashBattleArt != null)
         {
-
-
-            return;
+            if(!(CrossSlashBattleArt.StrikeCount == CrossSlashBattleArt.CurrentStrikeNumber && CrossSlashBattleArt.StrikeHitCount >= 1))
+            {
+                return;
+            }
         }
 
         GainLoseSeal(-1);
@@ -440,30 +461,54 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Data = GetComponent<CharacterData>();
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        if(amount > 0)
+        if (amount > 0)
         {
-            CurrentSeal += amount;
-            if(CurrentSeal > Data.MaxSealNumber)
+            while (amount > 0)
             {
-                CurrentSeal = Data.MaxSealNumber;
+                for (int i = 0; i < CurrentSealState.Count; i++)
+                {
+                    if (!CurrentSealState[i])
+                    {
+                        CurrentSealState[i] = true;
+                        break;
+                    }
+                }
+                amount--;
             }
-
-            SetAwaken(false);
         }
         else if(amount < 0)
         {
-            CurrentSeal += amount;
-            if(CurrentSeal <= 0)
+            while (amount < 0)
             {
-                CurrentSeal = 0;
-                SetAwaken(true);
+                for (int i = 0; i < CurrentSealState.Count; i++)
+                {
+                    if (CurrentSealState[i])
+                    {
+                        CurrentSealState[i] = false;
+                        break;
+                    }
+                }
+                amount++;
             }
         }
 
-        CurrentMaxEnergy = Data.MaxEnergy + Data.SealBreakEnergyCap * (Data.MaxSealNumber - CurrentSeal);
-        CurrentPower = AbilityData.BasePower + Data.PowerIncrementWithSeal[CurrentSeal];
+        if(GetCurrentSealSpot() == CurrentSealState.Count)
+        {
+            SetAwaken(true);
+        }
+        else
+        {
+            SetAwaken(false);
+        }
 
-        UltimateAwakeningBonus();
+        if (Awaken)
+        {
+            CurrentMaxEnergy = Data.MaxEnergy;
+        }
+        else
+        {
+            CurrentMaxEnergy = Data.SealSpotEnergyCap[GetCurrentSealSpot()];
+        }
     }
 
     private void OnEquipBattleArt(PlayerEquipBattleArt e)
@@ -546,7 +591,6 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                 SpiritMasterPassiveAbility = null;
                 break;
             case PassiveAbilityType.UltimateAwakening:
-                UltimateAwakeningLoseBonus();
                 UltimateAwakeningPassiveAbility = null;
                 break;
             case PassiveAbilityType.CriticalEye:
@@ -569,7 +613,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     //Power Slash
 
-    private void PowerSlashSelfIncrement()
+    private void PowerSlashAwakenBonus(CharacterAttackInfo Attack)
     {
         if (PowerSlashBattleArt == null)
         {
@@ -578,34 +622,19 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        if(PowerSlashBattleArt.Level >= 2)
+        if (Awaken)
         {
-            PowerSlashBattleArt.IncrementCount++;
-
-            int MaxIncrement = AbilityData.PowerSlashMaxIncrement_Normal;
-            if(PowerSlashBattleArt.Level == 3)
+            if (PowerSlashBattleArt.Level == 2)
             {
-                MaxIncrement = AbilityData.PowerSlashMaxIncrement_Upgraded;
+                Attack.Potency += AbilityData.PowerSlashAwakenPotencyBonus_Normal;
             }
-
-            if(PowerSlashBattleArt.IncrementCount > MaxIncrement)
+            else if (PowerSlashBattleArt.Level == 3)
             {
-                PowerSlashBattleArt.IncrementCount = MaxIncrement;
+                Attack.Potency += AbilityData.PowerSlashAwakenPotencyBonus_Upgraded;
             }
         }
     }
 
-    private void PowerSlashIncrementPotency(CharacterAttackInfo Attack)
-    {
-        if (PowerSlashBattleArt == null)
-        {
-            return;
-        }
-
-        var AbilityData = GetComponent<CharacterAbilityData>();
-
-        Attack.Potency += AbilityData.PowerSlashPotencyIncrement * PowerSlashBattleArt.IncrementCount;
-    }
    
     private void PowerSlashGainEnergy()
     {
@@ -616,9 +645,9 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        if (PowerSlashBattleArt.Level == 3 && PowerSlashBattleArt.IncrementCount == AbilityData.PowerSlashMaxIncrement_Upgraded)
+        if (PowerSlashBattleArt.Level == 3)
         {
-            GainLoseEnergy(AbilityData.PowerSlashMaxIncrementEnergyGain);
+            GainLoseEnergy(AbilityData.PowerSlashEnergyGain);
         }
     }
 
@@ -635,39 +664,33 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     //Cross Slash
 
-    private void CrossSlashBreakSeal()
+    
+    public void SetCrossSlashParameter()
     {
-        if(CrossSlashBattleArt == null)
-        {
-            return;
-        }
-
-        var AbilityData = GetComponent<CharacterAbilityData>();
-        if(CrossSlashBattleArt.Level == 3 && CrossSlashBattleArt.StrikeHitCount == AbilityData.CrossSlashStrikeNumber_Upgraded)
-        {
-            GainLoseSeal(-AbilityData.CrossSlashSealBreakBonus);
-        }
-    }
-
-    private void CrossSlashLastStrikeBonus(CharacterAttackInfo Attack)
-    {
-        if (CrossSlashBattleArt == null)
+        if(CrossSlashBattleArt == null || CrossSlashBattleArt.StrikeCount > 1)
         {
             return;
         }
 
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        int LastStrike = AbilityData.CrossSlashStrikeNumber_Normal;
-        if(CrossSlashBattleArt.Level >= 2)
+        if (CrossSlashBattleArt.Level >= 2)
         {
-            LastStrike = AbilityData.CrossSlashStrikeNumber_Upgraded;
+            if (Awaken)
+            {
+                CrossSlashBattleArt.CurrentStrikeNumber = AbilityData.CrossSlashStrikeNumber_Awaken;
+            }
+            else
+            {
+                CrossSlashBattleArt.CurrentStrikeNumber = AbilityData.CrossSlashStrikeNumber_Normal;
+            }
+        }
+        else
+        {
+            CrossSlashBattleArt.CurrentStrikeNumber = AbilityData.CrossSlashStrikeNumber_Normal;
         }
 
-        if(Awaken && CrossSlashBattleArt.StrikeCount == LastStrike)
-        {
-            Attack.Potency += AbilityData.CrossSlashAwakenPotencyBonus;
-        }
+        CrossSlashBattleArt.CurrentPotency = AbilityData.CrossSlashPotencyList[GetCurrentSealSpot()];
     }
 
     private void CrossSlashCountHit()
@@ -703,7 +726,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         }
 
         var AbilityData = GetComponent<CharacterAbilityData>();
-        GainLoseEnergy(AbilityData.SpiritMasterExtraEnergyGainListWithSeal[CurrentSeal]);
+        GainLoseEnergy(AbilityData.SpiritMasterExtraEnergyGainListWithSeal[GetCurrentSealSpot()]);
     }
 
     private void SpiritMasterGainSeal()
@@ -714,12 +737,12 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         }
 
         var Data = GetComponent<CharacterData>();
-        GainLoseSeal(Data.MaxSealNumber);
+        GainLoseSeal(Data.SealSpotEnergyCap.Count);
     }
 
     //UltimateAwakening
 
-    private void UltimateAwakeningBonus()
+    private void UltimateAwakeningBonus(CharacterAttackInfo Attack)
     {
         if (UltimateAwakeningPassiveAbility == null)
         {
@@ -730,22 +753,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         if (Awaken)
         {
-            CurrentPower += AbilityData.UltimateAwakeningExtraPower;
-        }
-    }
-
-    private void UltimateAwakeningLoseBonus()
-    {
-        if (UltimateAwakeningPassiveAbility == null)
-        {
-            return;
-        }
-
-        var AbilityData = GetComponent<CharacterAbilityData>();
-
-        if (Awaken)
-        {
-            CurrentPower -= AbilityData.UltimateAwakeningExtraPower;
+            Attack.Potency += AbilityData.UltimateAwakeningExtraPotency;
         }
     }
 
@@ -757,7 +765,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         }
 
         var Data = GetComponent<CharacterData>();
-        GainLoseSeal(Data.MaxSealNumber);
+        GainLoseSeal(Data.SealSpotEnergyCap.Count);
     }
 
 

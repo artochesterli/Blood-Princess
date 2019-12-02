@@ -142,6 +142,8 @@ public class CrossSlash : BattleArt
 {
     public int StrikeCount;
     public int StrikeHitCount;
+    public int CurrentStrikeNumber;
+    public int CurrentPotency;
 
     public CrossSlash(int level = 1)
     {
@@ -1593,8 +1595,9 @@ public class SlashAnticipation : CharacterActionState
             dir = Direction.Left;
         }
 
+        int Potency = AbilityData.SlashPotencyList[Status.GetCurrentSealSpot()];
 
-        SetAttribute(AbilityData.SlashAnticipationTime, AbilityData.SlashStrikeTime, AbilityData.SlashRecoveryTime, Status.CurrentPower, AbilityData.SlashPotency, AbilityData.SlashInterruptLevel, AbilityData.SlashOffset, AbilityData.SlashHitBoxSize);
+        SetAttribute(AbilityData.SlashAnticipationTime, AbilityData.SlashStrikeTime, AbilityData.SlashRecoveryTime, Status.CurrentPower, Potency, AbilityData.SlashInterruptLevel, AbilityData.SlashOffset, AbilityData.SlashHitBoxSize);
 
         Context.CurrentAttack = new CharacterAttackInfo(Entity, CharacterAttackType.Slash,  dir, Power, Power, Potency, Potency, InterruptLevel, InterruptLevel, Offset, Offset, Size, Size, Anticipation, Anticipation, Strike, Strike, Recovery, Recovery);
 
@@ -1950,16 +1953,19 @@ public class CrossSlashAnticipation : CharacterActionState
             dir = Direction.Left;
         }
 
+        crossSlash = (CrossSlash)Context.EquipedBattleArt;
 
-        SetAttribute(AbilityData.CrossSlashAnticipationTime, AbilityData.CrossSlashStrikeTime, AbilityData.CrossSlashRecoveryTime, Status.CurrentPower, AbilityData.CrossSlashPotency, AbilityData.CrossSlashInterruptLevel, AbilityData.CrossSlashOffset, AbilityData.CrossSlashHitBoxSize);
+        crossSlash.StrikeCount++;
+
+        Status.SetCrossSlashParameter();
+
+        SetAttribute(AbilityData.CrossSlashAnticipationTime, AbilityData.CrossSlashStrikeTime, AbilityData.CrossSlashRecoveryTime, Status.CurrentPower, crossSlash.CurrentPotency, AbilityData.CrossSlashInterruptLevel, AbilityData.CrossSlashOffset, AbilityData.CrossSlashHitBoxSize);
 
         Context.HitEnemies = new List<GameObject>();
 
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
 
-        crossSlash = (CrossSlash)Context.EquipedBattleArt;
 
-        crossSlash.StrikeCount++;
 
         if(crossSlash.StrikeCount > 1)
         {
@@ -2092,17 +2098,11 @@ public class CrossSlashStrike : CharacterActionState
     {
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
 
-        int MaxStrike = AbilityData.CrossSlashStrikeNumber_Normal;
-        if(crossSlash.Level >= 2)
-        {
-            MaxStrike = AbilityData.CrossSlashStrikeNumber_Upgraded;
-        }
-
         TimeCount += Time.deltaTime;
 
         if (TimeCount > Context.CurrentAttack.StrikeTime)
         {
-            if(crossSlash.StrikeCount == MaxStrike)
+            if(crossSlash.StrikeCount == crossSlash.CurrentStrikeNumber)
             {
                 TransitionTo<CrossSlashRecovery>();
             }
@@ -2253,7 +2253,9 @@ public class PowerSlashAnticipation : CharacterActionState
             dir = Direction.Left;
         }
 
-        SetAttribute(AbilityData.PowerSlashAnticipationTime, AbilityData.PowerSlashStrikeTime, AbilityData.PowerSlashRecoveryTime,Status.CurrentPower , AbilityData.PowerSlashPotency, AbilityData.PowerSlashInterruptLevel, AbilityData.PowerSlashOffset, AbilityData.PowerSlashHitBoxSize);
+        int Potency = AbilityData.PowerSlashPotencyList[Status.GetCurrentSealSpot()];
+
+        SetAttribute(AbilityData.PowerSlashAnticipationTime, AbilityData.PowerSlashStrikeTime, AbilityData.PowerSlashRecoveryTime,Status.CurrentPower , Potency, AbilityData.PowerSlashInterruptLevel, AbilityData.PowerSlashOffset, AbilityData.PowerSlashHitBoxSize);
 
         Context.CurrentAttack = new CharacterAttackInfo(Entity, CharacterAttackType.PowerSlash, dir, Power, Power, Potency, Potency,InterruptLevel,InterruptLevel, Offset, Offset, Size, Size, Anticipation, Anticipation, Strike, Strike, Recovery, Recovery, Context.EquipedBattleArt);
 
