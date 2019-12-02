@@ -4,39 +4,78 @@ using UnityEngine;
 
 public class CharacterAbilityData : MonoBehaviour
 {
+    public int BasePower;
 
     public float SlashAnticipationTime;
     public float SlashStrikeTime;
     public float SlashRecoveryTime;
     public float SlashStepForwardSpeed;
-    public int SlashBaseDamage;
-    public float SlashCriticalEyeDamageBonus;
-    public int SlashEnergyGain;
-    public int SlashAdvancedEnergyGainInCriticalEye;
+    public List<int> SlashPotencyList;
+    public int SlashInterruptLevel;
 
-    public float SlashEffectPreGenerateTime;
+    public int SlashEnergyGain;
+    public int SlashEnergyAwakenGain;
+
     public GameObject SlashEffect;
-    public GameObject SlashImage;
     public Vector2 SlashOffset;
     public Vector2 SlashHitBoxSize;
+    public Vector2 SlashEffectOffset;
 
     public float ParryAnticipationTime;
     public float ParryRecoveryTime;
     public float ParryEffectTime;
     public int ParryEnergyGain;
 
-    public float SpiritSlashAnticipationTime;
-    public float SpiritSlashStrikeTime;
-    public float SpiritSlashRecoveryTime;
-    public float SpiritSlashStepBackSpeed;
-    public float SpiritSlashStepBackTime;
-    public float SpiritSlashStepForwardSpeed;
-    public int SpiritSlashBaseDamage;
-    public float SpiritSlashBackStabDamageBonus;
-    public int SpiritSlashAdvancedEnergyGain;
+    public float PowerSlashAnticipationTime;
+    public float PowerSlashStrikeTime;
+    public float PowerSlashRecoveryTime;
+    public float PowerSlashStepForwardSpeed;
+    public List<int> PowerSlashPotencyList;
+    public int PowerSlashInterruptLevel;
 
-    public GameObject SpiritSlashImage;
-    public Vector2 SpiritSlashOffset;
-    public Vector2 SpiritSlashHitBoxSize;
+    public int PowerSlashAwakenPotencyBonus_Normal;
+    public int PowerSlashAwakenPotencyBonus_Upgraded;
+    public int PowerSlashEnergyGain;
+
+    public GameObject PowerSlashEffect;
+    public Vector2 PowerSlashEffectOffset;
+    public Vector2 PowerSlashOffset;
+    public Vector2 PowerSlashHitBoxSize;
+
+
+    public float CrossSlashAnticipationTime;
+    public float CrossSlashStrikeTime;
+    public float CrossSlashRecoveryTime;
+    public float CrossSlashStepForwardSpeed;
+    public int CrossSlashStrikeNumber_Normal;
+    public int CrossSlashStrikeNumber_Awaken;
+    public List<int> CrossSlashPotencyList;
+    public int CrossSlashInterruptLevel;
+
+    public int CrossSlashAwakenPotencyBonus;
+    public int CrossSlashSealBreakBonus;
+
+    public GameObject CrossSlashEffect;
+    public Vector2 CrossSlashEffectOffset;
+    public Vector2 CrossSlashOffset;
+    public Vector2 CrossSlashHitBoxSize;
+
+    public int HarmonyHealPotency;
+
+    public List<int> SpiritMasterExtraEnergyGainListWithSeal;
+
+    public int UltimateAwakeningExtraPotency;
+
+    public int CriticalEyeExtraPotency;
+    public int CriticalEyePotencyRequired;
+
+    public int BattleArtMasterExtraPotency;
+
+    public int OneMindSlashPotencyIncrement;
+    public int OneMindMaxIncrement;
+
+    public int DancerPotency;
+    public int DancerInterruptLevel;
+    public Vector2 DancerHitBoxSize;
 
 }

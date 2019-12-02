@@ -11,10 +11,13 @@ public abstract class AttackInfo
 public class CharacterAttackInfo : AttackInfo
 {
     public CharacterAttackType Type;
-    public bool Right;
-    public int Damage;
-    public int BaseDamage;
-    public int OriginalDamage;
+    public Direction Dir;
+    public int Power;
+    public int BasePower;
+    public int Potency;
+    public int BasePotency;
+    public int InterruptLevel;
+    public int BaseInterruptLevel;
 
     public float AnticipationTime;
     public float BaseAnticipationTime;
@@ -29,20 +32,19 @@ public class CharacterAttackInfo : AttackInfo
     public Vector2 BaseHitBoxSize;
 
     public BattleArt ThisBattleArt;
-    public float Cost;
-    public float BaseCost;
 
-    public CharacterAttackInfo(GameObject source, CharacterAttackType type, bool right, int damage, int basedamage, int originaldamage,
-        Vector2 offset, Vector2 baseoffset, Vector2 size, Vector2 basesize, float anticipation = 0, float baseanticipation = 0, float strike = 0, float basestrike = 0, float recovery = 0, float baserecovery = 0, BattleArt thisbattleart = null, float cost = 0, float basecost =0)
+    public CharacterAttackInfo(GameObject source, CharacterAttackType type, Direction dir, int power, int basepower, int potency, int basepotency, int interruptlevel, int baseinterruptlevel,
+        Vector2 offset, Vector2 baseoffset, Vector2 size, Vector2 basesize, float anticipation = 0, float baseanticipation = 0, float strike = 0, float basestrike = 0, float recovery = 0, float baserecovery = 0, BattleArt thisbattleart = null)
     {
         Source = source;
         Type = type;
-        Right = right;
-        Damage = damage;
-        BaseDamage = basedamage;
-        OriginalDamage = originaldamage;
-        Cost = cost;
-        BaseCost = basecost;
+        Dir = dir;
+        Power = power;
+        BasePower = basepower;
+        Potency = potency;
+        BasePotency = basepotency;
+        InterruptLevel = interruptlevel;
+        BaseInterruptLevel = baseinterruptlevel;
 
         AnticipationTime = anticipation;
         BaseAnticipationTime = baseanticipation;
@@ -63,12 +65,13 @@ public class CharacterAttackInfo : AttackInfo
     {
         Source = Attack.Source;
         Type = Attack.Type;
-        Right = Attack.Right;
-        Damage = Attack.Damage;
-        BaseDamage = Attack.BaseDamage;
-        OriginalDamage = Attack.OriginalDamage;
-        Cost = Attack.Cost;
-        BaseCost = Attack.BaseCost;
+        Dir = Attack.Dir;
+        Power = Attack.Power;
+        BasePower = Attack.BasePower;
+        Potency = Attack.Potency;
+        BasePotency = Attack.BasePotency;
+        InterruptLevel = Attack.InterruptLevel;
+        BaseInterruptLevel = Attack.BaseInterruptLevel;
 
         AnticipationTime = Attack.AnticipationTime;
         BaseAnticipationTime = Attack.BaseAnticipationTime;
@@ -111,28 +114,159 @@ public abstract class CharacterAbility
     public int Level;
 }
 
-public class BattleArt : CharacterAbility
+public abstract class BattleArt : CharacterAbility
 {
     public BattleArtType Type;
-    public BattleArt(string s, BattleArtType type, int level = 1, Sprite icon = null)
+}
+
+public abstract class PassiveAbility : CharacterAbility
+{
+    public PassiveAbilityType Type;
+}
+
+public class PowerSlash : BattleArt
+{
+    public int IncrementCount;
+
+    public PowerSlash(int level = 1)
     {
-        name = s;
-        Type = type;
+        name = "Power Slash";
+        Type = BattleArtType.PowerSlash;
         Level = level;
-        Icon = icon;
+
+        IncrementCount = 0;
     }
 }
 
+public class CrossSlash : BattleArt
+{
+    public int StrikeCount;
+    public int StrikeHitCount;
+    public int CurrentStrikeNumber;
+    public int CurrentPotency;
+
+    public CrossSlash(int level = 1)
+    {
+        name = "Cross Slash";
+        Type = BattleArtType.CrossSlash;
+        Level = level;
+
+        StrikeCount = 0;
+        StrikeHitCount = 0;
+    }
+}
+
+public class Harmony : PassiveAbility
+{
+    public Harmony(int level = 1)
+    {
+        name = "Harmony";
+        Type = PassiveAbilityType.Harmony;
+        Level = level;
+    }
+}
+
+public class SpiritMaster : PassiveAbility
+{
+    public SpiritMaster(int level = 1)
+    {
+        name = "Spirit Master";
+        Type = PassiveAbilityType.SpiritMaster;
+        Level = level;
+    }
+}
+
+public class UltimateAwakening : PassiveAbility
+{
+    public UltimateAwakening(int level = 1)
+    {
+        name = "Ultimate Awakening";
+        Type = PassiveAbilityType.UltimateAwakening;
+        Level = level;
+    }
+}
+
+public class CriticalEye : PassiveAbility
+{
+    public CriticalEye(int level = 1)
+    {
+        name = "Critical Eye";
+        Type = PassiveAbilityType.CriticalEye;
+        Level = level;
+    }
+}
+
+public class BattleArtMaster : PassiveAbility
+{
+    public BattleArtMaster(int level = 1)
+    {
+        name = "BattleArt Master";
+        Type = PassiveAbilityType.BattleArtMaster;
+        Level = level;
+    }
+}
+
+public class OneMind : PassiveAbility
+{
+    public int IncrementCount;
+
+    public OneMind(int level = 1)
+    {
+        name = "One Mind";
+        Type = PassiveAbilityType.OneMind;
+        Level = level;
+
+        IncrementCount = 0;
+    }
+}
+
+public class Dancer : PassiveAbility
+{
+    public CharacterAttackInfo DancerAttack;
+    public List<GameObject> HitEnemies;
+
+    public Dancer(int level = 1)
+    {
+        name = "Dancer";
+        Type = PassiveAbilityType.Dancer;
+        Level = level;
+
+        HitEnemies = new List<GameObject>();
+    }
+}
+
+public enum Direction
+{
+    Left,
+    Right,
+    Up,
+    Down,
+    None
+}
 
 public enum BattleArtType
 {
-    SpiritSlash
+    PowerSlash,
+    CrossSlash,
+}
+
+public enum PassiveAbilityType
+{
+    Harmony,
+    SpiritMaster,
+    UltimateAwakening,
+    CriticalEye,
+    BattleArtMaster,
+    OneMind,
+    Dancer
 }
 
 public enum CharacterAttackType
 {
     Slash,
-    BattleArt
+    Dancer,
+    PowerSlash,
+    CrossSlash
 }
 
 public enum InputType
@@ -176,15 +310,13 @@ public class CharacterAction : MonoBehaviour
     public List<GameObject> HitEnemies;
 
     public BattleArt EquipedBattleArt;
-
-    public Dictionary<BattleArtType, string> BattleArtNameInfo;
+    public List<PassiveAbility> EquipedPassiveAbility;
 
     private FSM<CharacterAction> CharacterActionFSM;
 
     // Start is called before the first frame update
     void Start()
     {
-        SetUpBattleArtNameDic();
         SetUpAbility();
 
         CharacterActionFSM = new FSM<CharacterAction>(this);
@@ -199,12 +331,6 @@ public class CharacterAction : MonoBehaviour
 
     }
 
-    private void SetUpBattleArtNameDic()
-    {
-        BattleArtNameInfo = new Dictionary<BattleArtType, string>();
-
-        BattleArtNameInfo.Add(BattleArtType.SpiritSlash, "Spirit Slash");
-    }
 
     // <summary>
     /// return if player is in those states
@@ -231,7 +357,14 @@ public class CharacterAction : MonoBehaviour
     {
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        EquipedBattleArt = new BattleArt(BattleArtNameInfo[BattleArtType.SpiritSlash], BattleArtType.SpiritSlash);
+        EquipedBattleArt = null;
+
+        EquipedPassiveAbility = new List<PassiveAbility>();
+
+        EquipedPassiveAbility.Add(null);
+        EquipedPassiveAbility.Add(null);
+        EquipedPassiveAbility.Add(null);
+
     }
 
     private void UpdateRollCoolDown()
@@ -250,7 +383,6 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
 {
     protected GameObject Entity;
 
-    protected GameObject SlashImage;
     protected List<Sprite> CurrentSpriteSeries;
 
     protected const float DetectPassablePlatformDis = 0.01f;
@@ -295,9 +427,9 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         var Data = Entity.GetComponent<CharacterData>();
         var Status = Entity.GetComponent<StatusManager_Character>();
 
-        if (Status.GetCriticalEye())
+        if (Status.IsAwaken())
         {
-            Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[3];
+            Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[1];
         }
         else
         {
@@ -972,11 +1104,13 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
     protected bool CheckPerformBattleArt(InputInfo Info)
     {
         var Status = Entity.GetComponent<StatusManager_Character>();
-        if (Info.Type == InputType.BattleArt && Status.GetCriticalEye())
+        if (Info.Type == InputType.BattleArt && Status.IsEnergyFull() && Context.EquipedBattleArt != null)
         {
             switch (Context.EquipedBattleArt.Type)
             {
-                case BattleArtType.SpiritSlash:
+                case BattleArtType.PowerSlash:
+                    return CheckGrounded();
+                case BattleArtType.CrossSlash:
                     return CheckGrounded();
             }
 
@@ -1027,9 +1161,14 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
     {
         switch (Context.EquipedBattleArt.Type)
         {
-            case BattleArtType.SpiritSlash:
+            case BattleArtType.PowerSlash:
                 ChangeDirection(Info);
-                TransitionTo<SpiritSlashAnticipation>();
+                TransitionTo<PowerSlashAnticipation>();
+                break;
+            
+            case BattleArtType.CrossSlash:
+                ChangeDirection(Info);
+                TransitionTo<CrossSlashAnticipation>();
                 break;
         }
     }
@@ -1042,8 +1181,13 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
 
     protected void PerformJump(InputInfo Info)
     {
+        var SpeedManager = Entity.GetComponent<SpeedManager>();
+        var Data = Entity.GetComponent<CharacterData>();
+
         ChangeDirection(Info);
-        TransitionTo<JumpHolding>();
+        SpeedManager.SelfSpeed.y = Data.JumpSpeed;
+
+        TransitionTo<Air>();
     }
 
     protected void PerformParry(InputInfo Info)
@@ -1073,7 +1217,10 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
 
         if (MoveVector.x > 0)
         {
-            Entity.transform.eulerAngles = Vector3.zero;
+            if (Entity.transform.right.x < 0)
+            {
+                Utility.TurnAround(Entity);
+            }
 
             if (SpeedManager.SelfSpeed.x >= 0)
             {
@@ -1105,7 +1252,11 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         }
         else if (MoveVector.x < 0)
         {
-            Entity.transform.eulerAngles = new Vector3(0, 180, 0);
+            if (Entity.transform.right.x > 0)
+            {
+                Utility.TurnAround(Entity);
+            }
+
             if (SpeedManager.SelfSpeed.x <= 0)
             {
                 if (Ground)
@@ -1305,85 +1456,6 @@ public class GroundMove : CharacterActionState
     }
 }
 
-public class JumpHolding : CharacterActionState
-{
-    private InputInfo ImmediateInput;
-    private float TimeCount;
-
-    public override void OnEnter()
-    {
-        base.OnEnter();
-        SetUp();
-        SetAppearance();
-
-        ImmediateInput = null;
-        AirStateReceiveImmediateInput(ref ImmediateInput);
-    }
-
-    public override void Update()
-    {
-        base.Update();
-        RunCheck();
-    }
-
-    private void RunCheck()
-    {
-        CheckCharacterMove(false);
-
-        if (CheckGetInterrupted())
-        {
-            TransitionTo<GetInterrupted>();
-            return;
-        }
-
-        if (CheckLoseHolding())
-        {
-            TransitionTo<Air>();
-            return;
-        }
-
-        AirStateReceiveImmediateInput(ref ImmediateInput);
-
-        if (AirStateActionTransitionCheck(ImmediateInput))
-        {
-            return;
-        }
-    }
-
-    private bool CheckLoseHolding()
-    {
-        if (!Utility.InputJumpHold())
-        {
-            return true;
-        }
-
-        TimeCount += Time.deltaTime;
-        if (TimeCount >= Entity.GetComponent<CharacterData>().JumpHoldingTime)
-        {
-            return true;
-        }
-
-        return false;
-    }
-
-    private void SetUp()
-    {
-        TimeCount = 0;
-
-        Context.CurrentGravity = 0;
-        Entity.GetComponent<SpeedManager>().SelfSpeed.y = Entity.GetComponent<CharacterData>().JumpSpeed;
-    }
-
-    private void SetAppearance()
-    {
-        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
-        CurrentSpriteSeries = SpriteData.IdleSeries;
-
-        SetCharacterSprite();
-        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
-    }
-}
-
 public class Air : CharacterActionState
 {
     private List<InputInfo> SavedInputList;
@@ -1461,7 +1533,9 @@ public class SlashAnticipation : CharacterActionState
     private float Strike;
     private float Recovery;
 
-    private int Damage;
+    private int Power;
+    private int Potency;
+    private int InterruptLevel;
     private Vector2 Offset;
     private Vector2 Size;
 
@@ -1518,16 +1592,21 @@ public class SlashAnticipation : CharacterActionState
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
         var Data = Entity.GetComponent<CharacterData>();
 
-        int SlashDamage = AbilityData.SlashBaseDamage;
-
-        /*if (Status.GetCriticalEye())
+        Direction dir;
+        if(Entity.transform.right.x > 0)
         {
-            SlashDamage += Mathf.RoundToInt(AbilityData.SlashCriticalEyeDamageBonus * AbilityData.SlashBaseDamage);
-        }*/
+            dir = Direction.Right;
+        }
+        else
+        {
+            dir = Direction.Left;
+        }
 
-        SetAttribute(AbilityData.SlashAnticipationTime, AbilityData.SlashStrikeTime, AbilityData.SlashRecoveryTime, SlashDamage, AbilityData.SlashOffset, AbilityData.SlashHitBoxSize);
+        int Potency = AbilityData.SlashPotencyList[Status.GetCurrentSealSpot()];
 
-        Context.CurrentAttack = new CharacterAttackInfo(Entity, CharacterAttackType.Slash, Entity.transform.right.x > 0, Damage, Damage, Damage, Offset, Offset, Size, Size, Anticipation, Anticipation, Strike, Strike, Recovery, Recovery);
+        SetAttribute(AbilityData.SlashAnticipationTime, AbilityData.SlashStrikeTime, AbilityData.SlashRecoveryTime, Status.CurrentPower, Potency, AbilityData.SlashInterruptLevel, AbilityData.SlashOffset, AbilityData.SlashHitBoxSize);
+
+        Context.CurrentAttack = new CharacterAttackInfo(Entity, CharacterAttackType.Slash,  dir, Power, Power, Potency, Potency, InterruptLevel, InterruptLevel, Offset, Offset, Size, Size, Anticipation, Anticipation, Strike, Strike, Recovery, Recovery);
 
         Context.HitEnemies = new List<GameObject>();
 
@@ -1568,56 +1647,32 @@ public class SlashAnticipation : CharacterActionState
             TransitionTo<SlashStrike>();
             return;
         }
-        else if(TimeCount >= Context.CurrentAttack.AnticipationTime- AbilityData.SlashEffectPreGenerateTime && SlashEffect == null)
-        {
-            GenerateSlashEffect(Context.CurrentAttack);
-        }
     }
 
-    private void SetAttribute(float anticipation, float strike, float recovery, int damage, Vector2 offset, Vector2 size)
+    private void SetAttribute(float anticipation, float strike, float recovery, int power, int potency, int interruptlevel, Vector2 offset, Vector2 size)
     {
         Anticipation = anticipation;
         Strike = strike;
         Recovery = recovery;
 
-        Damage = damage;
+        Power = power;
+        Potency = potency;
+        InterruptLevel = interruptlevel;
         Offset = offset;
         Size = size;
-    }
-
-    private void GenerateSlashEffect(CharacterAttackInfo Attack)
-    {
-        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
-
-        float ScaleX = 1;
-        float EulerAngle = 0;
-
-        if (!Attack.Right)
-        {
-            ScaleX = -1;
-            EulerAngle = 180;
-        }
-
-        var Data = Entity.GetComponent<CharacterData>();
-
-        Vector2 Offset = Attack.HitBoxOffset;
-
-        if (!Attack.Right)
-        {
-            Offset.x = -Offset.x;
-        }
-
-        SlashEffect = GameObject.Instantiate(AbilityData.SlashEffect, (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0,EulerAngle, 0));
-        //SlashEffect.transform.localScale = new Vector3(ScaleX, 1, 1);
-        SlashEffect.transform.parent = Entity.transform;
     }
 }
 
 public class SlashStrike : CharacterActionState
 {
     private float StepForwardSpeed;
-    private GameObject Image;
     private GameObject SlashEffect;
+
+    private Vector2 Offset;
+    private Vector2 HitBoxSize;
+
+    private Vector2 CurrentOffset;
+    private Vector2 CurrentHitBoxSize;
 
     private float TimeCount;
     private bool Grounded;
@@ -1627,6 +1682,7 @@ public class SlashStrike : CharacterActionState
         base.OnEnter();
         SetUp();
         SetAppearance();
+        GenerateSlashEffect(Context.CurrentAttack);
         EventManager.instance.Fire(new PlayerStartAttackStrike(Context.CurrentAttack));
     }
 
@@ -1649,8 +1705,9 @@ public class SlashStrike : CharacterActionState
             }
         }
 
-        HitEnemy(Context.CurrentAttack, Context.HitEnemies);
         CheckTime();
+        HitEnemy(Context.CurrentAttack, Context.HitEnemies);
+
     }
 
     public override void OnExit()
@@ -1658,7 +1715,6 @@ public class SlashStrike : CharacterActionState
         base.OnExit();
         var SpeedManager = Entity.GetComponent<SpeedManager>();
         SpeedManager.AttackStepSpeed.x = 0;
-        GameObject.Destroy(SlashImage);
         EventManager.instance.Fire(new PlayerEndAttackStrike(Context.CurrentAttack, Context.HitEnemies));
     }
 
@@ -1670,14 +1726,17 @@ public class SlashStrike : CharacterActionState
         var Status = Entity.GetComponent<StatusManager_Character>();
 
         SlashEffect = AbilityData.SlashEffect;
-        Image = AbilityData.SlashImage;
 
         TimeCount = 0;
 
-        //GenerateSlashEffect(Context.CurrentAttack);
-        //GenerateSlashImage(Image, Context.CurrentAttack);
-
         Context.CurrentGravity = Data.NormalGravity;
+
+        Offset = AbilityData.SlashOffset;
+        HitBoxSize = AbilityData.SlashHitBoxSize;
+        CurrentOffset = Offset;
+        CurrentOffset.x = 0;
+        CurrentHitBoxSize = HitBoxSize;
+        CurrentHitBoxSize.x = 0;
 
         if (CheckGrounded())
         {
@@ -1703,19 +1762,15 @@ public class SlashStrike : CharacterActionState
 
     private void GenerateSlashEffect(CharacterAttackInfo Attack)
     {
-        float EulerAngle = 0;
+        var Data = Entity.GetComponent<CharacterData>();
+        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
 
-        if (!Attack.Right)
+        float EulerAngle = 0;
+        Vector2 Offset = AbilityData.SlashEffectOffset;
+
+        if (Attack.Dir == Direction.Left)
         {
             EulerAngle = 180;
-        }
-
-        var Data = Entity.GetComponent<CharacterData>();
-
-        Vector2 Offset = Attack.HitBoxOffset;
-
-        if (!Attack.Right)
-        {
             Offset.x = -Offset.x;
         }
 
@@ -1723,36 +1778,23 @@ public class SlashStrike : CharacterActionState
         Effect.transform.parent = Entity.transform;
     }
 
-    private void GenerateSlashImage(GameObject Image, CharacterAttackInfo Attack)
-    {
-        float EulerAngle = 0;
-
-        if (!Attack.Right)
-        {
-            EulerAngle = 180;
-        }
-
-        var Data = Entity.GetComponent<CharacterData>();
-
-        Vector2 Offset = Attack.HitBoxOffset;
-
-        if (!Attack.Right)
-        {
-            Offset.x = -Offset.x;
-        }
-
-        SlashImage = GameObject.Instantiate(Image, (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
-        SlashImage.transform.parent = Entity.transform;
-    }
-
     private void CheckTime()
     {
         TimeCount += Time.deltaTime;
+        SetAttackHitBox();
         if (TimeCount > Context.CurrentAttack.StrikeTime)
         {
             TransitionTo<SlashRecovery>();
             return;
         }
+    }
+
+    private void SetAttackHitBox()
+    {
+        CurrentHitBoxSize.x = Mathf.Lerp(0, HitBoxSize.x, TimeCount / Context.CurrentAttack.StrikeTime);
+        CurrentOffset.x = Offset.x- HitBoxSize.x/2 + CurrentHitBoxSize.x / 2;
+        Context.CurrentAttack.HitBoxSize = CurrentHitBoxSize;
+        Context.CurrentAttack.HitBoxOffset = CurrentOffset;
     }
 
 }
@@ -1853,7 +1895,7 @@ public class SlashRecovery : CharacterActionState
 
 }
 
-public class SpiritSlashAnticipation : CharacterActionState
+public class CrossSlashAnticipation : CharacterActionState
 {
     private float TimeCount;
 
@@ -1861,8 +1903,313 @@ public class SpiritSlashAnticipation : CharacterActionState
     private float Strike;
     private float Recovery;
 
-    private int Damage;
-    private float EnergyCost;
+    private int Power;
+    private int Potency;
+    private int InterruptLevel;
+
+    private Vector2 Offset;
+    private Vector2 Size;
+
+    private CrossSlash crossSlash;
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        SetUp();
+        SetAppearance();
+
+        EventManager.instance.Fire(new PlayerStartAttackAnticipation(Context.CurrentAttack));
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        if (CheckGetInterrupted())
+        {
+            TransitionTo<GetInterrupted>();
+            return;
+        }
+
+        CheckTime();
+    }
+
+    public override void OnExit()
+    {
+        base.OnExit();
+        EventManager.instance.Fire(new PlayerEndAttackAnticipation(Context.CurrentAttack));
+    }
+
+    private void SetUp()
+    {
+        RectifyDirectionWithInput();
+
+        TimeCount = 0;
+
+        var Status = Entity.GetComponent<StatusManager_Character>();
+
+        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
+        var Data = Entity.GetComponent<CharacterData>();
+
+        Direction dir;
+        if (Entity.transform.right.x > 0)
+        {
+            dir = Direction.Right;
+        }
+        else
+        {
+            dir = Direction.Left;
+        }
+
+        crossSlash = (CrossSlash)Context.EquipedBattleArt;
+
+        crossSlash.StrikeCount++;
+
+        Status.SetCrossSlashParameter();
+
+        SetAttribute(AbilityData.CrossSlashAnticipationTime, AbilityData.CrossSlashStrikeTime, AbilityData.CrossSlashRecoveryTime, Status.CurrentPower, crossSlash.CurrentPotency, AbilityData.CrossSlashInterruptLevel, AbilityData.CrossSlashOffset, AbilityData.CrossSlashHitBoxSize);
+
+        Context.HitEnemies = new List<GameObject>();
+
+        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+
+
+
+        if(crossSlash.StrikeCount > 1)
+        {
+            Power = Context.CurrentAttack.Power;
+        }
+
+        Context.CurrentAttack = new CharacterAttackInfo(Entity, CharacterAttackType.CrossSlash, dir, Power, Power, Potency, Potency, InterruptLevel, InterruptLevel, Offset, Offset, Size, Size, Anticipation, Anticipation, Strike, Strike, Recovery, Recovery, Context.EquipedBattleArt);
+    }
+
+    private void SetAppearance()
+    {
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+
+        CurrentSpriteSeries = SpriteData.HeavyAnticipationSeries;
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyAnticipationOffset, SpriteData.HeavyAnticipationSize);
+    }
+
+    private void CheckTime()
+    {
+        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
+        var Status = Entity.GetComponent<StatusManager_Character>();
+
+        TimeCount += Time.deltaTime;
+
+        if (TimeCount >= Context.CurrentAttack.AnticipationTime)
+        {
+            TransitionTo<CrossSlashStrike>();
+            return;
+        }
+    }
+
+    private void SetAttribute(float anticipation, float strike, float recovery, int power, int potency, int interruptlevel, Vector2 offset, Vector2 size)
+    {
+        Anticipation = anticipation;
+        Strike = strike;
+        Recovery = recovery;
+
+        Power = power;
+        Potency = potency;
+        InterruptLevel = interruptlevel;
+        Offset = offset;
+        Size = size;
+    }
+}
+
+public class CrossSlashStrike : CharacterActionState
+{
+    private float StepForwardSpeed;
+    private GameObject SlashEffect;
+
+    private CrossSlash crossSlash;
+    private float TimeCount;
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        SetUp();
+        SetAppearance();
+        EventManager.instance.Fire(new PlayerStartAttackStrike(Context.CurrentAttack));
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        if (CheckGetInterrupted())
+        {
+            crossSlash.StrikeCount = 0;
+            crossSlash.StrikeHitCount = 0;
+            TransitionTo<GetInterrupted>();
+            return;
+        }
+
+        HitEnemy(Context.CurrentAttack, Context.HitEnemies);
+        CheckTime();
+    }
+
+    public override void OnExit()
+    {
+        base.OnExit();
+        EventManager.instance.Fire(new PlayerEndAttackStrike(Context.CurrentAttack, Context.HitEnemies));
+    }
+
+    private void SetUp()
+    {
+        var SpeedManager = Entity.GetComponent<SpeedManager>();
+        var Data = Entity.GetComponent<CharacterData>();
+        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
+        var Status = Entity.GetComponent<StatusManager_Character>();
+
+        TimeCount = 0;
+
+        SlashEffect = AbilityData.CrossSlashEffect;
+        GenerateSlashEffect(SlashEffect, Context.CurrentAttack);
+
+        SpeedManager.AttackStepSpeed.x = AbilityData.CrossSlashStepForwardSpeed * Entity.transform.right.x;
+
+        crossSlash = (CrossSlash)Context.EquipedBattleArt;
+
+    }
+
+    private void SetAppearance()
+    {
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+
+        CurrentSpriteSeries = SpriteData.HeavyRecoverySeries;
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyRecoveryOffset, SpriteData.HeavyRecoverySize);
+    }
+
+    private void GenerateSlashEffect(GameObject Effect, CharacterAttackInfo Attack)
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
+
+        float EulerAngle = 0;
+        Vector2 Offset = AbilityData.CrossSlashEffectOffset;
+
+        if (Attack.Dir == Direction.Left)
+        {
+            EulerAngle = 180;
+            Offset.x = -Offset.x;
+        }
+
+        SlashEffect = GameObject.Instantiate(Effect, (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
+        SlashEffect.transform.parent = Entity.transform;
+    }
+
+    private void CheckTime()
+    {
+        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
+
+        TimeCount += Time.deltaTime;
+
+        if (TimeCount > Context.CurrentAttack.StrikeTime)
+        {
+            if(crossSlash.StrikeCount == crossSlash.CurrentStrikeNumber)
+            {
+                TransitionTo<CrossSlashRecovery>();
+            }
+            else
+            {
+                TransitionTo<CrossSlashAnticipation>();
+            }
+            return;
+        }
+    }
+}
+
+public class CrossSlashRecovery : CharacterActionState
+{
+    private float TimeCount;
+    private List<InputInfo> SavedInputList;
+    private InputInfo ImmediateInput;
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        SetUp();
+        SetAppearance();
+        RecoveryStateReceiveSavedInput(SavedInputList);
+        EventManager.instance.Fire(new PlayerStartAttackRecovery(Context.CurrentAttack, Context.HitEnemies));
+    }
+
+    public override void Update()
+    {
+        base.Update();
+        if (CheckGetInterrupted())
+        {
+            TransitionTo<GetInterrupted>();
+            return;
+        }
+
+
+        ManageSavedInputList(SavedInputList);
+        RecoveryStateReceiveSavedInput(SavedInputList);
+
+        CheckTime();
+    }
+
+    public override void OnExit()
+    {
+        base.OnExit();
+        EventManager.instance.Fire(new PlayerEndAttackRecovery(Context.CurrentAttack, Context.HitEnemies));
+
+        Context.CurrentAttack = null;
+    }
+
+    private void CheckTime()
+    {
+        TimeCount += Time.deltaTime;
+        if (TimeCount > Context.CurrentAttack.RecoveryTime)
+        {
+            if (!RecoveryEndTransitionCheck(SavedInputList, true))
+            {
+                TransitionTo<Stand>();
+            }
+        }
+    }
+
+    private void SetUp()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+
+        Entity.GetComponent<SpeedManager>().AttackStepSpeed.x = 0;
+
+        TimeCount = 0;
+
+        SavedInputList = new List<InputInfo>();
+
+        CrossSlash crossSlash = (CrossSlash)Context.EquipedBattleArt;
+
+        crossSlash.StrikeCount = 0;
+        crossSlash.StrikeHitCount = 0;
+    }
+
+    private void SetAppearance()
+    {
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+
+        CurrentSpriteSeries = SpriteData.HeavyRecoverySeries;
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyRecoveryOffset, SpriteData.HeavyRecoverySize);
+    }
+}
+
+public class PowerSlashAnticipation : CharacterActionState
+{
+    private float TimeCount;
+
+    private float Anticipation;
+    private float Strike;
+    private float Recovery;
+
+    private int Power;
+    private int Potency;
+    private int InterruptLevel;
     private Vector2 Offset;
     private Vector2 Size;
 
@@ -1903,26 +2250,37 @@ public class SpiritSlashAnticipation : CharacterActionState
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
         var Data = Entity.GetComponent<CharacterData>();
 
+        Direction dir;
+        if (Entity.transform.right.x > 0)
+        {
+            dir = Direction.Right;
+        }
+        else
+        {
+            dir = Direction.Left;
+        }
 
-        SetAttribute(AbilityData.SpiritSlashAnticipationTime, AbilityData.SpiritSlashStrikeTime, AbilityData.SpiritSlashRecoveryTime, AbilityData.SpiritSlashBaseDamage, 0, AbilityData.SpiritSlashOffset, AbilityData.SpiritSlashHitBoxSize);
+        int Potency = AbilityData.PowerSlashPotencyList[Status.GetCurrentSealSpot()];
 
-        Context.CurrentAttack = new CharacterAttackInfo(Entity, CharacterAttackType.BattleArt, Entity.transform.right.x > 0, Damage, Damage, Damage, Offset, Offset, Size, Size, Anticipation, Anticipation, Strike, Strike, Recovery, Recovery, Context.EquipedBattleArt, EnergyCost, EnergyCost);
+        SetAttribute(AbilityData.PowerSlashAnticipationTime, AbilityData.PowerSlashStrikeTime, AbilityData.PowerSlashRecoveryTime,Status.CurrentPower , Potency, AbilityData.PowerSlashInterruptLevel, AbilityData.PowerSlashOffset, AbilityData.PowerSlashHitBoxSize);
+
+        Context.CurrentAttack = new CharacterAttackInfo(Entity, CharacterAttackType.PowerSlash, dir, Power, Power, Potency, Potency,InterruptLevel,InterruptLevel, Offset, Offset, Size, Size, Anticipation, Anticipation, Strike, Strike, Recovery, Recovery, Context.EquipedBattleArt);
 
         Context.HitEnemies = new List<GameObject>();
 
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
-        Entity.GetComponent<SpeedManager>().AttackStepSpeed.x = -Entity.transform.right.x * AbilityData.SpiritSlashStepBackSpeed;
 
     }
 
-    private void SetAttribute(float anticipation, float strike, float recovery, int damage, float cost, Vector2 offset, Vector2 size)
+    private void SetAttribute(float anticipation, float strike, float recovery, int power, int potency, int interruptlevel, Vector2 offset, Vector2 size)
     {
         Anticipation = anticipation;
         Strike = strike;
         Recovery = recovery;
 
-        Damage = damage;
-        EnergyCost = cost;
+        Power = power;
+        Potency = potency;
+        InterruptLevel = interruptlevel;
         Offset = offset;
         Size = size;
     }
@@ -1945,22 +2303,16 @@ public class SpiritSlashAnticipation : CharacterActionState
 
         if (TimeCount >= Context.CurrentAttack.AnticipationTime)
         {
-            TransitionTo<SpiritSlashStrike>();
+            TransitionTo<PowerSlashStrike>();
             return;
         }
-        else if(TimeCount >= AbilityData.SpiritSlashStepBackTime)
-        {
-            Entity.GetComponent<SpeedManager>().AttackStepSpeed.x = 0;
-        }
     }
-
-
 }
 
-public class SpiritSlashStrike : CharacterActionState
+public class PowerSlashStrike : CharacterActionState
 {
     private float StepForwardSpeed;
-    private GameObject Image;
+    private GameObject SlashEffect;
 
     private float TimeCount;
 
@@ -1981,14 +2333,13 @@ public class SpiritSlashStrike : CharacterActionState
             return;
         }
 
-        HitEnemy(Context.CurrentAttack,Context.HitEnemies);
+        HitEnemy(Context.CurrentAttack, Context.HitEnemies);
         CheckTime();
     }
 
     public override void OnExit()
     {
         base.OnExit();
-        GameObject.Destroy(SlashImage);
         EventManager.instance.Fire(new PlayerEndAttackStrike(Context.CurrentAttack, Context.HitEnemies));
     }
 
@@ -2000,10 +2351,10 @@ public class SpiritSlashStrike : CharacterActionState
 
         TimeCount = 0;
 
-        Image = AbilityData.SpiritSlashImage;
-        GenerateSlashImage(Image, Context.CurrentAttack);
+        SlashEffect = AbilityData.PowerSlashEffect;
+        GenerateSlashEffect(SlashEffect, Context.CurrentAttack);
 
-        SpeedManager.AttackStepSpeed.x = AbilityData.SpiritSlashStepForwardSpeed* Entity.transform.right.x;
+        SpeedManager.AttackStepSpeed.x = AbilityData.PowerSlashStepForwardSpeed * Entity.transform.right.x;
 
     }
 
@@ -2016,26 +2367,23 @@ public class SpiritSlashStrike : CharacterActionState
         Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyRecoveryOffset, SpriteData.HeavyRecoverySize);
     }
 
-    private void GenerateSlashImage(GameObject Image, CharacterAttackInfo Attack)
+    private void GenerateSlashEffect(GameObject Image, CharacterAttackInfo Attack)
     {
-        float EulerAngle = 0;
-
-        if (!Attack.Right)
-        {
-            EulerAngle = 180;
-        }
 
         var Data = Entity.GetComponent<CharacterData>();
+        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
 
-        Vector2 Offset = Attack.HitBoxOffset;
+        float EulerAngle = 0;
+        Vector2 Offset = AbilityData.PowerSlashEffectOffset;
 
-        if (!Attack.Right)
+        if (Attack.Dir == Direction.Left)
         {
+            EulerAngle = 180;
             Offset.x = -Offset.x;
         }
 
-        SlashImage = GameObject.Instantiate(Image, (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
-        SlashImage.transform.parent = Entity.transform;
+        SlashEffect = GameObject.Instantiate(Image, (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
+        SlashEffect.transform.parent = Entity.transform;
     }
 
     private void CheckTime()
@@ -2043,16 +2391,17 @@ public class SpiritSlashStrike : CharacterActionState
         TimeCount += Time.deltaTime;
         if (TimeCount > Context.CurrentAttack.StrikeTime)
         {
-            TransitionTo<SpiritSlashRecovery>();
+            TransitionTo<PowerSlashRecovery>();
             return;
         }
     }
 }
 
-public class SpiritSlashRecovery : CharacterActionState
+public class PowerSlashRecovery : CharacterActionState
 {
     private float TimeCount;
     private List<InputInfo> SavedInputList;
+    private InputInfo ImmediateInput;
 
     public override void OnEnter()
     {
@@ -2071,6 +2420,7 @@ public class SpiritSlashRecovery : CharacterActionState
             TransitionTo<GetInterrupted>();
             return;
         }
+
 
         ManageSavedInputList(SavedInputList);
         RecoveryStateReceiveSavedInput(SavedInputList);
@@ -2091,7 +2441,7 @@ public class SpiritSlashRecovery : CharacterActionState
         TimeCount += Time.deltaTime;
         if (TimeCount > Context.CurrentAttack.RecoveryTime)
         {
-            if (!RecoveryEndTransitionCheck(SavedInputList,true))
+            if (!RecoveryEndTransitionCheck(SavedInputList, true))
             {
                 TransitionTo<Stand>();
             }
@@ -2285,66 +2635,6 @@ public class ParryRecovery : CharacterActionState
             {
                 TransitionTo<Stand>();
             }
-        }
-    }
-}
-
-public class RollAnticipation : CharacterActionState
-{
-    private float TimeCount;
-    private float StateTime;
-
-    public override void OnEnter()
-    {
-        base.OnEnter();
-        SetUp();
-        SetAppearance();
-        EventManager.instance.Fire(new PlayerStartRollAnticipation());
-    }
-
-    public override void Update()
-    {
-        base.Update();
-        if (CheckGetInterrupted())
-        {
-            TransitionTo<GetInterrupted>();
-            return;
-        }
-        CheckTime();
-    }
-
-    public override void OnExit()
-    {
-        base.OnExit();
-        EventManager.instance.Fire(new PlayerEndRollAnticipation());
-    }
-
-    private void SetUp()
-    {
-        RectifyDirectionWithInput();
-
-        var Data = Entity.GetComponent<CharacterData>();
-        TimeCount = 0;
-        StateTime = Data.RollAnticipationTime;
-
-        Entity.GetComponent<SpeedManager>().SelfSpeed = Vector2.zero;
-    }
-
-    private void SetAppearance()
-    {
-        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
-        CurrentSpriteSeries = SpriteData.IdleSeries;
-
-        SetCharacterSprite();
-        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
-    }
-
-    private void CheckTime()
-    {
-        TimeCount += Time.deltaTime;
-        if (TimeCount >= StateTime)
-        {
-            TransitionTo<Roll>();
         }
     }
 }
@@ -2759,9 +3049,6 @@ public class GetInterrupted : CharacterActionState
         SetUp();
 
         SetAppearance();
-        RecoveryStateReceiveSavedInput(SavedInputList);
-
-        GameObject.Destroy(SlashImage);
     }
 
     public override void Update()
@@ -2802,19 +3089,25 @@ public class GetInterrupted : CharacterActionState
         Entity.GetComponent<IHittable>().Interrupted = false;
         Context.CurrentGravity = Data.NormalGravity;
 
-        EnemyAttackInfo Temp = (EnemyAttackInfo)Entity.GetComponent<IHittable>().HitAttack;
+        EnemyAttackInfo Temp = Entity.GetComponent<StatusManager_Character>().CurrentTakenAttack;
         SpeedManager.SelfSpeed = Vector2.zero;
         if (Temp.Right)
         {
-            Entity.transform.eulerAngles = new Vector3(0, 180, 0);
+            if (Entity.transform.right.x > 0)
+            {
+                Utility.TurnAround(Entity);
+            }
 
-            SpeedManager.SelfSpeed.x = Data.InterruptedSpeedX;
+            SpeedManager.SelfSpeed.x = Data.InterruptedSpeed;
         }
         else
         {
-            Entity.transform.eulerAngles = new Vector3(0, 0, 0);
+            if (Entity.transform.right.x < 0)
+            {
+                Utility.TurnAround(Entity);
+            }
 
-            SpeedManager.SelfSpeed.x = -Data.InterruptedSpeedX;
+            SpeedManager.SelfSpeed.x = -Data.InterruptedSpeed;
 
         }
 
@@ -2845,13 +3138,6 @@ public class GetInterrupted : CharacterActionState
                 }
             }
 
-        }
-        else if(TimeCount >= Data.InterruptedMoveTime)
-        {
-            if (CheckGrounded())
-            {
-                Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
-            }
         }
     }
 }

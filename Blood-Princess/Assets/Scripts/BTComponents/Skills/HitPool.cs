@@ -34,7 +34,8 @@ public class HitPool : MonoBehaviour
 			return;
 		}
 		m_HitPoolFSM.TransitionTo<HitState>();
-		m_CurrentDamage += ev.UpdatedAttack.Damage;
+
+		m_CurrentDamage += Utility.GetEffectValue(ev.UpdatedAttack.Power, ev.UpdatedAttack.Potency);
 		if (m_CurrentDamage >= MaxDamageThreshold)
 		{
 			Debug.Log("Send Stagger Event");

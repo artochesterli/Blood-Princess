@@ -13,19 +13,14 @@ public class CharacterData : MonoBehaviour
     public float AirDeceleration;
     public float NormalGravity;
     public float JumpSpeed;
-    public float JumpHoldingTime;
 
     public int MaxHP;
     public int MaxEnergy;
 
-    public int MaxAdvancedEnergyDamageNulification;
-
-    public float HitEnergyLostProportion;
-    public int MinimalEnergyLost;
+    public List<int> SealSpotEnergyCap;
 
     public float InterruptedTime;
-    public float InterruptedMoveTime;
-    public float InterruptedSpeedX;
+    public float InterruptedSpeed;
 
     public GameObject RollEffect;
     public float RollAnticipationTime;

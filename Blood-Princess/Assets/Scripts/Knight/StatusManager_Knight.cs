@@ -5,27 +5,25 @@ using UnityEngine.UI;
 
 public class StatusManager_Knight : StatusManagerBase, IHittable
 {
-    public int MaxShield { get; set; }
-    public int CurrentShield { get; set; }
 
     public GameObject Canvas;
 	public GameObject SharedCanvas;
 	public GameObject HPFill;
-    public GameObject ShieldFill;
 
-	public Color NormalColor;
-	public Color RageColor;
+    public CharacterAttackInfo CurrentTakenAttack;
+
+    public Color NormalColor;
 
 	private GameObject DamageText;
 
-	private float ShockEffectTimeCount;
-	private float ShockEffectTime = 0.2f;
-	private bool ShockEffectActivate;
+
 	// Start is called before the first frame update
 	void Start()
 	{
 		var Data = GetComponent<KnightData>();
-		CurrentHP = Data.MaxHP;
+        CurrentTakenAttack = null;
+        MaxHP = Data.MaxHP;
+        CurrentHP = Data.MaxHP;
 		if (SharedCanvas == null)
 			SharedCanvas = GameObject.Find("SharedCanvas");
 	}
@@ -40,27 +38,42 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 	{
 		base.OnHit(Attack);
 
-
         var Data = GetComponent<KnightData>();
 
-        CharacterAttackInfo HitAttack = (CharacterAttackInfo)Attack;
+        CurrentTakenAttack = (CharacterAttackInfo)Attack;
 
+        var AI = GetComponent<KnightAI>();
 
-        Interrupted = true;
+        int Resistance;
 
+        if (AI.CurrentState != KnightState.Anticipation && AI.CurrentState != KnightState.Strike && AI.CurrentState != KnightState.BlinkPrepare)
+        {
+            Resistance = Data.NormalResistance;
+        }
+        else
+        {
+            Resistance = Data.AttackResistance;
+        }
+
+        if(CurrentTakenAttack.InterruptLevel >= Resistance)
+        {
+            Interrupted = true;
+        }
+        else
+        {
+            Interrupted = false;
+        }
 
         DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
 
+        int Damage = Utility.GetEffectValue(CurrentTakenAttack.Power, CurrentTakenAttack.Potency);
 
-		GetComponent<KnightAI>().Player = HitAttack.Source;
-
-
-		CurrentHP -= HitAttack.Damage;
+        CurrentHP -= Damage;
 
         SetHPFill((float)CurrentHP / Data.MaxHP);
 
 
-		if (HitAttack.Right)
+		if (CurrentTakenAttack.Dir == Direction.Right)
 		{
 			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 0);
 		}
@@ -68,16 +81,9 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 		{
 			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 0);
 		}
-		DamageText.GetComponent<Text>().text = HitAttack.Damage.ToString();
-		DamageText.transform.parent = Canvas.transform;
-		if (HitAttack.Type == CharacterAttackType.Slash)
-		{
-			DamageText.GetComponent<Text>().color = Color.red;
-		}
-		else
-		{
-			DamageText.GetComponent<Text>().color = Color.white;
-		}
+		DamageText.GetComponent<Text>().text = Damage.ToString();
+		DamageText.transform.SetParent(Canvas.transform);
+
 		DamageText.GetComponent<Text>().color = Color.white;
 
 		if (CurrentHP <= 0)

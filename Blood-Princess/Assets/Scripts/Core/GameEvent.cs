@@ -145,4 +145,44 @@ public class PlayerGetHit : GameEvent
     }
 }
 
+public class PlayerEquipBattleArt : GameEvent
+{
+    public BattleArt ThisBattleArt;
+    public PlayerEquipBattleArt(BattleArt b)
+    {
+        ThisBattleArt = b;
+    }
+
+}
+
+public class PlayerEquipPassiveAbility : GameEvent
+{
+    public PassiveAbility ThisPassiveAbility;
+    public int Index;
+    public PlayerEquipPassiveAbility(PassiveAbility p, int index)
+    {
+        ThisPassiveAbility = p;
+        Index = index;
+    }
+}
+
+public class PlayerUnequipBattleArt : GameEvent
+{
+    public BattleArt ThisBattleArt;
+    public PlayerUnequipBattleArt(BattleArt b)
+    {
+        ThisBattleArt = b;
+    }
+}
+
+public class PlayerUnequipPassiveAbility : GameEvent
+{
+    public PassiveAbility ThisPassiveAbility;
+    public int Index;
+    public PlayerUnequipPassiveAbility(PassiveAbility p, int index)
+    {
+        ThisPassiveAbility = p;
+        Index = index;
+    }
+}
 
