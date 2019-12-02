@@ -82,7 +82,7 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 0);
 		}
 		DamageText.GetComponent<Text>().text = Damage.ToString();
-		DamageText.transform.parent = Canvas.transform;
+		DamageText.transform.SetParent(Canvas.transform);
 
 		DamageText.GetComponent<Text>().color = Color.white;
 

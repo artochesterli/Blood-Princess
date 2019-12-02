@@ -2620,7 +2620,7 @@ MonoBehaviour:
   CrossSlashStepForwardSpeed: 3
   CrossSlashStrikeNumber_Normal: 2
   CrossSlashStrikeNumber_Awaken: 3
-  CrossSlashPotencyList: 7800000096000000b4000000
+  CrossSlashPotencyList: 96000000af000000c8000000
   CrossSlashInterruptLevel: 1
   CrossSlashAwakenPotencyBonus: 100
   CrossSlashSealBreakBonus: 1

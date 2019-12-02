@@ -253,6 +253,11 @@ public class KnightBlinkPrepare : KnightBehavior
     public override void Update()
     {
         base.Update();
+        if (CheckGetInterrupted())
+        {
+            TransitionToInterrupted();
+            return;
+        }
         CheckTime();
     }
 
@@ -462,6 +467,12 @@ public class KnightAttackAnticipation : KnightBehavior
     {
         base.Update();
 
+        if (CheckGetInterrupted())
+        {
+            TransitionToInterrupted();
+            return;
+        }
+
         if (Context.CurrentAttackMode == KnightAttackMode.Chase)
         {
             ChasePlayer();
@@ -604,6 +615,11 @@ public class KnightAttackStrike : KnightBehavior
     public override void Update()
     {
         base.Update();
+        if (CheckGetInterrupted())
+        {
+            TransitionToInterrupted();
+            return;
+        }
         CheckHitPlayer();
         CheckTime();
     }
