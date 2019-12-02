@@ -9,6 +9,9 @@ public class SetGravity : Action
 {
 	public SharedFloat Gravity;
 	public SharedBool Relative;
+	public SharedFloat Duration;
+
+	private float m_timer;
 
 	public override void OnStart()
 	{
@@ -21,10 +24,13 @@ public class SetGravity : Action
 		{
 			GetComponent<GravityManager>().Gravity = Gravity.Value;
 		}
+		m_timer = Time.timeSinceLevelLoad + Duration.Value;
 	}
 
 	public override TaskStatus OnUpdate()
 	{
-		return TaskStatus.Success;
+		if (m_timer < Time.timeSinceLevelLoad)
+			return TaskStatus.Success;
+		return TaskStatus.Running;
 	}
 }

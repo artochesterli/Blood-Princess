@@ -32,7 +32,7 @@ public class ChangeSprite : Action
 	{
 		if (m_Timer < Time.timeSinceLevelLoad)
 		{
-			m_SpriteRenderer.sprite = m_KnightSpriteData.Idle;
+			//m_SpriteRenderer.sprite = m_KnightSpriteData.Idle;
 			return TaskStatus.Success;
 		}
 		return TaskStatus.Running;
