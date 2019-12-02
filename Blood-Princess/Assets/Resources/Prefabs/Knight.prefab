@@ -246,6 +246,8 @@ MonoBehaviour:
   BlinkChance: 0.3
   BlinkPrepareTime: 0.1
   BlinkForChaseAttackDis: 3
+  NormalResistance: 1
+  AttackResistance: 2
 --- !u!114 &4305804637280515000
 MonoBehaviour:
   m_ObjectHideFlags: 0

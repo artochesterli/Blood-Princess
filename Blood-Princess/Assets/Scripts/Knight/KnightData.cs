@@ -53,6 +53,9 @@ public class KnightData : MonoBehaviour
     public float BlinkPrepareTime;
     public float BlinkForChaseAttackDis;
 
+    public int NormalResistance;
+    public int AttackResistance;
+
     // Start is called before the first frame update
     void Start()
     {

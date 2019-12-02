@@ -10238,7 +10238,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1168141816
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18904,6 +18904,11 @@ PrefabInstance:
         type: 3}
       propertyPath: KnockedBackSpeed
       value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4305804637280515001, guid: 6dc116148174896459ef435bd864d5cf,
+        type: 3}
+      propertyPath: MaxHP
+      value: 2000
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6dc116148174896459ef435bd864d5cf, type: 3}

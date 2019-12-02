@@ -220,14 +220,20 @@ public class KnightPatron : KnightBehavior
     {
         var Data = Entity.GetComponent<KnightData>();
         var PatronData = Entity.GetComponent<PatronData>();
+
+
+
+
         if (Moving)
         {
             AIUtility.PatronCheckSelfPos(Entity, Context.PatronRightX, Context.PatronLeftX, ref Moving, ref MovingRight);
         }
         else
         {
-            AIUtility.CheckPatronStayTime(Entity, ref TimeCount, PatronData.PatronStayTime, ref Moving, MovingRight, Data.NormalMoveSpeed);
+            AIUtility.CheckPatronStayTime(Entity, ref TimeCount, PatronData.PatronStayTime, ref Moving, ref MovingRight, Data.NormalMoveSpeed);
         }
+
+
     }
 }
 

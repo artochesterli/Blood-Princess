@@ -427,9 +427,9 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         var Data = Entity.GetComponent<CharacterData>();
         var Status = Entity.GetComponent<StatusManager_Character>();
 
-        if (Status.IsEnergyFull())
+        if (Status.IsAwaken())
         {
-            Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[3];
+            Entity.GetComponent<SpriteRenderer>().sprite = CurrentSpriteSeries[1];
         }
         else
         {
@@ -1217,7 +1217,10 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
 
         if (MoveVector.x > 0)
         {
-            Entity.transform.eulerAngles = Vector3.zero;
+            if (Entity.transform.right.x < 0)
+            {
+                Utility.TurnAround(Entity);
+            }
 
             if (SpeedManager.SelfSpeed.x >= 0)
             {
@@ -1249,7 +1252,11 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         }
         else if (MoveVector.x < 0)
         {
-            Entity.transform.eulerAngles = new Vector3(0, 180, 0);
+            if (Entity.transform.right.x > 0)
+            {
+                Utility.TurnAround(Entity);
+            }
+
             if (SpeedManager.SelfSpeed.x <= 0)
             {
                 if (Ground)
@@ -3086,13 +3093,19 @@ public class GetInterrupted : CharacterActionState
         SpeedManager.SelfSpeed = Vector2.zero;
         if (Temp.Right)
         {
-            Entity.transform.eulerAngles = new Vector3(0, 180, 0);
+            if (Entity.transform.right.x > 0)
+            {
+                Utility.TurnAround(Entity);
+            }
 
             SpeedManager.SelfSpeed.x = Data.InterruptedSpeed;
         }
         else
         {
-            Entity.transform.eulerAngles = new Vector3(0, 0, 0);
+            if (Entity.transform.right.x < 0)
+            {
+                Utility.TurnAround(Entity);
+            }
 
             SpeedManager.SelfSpeed.x = -Data.InterruptedSpeed;
 

@@ -2391,34 +2391,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IdleSeries:
   - {fileID: 21300000, guid: feaec7d138c627446bcc3a2844dcb484, type: 3}
-  - {fileID: 21300000, guid: feaec7d138c627446bcc3a2844dcb484, type: 3}
-  - {fileID: 21300000, guid: feaec7d138c627446bcc3a2844dcb484, type: 3}
-  - {fileID: 21300000, guid: feaec7d138c627446bcc3a2844dcb484, type: 3}
+  - {fileID: 21300000, guid: 7f1d052cbb35e2148b7e1af794214795, type: 3}
   LightAnticipationSeries:
   - {fileID: 21300000, guid: 2fe730c0855aea340933bcd740e59c7f, type: 3}
-  - {fileID: 21300000, guid: 2fe730c0855aea340933bcd740e59c7f, type: 3}
-  - {fileID: 21300000, guid: 2fe730c0855aea340933bcd740e59c7f, type: 3}
-  - {fileID: 21300000, guid: 2fe730c0855aea340933bcd740e59c7f, type: 3}
+  - {fileID: 21300000, guid: d1034e0a5053e3942a060f61acd8d66e, type: 3}
   LightRecoverySeries:
   - {fileID: 21300000, guid: 636bc6122cbf445459f5451b5f0b33dd, type: 3}
-  - {fileID: 21300000, guid: 636bc6122cbf445459f5451b5f0b33dd, type: 3}
-  - {fileID: 21300000, guid: 636bc6122cbf445459f5451b5f0b33dd, type: 3}
-  - {fileID: 21300000, guid: 636bc6122cbf445459f5451b5f0b33dd, type: 3}
+  - {fileID: 21300000, guid: 356b44ee4b61a854cb15f2cb9295ca7f, type: 3}
   HeavyAnticipationSeries:
   - {fileID: 21300000, guid: 2fe730c0855aea340933bcd740e59c7f, type: 3}
-  - {fileID: 21300000, guid: 2fe730c0855aea340933bcd740e59c7f, type: 3}
-  - {fileID: 21300000, guid: 2fe730c0855aea340933bcd740e59c7f, type: 3}
-  - {fileID: 21300000, guid: 2fe730c0855aea340933bcd740e59c7f, type: 3}
+  - {fileID: 21300000, guid: d1034e0a5053e3942a060f61acd8d66e, type: 3}
   HeavyRecoverySeries:
   - {fileID: 21300000, guid: 636bc6122cbf445459f5451b5f0b33dd, type: 3}
-  - {fileID: 21300000, guid: 636bc6122cbf445459f5451b5f0b33dd, type: 3}
-  - {fileID: 21300000, guid: 636bc6122cbf445459f5451b5f0b33dd, type: 3}
-  - {fileID: 21300000, guid: 636bc6122cbf445459f5451b5f0b33dd, type: 3}
+  - {fileID: 21300000, guid: 356b44ee4b61a854cb15f2cb9295ca7f, type: 3}
   HitSeries:
   - {fileID: 21300000, guid: feaec7d138c627446bcc3a2844dcb484, type: 3}
-  - {fileID: 21300000, guid: feaec7d138c627446bcc3a2844dcb484, type: 3}
-  - {fileID: 21300000, guid: feaec7d138c627446bcc3a2844dcb484, type: 3}
-  - {fileID: 21300000, guid: feaec7d138c627446bcc3a2844dcb484, type: 3}
+  - {fileID: 21300000, guid: 7f1d052cbb35e2148b7e1af794214795, type: 3}
   IdleOffset: {x: 0.07987654, y: -0.1138214}
   IdleSize: {x: 0.5182312, y: 1.305299}
   LightAnticipationOffset: {x: 0.06, y: -0.1915005}
@@ -2612,7 +2600,7 @@ MonoBehaviour:
   ParryRecoveryTime: 0.2
   ParryEffectTime: 0.2
   ParryEnergyGain: 0
-  PowerSlashAnticipationTime: 0.25
+  PowerSlashAnticipationTime: 0.2
   PowerSlashStrikeTime: 0.1
   PowerSlashRecoveryTime: 0.25
   PowerSlashStepForwardSpeed: 5

@@ -202,7 +202,7 @@ public class SoulWarriorPatron : SoulWarriorBehavior
         }
         else
         {
-            AIUtility.CheckPatronStayTime(Entity, ref TimeCount, PatronData.PatronStayTime, ref Moving, MovingRight, Data.NormalMoveSpeed);
+            AIUtility.CheckPatronStayTime(Entity, ref TimeCount, PatronData.PatronStayTime, ref Moving, ref MovingRight, Data.NormalMoveSpeed);
         }
     }
 }

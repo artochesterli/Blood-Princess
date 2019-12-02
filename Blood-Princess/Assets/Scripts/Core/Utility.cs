@@ -25,6 +25,20 @@ public class Utility
         return Ans;
     }
 
+    public static void TurnAround(GameObject obj)
+    {
+        Vector2 TruePos = obj.GetComponent<SpeedManager>().GetTruePos();
+        if (obj.transform.right.x > 0)
+        {
+            obj.transform.eulerAngles = new Vector3(0, 180, 0);
+        }
+        else
+        {
+            obj.transform.eulerAngles = new Vector3(0, 0, 0);
+        }
+
+        obj.GetComponent<SpeedManager>().MoveToPoint(TruePos);
+    }
 
     public static int GetEffectValue(int Power, int Potency)
     {

@@ -127,6 +127,11 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         return EnergyFull;
     }
 
+    public bool IsAwaken()
+    {
+        return Awaken;
+    }
+
     private void SetEnergyFull(bool value)
     {
         EnergyFull = value;

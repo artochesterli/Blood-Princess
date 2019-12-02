@@ -44,7 +44,18 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 
         var AI = GetComponent<KnightAI>();
 
+        int Resistance;
+
         if (AI.CurrentState != KnightState.Anticipation && AI.CurrentState != KnightState.Strike && AI.CurrentState != KnightState.BlinkPrepare)
+        {
+            Resistance = Data.NormalResistance;
+        }
+        else
+        {
+            Resistance = Data.AttackResistance;
+        }
+
+        if(CurrentTakenAttack.InterruptLevel >= Resistance)
         {
             Interrupted = true;
         }
@@ -52,7 +63,6 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
         {
             Interrupted = false;
         }
-
 
         DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
 

@@ -54,21 +54,23 @@ public static class AIUtility
 
     }
 
-    public static void CheckPatronStayTime(GameObject Entity, ref float TimeCount, float PatronStayTime, ref bool Moving, bool MovingRight, float MoveSpeed)
+    public static void CheckPatronStayTime(GameObject Entity, ref float TimeCount, float PatronStayTime, ref bool Moving,ref bool MovingRight, float MoveSpeed)
     {
         TimeCount += Time.deltaTime;
         if (TimeCount >= PatronStayTime)
         {
             TimeCount = 0;
             Moving = true;
+            MovingRight = !MovingRight;
+
+            Utility.TurnAround(Entity);
+
             if (MovingRight)
             {
-                Entity.transform.rotation = Quaternion.Euler(0, 0, 0);
                 Entity.GetComponent<SpeedManager>().SelfSpeed.x = MoveSpeed;
             }
             else
             {
-                Entity.transform.rotation = Quaternion.Euler(0, 180, 0);
                 Entity.GetComponent<SpeedManager>().SelfSpeed.x = -MoveSpeed;
             }
         }
@@ -80,16 +82,13 @@ public static class AIUtility
         var Data = Entity.GetComponent<PatronData>();
         Vector2 TruePos = Entity.GetComponent<SpeedManager>().GetTruePos();
 
-
         if (MovingRight && TruePos.x >= PatronRightX)
         {
-            MovingRight = false;
             Moving = false;
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
         }
         else if (!MovingRight && TruePos.x <= PatronLeftX)
         {
-            MovingRight = true;
             Moving = false;
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
         }
@@ -97,19 +96,24 @@ public static class AIUtility
 
     public static void PatronSetUp(GameObject Entity, ref bool Moving, ref bool MovingRight, float PatronRightX, float PatronLeftX, float MoveSpeed)
     {
-
         Moving = true;
 
         Vector2 TruePos = Entity.GetComponent<SpeedManager>().GetTruePos();
 
         if (TruePos.x > PatronRightX)
         {
-            Entity.transform.eulerAngles = new Vector3(0, 180, 0);
+            if (Entity.transform.right.x > 0)
+            {
+                Utility.TurnAround(Entity);
+            }
             MovingRight = false;
         }
         else if (TruePos.x < PatronLeftX)
         {
-            Entity.transform.eulerAngles = new Vector3(0, 0, 0);
+            if (Entity.transform.right.x < 0)
+            {
+                Utility.TurnAround(Entity);
+            }
             MovingRight = true;
         }
         else
@@ -181,7 +185,12 @@ public static class AIUtility
             PositionX = Mathf.Lerp(PatronLeftX, PatronRightX, CutTime / (PatronRightX - PatronLeftX) / MoveSpeed);
         }
 
-        Entity.transform.position = new Vector2(PositionX - Entity.GetComponent<SpeedManager>().OriPos.x, Entity.transform.position.y);
+        Moving = false;
+        MovingRight = true;
+        TimeCount = StayTime/2 - (PatronRightX - SelfX) / MoveSpeed;
+        PositionX = PatronRightX;
+
+        Entity.GetComponent<SpeedManager>().MoveToPoint(new Vector2(PositionX, Entity.transform.position.y));
 
         if (MovingRight)
         {
@@ -218,27 +227,17 @@ public static class AIUtility
     {
         if (GetXDiff(Player,Entity) > 0)
         {
-            Entity.transform.eulerAngles = new Vector3(0, 0, 0);
+            if (Entity.transform.right.x < 0)
+            {
+                Utility.TurnAround(Entity);
+            }
         }
         else
         {
-            Entity.transform.eulerAngles = new Vector3(0, 180, 0);
-        }
-    }
-
-    public static float GetBorderDis(GameObject Player, GameObject Entity)
-    {
-        var PlayerSpeedManager = Player.GetComponent<SpeedManager>();
-
-        var SelfSpeedManager = Entity.GetComponent<SpeedManager>();
-
-        if (GetXDiff(Player, Entity) > 0)
-        {
-            return (PlayerSpeedManager.GetTruePos().x - PlayerSpeedManager.BodyWidth / 2) - (SelfSpeedManager.GetTruePos().x + SelfSpeedManager.BodyWidth / 2);
-        }
-        else
-        {
-            return (SelfSpeedManager.GetTruePos().x - SelfSpeedManager.BodyWidth / 2) - (PlayerSpeedManager.GetTruePos().x + PlayerSpeedManager.BodyWidth / 2);
+            if (Entity.transform.right.x > 0)
+            {
+                Utility.TurnAround(Entity);
+            }
         }
     }
 
