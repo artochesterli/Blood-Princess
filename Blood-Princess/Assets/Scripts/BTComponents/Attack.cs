@@ -78,14 +78,14 @@ public class Attack : Action
 		}
 	}
 
-	public override void OnDrawGizmos()
-	{
-#if UNITY_EDITOR
-		Rect boxCastRect = new Rect((Vector2)Owner.transform.position + HitBoxOffset.Value, HitBoxSize.Value);
-		boxCastRect.center = (Vector2)Owner.transform.position + HitBoxOffset.Value;
-		UnityEditor.Handles.DrawSolidRectangleWithOutline(boxCastRect,
-			new Color(0, 1, 1, 0.4f), Color.white);
-#endif
-	}
+	//	public override void OnDrawGizmos()
+	//	{
+	//#if UNITY_EDITOR
+	//		Rect boxCastRect = new Rect((Vector2)Owner.transform.position + HitBoxOffset.Value, HitBoxSize.Value);
+	//		boxCastRect.center = (Vector2)Owner.transform.position + HitBoxOffset.Value;
+	//		UnityEditor.Handles.DrawSolidRectangleWithOutline(boxCastRect,
+	//			new Color(0, 1, 1, 0.4f), Color.white);
+	//#endif
+	//	}
 
 }
