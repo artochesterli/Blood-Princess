@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using BehaviorDesigner.Runtime;
+using DG.Tweening;
 
 [RequireComponent(typeof(BehaviorTree))]
-public class HitPool : MonoBehaviour
+public class HitReaction : MonoBehaviour
 {
 	public float Interval;
 	public int MaxDamageThreshold;
@@ -12,12 +13,12 @@ public class HitPool : MonoBehaviour
 
 	private int m_CurrentDamage;
 	private float m_Timer;
-	private FSM<HitPool> m_HitPoolFSM;
+	private FSM<HitReaction> m_HitPoolFSM;
 	private BehaviorTree m_BT;
 
 	private void Awake()
 	{
-		m_HitPoolFSM = new FSM<HitPool>(this);
+		m_HitPoolFSM = new FSM<HitReaction>(this);
 		m_HitPoolFSM.TransitionTo<IdleState>();
 		m_BT = GetComponent<BehaviorTree>();
 	}
@@ -29,6 +30,8 @@ public class HitPool : MonoBehaviour
 
 	private void m_OnHit(PlayerHitEnemy ev)
 	{
+		transform.DOShakePosition(0.2f, new Vector3(0.4f, 0f), 50, 90).SetRelative(true);
+		Debug.Log("Shake");
 		if ((bool)m_BT.GetVariable("Staggering").GetValue())
 		{
 			return;
@@ -63,7 +66,7 @@ public class HitPool : MonoBehaviour
 		EventManager.instance.RemoveHandler<PlayerGetHit>(m_OnHitPlayer);
 	}
 
-	private abstract class PoolState : FSM<HitPool>.State
+	private abstract class PoolState : FSM<HitReaction>.State
 	{
 	}
 
