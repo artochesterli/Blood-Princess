@@ -4,7 +4,6 @@ using UnityEngine;
 using BehaviorDesigner.Runtime.Tasks;
 using BehaviorDesigner.Runtime;
 
-[RequiredComponent(typeof(KnightSpriteData))]
 [RequiredComponent(typeof(SpriteRenderer))]
 [RequiredComponent(typeof(SpeedManager))]
 public class Attack : Action
@@ -15,25 +14,16 @@ public class Attack : Action
 	public SharedVector2 HitBoxSize;
 	public SharedFloat ForwardStep;
 	public LayerMask PlayerLayer;
-	public Sprite AttackSprite;
+	public SharedSprite AttackSprite;
 
-	private KnightSpriteData m_KnightSpriteData;
 	private float m_Timer;
 	private EnemyAttackInfo AttackInfo;
 	private bool m_AttackHit;
 
-	public override void OnAwake()
-	{
-		m_KnightSpriteData = GetComponent<KnightSpriteData>();
-	}
-
 	public override void OnStart()
 	{
 		m_Timer = Time.timeSinceLevelLoad + Duration.Value;
-		if (AttackSprite == null)
-			GetComponent<SpriteRenderer>().sprite = m_KnightSpriteData.SingleRecovery;
-		else
-			GetComponent<SpriteRenderer>().sprite = AttackSprite;
+		GetComponent<SpriteRenderer>().sprite = AttackSprite.Value;
 		m_AttackHit = false;
 		bool isRight = transform.eulerAngles.y == 0f;
 		AttackInfo = new EnemyAttackInfo(Owner.gameObject, isRight, Damage.Value, Damage.Value, HitBoxOffset.Value, HitBoxSize.Value);
