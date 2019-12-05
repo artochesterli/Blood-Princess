@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class StatusManager_Character : StatusManagerBase, IHittable
 {
+    public int CurrentMaxHP;
     public int CurrentEnergy;
     public int CurrentMaxEnergy;
     public int CurrentPower;
@@ -162,6 +163,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Data = GetComponent<CharacterData>();
         var AbilityData = GetComponent<CharacterAbilityData>();
 
+        CurrentMaxHP = Data.MaxHP;
         CurrentHP = Data.MaxHP;
         CurrentMaxEnergy = Data.SealSpotEnergyCap[0];
         CurrentSealState = new List<bool>();
@@ -179,7 +181,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     {
         Canvas.GetComponent<RectTransform>().eulerAngles = Vector3.zero;
         var Data = GetComponent<CharacterData>();
-        HPFill.GetComponent<Image>().fillAmount = (float)CurrentHP / Data.MaxHP;
+        HPFill.GetComponent<Image>().fillAmount = (float)CurrentHP / CurrentMaxHP;
 
         EnergyFill.GetComponent<Image>().fillAmount = (float)CurrentEnergy / Data.MaxEnergy;
 
@@ -470,7 +472,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         {
             while (amount > 0)
             {
-                for (int i = 0; i < CurrentSealState.Count; i++)
+                for (int i = CurrentSealState.Count-1; i >=0 ; i--)
                 {
                     if (!CurrentSealState[i])
                     {
@@ -650,7 +652,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        if (PowerSlashBattleArt.Level == 3)
+        if (PowerSlashBattleArt.Level == 3 && Awaken)
         {
             GainLoseEnergy(AbilityData.PowerSlashEnergyGain);
         }

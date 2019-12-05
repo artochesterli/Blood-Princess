@@ -42,7 +42,6 @@ public class CharacterAbilityData : MonoBehaviour
     public Vector2 PowerSlashOffset;
     public Vector2 PowerSlashHitBoxSize;
 
-
     public float CrossSlashAnticipationTime;
     public float CrossSlashStrikeTime;
     public float CrossSlashRecoveryTime;

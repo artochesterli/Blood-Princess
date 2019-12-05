@@ -7,6 +7,7 @@ interface IHittable
     int MaxHP { get; set; }
     int CurrentHP { get; set; }
     bool Interrupted { get; set; }
+    int ReceivedInterruptionLevel { get; set; }
 
 	bool OnHit(AttackInfo Attack);
 }
@@ -23,8 +24,9 @@ public class StatusManagerBase : MonoBehaviour, IHittable
     public int CurrentHP { get; set; }
 
     public bool Interrupted { get; set; }
-	// Start is called before the first frame update
-	void Start()
+    public int ReceivedInterruptionLevel { get; set; }
+    // Start is called before the first frame update
+    void Start()
 	{
 
 	}

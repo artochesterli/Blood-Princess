@@ -43,7 +43,8 @@ public class CharacterData : MonoBehaviour
 
     public LayerMask EnemyLayer;
 
-
+    public int BattleArtTypeNumber;
+    public int PassiveAbilityTypeNumber;
 
     // Start is called before the first frame update
     void Start()

@@ -25,6 +25,38 @@ public class Utility
         return Ans;
     }
 
+    public static void KnockedBack(GameObject obj, ref float TimeCount, float TotalTime, float Speed, bool Right)
+    {
+        TimeCount += Time.deltaTime;
+
+        if(TimeCount >= TotalTime)
+        {
+            obj.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+        }
+        else if(TimeCount >= TotalTime/2)
+        {
+            if (Right)
+            {
+                obj.GetComponent<SpeedManager>().SelfSpeed.x = -Speed;
+            }
+            else
+            {
+                obj.GetComponent<SpeedManager>().SelfSpeed.x = Speed;
+            }
+        }
+        else
+        {
+            if (Right)
+            {
+                obj.GetComponent<SpeedManager>().SelfSpeed.x = Speed;
+            }
+            else
+            {
+                obj.GetComponent<SpeedManager>().SelfSpeed.x = -Speed;
+            }
+        }
+    }
+
     public static void TurnAround(GameObject obj)
     {
         Vector2 TruePos = obj.GetComponent<SpeedManager>().GetTruePos();
