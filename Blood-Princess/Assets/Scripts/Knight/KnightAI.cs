@@ -18,8 +18,8 @@ public enum KnightState
     Strike,
     Recovery,
     BlinkPrepare,
-    Interrupted,
-    InterruptedRecovery
+    KnockedBack,
+    Offbalance
 }
 
 public class KnightAI : MonoBehaviour
@@ -28,6 +28,7 @@ public class KnightAI : MonoBehaviour
     public LayerMask PlayerLayer;
 
     public GameObject DoubleAttackMark;
+    public GameObject BlinkMark;
 
     public GameObject PatronLeftMark;
     public GameObject PatronRightMark;
@@ -78,12 +79,19 @@ public class KnightAI : MonoBehaviour
         PatronLeftX = PatronLeftMark.transform.position.x;
         PatronRightX = PatronRightMark.transform.position.x;
     }
+
+
+
+
 }
 
 public abstract class KnightBehavior : FSM<KnightAI>.State
 {
     protected GameObject Entity;
     protected GameObject SlashImage;
+
+    protected bool InKnockedBack;
+    protected float KnockedBackTimeCount;
 
     public override void Init()
     {
@@ -105,14 +113,12 @@ public abstract class KnightBehavior : FSM<KnightAI>.State
 
     protected bool CheckGetInterrupted()
     {
-        if (Entity.GetComponent<IHittable>().Interrupted)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return Entity.GetComponent<IHittable>().Interrupted;
+    }
+
+    protected bool CheckOffBalance()
+    {
+        return Entity.GetComponent<StatusManager_Knight>().OffBalance;
     }
 
     protected void MakeAttackDecision()
@@ -141,13 +147,43 @@ public abstract class KnightBehavior : FSM<KnightAI>.State
         return new EnemyAttackInfo(Entity, Entity.transform.right.x > 0, KnightData.Damage, KnightData.Damage, Offset, Size);
     }
 
-    protected void TransitionToInterrupted()
+    protected void SetKnockedBack(bool b, CharacterAttackInfo Attack = null)
+    {
+        var Data = Entity.GetComponent<KnightData>();
+        var Status = Entity.GetComponent<StatusManager_Knight>();
+
+        if (b)
+        {
+            Status.Interrupted = false;
+
+            InKnockedBack = true;
+            KnockedBackTimeCount = 0;
+            if (Attack.Dir == Direction.Right)
+            {
+                Entity.GetComponent<SpeedManager>().ForcedSpeed.x = Data.KnockedBackSpeed;
+            }
+            else if(Attack.Dir == Direction.Left)
+            {
+                Entity.GetComponent<SpeedManager>().ForcedSpeed.x = -Data.KnockedBackSpeed;
+            }
+        }
+        else
+        {
+            InKnockedBack = false;
+            Entity.GetComponent<SpeedManager>().ForcedSpeed.x = 0;
+        }
+    }
+
+    protected void KnockedBackProcess()
     {
         var Data = Entity.GetComponent<KnightData>();
 
-        TransitionTo<KnightGetInterrupted>();
+        KnockedBackTimeCount += Time.deltaTime;
+        if (KnockedBackTimeCount >= Data.KnockedBackTime)
+        {
+            SetKnockedBack(false);
+        }
     }
-
 }
 
 public class KnightPatron : KnightBehavior
@@ -191,9 +227,15 @@ public class KnightPatron : KnightBehavior
 
         var PatronData = Entity.GetComponent<PatronData>();
 
+        if (CheckOffBalance())
+        {
+            TransitionTo<KnightOffBalance>();
+            return;
+        }
+
         if (CheckGetInterrupted())
         {
-            TransitionToInterrupted();
+            TransitionTo<KnightKnockedBack>();
             return;
         }
         if (AIUtility.PlayerInDetectRange(Entity,Context.Player,Context.DetectRightX,Context.DetectLeftX,PatronData.DetectHeight,PatronData.DetectLayer,true))
@@ -253,17 +295,29 @@ public class KnightBlinkPrepare : KnightBehavior
     public override void Update()
     {
         base.Update();
-        if (CheckGetInterrupted())
+        if (CheckOffBalance())
         {
-            TransitionToInterrupted();
+            TransitionTo<KnightOffBalance>();
             return;
         }
+
+        if (CheckGetInterrupted())
+        {
+            SetKnockedBack(true, Entity.GetComponent<StatusManager_Knight>().CurrentTakenAttack);
+        }
+
+        if (InKnockedBack)
+        {
+            KnockedBackProcess();
+        }
+
         CheckTime();
     }
 
     public override void OnExit()
     {
         base.OnExit();
+        Context.BlinkMark.GetComponent<SpriteRenderer>().enabled = false;
         Context.LastState = KnightState.BlinkPrepare;
     }
 
@@ -273,6 +327,10 @@ public class KnightBlinkPrepare : KnightBehavior
 
         TimeCount = 0;
         StateTime = Data.BlinkPrepareTime;
+
+        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+
+        Context.BlinkMark.GetComponent<SpriteRenderer>().enabled = true;
     }
 
     private void SetAppearance()
@@ -284,7 +342,7 @@ public class KnightBlinkPrepare : KnightBehavior
     private void CheckTime()
     {
         TimeCount += Time.deltaTime;
-        if(TimeCount >= StateTime)
+        if(TimeCount >= StateTime && !InKnockedBack)
         {
             Blink();
             TransitionTo<KnightEngage>();
@@ -363,9 +421,15 @@ public class KnightEngage : KnightBehavior
 
         var PatronData = Entity.GetComponent<PatronData>();
 
+        if (CheckOffBalance())
+        {
+            TransitionTo<KnightOffBalance>();
+            return;
+        }
+
         if (CheckGetInterrupted())
         {
-            TransitionToInterrupted();
+            TransitionTo<KnightKnockedBack>();
             return;
         }
         if (!AIUtility.PlayerInDetectRange(Entity, Context.Player, Context.DetectRightX, Context.DetectLeftX, PatronData.DetectHeight, PatronData.DetectLayer, false))
@@ -467,10 +531,20 @@ public class KnightAttackAnticipation : KnightBehavior
     {
         base.Update();
 
+        if (CheckOffBalance())
+        {
+            TransitionTo<KnightOffBalance>();
+            return;
+        }
+
         if (CheckGetInterrupted())
         {
-            TransitionToInterrupted();
-            return;
+            SetKnockedBack(true, Entity.GetComponent<StatusManager_Knight>().CurrentTakenAttack);
+        }
+
+        if (InKnockedBack)
+        {
+            KnockedBackProcess();
         }
 
         if (Context.CurrentAttackMode == KnightAttackMode.Chase)
@@ -488,14 +562,16 @@ public class KnightAttackAnticipation : KnightBehavior
         base.OnExit();
         var Status = Entity.GetComponent<StatusManager_Knight>();
 
+        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
         Context.LastState = KnightState.Anticipation;
         Context.DoubleAttackMark.GetComponent<SpriteRenderer>().enabled = false;
     }
 
+
     private void CheckTime()
     {
         TimeCount += Time.deltaTime;
-        if(TimeCount >= StateTime)
+        if(TimeCount >= StateTime && !InKnockedBack)
         {
             TransitionTo<KnightAttackStrike>();
             return;
@@ -543,7 +619,7 @@ public class KnightAttackAnticipation : KnightBehavior
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
         DistanceTraveled = 0;
 
-
+        InKnockedBack = false;
 
     }
 
@@ -615,11 +691,6 @@ public class KnightAttackStrike : KnightBehavior
     public override void Update()
     {
         base.Update();
-        if (CheckGetInterrupted())
-        {
-            TransitionToInterrupted();
-            return;
-        }
         CheckHitPlayer();
         CheckTime();
     }
@@ -742,9 +813,15 @@ public class KnightAttackRecovery : KnightBehavior
     public override void Update()
     {
         base.Update();
+        if (CheckOffBalance())
+        {
+            TransitionTo<KnightOffBalance>();
+            return;
+        }
+
         if (CheckGetInterrupted())
         {
-            TransitionToInterrupted();
+            TransitionTo<KnightKnockedBack>();
             return;
         }
         CheckTime();
@@ -778,8 +855,6 @@ public class KnightAttackRecovery : KnightBehavior
                 StateTime = Data.ChaseAttackRecoveryTime;
                 break;
         }
-
-
 
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
     }
@@ -816,16 +891,14 @@ public class KnightAttackRecovery : KnightBehavior
     }
 }
 
-public class KnightGetInterrupted : KnightBehavior
+public class KnightKnockedBack : KnightBehavior
 {
     private float TimeCount;
     private float StateTime;
-    private bool GetHitOnBack;
 
     public override void OnEnter()
     {
         base.OnEnter();
-        Context.CurrentState = KnightState.Interrupted;
         SetUp();
         SetAppearance();
     }
@@ -833,110 +906,56 @@ public class KnightGetInterrupted : KnightBehavior
     public override void Update()
     {
         base.Update();
-
-        if (CheckGetInterrupted())
+        if (CheckOffBalance())
         {
-            AIUtility.RectifyDirection(Context.Player, Entity);
-            TransitionToInterrupted();
+            TransitionTo<KnightOffBalance>();
             return;
         }
-
         CheckTime();
     }
 
     public override void OnExit()
     {
         base.OnExit();
-
-        Context.LastState = KnightState.Interrupted;
+        Context.LastState = KnightState.KnockedBack;
     }
 
     private void SetUp()
     {
-        CharacterAttackInfo Temp = Entity.GetComponent<StatusManager_Knight>().CurrentTakenAttack;
-
-        var KnightData = Entity.GetComponent<KnightData>();
+        var Data = Entity.GetComponent<KnightData>();
         var Status = Entity.GetComponent<StatusManager_Knight>();
 
         Status.Interrupted = false;
+
+        StateTime = Data.KnockedBackTime;
+        TimeCount = 0;
+
         Context.AttackCoolDownTimeCount = 0;
 
-        StateTime = KnightData.KnockedBackTime;
-
-        if (Temp.Dir == Direction.Right)
+        if (Status.CurrentTakenAttack.Dir == Direction.Right)
         {
-            if (Entity.transform.right.x < 0)
-            {
-                GetHitOnBack = false;
-            }
-            else
-            {
-                StateTime += KnightData.BackHitStuckTime;
-                GetHitOnBack = true;
-            }
-
-            Entity.GetComponent<SpeedManager>().SelfSpeed.x = KnightData.KnockedBackSpeed;
+            Entity.GetComponent<SpeedManager>().SelfSpeed.x = Data.KnockedBackSpeed;
         }
-        else if(Temp.Dir == Direction.Left)
+        else if (Status.CurrentTakenAttack.Dir == Direction.Left)
         {
-            if (Entity.transform.right.x > 0)
-            {
-
-                GetHitOnBack = false;
-            }
-            else
-            {
-                StateTime += KnightData.BackHitStuckTime;
-                GetHitOnBack = true;
-            }
-            Entity.GetComponent<SpeedManager>().SelfSpeed.x = -KnightData.KnockedBackSpeed;
+            Entity.GetComponent<SpeedManager>().SelfSpeed.x = -Data.KnockedBackSpeed;
         }
-
-        TimeCount = 0;
     }
 
     private void SetAppearance()
     {
         var KnightSpriteData = Entity.GetComponent<KnightSpriteData>();
 
-        if (GetHitOnBack)
-        {
-            SetKnight(KnightSpriteData.Hit, KnightSpriteData.HitOffset, KnightSpriteData.HitSize);
-        }
-        else
-        {
-            SetKnight(KnightSpriteData.Idle, KnightSpriteData.IdleOffset, KnightSpriteData.IdleSize);
-        }
-
+        SetKnight(KnightSpriteData.Idle, KnightSpriteData.IdleOffset, KnightSpriteData.IdleSize);
     }
 
     private void CheckTime()
     {
-        var KnightData = Entity.GetComponent<KnightData>();
-
-        TimeCount += Time.deltaTime;
-
-        if (TimeCount >= StateTime)
-        {
-            Transition();
-        }
-        else if(TimeCount >= KnightData.KnockedBackTime && GetHitOnBack)
-        {
-            Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
-        }
-    }
-
-    private void Transition()
-    {
         var Data = Entity.GetComponent<KnightData>();
 
-        if (GetHitOnBack)
+        TimeCount += Time.deltaTime;
+        if (TimeCount >= StateTime)
         {
-            TransitionTo<KnightKnockedRecovery>();
-        }
-        else
-        {
-
             float Chance = Random.Range(0.0f, 1.0f);
             if (Chance < Data.BlinkChance)
             {
@@ -947,19 +966,19 @@ public class KnightGetInterrupted : KnightBehavior
                 TransitionTo<KnightEngage>();
             }
         }
-
     }
 }
 
-public class KnightKnockedRecovery : KnightBehavior
+public class KnightOffBalance : KnightBehavior
 {
     private float TimeCount;
-    private float StateTime;
+    private float BackTime;
+    private float StayTime;
 
     public override void OnEnter()
     {
         base.OnEnter();
-        Context.CurrentState = KnightState.InterruptedRecovery;
+        Context.CurrentState = KnightState.Offbalance;
         SetUp();
         SetAppearance();
     }
@@ -967,12 +986,21 @@ public class KnightKnockedRecovery : KnightBehavior
     public override void Update()
     {
         base.Update();
-        AIUtility.RectifyDirection(Context.Player, Entity);
+
+        if (CheckOffBalance())
+        {
+            TransitionTo<KnightOffBalance>();
+            return;
+        }
 
         if (CheckGetInterrupted())
         {
-            TransitionTo<KnightGetInterrupted>();
-            return;
+            SetKnockedBack(true, Entity.GetComponent<StatusManager_Knight>().CurrentTakenAttack);
+        }
+
+        if (InKnockedBack)
+        {
+            KnockedBackProcess();
         }
 
         CheckTime();
@@ -981,52 +1009,64 @@ public class KnightKnockedRecovery : KnightBehavior
     public override void OnExit()
     {
         base.OnExit();
-        Context.LastState = KnightState.InterruptedRecovery;
+        Context.LastState = KnightState.Offbalance;
     }
 
     private void SetUp()
     {
-        var KnightData = Entity.GetComponent<KnightData>();
+        var Data = Entity.GetComponent<KnightData>();
         var Status = Entity.GetComponent<StatusManager_Knight>();
+
+        Status.OffBalance = false;
+        Status.Interrupted = false;
+
+        BackTime = Data.OffBalanceBackTime;
+        StayTime = Data.OffBalanceStayTime;
+        TimeCount = 0;
+
+        Context.AttackCoolDownTimeCount = 0;
 
         AIUtility.RectifyDirection(Context.Player, Entity);
 
-        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+        if(Status.CurrentTakenAttack.Dir == Direction.Right)
+        {
+            Entity.GetComponent<SpeedManager>().SelfSpeed.x = Data.OffBalanceBackSpeed;
+        }
+        else if(Status.CurrentTakenAttack.Dir == Direction.Left)
+        {
+            Entity.GetComponent<SpeedManager>().SelfSpeed.x = -Data.OffBalanceBackSpeed;
+        }
 
-        TimeCount = 0;
-        StateTime = KnightData.KnockedRecoveryTime;
+
     }
 
     private void SetAppearance()
     {
         var KnightSpriteData = Entity.GetComponent<KnightSpriteData>();
-        SetKnight(KnightSpriteData.Idle, KnightSpriteData.IdleOffset, KnightSpriteData.IdleSize);
 
+        SetKnight(KnightSpriteData.Hit, KnightSpriteData.HitOffset, KnightSpriteData.HitSize);
     }
 
     private void CheckTime()
     {
-        TimeCount += Time.deltaTime;
-
-        if (TimeCount >= StateTime)
-        {
-            Transition();
-        }
-    }
-
-    private void Transition()
-    {
         var Data = Entity.GetComponent<KnightData>();
 
-        float Chance = Random.Range(0.0f, 1.0f);
-
-        if (Chance < Data.BlinkChance)
+        TimeCount += Time.deltaTime;
+        if(TimeCount >= BackTime + StayTime && !InKnockedBack)
         {
-            TransitionTo<KnightBlinkPrepare>();
+            float Chance = Random.Range(0.0f, 1.0f);
+            if (Chance < Data.BlinkChance)
+            {
+                TransitionTo<KnightBlinkPrepare>();
+            }
+            else
+            {
+                TransitionTo<KnightEngage>();
+            }
         }
-        else
+        else if(TimeCount >= BackTime)
         {
-            TransitionTo<KnightEngage>();
+            Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
         }
     }
 }

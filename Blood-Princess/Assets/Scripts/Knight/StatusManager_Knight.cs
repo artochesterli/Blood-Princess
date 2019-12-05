@@ -11,8 +11,7 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 	public GameObject HPFill;
 
     public CharacterAttackInfo CurrentTakenAttack;
-
-    public Color NormalColor;
+    public bool OffBalance;
 
 	private GameObject DamageText;
 
@@ -44,25 +43,36 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 
         var AI = GetComponent<KnightAI>();
 
-        int Resistance;
-
-        if (AI.CurrentState != KnightState.Anticipation && AI.CurrentState != KnightState.Strike && AI.CurrentState != KnightState.BlinkPrepare)
-        {
-            Resistance = Data.NormalResistance;
-        }
-        else
-        {
-            Resistance = Data.AttackResistance;
-        }
-
-        if(CurrentTakenAttack.InterruptLevel >= Resistance)
+        if(AI.CurrentState != KnightState.Strike && CurrentTakenAttack.InterruptLevel > 0)
         {
             Interrupted = true;
+            ReceivedInterruptionLevel = CurrentTakenAttack.InterruptLevel;
+
+            if(Data.OffBalanceInterruptLevel <= CurrentTakenAttack.InterruptLevel || CurrentTakenAttack.Dir == Direction.Right && transform.right.x > 0 || CurrentTakenAttack.Dir == Direction.Left && transform.right.x<0)
+            {
+                OffBalance = true;
+            }
+            else
+            {
+                OffBalance = false;
+            }
         }
         else
         {
             Interrupted = false;
+            OffBalance = false;
         }
+
+        
+        /*if(CurrentTakenAttack.InterruptLevel >= Resistance)
+        {
+            Interrupted = true;
+            
+        }
+        else
+        {
+            Interrupted = false;
+        }*/
 
         DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
 

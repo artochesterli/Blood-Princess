@@ -8,6 +8,7 @@ public class StatusManager_SoulWarrior : StatusManagerBase, IHittable
     public GameObject Canvas;
     public GameObject SharedCanvas;
     public GameObject HPFill;
+    public bool OffBalance;
 
     public CharacterAttackInfo CurrentTakenAttack;
 
@@ -36,7 +37,23 @@ public class StatusManager_SoulWarrior : StatusManagerBase, IHittable
 
         CurrentTakenAttack = (CharacterAttackInfo)Attack;
 
-        Interrupted = true;
+        if(CurrentTakenAttack.InterruptLevel > 0&& GetComponent<SoulWarriorAI>().CurrentState != SoulWarriorState.SlashStrike && GetComponent<SoulWarriorAI>().CurrentState != SoulWarriorState.MagicStrike)
+        {
+            Interrupted = true;
+            if(CurrentTakenAttack.InterruptLevel >= Data.OffBalanceInterruptLevel || CurrentTakenAttack.Dir == Direction.Right && transform.right.x > 0 || CurrentTakenAttack.Dir == Direction.Left && transform.right.x < 0)
+            {
+                OffBalance = true;
+            }
+            else
+            {
+                OffBalance = false;
+            }
+        }
+        else
+        {
+            Interrupted = false;
+            OffBalance = false;
+        }
 
         DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
 

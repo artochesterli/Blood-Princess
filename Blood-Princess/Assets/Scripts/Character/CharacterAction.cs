@@ -117,11 +117,13 @@ public abstract class CharacterAbility
 public abstract class BattleArt : CharacterAbility
 {
     public BattleArtType Type;
+    public List<string> Description;
 }
 
 public abstract class PassiveAbility : CharacterAbility
 {
     public PassiveAbilityType Type;
+    public string Description;
 }
 
 public class PowerSlash : BattleArt
@@ -350,8 +352,6 @@ public class CharacterAction : MonoBehaviour
         }
         return false;
     }
-
-
 
     private void SetUpAbility()
     {
@@ -2693,10 +2693,14 @@ public class Roll: CharacterActionState
         var Data = Entity.GetComponent<CharacterData>();
         var SpeedManager = Entity.GetComponent<SpeedManager>();
 
+        if (CheckGrounded())
+        {
+            SpeedManager.SelfSpeed.x = 0;
+        }
+
         EventManager.instance.Fire(new PlayerEndRoll());
 
         SpeedManager.IgnoredLayers = Data.NormalIgnoredLayers;
-        SpeedManager.SelfSpeed.x = 0;
 
         Context.RollCoolDownTimeCount = Entity.GetComponent<CharacterData>().RollCoolDown;
 

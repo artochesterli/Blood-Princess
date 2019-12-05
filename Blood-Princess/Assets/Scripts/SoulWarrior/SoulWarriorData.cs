@@ -34,8 +34,12 @@ public class SoulWarriorData : MonoBehaviour
 
     public float KnockedBackTime;
     public float KnockedBackSpeed;
+    public float OffBalanceBackTime;
+    public float OffBalanceBackSpeed;
+    public float OffBalanceStayTime;
 
-    public float InterruptedRecoveryTime;
+    public int OffBalanceInterruptLevel;
+
 
     public float AttackCoolDown;
 
