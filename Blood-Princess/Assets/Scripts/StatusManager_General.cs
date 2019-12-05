@@ -44,7 +44,7 @@ public class StatusManager_General : StatusManagerBase, IHittable
 
 		CharacterAttackInfo HitAttack = (CharacterAttackInfo)Attack;
 
-        int Damage = Utility.GetEffectValue(HitAttack.Power, HitAttack.Potency);
+		int Damage = Utility.GetEffectValue(HitAttack.Power, HitAttack.Potency);
 
 		CurrentHP -= Damage;
 
@@ -83,6 +83,7 @@ public class StatusManager_General : StatusManagerBase, IHittable
 		if (CurrentHP <= 0)
 		{
 			DamageText.transform.parent = SharedCanvas.transform;
+			EventManager.instance.Fire(new PlayerKillEnemy((CharacterAttackInfo)Attack, gameObject));
 			Destroy(gameObject);
 			return true;
 		}
