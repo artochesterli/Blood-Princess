@@ -1,0 +1,98 @@
+{
+	"sheets": [
+		{
+			"name": "MonsterDB",
+			"columns": [
+				{
+					"typeStr": "0",
+					"name": "id"
+				},
+				{
+					"typeStr": "3",
+					"name": "HitPoints"
+				},
+				{
+					"typeStr": "7",
+					"name": "Sprite",
+					"display": null
+				},
+				{
+					"typeStr": "8",
+					"name": "Drops",
+					"display": null
+				}
+			],
+			"lines": [
+				{
+					"HitPoints": 10,
+					"Sprite": "",
+					"Drops": [
+						{
+							"Weight": 0.9,
+							"Quantity": 38,
+							"Item": "MONEY"
+						},
+						{
+							"Weight": 0.1,
+							"Quantity": 3,
+							"Item": "HEALINGPOTION"
+						}
+					],
+					"id": "Enemy1"
+				}
+			],
+			"separators": [],
+			"props": {}
+		},
+		{
+			"name": "ItemDB",
+			"columns": [
+				{
+					"typeStr": "0",
+					"name": "id"
+				},
+				{
+					"typeStr": "3",
+					"name": "Price"
+				}
+			],
+			"lines": [
+				{
+					"Price": 30,
+					"id": "HEALINGPOTION"
+				},
+				{
+					"Price": 0,
+					"id": "MONEY"
+				}
+			],
+			"separators": [],
+			"props": {}
+		},
+		{
+			"name": "MonsterDB@Drops",
+			"props": {
+				"hide": true
+			},
+			"separators": [],
+			"lines": [],
+			"columns": [
+				{
+					"typeStr": "6:ItemDB",
+					"name": "Item"
+				},
+				{
+					"typeStr": "4",
+					"name": "Weight",
+					"display": 1
+				},
+				{
+					"typeStr": "3",
+					"name": "Quantity"
+				}
+			]
+		}
+	],
+	"customTypes": [],
+	"compress": false
+}

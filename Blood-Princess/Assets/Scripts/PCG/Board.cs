@@ -138,6 +138,10 @@ namespace PCG
 			{
 				instantiatedObject = GameObject.Instantiate(Resources.Load("Dummy", typeof(GameObject))) as GameObject;
 			}
+			else if (curChar == "7" && _board[worldPosition.x, worldPosition.y - 1] != "7")
+			{
+				instantiatedObject = GameObject.Instantiate(Resources.Load("Door", typeof(GameObject))) as GameObject;
+			}
 
 			if (instantiatedObject != null)
 			{
