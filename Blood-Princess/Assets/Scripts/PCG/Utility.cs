@@ -38,7 +38,7 @@ namespace PCG
 		/// <returns></returns>
 		public static readonly HashSet<string> IgnorePlacingStrHashSet = new HashSet<string>()
 		{
-			"L", "R", "U", "D", "s.1", "s.2", ""
+			"L", "R", "U", "D", "s.1", "s.2", "", "T", "F"
 		};
 
 		/// <summary>
@@ -48,12 +48,22 @@ namespace PCG
 		/// <returns></returns>
 		public static readonly HashSet<string> EmptyStrHashSet = new HashSet<string>()
 		{
-			"0", "", "\n", "*"
+			"0", "", "\n", "*", "T", "F"
+		};
+
+		/// <summary>
+		/// A Hashset of string that acts as room type marker
+		/// T = Temple
+		/// F = Forest
+		/// </summary>
+		public static readonly HashSet<string> RoomTypeMarkerHashSet = new HashSet<string>
+		{
+			"T", "F"
 		};
 
 		public static Vector2 TileSize()
 		{
-			Sprite sampleTileSprite = (Resources.Load("BlockTile0", typeof(GameObject)) as GameObject).GetComponent<SpriteRenderer>().sprite;
+			Sprite sampleTileSprite = (Resources.Load("SampleTile", typeof(GameObject)) as GameObject).GetComponent<SpriteRenderer>().sprite;
 			Debug.Assert(sampleTileSprite != null, "Sample Tile Sprite Not Found");
 			float halfX = sampleTileSprite.bounds.extents.x;
 			float halfY = sampleTileSprite.bounds.extents.y;
@@ -76,6 +86,20 @@ namespace PCG
 		public static int MaxFileWidth()
 		{
 			return 0;
+		}
+
+		public static string LoadPath(string marker)
+		{
+			if (marker == "F")
+			{
+				return "Forest/";
+			}
+			if (marker == "T")
+			{
+				return "Temple/";
+			}
+			Debug.Assert(false, "Load Path: " + marker + "is not avaiable");
+			return "";
 		}
 
 		public static Vector2 BoardPositionToWorldPosition(IntVector2 boardPosition)

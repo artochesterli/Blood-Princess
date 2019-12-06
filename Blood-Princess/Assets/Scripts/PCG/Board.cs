@@ -85,34 +85,45 @@ namespace PCG
 				new Vector2(worldPosition.x * Utility.TileSize().x, worldPosition.y * Utility.TileSize().y);
 
 			GameObject instantiatedObject = null;
-			if (curChar == "1" || curChar == "3")
+			string curCharacter = curChar;
+			if (Utility.IgnorePlacingStrHashSet.Contains(curCharacter)) return;
+			string curRoomType = "";
+			string[] splitChar = curChar.Split(';');
+			Debug.Assert(splitChar.Length > 1, curChar + "Is not marked");
+			if (splitChar.Length > 1)
 			{
-				if (!Utility.EmptyStrHashSet.Contains(_board[worldPosition.x, worldPosition.y - 1]))
+				curCharacter = splitChar[0];
+				curRoomType = splitChar[1];
+			}
+
+			if (curCharacter == "1" || curCharacter == "3")
+			{
+				if (!Utility.EmptyStrHashSet.Contains(_board[worldPosition.x, worldPosition.y - 1].Split(';')[0]))
 				{
-					instantiatedObject = GameObject.Instantiate(Resources.Load("WallTile0", typeof(GameObject))) as GameObject;
+					instantiatedObject = GameObject.Instantiate(Resources.Load(Utility.LoadPath(curRoomType) + "WallTile0", typeof(GameObject))) as GameObject;
 				}
 				else
 				{
-					instantiatedObject = GameObject.Instantiate(Resources.Load("BlockTile" + m_Rand.Next(0, 2).ToString(), typeof(GameObject))) as GameObject;
+					instantiatedObject = GameObject.Instantiate(Resources.Load(Utility.LoadPath(curRoomType) + "BlockTile" + m_Rand.Next(0, 2).ToString(), typeof(GameObject))) as GameObject;
 				}
 
 			}
-			else if (curChar == "2")
+			else if (curCharacter == "2")
 			{
 				if (m_Rand.Next(0, 100) > 50)
 				{
-					instantiatedObject = GameObject.Instantiate(Resources.Load("BlockTile" + m_Rand.Next(0, 2).ToString(), typeof(GameObject))) as GameObject;
+					instantiatedObject = GameObject.Instantiate(Resources.Load(Utility.LoadPath(curRoomType) + "BlockTile" + m_Rand.Next(0, 2).ToString(), typeof(GameObject))) as GameObject;
 				}
 			}
-			else if (curChar == "5")
+			else if (curCharacter == "5")
 			{
-				instantiatedObject = GameObject.Instantiate(Resources.Load("Ladder", typeof(GameObject))) as GameObject;
+				instantiatedObject = GameObject.Instantiate(Resources.Load(Utility.LoadPath(curRoomType) + "Ladder", typeof(GameObject))) as GameObject;
 			}
-			else if (curChar == "6")
+			else if (curCharacter == "6")
 			{
-				instantiatedObject = GameObject.Instantiate(Resources.Load("PassablePlatform", typeof(GameObject))) as GameObject;
+				instantiatedObject = GameObject.Instantiate(Resources.Load(Utility.LoadPath(curRoomType) + "PassablePlatform", typeof(GameObject))) as GameObject;
 			}
-			else if (curChar == "a")
+			else if (curCharacter == "a")
 			{
 				int randInt = m_Rand.Next(0, 100);
 				if (randInt > 45)
@@ -126,7 +137,7 @@ namespace PCG
 				// initialize knight's Patrol Point and Engage Point
 				_initializeAI(instantiatedObject, worldPosition);
 			}
-			else if (curChar == "b")
+			else if (curCharacter == "b")
 			{
 				if (m_Rand.Next(0, 100) > 50)
 				{
@@ -137,17 +148,17 @@ namespace PCG
 					_initializeAI(instantiatedObject, worldPosition);
 				}
 			}
-			else if (curChar == "p")
+			else if (curCharacter == "p")
 			{
 				instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Character", typeof(GameObject))) as GameObject;
 			}
-			else if (curChar == "dummy")
+			else if (curCharacter == "dummy")
 			{
 				instantiatedObject = GameObject.Instantiate(Resources.Load("Dummy", typeof(GameObject))) as GameObject;
 			}
-			else if (curChar == "7" && _board[worldPosition.x, worldPosition.y - 1] != "7")
+			else if (curCharacter == "7" && _board[worldPosition.x, worldPosition.y - 1].Split(';')[0] != "7")
 			{
-				instantiatedObject = GameObject.Instantiate(Resources.Load("Door", typeof(GameObject))) as GameObject;
+				instantiatedObject = GameObject.Instantiate(Resources.Load(Utility.LoadPath(curRoomType) + "Door", typeof(GameObject))) as GameObject;
 			}
 
 			if (instantiatedObject != null)
@@ -174,12 +185,15 @@ namespace PCG
 			while (!leftIsWall && !leftIsEdge)
 			{
 				string leftDownPos = _board[currentX - 1, worldPosition.y - 1];
+				leftDownPos = leftDownPos.Split(';')[0];
 				string leftPos = _board[currentX - 1, worldPosition.y];
-				leftIsWall = (leftPos != "" && leftPos != "0" && leftPos != "6" && leftPos != "e" && leftPos != "a" && leftPos != "b" && leftPos != "7");
-				leftIsEdge = (leftPos == "" || leftPos == "0") && (leftDownPos == "" || leftDownPos == "0");
+				leftPos = leftPos.Split(';')[0];
+				//leftIsWall = (leftPos != "" && leftPos != "0" && leftPos != "6" && leftPos != "e" && leftPos != "a" && leftPos != "b" && leftPos != "7");
+				leftIsWall = !Utility.EmptyStrHashSet.Contains(leftPos);
+				//leftIsEdge = (leftPos == "" || leftPos == "0") && (leftDownPos == "" || leftDownPos == "0");
+				leftIsEdge = Utility.EmptyStrHashSet.Contains(leftPos) && Utility.EmptyStrHashSet.Contains(leftDownPos);
 				currentX--;
 			}
-
 			if (AI.name.Contains("Knight"))
 			{
 				AI.transform.Find("PatronLeftMark").localPosition = Utility.BoardPositionToWorldPosition(new IntVector2(currentX + 2, worldPosition.y) - worldPosition);
@@ -192,9 +206,13 @@ namespace PCG
 			while (!rightIsWall && !RightIsEdge)
 			{
 				string rightDownPos = _board[currentX + 1, worldPosition.y - 1];
+				rightDownPos = rightDownPos.Split(';')[0];
 				string rightPos = _board[currentX + 1, worldPosition.y];
-				rightIsWall = (rightPos != "" && rightPos != "0" && rightPos != "6" && rightPos != "e" && rightPos != "a" && rightPos != "b" && rightPos != "7");
-				RightIsEdge = (rightPos == "" || rightPos == "0") && (rightDownPos == "" || rightDownPos == "0");
+				rightPos = rightPos.Split(';')[0];
+				//rightIsWall = (rightPos != "" && rightPos != "0" && rightPos != "6" && rightPos != "e" && rightPos != "a" && rightPos != "b" && rightPos != "7");
+				rightIsWall = !Utility.EmptyStrHashSet.Contains(rightPos);
+				//RightIsEdge = (rightPos == "" || rightPos == "0") && (rightDownPos == "" || rightDownPos == "0");
+				RightIsEdge = Utility.EmptyStrHashSet.Contains(rightPos) && Utility.EmptyStrHashSet.Contains(rightDownPos);
 				currentX++;
 			}
 			if (AI.name.Contains("Knight"))
@@ -206,16 +224,16 @@ namespace PCG
 
 		public void Print()
 		{
-			string _boardstr = "";
-			for (int i = _height - 1; i >= 0; i--)
-			{
-				for (int j = 0; j < _width; j++)
-				{
-					_boardstr += _board[j, i];
-				}
-				_boardstr += "\n";
-			}
-			//Debug.Log(_boardstr);
+			//string _boardstr = "";
+			//for (int i = _height - 1; i >= 0; i--)
+			//{
+			//	for (int j = 0; j < _width; j++)
+			//	{
+			//		_boardstr += _board[j, i];
+			//	}
+			//	_boardstr += "\n";
+			//}
+			//Debug.Log(_boardstr.Trim());
 		}
 	}
 }
