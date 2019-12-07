@@ -137,6 +137,9 @@ public class PowerSlash : BattleArt
         Level = level;
 
         IncrementCount = 0;
+
+        Icon = CharacterOpenInfo.Self.GetComponent<CharacterAbilitiesInfo>().PowerSlashIcon;
+        Description = CharacterOpenInfo.Self.GetComponent<CharacterAbilitiesInfo>().PowerSlashDescription;
     }
 }
 
@@ -155,6 +158,9 @@ public class CrossSlash : BattleArt
 
         StrikeCount = 0;
         StrikeHitCount = 0;
+
+        Icon = CharacterOpenInfo.Self.GetComponent<CharacterAbilitiesInfo>().CrossSlashIcon;
+        Description = CharacterOpenInfo.Self.GetComponent<CharacterAbilitiesInfo>().CrossSlashDescription;
     }
 }
 
@@ -165,6 +171,9 @@ public class Harmony : PassiveAbility
         name = "Harmony";
         Type = PassiveAbilityType.Harmony;
         Level = level;
+
+        Icon = CharacterOpenInfo.Self.GetComponent<CharacterAbilitiesInfo>().HarmonyIcon;
+        Description = CharacterOpenInfo.Self.GetComponent<CharacterAbilitiesInfo>().HarmonyDescription;
     }
 }
 
@@ -175,6 +184,9 @@ public class SpiritMaster : PassiveAbility
         name = "Spirit Master";
         Type = PassiveAbilityType.SpiritMaster;
         Level = level;
+
+        Icon = CharacterOpenInfo.Self.GetComponent<CharacterAbilitiesInfo>().SpiritMasterIcon;
+        Description = CharacterOpenInfo.Self.GetComponent<CharacterAbilitiesInfo>().SpiritMasterDescription;
     }
 }
 
@@ -185,6 +197,9 @@ public class UltimateAwakening : PassiveAbility
         name = "Ultimate Awakening";
         Type = PassiveAbilityType.UltimateAwakening;
         Level = level;
+
+        Icon = CharacterOpenInfo.Self.GetComponent<CharacterAbilitiesInfo>().UltimateAwakeningIcon;
+        Description = CharacterOpenInfo.Self.GetComponent<CharacterAbilitiesInfo>().UltimateAwakeningDescription;
     }
 }
 
@@ -195,6 +210,9 @@ public class CriticalEye : PassiveAbility
         name = "Critical Eye";
         Type = PassiveAbilityType.CriticalEye;
         Level = level;
+
+        Icon = CharacterOpenInfo.Self.GetComponent<CharacterAbilitiesInfo>().CriticalEyeIcon;
+        Description = CharacterOpenInfo.Self.GetComponent<CharacterAbilitiesInfo>().CriticalEyeDescription;
     }
 }
 
@@ -205,6 +223,9 @@ public class BattleArtMaster : PassiveAbility
         name = "BattleArt Master";
         Type = PassiveAbilityType.BattleArtMaster;
         Level = level;
+
+        Icon = CharacterOpenInfo.Self.GetComponent<CharacterAbilitiesInfo>().BattleArtMasterIcon;
+        Description = CharacterOpenInfo.Self.GetComponent<CharacterAbilitiesInfo>().BattleArtMasterDescription;
     }
 }
 
@@ -219,6 +240,9 @@ public class OneMind : PassiveAbility
         Level = level;
 
         IncrementCount = 0;
+
+        Icon = CharacterOpenInfo.Self.GetComponent<CharacterAbilitiesInfo>().OneMindIcon;
+        Description = CharacterOpenInfo.Self.GetComponent<CharacterAbilitiesInfo>().OneMindDescription;
     }
 }
 
@@ -234,6 +258,9 @@ public class Dancer : PassiveAbility
         Level = level;
 
         HitEnemies = new List<GameObject>();
+
+        Icon = CharacterOpenInfo.Self.GetComponent<CharacterAbilitiesInfo>().DancerIcon;
+        Description = CharacterOpenInfo.Self.GetComponent<CharacterAbilitiesInfo>().DancerDescription;
     }
 }
 

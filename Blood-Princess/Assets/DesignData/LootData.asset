@@ -22,3 +22,6 @@ MonoBehaviour:
   - Name: Coin10
     Prefab: {fileID: 7769454323396070113, guid: c01584cf5263d01479baf98a47132fdc,
       type: 3}
+  - Name: AbilityObject
+    Prefab: {fileID: 7769454323396070113, guid: c01584cf5263d01479baf98a47132fdc,
+      type: 3}

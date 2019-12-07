@@ -27,7 +27,7 @@ public class CharacterAbilitiesInfo : MonoBehaviour
     public Sprite OneMindIcon;
     public string OneMindDescription;
 
-    public Sprite Dancer;
+    public Sprite DancerIcon;
     public string DancerDescription;
 
 
