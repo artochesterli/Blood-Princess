@@ -8,7 +8,8 @@ public static class AIUtility
     {
         Vector2 Offset = Attack.HitBoxOffset;
         Vector2 Direction = Vector2.right;
-        if (!Attack.Right)
+
+        if(Attack.Dir == global::Direction.Left)
         {
             Offset.x = -Offset.x;
             Direction = Vector2.left;

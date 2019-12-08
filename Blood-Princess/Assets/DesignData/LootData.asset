@@ -23,5 +23,5 @@ MonoBehaviour:
     Prefab: {fileID: 7769454323396070113, guid: c01584cf5263d01479baf98a47132fdc,
       type: 3}
   - Name: AbilityObject
-    Prefab: {fileID: 7769454323396070113, guid: c01584cf5263d01479baf98a47132fdc,
+    Prefab: {fileID: 6177557376495306715, guid: b2848177ecbe0f64dbe139264a486edc,
       type: 3}

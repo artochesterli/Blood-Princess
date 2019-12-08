@@ -10,11 +10,6 @@ public class BattleArtManagePanel : MonoBehaviour
 
     public BattleArt UpdatedBattleArt;
 
-    private void OnEnable()
-    {
-        SetPanel();
-    }
-
     // Start is called before the first frame update
     void Start()
     {
@@ -72,6 +67,9 @@ public class BattleArtManagePanel : MonoBehaviour
         {
             CurrentBattleArtInfo.GetComponent<Text>().text = Current.name + "(" + Current.Level.ToString() + ")";
             CurrentBattleArtInfo.transform.Find("Icon").GetComponent<Image>().sprite = Current.Icon;
+
+            CurrentBattleArtInfo.transform.Find("Description").GetComponent<Text>().text = "";
+
             for (int i = 1; i <= Current.Level; i++)
             {
                 CurrentBattleArtInfo.transform.Find("Description").GetComponent<Text>().text += "-" + Current.Description[i - 1];
@@ -92,7 +90,10 @@ public class BattleArtManagePanel : MonoBehaviour
         UpdateBattleArtInfo.GetComponent<Text>().text = UpdatedBattleArt.name +"("+UpdatedBattleArt.Level.ToString()+")";
         UpdateBattleArtInfo.transform.Find("Icon").GetComponent<Image>().sprite = UpdatedBattleArt.Icon;
 
-        for(int i = 1; i < UpdatedBattleArt.Level; i++)
+
+        UpdateBattleArtInfo.transform.Find("Description").GetComponent<Text>().text = "";
+
+        for (int i = 1; i <= UpdatedBattleArt.Level; i++)
         {
             UpdateBattleArtInfo.transform.Find("Description").GetComponent<Text>().text += "-" + UpdatedBattleArt.Description[i - 1];
             if(i<UpdatedBattleArt.Level - 1)

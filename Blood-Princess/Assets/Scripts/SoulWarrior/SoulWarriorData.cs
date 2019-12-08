@@ -29,7 +29,7 @@ public class SoulWarriorData : MonoBehaviour
 
     public float MagicUseableDis;
     public float MagicPredictionDis;
-    public Vector2 MagicHalfHitBoxSize;
+    public Vector2 MagicHitBoxSize;
     public GameObject MagicPrefab;
 
     public float KnockedBackTime;

@@ -3,8 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum AbilityObjectType
+{
+    OnlyBattleArt,
+    OnlyPassiveAbility,
+    All
+}
+
+public enum AbilityObjectPriceType
+{
+    Purchase,
+    Drop
+}
+
 public class AbilityObject : MonoBehaviour
 {
+    public AbilityObjectType Type;
+    public AbilityObjectPriceType PriceType;
+
     public LayerMask PlayerLayer;
     public CharacterAbility Ability;
     public GameObject Text;
@@ -26,7 +42,25 @@ public class AbilityObject : MonoBehaviour
     private void RandomAbility()
     {
         var Data = CharacterOpenInfo.Self.GetComponent<CharacterData>();
-        int value = Random.Range(0, Data.BattleArtTypeNumber + Data.PassiveAbilityTypeNumber);
+
+        int value;
+
+        switch (Type)
+        {
+            case AbilityObjectType.OnlyBattleArt:
+                value = Random.Range(0, Data.BattleArtTypeNumber);
+                break;
+            case AbilityObjectType.OnlyPassiveAbility:
+                value = Random.Range(Data.BattleArtTypeNumber, Data.BattleArtTypeNumber + Data.PassiveAbilityTypeNumber);
+                break;
+            case AbilityObjectType.All:
+                value = Random.Range(0, Data.BattleArtTypeNumber + Data.PassiveAbilityTypeNumber);
+                break;
+            default:
+                value = Random.Range(0, Data.BattleArtTypeNumber + Data.PassiveAbilityTypeNumber);
+                break;
+        }
+
 
         if (value < Data.BattleArtTypeNumber)
         {

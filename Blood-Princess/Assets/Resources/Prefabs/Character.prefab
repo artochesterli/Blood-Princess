@@ -4628,7 +4628,7 @@ MonoBehaviour:
   CrossSlashDescription:
   - Perform two lightning fast strikes with 150/175/200 potency
   - 'Awaken: Perform third attack'
-  - 
+  - Increase the attack range
   HarmonyIcon: {fileID: 21300000, guid: ae9dfd83c2c96c144b137758ad4eda33, type: 3}
   HarmonyDescription: Recover HP with 20 potency after hitting enemies with Battle
     Arts

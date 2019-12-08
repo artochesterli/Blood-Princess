@@ -29,6 +29,8 @@ public class SoulWarriorAI : MonoBehaviour
     public GameObject DetectLeftMark;
     public GameObject DetectRightMark;
 
+    public GameObject BlinkMark;
+
     public float DetectLeftX;
     public float DetectRightX;
     public float PatronLeftX;
@@ -111,15 +113,20 @@ public abstract class SoulWarriorBehavior : FSM<SoulWarriorAI>.State
     {
         var Data = Entity.GetComponent<SoulWarriorData>();
 
-        return new EnemyAttackInfo(Entity, Entity.transform.right.x > 0, Data.SlashDamage, Data.SlashDamage, Data.SlashOffset, Data.SlashHitBoxSize);
+        Direction dir = Direction.Right;
+        if(Entity.transform.right.x < 0)
+        {
+            dir = Direction.Left;
+        }
+
+        return new EnemyAttackInfo(Entity, dir, Data.SlashDamage, Data.SlashDamage, Data.SlashOffset, Data.SlashHitBoxSize);
     }
 
-    protected void GetMagicInfo(GameObject Magic, ref EnemyAttackInfo Left,ref EnemyAttackInfo Right)
+    protected EnemyAttackInfo GetMagicInfo(GameObject Magic)
     {
         var Data = Entity.GetComponent<SoulWarriorData>();
 
-        Left = new EnemyAttackInfo(Magic, false, Data.MagicDamage, Data.MagicDamage, Vector2.right * Data.MagicHalfHitBoxSize.x / 2 , Data.MagicHalfHitBoxSize);
-        Right = new EnemyAttackInfo(Magic, true, Data.MagicDamage, Data.MagicDamage, Vector2.right * Data.MagicHalfHitBoxSize.x / 2 , Data.MagicHalfHitBoxSize);
+        return new EnemyAttackInfo(Magic, Direction.None, Data.MagicDamage, Data.MagicDamage, Vector2.zero , Data.MagicHitBoxSize);
     }
 
     protected void SetKnockedBack(bool b, CharacterAttackInfo Attack = null)
@@ -481,17 +488,13 @@ public class SoulWarriorSlashStrike : SoulWarriorBehavior
     {
         float EulerAngle = 0;
 
-        if (!Attack.Right)
-        {
-            EulerAngle = 180;
-        }
-
         var Data = Entity.GetComponent<SoulWarriorData>();
 
         Vector2 Offset = Data.SlashOffset;
-        if (!Attack.Right)
+        if (Attack.Dir == Direction.Left)
         {
             Offset.x = -Offset.x;
+            EulerAngle = 180;
         }
 
         SlashImage = GameObject.Instantiate(Data.SlashImage, (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
@@ -674,8 +677,8 @@ public class SoulWarriorMagicStrike : SoulWarriorBehavior
     private float TimeCount;
     private float StateTime;
 
-    private EnemyAttackInfo Left;
-    private EnemyAttackInfo Right;
+    private EnemyAttackInfo MagicAttack;
+
     private bool AttackHit;
 
     public override void OnEnter()
@@ -706,7 +709,7 @@ public class SoulWarriorMagicStrike : SoulWarriorBehavior
 
         TimeCount = 0;
         StateTime = Data.MagicStrikeTime;
-        GetMagicInfo(Context.Magic, ref Left, ref Right);
+        MagicAttack = GetMagicInfo(Context.Magic);
         AttackHit = false;
     }
 
@@ -721,7 +724,7 @@ public class SoulWarriorMagicStrike : SoulWarriorBehavior
         var Data = Entity.GetComponent<SoulWarriorData>();
 
         TimeCount += Time.deltaTime;
-        Context.Magic.transform.localScale = Vector3.one * Mathf.Lerp(1, Data.MagicHalfHitBoxSize.x * 2, TimeCount / StateTime);
+        Context.Magic.transform.localScale = Vector3.one * Mathf.Lerp(1, Data.MagicHitBoxSize.x, TimeCount / StateTime);
         Color color = Context.Magic.GetComponent<SpriteRenderer>().color;
         Context.Magic.GetComponent<SpriteRenderer>().color = new Color(color.r, color.g, color.b, Mathf.Lerp(1, 0, TimeCount / StateTime));
         if (TimeCount >= StateTime)
@@ -736,11 +739,7 @@ public class SoulWarriorMagicStrike : SoulWarriorBehavior
     {
         if (!AttackHit)
         {
-            if(AIUtility.HitPlayer(Context.Magic.transform.position, Left, Context.PlayerLayer))
-            {
-                AttackHit = true;
-            }
-            else if(AIUtility.HitPlayer(Context.Magic.transform.position, Right, Context.PlayerLayer))
+            if(AIUtility.HitPlayer(Context.Magic.transform.position, MagicAttack, Context.PlayerLayer))
             {
                 AttackHit = true;
             }
@@ -856,6 +855,7 @@ public class SoulWarriorBlink : SoulWarriorBehavior
     public override void OnExit()
     {
         base.OnExit();
+        Context.BlinkMark.GetComponent<SpriteRenderer>().enabled = false;
         Context.LastState = SoulWarriorState.BlinkPrepare;
     }
 
@@ -866,6 +866,8 @@ public class SoulWarriorBlink : SoulWarriorBehavior
         StateTime = Data.BlinkPrepareTime;
 
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+
+        Context.BlinkMark.GetComponent<SpriteRenderer>().enabled = true;
     }
 
     private void SetAppearance()

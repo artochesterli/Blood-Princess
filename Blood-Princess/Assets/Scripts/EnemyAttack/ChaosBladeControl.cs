@@ -57,7 +57,14 @@ public class ChaosBladeControl : MonoBehaviour
 			{
 				// Hit Player
 				bool isRight = transform.position.x < hit.gameObject.transform.position.x;
-				EnemyAttackInfo attackInfo = new EnemyAttackInfo(Owner, isRight, Damage, Damage, BladeHitBoxSize, BladeHitBoxOffset);
+
+                Direction dir = Direction.Right;
+                if (AIUtility.GetXDiff(hit.gameObject, gameObject) < 0)
+                {
+                    dir = Direction.Left;
+                }
+
+				EnemyAttackInfo attackInfo = new EnemyAttackInfo(Owner, dir, Damage, Damage, BladeHitBoxSize, BladeHitBoxOffset);
 				hit.gameObject.GetComponent<IHittable>().OnHit(attackInfo);
 				m_HitOnce = true;
 			}

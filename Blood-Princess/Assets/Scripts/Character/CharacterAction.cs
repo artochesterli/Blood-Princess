@@ -91,15 +91,15 @@ public class CharacterAttackInfo : AttackInfo
 
 public class EnemyAttackInfo : AttackInfo
 {
-    public bool Right;
+    public Direction Dir;
     public int Damage;
     public int BaseDamage;
     public Vector2 HitBoxOffset;
     public Vector2 HitBoxSize;
-    public EnemyAttackInfo(GameObject source, bool right,int damage, int basedamage, Vector2 offset,Vector2 size)
+    public EnemyAttackInfo(GameObject source, Direction dir,int damage, int basedamage, Vector2 offset,Vector2 size)
     {
         Source = source;
-        Right = right;
+        Dir = dir;
         Damage = damage;
         BaseDamage = basedamage;
         HitBoxOffset = offset;
@@ -3122,7 +3122,7 @@ public class GetInterrupted : CharacterActionState
 
         EnemyAttackInfo Temp = Entity.GetComponent<StatusManager_Character>().CurrentTakenAttack;
         SpeedManager.SelfSpeed = Vector2.zero;
-        if (Temp.Right)
+        if (Temp.Dir == Direction.Right)
         {
             if (Entity.transform.right.x > 0)
             {
@@ -3131,7 +3131,7 @@ public class GetInterrupted : CharacterActionState
 
             SpeedManager.SelfSpeed.x = Data.InterruptedSpeed;
         }
-        else
+        else if(Temp.Dir == Direction.Left)
         {
             if (Entity.transform.right.x < 0)
             {
@@ -3139,7 +3139,10 @@ public class GetInterrupted : CharacterActionState
             }
 
             SpeedManager.SelfSpeed.x = -Data.InterruptedSpeed;
-
+        }
+        else
+        {
+            SpeedManager.SelfSpeed.x = 0;
         }
 
         SavedInputList = new List<InputInfo>();
