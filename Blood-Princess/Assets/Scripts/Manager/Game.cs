@@ -21,7 +21,7 @@ public class Game : MonoBehaviour
 		Services.GameStateManager = new GameStateManager();
 		Services.LootManager = new LootManager(Database, LootData);
 		Services.CoinManager = new CoinManager(LootData);
-
+		Services.StorageManager = new StorageManager();
 	}
 
 	// Update is called once per frame
@@ -49,5 +49,8 @@ public class Game : MonoBehaviour
 
 		Services.CoinManager.Destroy();
 		Services.CoinManager = null;
+
+		Services.StorageManager.Destroy();
+		Services.StorageManager = null;
 	}
 }

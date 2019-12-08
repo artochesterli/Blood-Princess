@@ -22,13 +22,11 @@ namespace Clinic
 
 		private void Start()
 		{
-			m_Inventory.OnAddItem(new Rug(m_ItemData));
-			m_Inventory.OnAddItem(new Wood(m_ItemData));
-			m_Inventory.OnAddItem(new Cloth(m_ItemData));
-			m_Inventory.OnAddItem(new Cloth(m_ItemData));
-			m_Inventory.OnAddItem(new OakSeed(m_ItemData));
-			m_Inventory.OnAddItem(new AppleSeed(m_ItemData));
-			m_Inventory.OnAddItem(new Scroll(m_ItemData));
+			Services.StorageManager.SaveItem(new Rug(m_ItemData), 1);
+			Services.StorageManager.SaveItem(new Wood(m_ItemData), 1);
+			Services.StorageManager.SaveItem(new Cloth(m_ItemData), 2);
+			Services.StorageManager.SaveItem(new OakSeed(m_ItemData), 1);
+			Services.StorageManager.SaveItem(new Scroll(m_ItemData), 1);
 		}
 
 		protected override void OnCancelInteract()

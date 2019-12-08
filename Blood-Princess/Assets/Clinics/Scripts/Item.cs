@@ -1,19 +1,28 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Xml.Serialization;
 
 namespace Clinic
 {
+	[XmlInclude(typeof(Rug))]
+	[XmlInclude(typeof(EmptyItem))]
+	[XmlInclude(typeof(OakSeed))]
+	[XmlInclude(typeof(AppleSeed))]
+	[XmlInclude(typeof(Scroll))]
+	[XmlInclude(typeof(Wood))]
+	[XmlInclude(typeof(Charcoal))]
+	[XmlInclude(typeof(Cloth))]
 	public abstract class Item
 	{
 		public string Name = "";
 		public int Number = 1;
-		public Sprite Sprite;
+		//public Sprite Sprite;
 		protected ItemDatium m_ID;
 
 		protected virtual string theName { get { return this.GetType().Name; } }
 		public virtual void OnSelect(GameObject Player) { }
-		public GameObject ItemInstance;
+		//public GameObject ItemInstance;
 
 		public Item(ItemData id)
 		{
@@ -21,9 +30,23 @@ namespace Clinic
 			if (i != null)
 			{
 				Name = i.Name;
-				Sprite = i.Sprite;
 				m_ID = i;
 			}
+		}
+
+		public Item()
+		{
+			ItemDatium i = Resources.Load<ItemData>("ItemData").GetItem(theName);
+			if (i != null)
+			{
+				Name = i.Name;
+				m_ID = i;
+			}
+		}
+
+		public ItemDatium GetID()
+		{
+			return m_ID;
 		}
 	}
 
@@ -32,10 +55,15 @@ namespace Clinic
 		public EmptyItem(ItemData id) : base(id)
 		{
 		}
+		public EmptyItem() : base() { }
 	}
 
 	public abstract class SeedItem : Item
 	{
+		public SeedItem()
+		{
+		}
+
 		public SeedItem(ItemData id) : base(id)
 		{
 		}
@@ -43,6 +71,10 @@ namespace Clinic
 
 	public class OakSeed : SeedItem
 	{
+		public OakSeed()
+		{
+		}
+
 		public OakSeed(ItemData id) : base(id)
 		{
 		}
@@ -50,6 +82,10 @@ namespace Clinic
 
 	public class AppleSeed : SeedItem
 	{
+		public AppleSeed()
+		{
+		}
+
 		public AppleSeed(ItemData id) : base(id)
 		{
 		}
@@ -57,6 +93,10 @@ namespace Clinic
 
 	public abstract class MaterialItem : Item
 	{
+		public MaterialItem()
+		{
+		}
+
 		public MaterialItem(ItemData id) : base(id)
 		{
 		}
@@ -71,10 +111,20 @@ namespace Clinic
 		public DecorationItem(ItemData id) : base(id)
 		{
 		}
+
+		public DecorationItem()
+		{
+		}
+
+		public abstract GameObject OnSelectObject(GameObject Player);
 	}
 
 	public class Rug : DecorationItem
 	{
+		public Rug()
+		{
+		}
+
 		public Rug(ItemData id) : base(id)
 		{
 		}
@@ -84,12 +134,24 @@ namespace Clinic
 		public override void OnSelect(GameObject Player)
 		{
 			Player.GetComponent<InventoryUI>().OnUseDecoration(this);
-			ItemInstance = GameObject.Instantiate(Resources.Load("D_Rug") as GameObject);
+			//ItemInstance = GameObject.Instantiate(Resources.Load("D_Rug") as GameObject);
+			GameObject.Instantiate(Resources.Load("D_Rug") as GameObject);
+		}
+
+		public override GameObject OnSelectObject(GameObject Player)
+		{
+			Player.GetComponent<InventoryUI>().OnUseDecoration(this);
+			//ItemInstance = GameObject.Instantiate(Resources.Load("D_Rug") as GameObject);
+			return GameObject.Instantiate(Resources.Load("D_Rug") as GameObject);
 		}
 	}
 
 	public class Scroll : DecorationItem
 	{
+		public Scroll()
+		{
+		}
+
 		public Scroll(ItemData id) : base(id)
 		{
 		}
@@ -99,12 +161,24 @@ namespace Clinic
 		public override void OnSelect(GameObject Player)
 		{
 			Player.GetComponent<InventoryUI>().OnUseDecoration(this);
-			ItemInstance = GameObject.Instantiate(Resources.Load("D_Scroll") as GameObject);
+			//ItemInstance = GameObject.Instantiate(Resources.Load("D_Scroll") as GameObject);
+			GameObject.Instantiate(Resources.Load("D_Scroll") as GameObject);
+		}
+
+		public override GameObject OnSelectObject(GameObject Player)
+		{
+			Player.GetComponent<InventoryUI>().OnUseDecoration(this);
+			//ItemInstance = GameObject.Instantiate(Resources.Load("D_Scroll") as GameObject);
+			return GameObject.Instantiate(Resources.Load("D_Scroll") as GameObject);
 		}
 	}
 
 	public class Wood : MaterialItem
 	{
+		public Wood()
+		{
+		}
+
 		public Wood(ItemData id) : base(id)
 		{
 		}
@@ -112,6 +186,10 @@ namespace Clinic
 
 	public class Cloth : MaterialItem
 	{
+		public Cloth()
+		{
+		}
+
 		public Cloth(ItemData id) : base(id)
 		{
 		}
@@ -120,6 +198,10 @@ namespace Clinic
 
 	public class Charcoal : MaterialItem
 	{
+		public Charcoal()
+		{
+		}
+
 		public Charcoal(ItemData id) : base(id)
 		{
 		}

@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<StorageData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <ItemList>
+    <Item xsi:type="Rug">
+      <Name>Rug</Name>
+      <Number>1</Number>
+    </Item>
+    <Item xsi:type="Wood">
+      <Name>Wood</Name>
+      <Number>2</Number>
+    </Item>
+    <Item xsi:type="Cloth">
+      <Name>Cloth</Name>
+      <Number>3</Number>
+    </Item>
+    <Item xsi:type="OakSeed">
+      <Name>OakSeed</Name>
+      <Number>2</Number>
+    </Item>
+    <Item xsi:type="Scroll">
+      <Name>Scroll</Name>
+      <Number>1</Number>
+    </Item>
+    <Item xsi:type="EmptyItem">
+      <Name />
+      <Number>1</Number>
+    </Item>
+    <Item xsi:type="EmptyItem">
+      <Name />
+      <Number>1</Number>
+    </Item>
+    <Item xsi:type="EmptyItem">
+      <Name />
+      <Number>1</Number>
+    </Item>
+    <Item xsi:type="EmptyItem">
+      <Name />
+      <Number>1</Number>
+    </Item>
+    <Item xsi:type="EmptyItem">
+      <Name />
+      <Number>1</Number>
+    </Item>
+    <Item xsi:type="EmptyItem">
+      <Name />
+      <Number>1</Number>
+    </Item>
+    <Item xsi:type="EmptyItem">
+      <Name />
+      <Number>1</Number>
+    </Item>
+    <Item xsi:type="EmptyItem">
+      <Name />
+      <Number>1</Number>
+    </Item>
+    <Item xsi:type="EmptyItem">
+      <Name />
+      <Number>1</Number>
+    </Item>
+    <Item xsi:type="EmptyItem">
+      <Name />
+      <Number>1</Number>
+    </Item>
+  </ItemList>
+</StorageData>

@@ -18,7 +18,7 @@ namespace Clinic
 		{
 			get
 			{
-				return Inventory.m_Items;
+				return Services.StorageManager.LoadItem();
 			}
 		}
 
@@ -113,7 +113,7 @@ namespace Clinic
 						continue;
 					SeedItem si = (SeedItem)item;
 					GameObject go = Instantiate(Resources.Load("Seed") as GameObject, Context.FarmPanel.transform);
-					go.transform.GetChild(0).GetComponent<Image>().sprite = si.Sprite;
+					go.transform.GetChild(0).GetComponent<Image>().sprite = si.GetID().Sprite;
 					go.transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = si.Number.ToString();
 				}
 				m_SetSelectionCursor(m_CurrentSelection);
