@@ -145,6 +145,23 @@ public class PlayerGetHit : GameEvent
     }
 }
 
+public class PlayerDied : GameEvent
+{
+    public PlayerDied()
+    {
+
+    }
+}
+
+public class PlayerPickUpAbility : GameEvent
+{
+    public CharacterAbility Ability;
+    public PlayerPickUpAbility(CharacterAbility ability)
+    {
+        Ability = ability;
+    }
+}
+
 public class PlayerEquipBattleArt : GameEvent
 {
     public BattleArt ThisBattleArt;

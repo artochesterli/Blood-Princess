@@ -36,7 +36,7 @@ public class Attack : Action
 			GetComponent<SpriteRenderer>().sprite = AttackSprite;
 		m_AttackHit = false;
 		bool isRight = transform.eulerAngles.y == 0f;
-		AttackInfo = new EnemyAttackInfo(Owner.gameObject, isRight, Damage.Value, Damage.Value, HitBoxOffset.Value, HitBoxSize.Value);
+		AttackInfo = new EnemyAttackInfo(Owner.gameObject, Direction.Right, Damage.Value, Damage.Value, HitBoxOffset.Value, HitBoxSize.Value);
 		GetComponent<SpeedManager>().SelfSpeed.x = transform.right.x * ForwardStep.Value;
 	}
 
@@ -68,7 +68,12 @@ public class Attack : Action
 
 		if (Hit)
 		{
-			Attack.Right = Owner.GetComponent<SpeedManager>().GetTruePos().x < Hit.collider.gameObject.GetComponent<SpeedManager>().GetTruePos().x;
+            Attack.Dir = Direction.Right;
+            if (AIUtility.GetXDiff(Hit.collider.gameObject, Owner.gameObject) > 0)
+            {
+                Attack.Dir = Direction.Left;
+            }
+
 			Hit.collider.gameObject.GetComponent<IHittable>().OnHit(Attack);
 			return true;
 		}

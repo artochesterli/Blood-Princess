@@ -33,7 +33,7 @@ public class Stomp : Action
 		base.OnStart();
 		m_Timer = Time.timeSinceLevelLoad + Duration.Value;
 		m_StartPosition = (Vector2)Owner.transform.position + StartOffset.Value;
-		m_EnemyAttackInfo = new EnemyAttackInfo(Owner.gameObject, true, Damage.Value, Damage.Value, Vector2.zero, HitBoxSize.Value);
+		m_EnemyAttackInfo = new EnemyAttackInfo(Owner.gameObject, Direction.Right, Damage.Value, Damage.Value, Vector2.zero, HitBoxSize.Value);
 		m_WaveObject = GameObject.Instantiate(Resources.Load<GameObject>("Prefabs/Wave"));
 		m_WaveObject.transform.position = m_StartPosition;
 		m_WaveObject.GetComponent<SpriteRenderer>().size = HitBoxSize.Value;
@@ -54,7 +54,7 @@ public class Stomp : Action
 	private void m_ScanHit()
 	{
 		m_StartPosition.x += Speed.Value * (Right.Value ? 1f : -1f) * Time.deltaTime;
-		m_EnemyAttackInfo.Right = m_StartPosition.x < m_Player.transform.position.x;
+		//m_EnemyAttackInfo.Right = m_StartPosition.x < m_Player.transform.position.x;
 		m_WaveObject.transform.position = m_StartPosition;
 		if (!m_Hit && HitPlayer(m_EnemyAttackInfo))
 		{
@@ -71,7 +71,12 @@ public class Stomp : Action
 
 		if (Hit)
 		{
-			Attack.Right = Owner.GetComponent<SpeedManager>().GetTruePos().x < Hit.collider.gameObject.GetComponent<SpeedManager>().GetTruePos().x;
+            Attack.Dir = Direction.Right;
+            if(AIUtility.GetXDiff(Hit.collider.gameObject, Owner.gameObject) > 0)
+            {
+                Attack.Dir = Direction.Left;
+            }
+
 			Hit.collider.gameObject.GetComponent<IHittable>().OnHit(Attack);
 			return true;
 		}

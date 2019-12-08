@@ -239,13 +239,17 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             Interrupted = true;
 
 
-            if (CurrentTakenAttack.Right)
+            if (CurrentTakenAttack.Dir == Direction.Right)
             {
                 DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 1);
             }
-            else
+            else if(CurrentTakenAttack.Dir == Direction.Left)
             {
                 DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 1);
+            }
+            else
+            {
+                DamageText.GetComponent<DamageText>().TravelVector = Vector2.zero;
             }
             DamageText.GetComponent<Text>().text = Damage.ToString();
             DamageText.transform.parent = Canvas.transform;
@@ -257,7 +261,9 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
             if (CurrentHP <= 0)
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                EventManager.instance.Fire(new PlayerDied());
+
+                //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
                 return true;
             }
             else

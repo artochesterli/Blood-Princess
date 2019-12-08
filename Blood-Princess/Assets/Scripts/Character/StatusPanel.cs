@@ -12,16 +12,25 @@ public class StatusPanel : MonoBehaviour
     public GameObject BattleArtInfo;
     public GameObject PassiveAbilityInfo;
 
+    private void OnEnable()
+    {
+        SetPanel();
+    }
+
     // Start is called before the first frame update
     void Start()
     {
-        SetPanel();
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if(Utility.InputCancel(ControlState.CheckStatus) || Utility.InputOpenStatusPanel(ControlState.CheckStatus))
+        {
+            ControlStateManager.CurrentControlState = ControlState.Action;
+            gameObject.SetActive(false);
+        }
     }
 
     private void SetPanel()

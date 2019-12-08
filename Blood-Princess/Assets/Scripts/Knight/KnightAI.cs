@@ -144,7 +144,13 @@ public abstract class KnightBehavior : FSM<KnightAI>.State
     {
         var KnightData = Entity.GetComponent<KnightData>();
 
-        return new EnemyAttackInfo(Entity, Entity.transform.right.x > 0, KnightData.Damage, KnightData.Damage, Offset, Size);
+        Direction dir = Direction.Right;
+        if (Entity.transform.right.x < 0)
+        {
+            dir = Direction.Left;
+        }
+
+        return new EnemyAttackInfo(Entity, dir, KnightData.Damage, KnightData.Damage, Offset, Size);
     }
 
     protected void SetKnockedBack(bool b, CharacterAttackInfo Attack = null)
@@ -746,20 +752,16 @@ public class KnightAttackStrike : KnightBehavior
 
     private void GenerateSlashImage()
     {
-        float EulerAngle = 0;
 
-        if (!Attack.Right)
-        {
-            EulerAngle = 180;
-        }
+        float EulerAngle = 0;
 
         var Data = Entity.GetComponent<KnightData>();
 
         Vector2 Offset = Attack.HitBoxOffset;
-        if (!Attack.Right)
+        if (Attack.Dir == Direction.Left)
         {
             Offset.x = -Offset.x;
-
+            EulerAngle = 180;
         }
 
         GameObject CurrentSlashImage;

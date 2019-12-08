@@ -1,32 +1,71 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+
+public enum AbilityObjectType
+{
+    OnlyBattleArt,
+    OnlyPassiveAbility,
+    All
+}
+
+public enum AbilityObjectPriceType
+{
+    Purchase,
+    Drop
+}
 
 public class AbilityObject : MonoBehaviour
 {
-    public CharacterAbility Ability;
+    public AbilityObjectType Type;
+    public AbilityObjectPriceType PriceType;
 
+    public LayerMask PlayerLayer;
+    public CharacterAbility Ability;
+    public GameObject Text;
 
     // Start is called before the first frame update
     void Start()
     {
         RandomAbility();
+        SetSelf();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        DetectPlayer();
+
     }
 
     private void RandomAbility()
     {
         var Data = CharacterOpenInfo.Self.GetComponent<CharacterData>();
-        int value = Random.Range(0, Data.BattleArtTypeNumber + Data.PassiveAbilityTypeNumber);
 
-        if(value < Data.BattleArtTypeNumber)
+        int value;
+
+        switch (Type)
+        {
+            case AbilityObjectType.OnlyBattleArt:
+                value = Random.Range(0, Data.BattleArtTypeNumber);
+                break;
+            case AbilityObjectType.OnlyPassiveAbility:
+                value = Random.Range(Data.BattleArtTypeNumber, Data.BattleArtTypeNumber + Data.PassiveAbilityTypeNumber);
+                break;
+            case AbilityObjectType.All:
+                value = Random.Range(0, Data.BattleArtTypeNumber + Data.PassiveAbilityTypeNumber);
+                break;
+            default:
+                value = Random.Range(0, Data.BattleArtTypeNumber + Data.PassiveAbilityTypeNumber);
+                break;
+        }
+
+
+        if (value < Data.BattleArtTypeNumber)
         {
             BattleArtType Type = (BattleArtType)value;
+
             switch (Type)
             {
                 case BattleArtType.PowerSlash:
@@ -40,6 +79,7 @@ public class AbilityObject : MonoBehaviour
         else
         {
             PassiveAbilityType Type = (PassiveAbilityType)(value - Data.BattleArtTypeNumber);
+
             switch (Type)
             {
                 case PassiveAbilityType.Harmony:
@@ -66,4 +106,46 @@ public class AbilityObject : MonoBehaviour
             }
         }
     }
+
+    public void SetSelf()
+    {
+        GetComponent<SpriteRenderer>().sprite = Ability.Icon;
+        Text.GetComponent<Text>().text = Ability.name;
+        if(Ability.GetType() == typeof(BattleArt))
+        {
+            Text.GetComponent<Text>().text += "(" + Ability.Level + ")";
+        }
+    }
+
+    private void DetectPlayer()
+    {
+        var SpeedManager = GetComponent<SpeedManager>();
+
+        RaycastHit2D Hit = Physics2D.BoxCast(SpeedManager.GetTruePos(), new Vector2(SpeedManager.BodyWidth, SpeedManager.BodyHeight), 0, Vector2.down,0,PlayerLayer);
+
+        if(Hit.collider != null)
+        {
+            Text.SetActive(true);
+
+            if (Hit.collider.gameObject.GetComponent<ControlStateManager>().AttachedAbilityObject == null)
+            {
+                Hit.collider.gameObject.GetComponent<ControlStateManager>().AttachedAbilityObject = gameObject;
+
+                if (Ability.GetType().BaseType == typeof(BattleArt))
+                {
+                    Hit.collider.gameObject.GetComponent<ControlStateManager>().BattleArtManagerPanel.GetComponent<BattleArtManagePanel>().UpdatedBattleArt = (BattleArt)Ability;
+                }
+                else
+                {
+                    Hit.collider.gameObject.GetComponent<ControlStateManager>().PassiveAbilityManagerPanel.GetComponent<PassiveAbilityManagePanel>().UpdatePassiveAbility = (PassiveAbility)Ability;
+                }
+            }
+        }
+        else
+        {
+            Text.SetActive(false);
+        }
+    }
+
+    
 }

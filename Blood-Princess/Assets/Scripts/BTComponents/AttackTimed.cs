@@ -50,7 +50,7 @@ public class AttackTimed : Action
 		m_Timer = Time.timeSinceLevelLoad + Duration.Value;
 		m_AttackPoint = m_AttackStart;
 		m_AttackHit = false;
-		AttackInfo = new EnemyAttackInfo(Owner.gameObject, true, Damage.Value, Damage.Value, Vector2.zero, Vector2.zero);
+		AttackInfo = new EnemyAttackInfo(Owner.gameObject, Direction.Right, Damage.Value, Damage.Value, Vector2.zero, Vector2.zero);
 	}
 
 	public override TaskStatus OnUpdate()
@@ -83,7 +83,11 @@ public class AttackTimed : Action
 
 		if (Hit)
 		{
-			Attack.Right = m_SpeedManager.GetTruePos().x < Hit.collider.gameObject.GetComponent<SpeedManager>().GetTruePos().x;
+            Attack.Dir = Direction.Right;
+            if(AIUtility.GetXDiff(Hit.collider.gameObject, gameObject) < 0)
+            {
+                Attack.Dir = Direction.Left;
+            }
 			Hit.collider.gameObject.GetComponent<IHittable>().OnHit(Attack);
 			return true;
 		}
