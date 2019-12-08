@@ -13,12 +13,15 @@ public class Game : MonoBehaviour
 
 	private void Awake()
 	{
+		DontDestroyOnLoad(gameObject);
+
 		Services.AudioManager = new AudioManager(AudioData);
 		Services.GameFeelManager = new GameFeelManager(GameFeelData);
 		Services.VisualEffectManager = new VFXManager(VFXData);
 		Services.GameStateManager = new GameStateManager();
 		Services.LootManager = new LootManager(Database, LootData);
 		Services.CoinManager = new CoinManager(LootData);
+
 	}
 
 	// Update is called once per frame

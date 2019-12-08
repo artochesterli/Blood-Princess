@@ -18,6 +18,15 @@ namespace Clinic
 			m_Farm.OnCloseUI();
 		}
 
+		protected override void OnEnterZone()
+		{
+			return;
+		}
+
+		protected override void OnExitZone()
+		{
+		}
+
 		protected override void OnInteract()
 		{
 			m_Farm.OnOpenUI();

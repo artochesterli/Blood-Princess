@@ -82,23 +82,74 @@ namespace Clinic
 		public Vector2 WorldPosition;
 		public GameObject gameObject;
 		public string GridName => GetType().Name;
+		public GridState GridState
+		{
+			get { return m_GridState; }
+			set
+			{
+				SpriteRenderer sr = gameObject.GetComponent<SpriteRenderer>();
+				switch (value)
+				{
+					case GridState.Empty:
+						sr.color = Color.white;
+						break;
+					case GridState.Occupied:
+						sr.color = Color.black;
+						break;
+					case GridState.CannotPlace:
+						sr.color = Color.red;
+						break;
+					case GridState.CanPlace:
+						sr.color = Color.green;
+						break;
+				}
+				m_GridState = value;
+			}
+		}
 
-		public Grid(Vector2Int boardPosition)
+		private GridState m_GridState;
+
+		public Grid(Vector2Int boardPosition, GameObject go)
 		{
 			BoardPosition = boardPosition;
+			gameObject = go;
+			GridState = GridState.Empty;
 		}
+
+		public Grid(Vector2Int boardPosition, GameObject go, GridState gridState)
+		{
+			BoardPosition = boardPosition;
+			gameObject = go;
+			GridState = gridState;
+		}
+	}
+
+	public enum GridState
+	{
+		Empty,
+		Occupied,
+		CannotPlace,
+		CanPlace,
 	}
 
 	public class WallGrid : Grid
 	{
-		public WallGrid(Vector2Int boardPosition) : base(boardPosition)
+		public WallGrid(Vector2Int boardPosition, GameObject go) : base(boardPosition, go)
+		{
+		}
+
+		public WallGrid(Vector2Int boardPosition, GameObject go, GridState gridState) : base(boardPosition, go, gridState)
 		{
 		}
 	}
 
 	public class GroundGrid : Grid
 	{
-		public GroundGrid(Vector2Int boardPosition) : base(boardPosition)
+		public GroundGrid(Vector2Int boardPosition, GameObject go) : base(boardPosition, go)
+		{
+		}
+
+		public GroundGrid(Vector2Int boardPosition, GameObject go, GridState gridState) : base(boardPosition, go, gridState)
 		{
 		}
 	}

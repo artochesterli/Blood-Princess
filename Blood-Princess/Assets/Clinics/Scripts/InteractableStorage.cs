@@ -40,6 +40,15 @@ namespace Clinic
 		{
 			m_InventoryUI.OnOpenUI();
 		}
+
+		protected override void OnEnterZone()
+		{
+			return;
+		}
+
+		protected override void OnExitZone()
+		{
+		}
 	}
 
 }
