@@ -261,7 +261,9 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
             if (CurrentHP <= 0)
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                EventManager.instance.Fire(new PlayerDied());
+
+                //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
                 return true;
             }
             else
