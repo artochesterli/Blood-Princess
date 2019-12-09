@@ -1218,7 +1218,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         ChangeDirection(Info);
         SpeedManager.SelfSpeed.y = Data.JumpSpeed;
 
-        TransitionTo<Air>();
+        TransitionTo<JumpHolding>();
     }
 
     protected void PerformParry(InputInfo Info)
@@ -1487,6 +1487,70 @@ public class GroundMove : CharacterActionState
     }
 }
 
+public class JumpHolding : CharacterActionState
+{
+    private float TimeCount;
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        SetUp();
+        SetAppearance();
+    }
+
+    public override void Update()
+    {
+        base.Update();
+
+        CheckCharacterMove(false);
+
+        if (CheckGetInterrupted())
+        {
+            TransitionTo<GetInterrupted>();
+            return;
+        }
+
+        if (Utility.InputNormalSlash())
+        {
+            TransitionTo<SlashAnticipation>();
+            return;
+        }
+
+        CheckTime();
+    }
+
+    private void SetUp()
+    {
+        Context.CurrentGravity = 0;
+        TimeCount = 0;
+    }
+
+    private void SetAppearance()
+    {
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.IdleSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
+    }
+
+    private void CheckTime()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+
+        TimeCount += Time.deltaTime;
+        if(TimeCount >= Data.JumpHoldingTime)
+        {
+            Entity.GetComponent<SpeedManager>().SelfSpeed.y = Data.OverJumpSpeed;
+            TransitionTo<Air>();
+        }
+        else if (!Utility.InputJumpHold())
+        {
+            TransitionTo<Air>();
+        }
+    }
+}
+
 public class Air : CharacterActionState
 {
     private List<InputInfo> SavedInputList;
@@ -1622,6 +1686,8 @@ public class SlashAnticipation : CharacterActionState
 
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
         var Data = Entity.GetComponent<CharacterData>();
+
+        Context.CurrentGravity = Data.NormalGravity;
 
         Direction dir;
         if(Entity.transform.right.x > 0)

@@ -4552,8 +4552,10 @@ MonoBehaviour:
   GroundDeceleration: 50
   AirAcceleration: 25
   AirDeceleration: 50
-  NormalGravity: 4
-  JumpSpeed: 12
+  NormalGravity: 4.5
+  JumpSpeed: 6
+  JumpHoldingTime: 0.1
+  OverJumpSpeed: 10.4
   MaxHP: 30
   MaxEnergy: 80
   SealSpotEnergyCap: 280000003c000000

@@ -359,16 +359,21 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                 EndStrikeBreakSeal();
             }
         }
+
+        if (CrossSlashBattleArt != null)
+        {
+            if ((CrossSlashBattleArt.StrikeCount == CrossSlashBattleArt.CurrentStrikeNumber && CrossSlashBattleArt.StrikeHitCount >= 1))
+            {
+                GainLoseSeal(-1);
+            }
+        }
     }
 
     private void EndStrikeBreakSeal()
     {
         if(CrossSlashBattleArt != null)
         {
-            if(!(CrossSlashBattleArt.StrikeCount == CrossSlashBattleArt.CurrentStrikeNumber && CrossSlashBattleArt.StrikeHitCount >= 1))
-            {
-                return;
-            }
+            return;
         }
 
         GainLoseSeal(-1);
