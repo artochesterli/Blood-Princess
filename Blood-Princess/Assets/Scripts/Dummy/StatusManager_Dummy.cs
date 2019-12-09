@@ -36,7 +36,7 @@ public class StatusManager_Dummy : StatusManagerBase, IHittable, IShield
     {
         base.OnHit(Attack);
         GameObject DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
-        DamageText.transform.parent = Canvas.transform;
+        DamageText.transform.SetParent (Canvas.transform);
         if (CurrentHP > 0)
         {
             CharacterAttackInfo HitAttack = (CharacterAttackInfo)Attack;

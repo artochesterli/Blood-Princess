@@ -72,9 +72,18 @@ public class Utility
         obj.GetComponent<SpeedManager>().MoveToPoint(TruePos);
     }
 
+    public static void SetAttackHitBox(CharacterAttackInfo Attack, Vector2 Offset, Vector2 HitBoxSize, float TimeCount)
+    {
+        float CurrentSizeX = Mathf.Lerp(0, HitBoxSize.x, TimeCount / Attack.StrikeTime);
+        float CurrentOffsetX = Offset.x - HitBoxSize.x / 2 + CurrentSizeX / 2;
+
+        Attack.HitBoxSize = new Vector2(CurrentSizeX, HitBoxSize.y);
+        Attack.HitBoxOffset = new Vector2(CurrentOffsetX, Offset.y);
+    }
+
     public static int GetEffectValue(int Power, int Potency)
     {
-        return Mathf.CeilToInt(Power * Potency/100.0f);
+        return Mathf.RoundToInt(Power * Potency/100.0f);
     }
 
 

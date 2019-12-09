@@ -128,6 +128,7 @@ GameObject:
   - component: {fileID: 1247387126513296791}
   - component: {fileID: 1247387126513296788}
   - component: {fileID: 1247387126513297002}
+  - component: {fileID: 7506960008286008655}
   m_Layer: 10
   m_Name: SoulWarrior
   m_TagString: Untagged
@@ -284,6 +285,8 @@ MonoBehaviour:
   SlashDamage: 5
   MagicDamage: 3
   BlinkPrepareTime: 0.2
+  BlinkEffect: {fileID: 4609852680319573600, guid: f03730094d17ae0449957fc891781dc8,
+    type: 3}
   SlashAvailableHitBoxPercentage: 0.5
   SlashOffset: {x: 1.4, y: 0}
   SlashHitBoxSize: {x: 1.44, y: 0.64}
@@ -395,7 +398,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IgnoredLayers:
     serializedVersion: 2
-    m_Bits: 1792
+    m_Bits: 14080
   SelfSpeed: {x: 0, y: 0}
   ForcedSpeed: {x: 0, y: 0}
   AttackStepSpeed: {x: 0, y: 0}
@@ -423,6 +426,18 @@ MonoBehaviour:
   BodyHeight: 0
   OriPos: {x: 0, y: 0}
   MoveExecuted: 0
+--- !u!114 &7506960008286008655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1247387126513296796}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c336518d14665ef42b6eae8af8144357, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1247387126933390989
 GameObject:
   m_ObjectHideFlags: 0

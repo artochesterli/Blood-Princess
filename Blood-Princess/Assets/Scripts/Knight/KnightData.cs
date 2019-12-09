@@ -53,6 +53,7 @@ public class KnightData : MonoBehaviour
     public float SingleAttackChance;
     public float DoubleAttackChance;
 
+    public GameObject BlinkEffect;
     public float BlinkChance;
 
     public float BlinkPrepareTime;

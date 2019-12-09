@@ -42,6 +42,7 @@ public class CharacterData : MonoBehaviour
     public LayerMask LadderLayer;
 
     public LayerMask EnemyLayer;
+    public LayerMask DoorLayer;
 
     public int BattleArtTypeNumber;
     public int PassiveAbilityTypeNumber;

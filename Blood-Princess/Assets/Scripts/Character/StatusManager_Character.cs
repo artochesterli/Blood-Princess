@@ -252,7 +252,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                 DamageText.GetComponent<DamageText>().TravelVector = Vector2.zero;
             }
             DamageText.GetComponent<Text>().text = Damage.ToString();
-            DamageText.transform.parent = Canvas.transform;
+            DamageText.transform.SetParent(Canvas.transform);
 
             DamageText.GetComponent<Text>().color = Color.white;
 
@@ -422,8 +422,70 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Action = GetComponent<CharacterAction>();
         var AbilityData = GetComponent<CharacterAbilityData>();
 
+        GenerateHitEffect(e);
+
+
         OneMindGainIncrement();
         
+    }
+
+    private void GenerateHitEffect(PlayerHitEnemy e)
+    {
+        var AbilityData = GetComponent<CharacterAbilityData>();
+        var Data = GetComponent<CharacterData>();
+
+        Vector2 AttackOrigin;
+        Vector2 Dir;
+        bool EffectRight;
+
+        if (e.UpdatedAttack.Dir == Direction.Right)
+        {
+            AttackOrigin = transform.position + e.UpdatedAttack.HitBoxOffset.x * Vector3.right + e.UpdatedAttack.HitBoxSize.x / 2 * Vector3.left;
+            Dir = Vector2.right;
+            EffectRight = false;
+        }
+        else
+        {
+            AttackOrigin = transform.position + e.UpdatedAttack.HitBoxOffset.x * Vector3.left + e.UpdatedAttack.HitBoxSize.x / 2 * Vector3.right;
+            Dir = Vector2.left;
+            EffectRight = true;
+        }
+
+
+        RaycastHit2D hit = Physics2D.Raycast(AttackOrigin, Dir, e.UpdatedAttack.HitBoxSize.x, Data.EnemyLayer);
+        RaycastHit2D TopHit = Physics2D.Raycast(AttackOrigin + Vector2.up * e.UpdatedAttack.HitBoxSize.y / 2, Dir, e.UpdatedAttack.HitBoxSize.x, Data.EnemyLayer);
+        RaycastHit2D DownHit = Physics2D.Raycast(AttackOrigin + Vector2.down * e.UpdatedAttack.HitBoxSize.y / 2, Dir, e.UpdatedAttack.HitBoxSize.x, Data.EnemyLayer);
+
+        GameObject Effect = null;
+
+        switch (e.UpdatedAttack.Type)
+        {
+            case CharacterAttackType.Slash:
+                Effect = AbilityData.SlashHitEffect;
+                break;
+            case CharacterAttackType.PowerSlash:
+                Effect = AbilityData.PowerSlashHitEffect;
+                break;
+            case CharacterAttackType.CrossSlash:
+                Effect = AbilityData.CrossSlashHitEffect;
+                break;
+        }
+
+        if (hit.collider != null)
+        {
+            GameObject HitEffect = GameObject.Instantiate(Effect, hit.point, Quaternion.Euler(0, 0, 0));
+            e.Enemy.GetComponent<HitEffectManager>().AllInfo.Add(new HitEffectInfo(HitEffect, EffectRight));
+        }
+        else if (TopHit)
+        {
+            GameObject HitEffect = GameObject.Instantiate(Effect, TopHit.point, Quaternion.Euler(0, 0, 0));
+            e.Enemy.GetComponent<HitEffectManager>().AllInfo.Add(new HitEffectInfo(HitEffect, EffectRight));
+        }
+        else if (DownHit)
+        {
+            GameObject HitEffect = GameObject.Instantiate(Effect, DownHit.point, Quaternion.Euler(0, 0, 0));
+            e.Enemy.GetComponent<HitEffectManager>().AllInfo.Add(new HitEffectInfo(HitEffect, EffectRight));
+        }
     }
 
     private void OnPlayerBreakEnemyShield(PlayerBreakEnemyShield e)

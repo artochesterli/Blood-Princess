@@ -892,6 +892,8 @@ public class SoulWarriorBlink : SoulWarriorBehavior
         var SelfSpeedManager = Entity.GetComponent<SpeedManager>();
         var PlayerSpeedManager = Context.Player.GetComponent<SpeedManager>();
 
+        GameObject.Instantiate(Data.BlinkEffect, SelfSpeedManager.GetTruePos(), Quaternion.Euler(0, 0, 0));
+
         bool BlinkToRight;
 
         if (AIUtility.GetXDiff(Context.Player, Entity) < 0)
@@ -930,6 +932,8 @@ public class SoulWarriorBlink : SoulWarriorBehavior
         }
 
         SelfSpeedManager.MoveToPoint(new Vector2(BlinkPosX, SelfSpeedManager.GetTruePos().y));
+
+        GameObject.Instantiate(Data.BlinkEffect, SelfSpeedManager.GetTruePos(), Quaternion.Euler(0, 0, 0));
     }
 }
 

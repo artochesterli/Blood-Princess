@@ -361,6 +361,8 @@ public class KnightBlinkPrepare : KnightBehavior
         var SelfSpeedManager = Entity.GetComponent<SpeedManager>();
         var PlayerSpeedManager = Context.Player.GetComponent<SpeedManager>();
 
+        GameObject.Instantiate(Data.BlinkEffect, SelfSpeedManager.GetTruePos(), Quaternion.Euler(0, 0, 0));
+
         bool RightAvailable = true;
         bool LeftAvailable = true;
 
@@ -403,6 +405,8 @@ public class KnightBlinkPrepare : KnightBehavior
             SelfSpeedManager.MoveToPoint(new Vector2(BlinkLeftPosX, SelfSpeedManager.GetTruePos().y));
         }
 
+
+        GameObject.Instantiate(Data.BlinkEffect, SelfSpeedManager.GetTruePos(), Quaternion.Euler(0, 0, 0));
     }
 }
 

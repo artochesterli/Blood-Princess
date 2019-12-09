@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class CharacterAbilityData : MonoBehaviour
 {
+    public int PowerUpgradeAmount;
+    public int HPUpgradeAmount;
+
     public int BasePower;
 
     public float SlashAnticipationTime;
@@ -17,6 +20,8 @@ public class CharacterAbilityData : MonoBehaviour
     public int SlashEnergyAwakenGain;
 
     public GameObject SlashEffect;
+    public GameObject SlashHitEffect;
+
     public Vector2 SlashOffset;
     public Vector2 SlashHitBoxSize;
     public Vector2 SlashEffectOffset;
@@ -38,6 +43,8 @@ public class CharacterAbilityData : MonoBehaviour
     public int PowerSlashEnergyGain;
 
     public GameObject PowerSlashEffect;
+    public GameObject PowerSlashHitEffect;
+
     public Vector2 PowerSlashEffectOffset;
     public Vector2 PowerSlashOffset;
     public Vector2 PowerSlashHitBoxSize;
@@ -55,9 +62,16 @@ public class CharacterAbilityData : MonoBehaviour
     public int CrossSlashSealBreakBonus;
 
     public GameObject CrossSlashEffect;
+    public GameObject CrossSlashEffect_Upgrade;
+    public GameObject CrossSlashHitEffect;
+
     public Vector2 CrossSlashEffectOffset;
     public Vector2 CrossSlashOffset;
     public Vector2 CrossSlashHitBoxSize;
+
+    public Vector2 CrossSlashEffectOffset_Upgrade;
+    public Vector2 CrossSlashOffset_Upgrade;
+    public Vector2 CrossSlashHitBoxSize_Upgrade;
 
     public int HarmonyHealPotency;
 

@@ -18,6 +18,7 @@ GameObject:
   - component: {fileID: 4305804637280515000}
   - component: {fileID: 4305804637280514978}
   - component: {fileID: 2740503663709708477}
+  - component: {fileID: 5753425907887898551}
   m_Layer: 10
   m_Name: Knight
   m_TagString: Untagged
@@ -248,6 +249,8 @@ MonoBehaviour:
   MaxChaseAttackChaseDistance: 5
   SingleAttackChance: 0.5
   DoubleAttackChance: 0.5
+  BlinkEffect: {fileID: 4609852680319573600, guid: f03730094d17ae0449957fc891781dc8,
+    type: 3}
   BlinkChance: 0.3
   BlinkPrepareTime: 0.3
   BlinkForChaseAttackDis: 3
@@ -283,7 +286,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IgnoredLayers:
     serializedVersion: 2
-    m_Bits: 1792
+    m_Bits: 14080
   SelfSpeed: {x: 0, y: 0}
   ForcedSpeed: {x: 0, y: 0}
   AttackStepSpeed: {x: 0, y: 0}
@@ -328,6 +331,18 @@ MonoBehaviour:
   RightPassable: 0
   TopPassable: 1
   BottomPassable: 1
+--- !u!114 &5753425907887898551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4305804637280515003}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c336518d14665ef42b6eae8af8144357, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4530612535079337115
 GameObject:
   m_ObjectHideFlags: 0
