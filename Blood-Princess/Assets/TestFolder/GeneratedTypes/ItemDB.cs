@@ -12,8 +12,16 @@ namespace CompiledTypes
 public int Price;
 
         public enum RowValues { 
-HEALINGPOTION, 
-MONEY
+HEALINGPOTION15, 
+MONEY, 
+BATTLEARTABILITYOBJECT, 
+PASSIVEABILITYOBJECT, 
+ALLABILITYOBJECT, 
+HEALINGPOTION30, 
+HEALINGPOTION100, 
+CHARCOAL, 
+CLOTH, 
+WOOD
  } 
         public ItemDB (CastleDBParser.RootNode root, RowValues line) 
         {

@@ -31,12 +31,11 @@ namespace Loot
 			{
 				if (ev.Enemy.name.ToLower().Contains(monster.id.ToLower()))
 				{
-					float roll = Random.Range(0f, 1f);
-					float x = 0f;
 					for (int i = 0; i < monster.DropsList.Count; i++)
 					{
-						x += monster.DropsList[i].Weight;
-						if (roll < x)
+						float roll = Random.Range(0f, 1f);
+
+						if (roll < monster.DropsList[i].Weight)
 						{
 							string dropName = monster.DropsList[i].Item.id;
 							if (dropName.ToLower() == "money")
@@ -45,9 +44,12 @@ namespace Loot
 							}
 							else
 							{
-								// TODO: Drop other stuff
+								// Drop other stuff
+								GameObject theLoot = m_LootData.GetPrefabFromName(dropName);
+								Debug.Assert(theLoot != null, "Loot: " + dropName + " is not in loot data");
+								GameObject lootInstance = GameObject.Instantiate<GameObject>(theLoot, ev.Enemy.transform.position, Quaternion.identity);
+								lootInstance.GetComponent<SpeedManager>().SelfSpeed = new Vector2(Random.Range(-10, 10), Random.Range(7, 17));
 							}
-							break;
 						}
 					}
 					break;

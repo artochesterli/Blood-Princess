@@ -14,7 +14,10 @@ public string Sprite;
 public List<Drops> DropsList = new List<Drops>();
 
         public enum RowValues { 
-Enemy1
+Enemy1, 
+Knight, 
+SoulWarrior, 
+Enemy2
  } 
         public MonsterDB (CastleDBParser.RootNode root, RowValues line) 
         {

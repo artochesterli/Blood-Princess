@@ -11,7 +11,8 @@ namespace Loot
 
 		public GameObject GetPrefabFromName(string Name)
 		{
-			return Loots.Find(x => x.Name == Name).Prefab;
+			//return Loots.Find(x => x.Name == Name).Prefab;
+			return Loots.Find(x => Name.ToLower().Contains(x.Name.ToLower())).Prefab;
 		}
 	}
 
