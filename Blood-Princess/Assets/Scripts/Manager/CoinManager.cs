@@ -21,7 +21,7 @@ namespace Loot
 			int coinThreeNum = (amount % 10) / 3;
 			int coinOneNum = ((amount % 10) % 3) / 1;
 			int curCoinNum = coinTenNum + coinThreeNum + coinOneNum;
-			if (curCoinNum < minCoinNum)
+			if ((curCoinNum < minCoinNum) && (amount > 6))
 			{
 				if (coinTenNum > 0)
 				{
