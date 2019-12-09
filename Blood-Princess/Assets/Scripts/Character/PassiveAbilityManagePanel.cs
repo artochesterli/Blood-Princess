@@ -15,24 +15,6 @@ public class PassiveAbilityManagePanel : MonoBehaviour
 
     private int CurrentSlot;
 
-    private void OnEnable()
-    {
-        GameObject Player = CharacterOpenInfo.Self;
-
-        CurrentSlot = 0;
-
-        for (int i = 0; i < Player.GetComponent<CharacterAction>().EquipedPassiveAbility.Count; i++)
-        {
-            if (Player.GetComponent<CharacterAction>().EquipedPassiveAbility[i] == null)
-            {
-                CurrentSlot = i;
-                return;
-            }
-        }
-
-        SetPanel();
-    }
-
     // Start is called before the first frame update
     void Start()
     {
@@ -126,6 +108,16 @@ public class PassiveAbilityManagePanel : MonoBehaviour
         UpdatePassiveAbilityInfo.GetComponent<Text>().text = UpdatePassiveAbility.name;
         UpdatePassiveAbilityInfo.transform.Find("Icon").GetComponent<Image>().sprite = UpdatePassiveAbility.Icon;
         UpdatePassiveAbilityInfo.transform.Find("Description").GetComponent<Text>().text = UpdatePassiveAbility.Description;
+
+        /*for (int i = 0; i < Player.GetComponent<CharacterAction>().EquipedPassiveAbility.Count; i++)
+        {
+            if (Player.GetComponent<CharacterAction>().EquipedPassiveAbility[i] == null)
+            {
+                CurrentSlot = i;
+                return;
+            }
+        }*/
+
 
         Vector3 Pos = UpdatePassiveAbilityInfo.GetComponent<RectTransform>().localPosition;
         Pos.y = BaseY - YInterval * CurrentSlot;

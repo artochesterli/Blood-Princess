@@ -474,6 +474,9 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             case CharacterAttackType.CrossSlash:
                 Effect = AbilityData.CrossSlashHitEffect;
                 break;
+            case CharacterAttackType.Dancer:
+                Effect = AbilityData.DancerHitEffect;
+                break;
         }
 
         if (hit.collider != null)

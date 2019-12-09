@@ -87,6 +87,7 @@ public class CharacterAbilityData : MonoBehaviour
     public int OneMindSlashPotencyIncrement;
     public int OneMindMaxIncrement;
 
+    public GameObject DancerHitEffect;
     public int DancerPotency;
     public int DancerInterruptLevel;
     public Vector2 DancerHitBoxSize;

@@ -4714,6 +4714,8 @@ MonoBehaviour:
   BattleArtMasterExtraPotency: 50
   OneMindSlashPotencyIncrement: 5
   OneMindMaxIncrement: 20
+  DancerHitEffect: {fileID: 5987379524202607353, guid: 97475bb4c41d1cd47af964ca939f5ce3,
+    type: 3}
   DancerPotency: 50
   DancerInterruptLevel: -1
   DancerHitBoxSize: {x: 0.3, y: 1}

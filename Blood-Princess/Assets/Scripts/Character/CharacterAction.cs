@@ -1800,6 +1800,9 @@ public class SlashStrike : CharacterActionState
         }
 
         CheckTime();
+
+        Utility.SetAttackHitBox(Context.CurrentAttack, Offset, HitBoxSize, TimeCount);
+
         HitEnemy(Context.CurrentAttack, Context.HitEnemies);
 
     }
@@ -1881,7 +1884,7 @@ public class SlashStrike : CharacterActionState
     private void CheckTime()
     {
         TimeCount += Time.deltaTime;
-        Utility.SetAttackHitBox(Context.CurrentAttack, Offset, HitBoxSize, TimeCount);
+
 
         if (TimeCount > Context.CurrentAttack.StrikeTime)
         {
@@ -2150,10 +2153,12 @@ public class CrossSlashStrike : CharacterActionState
             return;
         }
 
+        CheckTime();
+
         Utility.SetAttackHitBox(Context.CurrentAttack, Offset, HitBoxSize, TimeCount);
 
         HitEnemy(Context.CurrentAttack, Context.HitEnemies);
-        CheckTime();
+
     }
 
     public override void OnExit()
@@ -2463,10 +2468,12 @@ public class PowerSlashStrike : CharacterActionState
             return;
         }
 
+        CheckTime();
+
         Utility.SetAttackHitBox(Context.CurrentAttack, Offset, HitBoxSize, TimeCount);
 
         HitEnemy(Context.CurrentAttack, Context.HitEnemies);
-        CheckTime();
+
     }
 
     public override void OnExit()
