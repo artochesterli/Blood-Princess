@@ -3,27 +3,27 @@
   <ItemList>
     <Item xsi:type="Rug">
       <Name>Rug</Name>
-      <Number>12</Number>
-    </Item>
-    <Item xsi:type="Wood">
-      <Name>Wood</Name>
-      <Number>16</Number>
-    </Item>
-    <Item xsi:type="Cloth">
-      <Name>Cloth</Name>
-      <Number>31</Number>
-    </Item>
-    <Item xsi:type="OakSeed">
-      <Name>OakSeed</Name>
-      <Number>16</Number>
-    </Item>
-    <Item xsi:type="Scroll">
-      <Name>Scroll</Name>
-      <Number>14</Number>
+      <Number>8</Number>
     </Item>
     <Item xsi:type="EmptyItem">
       <Name />
-      <Number>16</Number>
+      <Number>1</Number>
+    </Item>
+    <Item xsi:type="Cloth">
+      <Name>Cloth</Name>
+      <Number>15</Number>
+    </Item>
+    <Item xsi:type="OakSeed">
+      <Name>OakSeed</Name>
+      <Number>8</Number>
+    </Item>
+    <Item xsi:type="Scroll">
+      <Name>Scroll</Name>
+      <Number>8</Number>
+    </Item>
+    <Item xsi:type="EmptyItem">
+      <Name />
+      <Number>1</Number>
     </Item>
     <Item xsi:type="EmptyItem">
       <Name />

@@ -13,6 +13,7 @@ namespace Clinic
 	[XmlInclude(typeof(Wood))]
 	[XmlInclude(typeof(Charcoal))]
 	[XmlInclude(typeof(Cloth))]
+	[XmlInclude(typeof(Tub))]
 	public abstract class Item
 	{
 		public string Name = "";
@@ -152,6 +153,40 @@ namespace Clinic
 			return GameObject.Instantiate(Resources.Load("D_Rug") as GameObject);
 		}
 	}
+
+	public class Tub : DecorationItem
+	{
+		public Tub(ItemData id) : base(id)
+		{
+		}
+
+		public Tub()
+		{
+		}
+
+		public override string[,] OccupySize => new string[1, 4] { { "GroundGrid", "GroundGrid", "GroundGrid", "GroundGrid" } };
+
+
+		public override GameObject GetInstantiatedObject()
+		{
+			return GameObject.Instantiate(Resources.Load("D_Tub") as GameObject);
+		}
+
+		public override GameObject OnSelectObject(GameObject Player)
+		{
+			Player.GetComponent<InventoryUI>().OnUseDecoration(this);
+			//ItemInstance = GameObject.Instantiate(Resources.Load("D_Rug") as GameObject);
+			return GameObject.Instantiate(Resources.Load("D_Tub") as GameObject);
+		}
+
+		public override void OnSelect(GameObject Player)
+		{
+			Player.GetComponent<InventoryUI>().OnUseDecoration(this);
+			//ItemInstance = GameObject.Instantiate(Resources.Load("D_Rug") as GameObject);
+			GameObject.Instantiate(Resources.Load("D_Tub") as GameObject);
+		}
+	}
+
 
 	public class Scroll : DecorationItem
 	{

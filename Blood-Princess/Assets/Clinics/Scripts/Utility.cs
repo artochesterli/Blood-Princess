@@ -42,7 +42,7 @@ namespace Clinic
 				case "rug":
 					return new Rug(Resources.Load<ItemData>("ItemData"));
 				case "tub":
-					return new Rug(Resources.Load<ItemData>("ItemData"));
+					return new Tub(Resources.Load<ItemData>("ItemData"));
 				case "scroll":
 					return new Scroll(Resources.Load<ItemData>("ItemData"));
 			}

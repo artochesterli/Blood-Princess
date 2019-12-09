@@ -3,29 +3,13 @@
   <BuildPositions>
     <Vector2Int>
       <x>3</x>
-      <y>4</y>
-    </Vector2Int>
-    <Vector2Int>
-      <x>0</x>
-      <y>8</y>
-    </Vector2Int>
-    <Vector2Int>
-      <x>0</x>
-      <y>9</y>
+      <y>3</y>
     </Vector2Int>
   </BuildPositions>
   <DecorationItems>
-    <DecorationItem xsi:type="Rug">
-      <Name>Rug</Name>
-      <Number>11</Number>
-    </DecorationItem>
-    <DecorationItem xsi:type="Scroll">
-      <Name>Scroll</Name>
-      <Number>14</Number>
-    </DecorationItem>
-    <DecorationItem xsi:type="Scroll">
-      <Name>Scroll</Name>
-      <Number>14</Number>
+    <DecorationItem xsi:type="Tub">
+      <Name>Tub</Name>
+      <Number>0</Number>
     </DecorationItem>
   </DecorationItems>
 </HomeData>

@@ -133,7 +133,7 @@ namespace Clinic
 				foreach (var craftMaterial in m_CurrentCraftMaterialsNeeded)
 				{
 					//Context.Inventories.OnRemoveItem(Utility.NewItemFromString(craftMaterial.Name), craftMaterial.Amount);
-					Services.StorageManager.SaveItem(Utility.NewItemFromString(craftMaterial.Name), craftMaterial.Amount);
+					Services.StorageManager.SaveItem(Utility.NewItemFromString(craftMaterial.Name), -craftMaterial.Amount);
 				}
 				// Add items to storage
 				//Context.Inventories.OnAddItem(Utility.NewItemFromString(Context.CraftingPanel.transform.GetChild(m_SelectionIndex).GetComponent<TextMeshProUGUI>().text));
