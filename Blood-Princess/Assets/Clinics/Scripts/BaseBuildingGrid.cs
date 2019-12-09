@@ -41,6 +41,33 @@ namespace Clinic
 			m_OccupyCraftAndStorage();
 		}
 
+		private void Start()
+		{
+			m_LoadCurrentDecorations();
+			Services.HomeManager.OnSave();
+			gameObject.SetActive(false);
+		}
+
+		private void m_LoadCurrentDecorations()
+		{
+			var data = Services.HomeManager.OnLoad();
+			for (int i = 0; i < data.BuildPositions.Count; i++)
+			{
+				// First Instantiated a new prefab in the world
+				GameObject obj = data.DecorationItems[i].GetInstantiatedObject();
+				obj.transform.position = Grids[data.BuildPositions[i].x, data.BuildPositions[i].y].gameObject.transform.position;
+
+				// Then Occupy all the grids it's suppose to occupy
+				for (int m = 0; m < data.DecorationItems[i].OccupySize.GetLength(0); m++)
+				{
+					for (int n = 0; n < data.DecorationItems[i].OccupySize.GetLength(1); n++)
+					{
+						Grids[data.BuildPositions[i].x + m, data.BuildPositions[i].y + n].GridState = GridState.Occupied;
+					}
+				}
+			}
+		}
+
 		private void m_OccupyCraftAndStorage()
 		{
 			for (int i = 1; i <= 3; i++)

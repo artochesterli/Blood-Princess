@@ -22,6 +22,7 @@ namespace Clinic
 
 		private void Start()
 		{
+			Services.StorageManager.SaveItem(new EmptyItem());
 			Services.StorageManager.SaveItem(new Rug(m_ItemData), 1);
 			Services.StorageManager.SaveItem(new Wood(m_ItemData), 1);
 			Services.StorageManager.SaveItem(new Cloth(m_ItemData), 2);
@@ -41,7 +42,6 @@ namespace Clinic
 
 		protected override void OnEnterZone()
 		{
-			return;
 		}
 
 		protected override void OnExitZone()

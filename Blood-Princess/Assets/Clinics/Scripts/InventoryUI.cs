@@ -231,6 +231,7 @@ namespace Clinic
 						m_Place(BuildPosition, DecorationItem, BaseBuildingGrid);
 						GameObject.Instantiate(Context.m_CurrentInstantiatedObject);
 						Services.StorageManager.SaveItem(DecorationItem, -1);
+						Services.HomeManager.OnSave(BuildPosition, DecorationItem);
 						TransitionTo<InventoryClosedState>();
 						return;
 					}

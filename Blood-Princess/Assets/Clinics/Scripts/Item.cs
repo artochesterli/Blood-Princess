@@ -117,6 +117,8 @@ namespace Clinic
 		}
 
 		public abstract GameObject OnSelectObject(GameObject Player);
+
+		public abstract GameObject GetInstantiatedObject();
 	}
 
 	public class Rug : DecorationItem
@@ -130,6 +132,11 @@ namespace Clinic
 		}
 
 		public override string[,] OccupySize => new string[1, 4] { { "GroundGrid", "GroundGrid", "GroundGrid", "GroundGrid" } };
+
+		public override GameObject GetInstantiatedObject()
+		{
+			return GameObject.Instantiate(Resources.Load("D_Rug") as GameObject);
+		}
 
 		public override void OnSelect(GameObject Player)
 		{
@@ -157,6 +164,11 @@ namespace Clinic
 		}
 
 		public override string[,] OccupySize => new string[4, 1] { { "WallGrid" }, { "WallGrid" }, { "WallGrid" }, { "GroundGrid" } };
+
+		public override GameObject GetInstantiatedObject()
+		{
+			return GameObject.Instantiate(Resources.Load("D_Scroll") as GameObject);
+		}
 
 		public override void OnSelect(GameObject Player)
 		{

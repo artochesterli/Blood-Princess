@@ -77,6 +77,19 @@ namespace Clinic
 		public int Amount = 1;
 	}
 
+	[System.Serializable]
+	public class Vector2IntAndDecorationItemList
+	{
+		public List<Vector2Int> BuildPositions;
+		public List<DecorationItem> DecorationItems;
+
+		public Vector2IntAndDecorationItemList(List<Vector2Int> buildPositions, List<DecorationItem> decorationItems)
+		{
+			BuildPositions = buildPositions;
+			DecorationItems = decorationItems;
+		}
+	}
+
 	public abstract class Grid
 	{
 		public Vector2Int BoardPosition;

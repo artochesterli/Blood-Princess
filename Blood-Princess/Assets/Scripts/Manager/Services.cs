@@ -103,4 +103,18 @@ public static class Services
 			_storagemanaager = value;
 		}
 	}
+
+	private static HomeManager _homemamager;
+	public static HomeManager HomeManager
+	{
+		get
+		{
+			Debug.Assert(_homemamager != null);
+			return _homemamager;
+		}
+		set
+		{
+			_homemamager = value;
+		}
+	}
 }
