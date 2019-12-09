@@ -146,6 +146,11 @@ public class AbilityObject : MonoBehaviour
         }
         else
         {
+            if(CharacterOpenInfo.Self.GetComponent<ControlStateManager>().AttachedAbilityObject == gameObject)
+            {
+                CharacterOpenInfo.Self.GetComponent<ControlStateManager>().AttachedAbilityObject = null;
+            }
+
             Text.SetActive(false);
         }
     }
