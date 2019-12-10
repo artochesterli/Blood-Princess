@@ -43,7 +43,7 @@ public class SpeedManager : MonoBehaviour
 
     public bool MoveExecuted;
 
-    private const float DetectDis = 1f;
+    private const float DetectDis = 5f;
     private const float HitMargin = 0.01f;
     private const float Zero = 0.001f;
 
@@ -51,7 +51,9 @@ public class SpeedManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        OriPos = GetComponent<BoxCollider2D>().offset;
+        BodyWidth = GetComponent<BoxCollider2D>().size.x;
+        BodyHeight = GetComponent<BoxCollider2D>().size.y;
     }
 
     // Update is called once per frame
@@ -109,6 +111,16 @@ public class SpeedManager : MonoBehaviour
         BodyHeight = BodySize.y;
         GetComponent<BoxCollider2D>().offset = Offset;
         GetComponent<BoxCollider2D>().size = BodySize;
+
+        if (GetComponent<OuterForceFieldManager>())
+        {
+            GameObject OuterForceField = GetComponent<OuterForceFieldManager>().OuterForceField;
+            float Width = GetComponent<OuterForceFieldManager>().OuterWidth;
+
+            OuterForceField.GetComponent<BoxCollider2D>().offset = Offset;
+            OuterForceField.GetComponent<BoxCollider2D>().size = BodySize + new Vector2(1,0)*Width*2;
+
+        }
     }
     
 
@@ -598,7 +610,7 @@ public class SpeedManager : MonoBehaviour
                             MinForceFieldDis = Dis;
                             ForceFieldHit = HitList[i];
                         }
-                        else if (!Info.TopPassable)
+                        else if (!Info.TopPassable || !CompareTag("Player"))
                         {
                             MinDis = Dis;
                             Hit = HitList[i];

@@ -5,13 +5,25 @@ using UnityEngine;
 public enum ControlState
 {
     Action,
-    SkillManagement
+    ReplaceBattleArt,
+    ReplacePassiveAbility,
+    UpgradeStats,
+    CheckStatus,
+    Storage,
+    CraftingTable
 }
 
 public class ControlStateManager : MonoBehaviour
 {
     public static ControlState CurrentControlState;
-    public GameObject SkillPanel;
+    public GameObject StatusPanel;
+    public GameObject BattleArtManagerPanel;
+    public GameObject PassiveAbilityManagerPanel;
+    public GameObject UpgradeStatsPanel;
+
+    public GameObject AttachedAbilityObject;
+    public GameObject AttachedAltar;
+    public GameObject AttachedPotion;
 
     // Start is called before the first frame update
     void Start()
@@ -22,18 +34,48 @@ public class ControlStateManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Utility.InputOpenCloseSkillPanel())
+        if (Utility.InputOpenStatusPanel(ControlState.Action))
         {
-            if (CurrentControlState == ControlState.Action)
+            CurrentControlState = ControlState.CheckStatus;
+            StatusPanel.SetActive(true);
+        }
+
+        if (Utility.InputPickUp())
+        {
+            if (AttachedAbilityObject != null)
             {
-                CurrentControlState = ControlState.SkillManagement;
-                SkillPanel.SetActive(true);
+                if (AttachedAbilityObject.GetComponent<AbilityObject>().Ability.GetType().BaseType == typeof(BattleArt))
+                {
+                    CurrentControlState = ControlState.ReplaceBattleArt;
+                    BattleArtManagerPanel.GetComponent<BattleArtManagePanel>().UpdatedBattleArt = (BattleArt)(AttachedAbilityObject.GetComponent<AbilityObject>().Ability);
+                    BattleArtManagerPanel.GetComponent<BattleArtManagePanel>().SetPanel();
+                    BattleArtManagerPanel.SetActive(true);
+                }
+                else
+                {
+                    CurrentControlState = ControlState.ReplacePassiveAbility;
+                    PassiveAbilityManagerPanel.GetComponent<PassiveAbilityManagePanel>().UpdatePassiveAbility = (PassiveAbility)(AttachedAbilityObject.GetComponent<AbilityObject>().Ability);
+                    PassiveAbilityManagerPanel.GetComponent<PassiveAbilityManagePanel>().SetPanel();
+                    PassiveAbilityManagerPanel.SetActive(true);
+                }
+                return;
             }
-            else
+
+            if(AttachedAltar != null)
             {
-                CurrentControlState = ControlState.Action;
-                SkillPanel.SetActive(false);
+                CurrentControlState = ControlState.UpgradeStats;
+                UpgradeStatsPanel.GetComponent<UpgradeStatsPanel>().SetPanel();
+                UpgradeStatsPanel.SetActive(true);
+                return;
+            }
+
+            if(AttachedPotion != null)
+            {
+                var Status = GetComponent<StatusManager_Character>();
+                Status.Heal(Mathf.RoundToInt(Status.CurrentMaxHP * AttachedPotion.GetComponent<HealingPotion>().Proportion/100.0f));
+                Destroy(AttachedPotion);
             }
         }
+
     }
 }

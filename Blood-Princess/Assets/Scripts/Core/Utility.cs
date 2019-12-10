@@ -1,8 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System.IO;
 using PCG;
+using DG.Tweening;
+using TMPro;
 
 public class Utility
 {
@@ -25,6 +28,30 @@ public class Utility
         return Ans;
     }
 
+    public static void ObjectFollow(GameObject Target, GameObject Follower, Vector2 Offset)
+    {
+        Vector2 TargetPos;
+
+        if (Target.GetComponent<SpeedManager>())
+        {
+            TargetPos = Target.GetComponent<SpeedManager>().GetTruePos();
+        }
+        else
+        {
+            TargetPos = Target.transform.position;
+        }
+
+        if (Follower.GetComponent<SpeedManager>())
+        {
+            Follower.GetComponent<SpeedManager>().MoveToPoint(TargetPos + Offset);
+        }
+        else
+        {
+            Follower.transform.position = TargetPos + Offset;
+        }
+    }
+
+
     public static void TurnAround(GameObject obj)
     {
         Vector2 TruePos = obj.GetComponent<SpeedManager>().GetTruePos();
@@ -40,9 +67,18 @@ public class Utility
         obj.GetComponent<SpeedManager>().MoveToPoint(TruePos);
     }
 
+    public static void SetAttackHitBox(CharacterAttackInfo Attack, Vector2 Offset, Vector2 HitBoxSize, float TimeCount)
+    {
+        float CurrentSizeX = Mathf.Lerp(0, HitBoxSize.x, TimeCount / Attack.StrikeTime);
+        float CurrentOffsetX = Offset.x - HitBoxSize.x / 2 + CurrentSizeX / 2;
+
+        Attack.HitBoxSize = new Vector2(CurrentSizeX, HitBoxSize.y);
+        Attack.HitBoxOffset = new Vector2(CurrentOffsetX, Offset.y);
+    }
+
     public static int GetEffectValue(int Power, int Potency)
     {
-        return Mathf.CeilToInt(Power * Potency/100.0f);
+        return Mathf.RoundToInt(Power * Potency/100.0f);
     }
 
 
@@ -87,6 +123,89 @@ public class Utility
         return Input.GetKeyDown(KeyCode.Escape);
     }
 
+
+    public static bool InputOpenStatusPanel(ControlState Current)
+    {
+        if(ControlStateManager.CurrentControlState != Current)
+        {
+            return false;
+        }
+
+        return Input.GetKeyDown(KeyCode.H) || ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Start");
+    }
+
+    public static bool InputPickUp()
+    {
+        if(ControlStateManager.CurrentControlState != ControlState.Action)
+        {
+            return false;
+        }
+
+        return Input.GetKeyDown(KeyCode.G) || ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("PickUp");
+    }
+
+    public static bool InputCancel(ControlState Current)
+    {
+        if (ControlStateManager.CurrentControlState != Current)
+        {
+            return false;
+        }
+
+        return Input.GetMouseButtonDown(1) || ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Roll");
+    }
+
+    public static bool InputComfirm(ControlState Current)
+    {
+        if(ControlStateManager.CurrentControlState != Current)
+        {
+            return false;
+        }
+
+        return Input.GetMouseButtonDown(0) || ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Jump");
+    }
+
+    public static bool InputSelectUp(ControlState Current)
+    {
+        if (ControlStateManager.CurrentControlState != Current)
+        {
+            return false;
+        }
+
+        return Input.GetKeyDown(KeyCode.W) || ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("UpArrow");
+    }
+
+    public static bool InputSelectDown(ControlState Current)
+    {
+        if(ControlStateManager.CurrentControlState != Current)
+        {
+            return false;
+        }
+
+        return Input.GetKeyDown(KeyCode.S) || ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("DownArrow");
+    }
+
+    public static bool InputSelectLeft(ControlState Current)
+    {
+        if (ControlStateManager.CurrentControlState != Current)
+        {
+            return false;
+        }
+
+        return Input.GetKeyDown(KeyCode.A) || ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("LeftArrow");
+    }
+
+    public static bool InputSelectRight(ControlState Current)
+    {
+        if (ControlStateManager.CurrentControlState != Current)
+        {
+            return false;
+        }
+
+        return Input.GetKeyDown(KeyCode.D) || ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("RightArrow");
+    }
+
+
+
     public static bool InputComfirm()
     {
         if (ControlStateManager.CurrentControlState == ControlState.Action)
@@ -117,7 +236,7 @@ public class Utility
 
     public static bool InputRight()
     {
-        if (ControlStateManager.CurrentControlState == ControlState.SkillManagement)
+        if (ControlStateManager.CurrentControlState != ControlState.Action)
         {
             return false;
         }
@@ -127,7 +246,7 @@ public class Utility
 
     public static bool InputLeft()
     {
-        if (ControlStateManager.CurrentControlState == ControlState.SkillManagement)
+        if (ControlStateManager.CurrentControlState != ControlState.Action)
         {
             return false;
         }
@@ -136,7 +255,7 @@ public class Utility
 
     public static bool InputUp()
     {
-        if (ControlStateManager.CurrentControlState == ControlState.SkillManagement)
+        if (ControlStateManager.CurrentControlState != ControlState.Action)
         {
             return false;
         }
@@ -145,7 +264,7 @@ public class Utility
 
     public static bool InputDown()
     {
-        if (ControlStateManager.CurrentControlState == ControlState.SkillManagement)
+        if (ControlStateManager.CurrentControlState != ControlState.Action)
         {
             return false;
         }
@@ -154,7 +273,7 @@ public class Utility
 
     public static bool InputJump()
     {
-        if (ControlStateManager.CurrentControlState == ControlState.SkillManagement)
+        if (ControlStateManager.CurrentControlState != ControlState.Action)
         {
             return false;
         }
@@ -163,7 +282,7 @@ public class Utility
 
     public static bool InputJumpHold()
     {
-        if (ControlStateManager.CurrentControlState == ControlState.SkillManagement)
+        if (ControlStateManager.CurrentControlState != ControlState.Action)
         {
             return false;
         }
@@ -172,36 +291,38 @@ public class Utility
 
     public static bool InputNormalSlash()
     {
-        if (ControlStateManager.CurrentControlState == ControlState.SkillManagement)
+        if (ControlStateManager.CurrentControlState != ControlState.Action)
         {
             return false;
         }
-        return Input.GetMouseButtonDown(0) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Slash"));
+        return Input.GetMouseButtonDown(0) && !Input.GetKey(KeyCode.LeftShift) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Slash"));
     }
 
     public static bool InputBattleArt()
     {
-        if (ControlStateManager.CurrentControlState == ControlState.SkillManagement)
+        if (ControlStateManager.CurrentControlState != ControlState.Action)
         {
             return false;
         }
 
-        return Input.GetMouseButtonDown(1) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("BattleArt"));
+        return Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.LeftShift) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("BattleArt"));
 
     }
 
     public static bool InputRoll()
     {
-        if (ControlStateManager.CurrentControlState == ControlState.SkillManagement)
+        if (ControlStateManager.CurrentControlState != ControlState.Action)
         {
             return false;
         }
-        return Input.GetKeyDown(KeyCode.LeftControl)|| (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Roll"));
+        return Input.GetMouseButtonDown(1) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Roll"));
     }
 
     public static bool InputParry()
     {
-        if (ControlStateManager.CurrentControlState == ControlState.SkillManagement)
+        return false;
+
+        if (ControlStateManager.CurrentControlState != ControlState.Action)
         {
             return false;
         }

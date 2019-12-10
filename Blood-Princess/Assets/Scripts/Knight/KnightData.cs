@@ -6,6 +6,9 @@ public class KnightData : MonoBehaviour
 {
     public int MaxHP;
 
+    public int DisEngageHPRecovery;
+    public float DisEngageHPRecoveryInterval;
+
     public float NormalMoveSpeed;
     public float KeepDisMoveSpeed;
     public float AttackStepForwardSpeed;
@@ -35,7 +38,12 @@ public class KnightData : MonoBehaviour
 
     public float KnockedBackTime;
     public float KnockedBackSpeed;
-    public float BackHitStuckTime;
+
+    public float OffBalanceBackTime;
+    public float OffBalanceBackSpeed;
+    public float OffBalanceStayTime;
+
+    public int OffBalanceInterruptLevel;
 
     public float KnockedRecoveryTime;
     public float GetHitOnBackKnockedTime;
@@ -48,13 +56,11 @@ public class KnightData : MonoBehaviour
     public float SingleAttackChance;
     public float DoubleAttackChance;
 
+    public GameObject BlinkEffect;
     public float BlinkChance;
 
     public float BlinkPrepareTime;
     public float BlinkForChaseAttackDis;
-
-    public int NormalResistance;
-    public int AttackResistance;
 
     // Start is called before the first frame update
     void Start()

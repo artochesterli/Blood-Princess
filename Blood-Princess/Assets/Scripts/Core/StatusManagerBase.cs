@@ -4,9 +4,10 @@ using UnityEngine;
 
 interface IHittable
 {
-    int MaxHP { get; set; }
+
     int CurrentHP { get; set; }
     bool Interrupted { get; set; }
+    int ReceivedInterruptionLevel { get; set; }
 
 	bool OnHit(AttackInfo Attack);
 }
@@ -19,12 +20,13 @@ interface IShield
 
 public class StatusManagerBase : MonoBehaviour, IHittable
 {
-    public int MaxHP { get; set; }
     public int CurrentHP { get; set; }
+    public int CurrentMaxHP { get; set; }
 
     public bool Interrupted { get; set; }
-	// Start is called before the first frame update
-	void Start()
+    public int ReceivedInterruptionLevel { get; set; }
+    // Start is called before the first frame update
+    void Start()
 	{
 
 	}

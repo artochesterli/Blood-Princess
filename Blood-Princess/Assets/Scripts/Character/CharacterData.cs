@@ -13,6 +13,8 @@ public class CharacterData : MonoBehaviour
     public float AirDeceleration;
     public float NormalGravity;
     public float JumpSpeed;
+    public float JumpHoldingTime;
+    public float OverJumpSpeed;
 
     public int MaxHP;
     public int MaxEnergy;
@@ -42,8 +44,10 @@ public class CharacterData : MonoBehaviour
     public LayerMask LadderLayer;
 
     public LayerMask EnemyLayer;
+    public LayerMask DoorLayer;
 
-
+    public int BattleArtTypeNumber;
+    public int PassiveAbilityTypeNumber;
 
     // Start is called before the first frame update
     void Start()

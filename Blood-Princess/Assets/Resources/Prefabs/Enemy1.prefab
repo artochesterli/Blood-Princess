@@ -251,7 +251,7 @@ MonoBehaviour:
         In Front\",\n\t\t\t\t\t\t\"Instant\":true,\n\t\t\t\t\t\t\"SharedFloatDistance\":{\n\t\t\t\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\t\t\t\t\t\"Name\":\"DetectionRadius\",\n\t\t\t\t\t\t\t\"IsShared\":true,\n\t\t\t\t\t\t\t\"SinglemValue\":8\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"SharedFloatHalfAngle\":{\n\t\t\t\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\t\t\t\t\t\"Name\":null,\n\t\t\t\t\t\t\t\"SinglemValue\":30\n\t\t\t\t\t\t}\n\t\t\t\t\t},{\n\t\t\t\t\t\t\"Type\":\"PlayerInBack\",\n\t\t\t\t\t\t\"NodeData\":{\n\t\t\t\t\t\t\t\"Offset\":\"(68.54736,110.582733)\"\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"ID\":56,\n\t\t\t\t\t\t\"Name\":\"Player
         In Back\",\n\t\t\t\t\t\t\"Instant\":true,\n\t\t\t\t\t\t\"SharedFloatDistance\":{\n\t\t\t\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\t\t\t\t\t\"Name\":\"BackDetectionRadius\",\n\t\t\t\t\t\t\t\"IsShared\":true,\n\t\t\t\t\t\t\t\"SinglemValue\":3\n\t\t\t\t\t\t},\n\t\t\t\t\t\t\"SharedFloatHalfAngle\":{\n\t\t\t\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\t\t\t\t\t\"Name\":null,\n\t\t\t\t\t\t\t\"SinglemValue\":150\n\t\t\t\t\t\t}\n\t\t\t\t\t}]\n\t\t\t\t}]\n\t\t\t},{\n\t\t\t\t\"Type\":\"Patrol\",\n\t\t\t\t\"NodeData\":{\n\t\t\t\t\t\"Offset\":\"(119.809517,138.59523)\"\n\t\t\t\t},\n\t\t\t\t\"ID\":57,\n\t\t\t\t\"Name\":\"Patrol\",\n\t\t\t\t\"Instant\":true,\n\t\t\t\t\"SharedFloatSpeed\":{\n\t\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\t\t\t\"Name\":null,\n\t\t\t\t\t\"SinglemValue\":2\n\t\t\t\t},\n\t\t\t\t\"SharedFloatMinWayPointPauseDuration\":{\n\t\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\t\t\t\"Name\":null,\n\t\t\t\t\t\"SinglemValue\":1\n\t\t\t\t},\n\t\t\t\t\"SharedFloatMaxWayPointPauseDuration\":{\n\t\t\t\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\t\t\t\"Name\":null,\n\t\t\t\t\t\"SinglemValue\":2\n\t\t\t\t}\n\t\t\t}]\n\t\t}]\n\t},\n\t\"Variables\":[{\n\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\"Name\":\"PatroSpeed\",\n\t\t\"IsShared\":true,\n\t\t\"SinglemValue\":2\n\t},{\n\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedInt\",\n\t\t\"Name\":\"CurrentHP\",\n\t\t\"IsShared\":true,\n\t\t\"Int32mValue\":0\n\t},{\n\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\"Name\":\"DetectionRadius\",\n\t\t\"IsShared\":true,\n\t\t\"SinglemValue\":8\n\t},{\n\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\"Name\":\"BackDetectionRadius\",\n\t\t\"IsShared\":true,\n\t\t\"SinglemValue\":3\n\t},{\n\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedBool\",\n\t\t\"Name\":\"PerformAction\",\n\t\t\"IsShared\":true,\n\t\t\"BooleanmValue\":false\n\t},{\n\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedFloat\",\n\t\t\"Name\":\"PerformanceTimer\",\n\t\t\"IsShared\":true,\n\t\t\"SinglemValue\":0\n\t},{\n\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedInt\",\n\t\t\"Name\":\"Normal
         Attack Damage\",\n\t\t\"IsShared\":true,\n\t\t\"Int32mValue\":8\n\t},{\n\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedInt\",\n\t\t\"Name\":\"Normal
-        Attack 2 Damage\",\n\t\t\"IsShared\":true,\n\t\t\"Int32mValue\":10\n\t},{\n\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedBool\",\n\t\t\"Name\":\"Attacked\",\n\t\t\"IsShared\":true,\n\t\t\"BooleanmValue\":false\n\t},{\n\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedInt\",\n\t\t\"Name\":\"ActionSequence\",\n\t\t\"IsShared\":true,\n\t\t\"Int32mValue\":0\n\t}]\n}"
+        Attack 2 Damage\",\n\t\t\"IsShared\":true,\n\t\t\"Int32mValue\":10\n\t},{\n\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedBool\",\n\t\t\"Name\":\"Attacked\",\n\t\t\"IsShared\":true,\n\t\t\"BooleanmValue\":false\n\t},{\n\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedInt\",\n\t\t\"Name\":\"ActionSequence\",\n\t\t\"IsShared\":true,\n\t\t\"Int32mValue\":0\n\t},{\n\t\t\"Type\":\"BehaviorDesigner.Runtime.SharedBool\",\n\t\t\"Name\":\"PlayerHit\",\n\t\t\"IsShared\":true,\n\t\t\"BooleanmValue\":false\n\t}]\n}"
       fieldSerializationData:
         typeName: []
         fieldNameHash: 
@@ -324,15 +324,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Idle: {fileID: 21300000, guid: 78f1843178f4df44888a795fac82d29a, type: 3}
-  Anticipation: {fileID: 21300000, guid: 0205a2a4f930eff428fded196b6fb721, type: 3}
-  Recovery: {fileID: 21300000, guid: 12758e64af36f184580d6ed290773740, type: 3}
+  SingleAnticipation: {fileID: 0}
+  SingleRecovery: {fileID: 0}
+  DoubleAnticipation: {fileID: 0}
+  DoubleRecovery: {fileID: 0}
   Hit: {fileID: 21300000, guid: 7836bc393e3cc1c4e9955ba5af97a9ac, type: 3}
   IdleOffset: {x: 0, y: 0}
   IdleSize: {x: 0, y: 0}
-  AnticipationOffset: {x: 0, y: 0}
-  AnticipationSize: {x: 0, y: 0}
-  RecoveryOffset: {x: 0, y: 0}
-  RecoverySize: {x: 0, y: 0}
+  SingleAnticipationOffset: {x: 0, y: 0}
+  SingleAnticipationSize: {x: 0, y: 0}
+  SingleRecoveryOffset: {x: 0, y: 0}
+  SingleRecoverySize: {x: 0, y: 0}
+  DoubleAnticipationOffset: {x: 0, y: 0}
+  DoubleAnticipationSize: {x: 0, y: 0}
+  DoubleRecoveryOffset: {x: 0, y: 0}
+  DoubleRecoverySize: {x: 0, y: 0}
   HitOffset: {x: 0, y: 0}
   HitSize: {x: 0, y: 0}
 --- !u!114 &2447241083889292725

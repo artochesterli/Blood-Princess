@@ -87,7 +87,14 @@ namespace PCG
 			GameObject instantiatedObject = null;
 			if (curChar == "1" || curChar == "3")
 			{
-				instantiatedObject = GameObject.Instantiate(Resources.Load("BlockTile" + m_Rand.Next(0, 2).ToString(), typeof(GameObject))) as GameObject;
+				if (!Utility.EmptyStrHashSet.Contains(_board[worldPosition.x, worldPosition.y - 1]))
+				{
+					instantiatedObject = GameObject.Instantiate(Resources.Load("WallTile0", typeof(GameObject))) as GameObject;
+				}
+				else
+				{
+					instantiatedObject = GameObject.Instantiate(Resources.Load("BlockTile" + m_Rand.Next(0, 2).ToString(), typeof(GameObject))) as GameObject;
+				}
 
 			}
 			else if (curChar == "2")
@@ -137,6 +144,10 @@ namespace PCG
 			else if (curChar == "dummy")
 			{
 				instantiatedObject = GameObject.Instantiate(Resources.Load("Dummy", typeof(GameObject))) as GameObject;
+			}
+			else if (curChar == "7" && _board[worldPosition.x, worldPosition.y - 1] != "7")
+			{
+				instantiatedObject = GameObject.Instantiate(Resources.Load("Door", typeof(GameObject))) as GameObject;
 			}
 
 			if (instantiatedObject != null)
