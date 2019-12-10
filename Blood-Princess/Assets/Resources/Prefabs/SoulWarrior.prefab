@@ -297,8 +297,9 @@ MonoBehaviour:
   MagicUseableDis: 6
   MagicPredictionDis: 1
   MagicHitBoxSize: {x: 1.5, y: 1.5}
-  MagicPrefab: {fileID: 9191230703977067593, guid: 7b97e9c9953100c448aed176dd522419,
+  MagicPrepare: {fileID: 3031945465339073520, guid: e8dead3eebaabea4eb69fdef97dd7581,
     type: 3}
+  Magic: {fileID: 2423179850925593892, guid: 90d46624643cdea43824bf3e51ffedc3, type: 3}
   KnockedBackTime: 0.1
   KnockedBackSpeed: 6
   OffBalanceBackTime: 0.1
@@ -357,7 +358,6 @@ MonoBehaviour:
   PlayerLayer:
     serializedVersion: 2
     m_Bits: 256
-  Magic: {fileID: 9191230703977067593, guid: 7b97e9c9953100c448aed176dd522419, type: 3}
   PatronLeftMark: {fileID: 1247387127711589293}
   PatronRightMark: {fileID: 1247387127901930099}
   DetectLeftMark: {fileID: 1247387126933390989}
@@ -370,6 +370,7 @@ MonoBehaviour:
   AttackCoolDownTimeCount: 0
   LastState: 0
   CurrentState: 0
+  MagicPos: {x: 0, y: 0}
 --- !u!114 &1247387126513296788
 MonoBehaviour:
   m_ObjectHideFlags: 0
