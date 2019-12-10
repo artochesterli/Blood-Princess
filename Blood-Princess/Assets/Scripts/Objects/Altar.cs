@@ -9,10 +9,12 @@ public class Altar : MonoBehaviour
     public LayerMask PlayerLayer;
     public GameObject Text;
 
+    private bool Useable;
+
     // Start is called before the first frame update
     void Start()
     {
-        
+        Useable = true;
     }
 
     // Update is called once per frame
@@ -23,6 +25,16 @@ public class Altar : MonoBehaviour
 
     private void DetectPlayer()
     {
+        if (!Useable)
+        {
+            if (CharacterOpenInfo.Self.GetComponent<ControlStateManager>().AttachedAltar == gameObject)
+            {
+                CharacterOpenInfo.Self.GetComponent<ControlStateManager>().AttachedAltar = null;
+            }
+            Text.SetActive(false);
+            return;
+        }
+
         var SpeedManager = GetComponent<SpeedManager>();
 
         RaycastHit2D Hit = Physics2D.BoxCast(SpeedManager.GetTruePos(), new Vector2(SpeedManager.BodyWidth, SpeedManager.BodyHeight), 0, Vector2.down, 0, PlayerLayer);
@@ -41,7 +53,16 @@ public class Altar : MonoBehaviour
         }
         else
         {
+            if(CharacterOpenInfo.Self.GetComponent<ControlStateManager>().AttachedAltar == gameObject)
+            {
+                CharacterOpenInfo.Self.GetComponent<ControlStateManager>().AttachedAltar = null;
+            }
             Text.SetActive(false);
         }
+    }
+
+    public void SetUseable(bool b)
+    {
+        Useable = b;
     }
 }

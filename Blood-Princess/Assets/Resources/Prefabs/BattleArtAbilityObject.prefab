@@ -193,7 +193,7 @@ GameObject:
   - component: {fileID: 269867735205912168}
   - component: {fileID: 4329499079371842896}
   - component: {fileID: 2477419318554149448}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: BattleArtAbilityObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -296,7 +296,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IgnoredLayers:
     serializedVersion: 2
-    m_Bits: 14080
+    m_Bits: 46848
   SelfSpeed: {x: 0, y: 0}
   ForcedSpeed: {x: 0, y: 0}
   AttackStepSpeed: {x: 0, y: 0}

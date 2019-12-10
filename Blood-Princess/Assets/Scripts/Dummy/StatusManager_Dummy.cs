@@ -16,11 +16,12 @@ public class StatusManager_Dummy : StatusManagerBase, IHittable, IShield
     public Color DeadColor;
 
     private float RecoveryTimeCount;
+    private GameObject DamageText;
     // Start is called before the first frame update
     void Start()
     {
         var Data = GetComponent<DummyData>();
-        MaxHP = Data.MaxHP;
+        CurrentMaxHP = Data.MaxHP;
         CurrentHP = Data.MaxHP;
         CurrentShield = Data.MaxShield;
     }
@@ -28,6 +29,11 @@ public class StatusManager_Dummy : StatusManagerBase, IHittable, IShield
     // Update is called once per frame
     void Update()
     {
+        if (DamageText != null)
+        {
+            Utility.ObjectFollow(gameObject, DamageText, Vector2.zero);
+        }
+
         CheckRecovery();
         SetFill();
     }
@@ -35,8 +41,7 @@ public class StatusManager_Dummy : StatusManagerBase, IHittable, IShield
     public override bool OnHit(AttackInfo Attack)
     {
         base.OnHit(Attack);
-        GameObject DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
-        DamageText.transform.SetParent (Canvas.transform);
+
         if (CurrentHP > 0)
         {
             CharacterAttackInfo HitAttack = (CharacterAttackInfo)Attack;
@@ -47,39 +52,22 @@ public class StatusManager_Dummy : StatusManagerBase, IHittable, IShield
 
             int Damage = Utility.GetEffectValue(HitAttack.Power, HitAttack.Potency);
 
-            if (HitAttack.Type != CharacterAttackType.Slash)
-            {
-                CurrentHP -= Damage;
+            CurrentHP -= Damage;
                 
+
+            if (DamageText == null)
+            {
+                DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
             }
 
-            if (HitAttack.Dir == Direction.Right)
-            {
-                DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 1);
-            }
-            else
-            {
-                DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 1);
-            }
-            DamageText.GetComponent<Text>().text = Damage.ToString();
-            if (Interrupted)
-            {
-                DamageText.GetComponent<Text>().color = Color.red;
-            }
-            else
-            {
-                DamageText.GetComponent<Text>().color = Color.white;
-            }
+            DamageText.GetComponent<DamageText>().ActivateSelf(Damage);
+
+            DamageText.transform.SetParent(Canvas.transform);
 
             if (CurrentHP <= 0)
             {
                 return true;
             }
-        }
-        else
-        {
-            DamageText.GetComponent<Text>().text = "0";
-            DamageText.transform.parent = HPFill.transform.parent;
         }
 
         return false;

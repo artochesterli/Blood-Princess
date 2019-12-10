@@ -9,6 +9,8 @@ using UnityEngine;
 [RequireComponent(typeof(TrailRenderer))]
 public class CoinBehavior : MonoBehaviour
 {
+    public int Value;
+
 	public Vector2 XSpeedRange = new Vector2(-6f, -6f);
 	public Vector2 YSpeedRange = new Vector2(5f, 15f);
 	public float InIdleStateDuration = 0.6f;
@@ -117,6 +119,7 @@ public class CoinBehavior : MonoBehaviour
 			Context.transform.position = Vector3.Lerp(Context.transform.position, Player.transform.position, FollowSpeed);
 			if (Vector2.Distance(Player.transform.position, Context.transform.position) < 0.4f)
 			{
+                EventManager.instance.Fire(new PlayerGetMoney(Context.Value));
 				Destroy(Context.gameObject);
 				return;
 			}

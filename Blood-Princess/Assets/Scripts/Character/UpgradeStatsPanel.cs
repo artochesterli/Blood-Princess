@@ -13,12 +13,12 @@ public class UpgradeStatsPanel : MonoBehaviour
     public float HPY;
     public float PowerY;
 
-    private bool UpgradeHP;
+    public bool UpgradeHP;
 
     // Start is called before the first frame update
     void Start()
     {
-        UpgradeHP = true;
+
     }
 
     // Update is called once per frame
@@ -39,6 +39,7 @@ public class UpgradeStatsPanel : MonoBehaviour
         if (Utility.InputComfirm(ControlState.UpgradeStats))
         {
             Upgrade();
+            CharacterOpenInfo.Self.GetComponent<ControlStateManager>().AttachedAltar.GetComponent<Altar>().SetUseable(false);
             ControlStateManager.CurrentControlState = ControlState.Action;
             gameObject.SetActive(false);
         }
@@ -54,7 +55,7 @@ public class UpgradeStatsPanel : MonoBehaviour
         if (UpgradeHP)
         {
             Status.CurrentHP += AbilityData.HPUpgradeAmount;
-            Status.MaxHP += AbilityData.HPUpgradeAmount;
+            Status.CurrentMaxHP += AbilityData.HPUpgradeAmount;
         }
         else
         {

@@ -8,7 +8,9 @@ public enum ControlState
     ReplaceBattleArt,
     ReplacePassiveAbility,
     UpgradeStats,
-    CheckStatus
+    CheckStatus,
+    Storage,
+    CraftingTable
 }
 
 public class ControlStateManager : MonoBehaviour
@@ -21,6 +23,7 @@ public class ControlStateManager : MonoBehaviour
 
     public GameObject AttachedAbilityObject;
     public GameObject AttachedAltar;
+    public GameObject AttachedPotion;
 
     // Start is called before the first frame update
     void Start()
@@ -64,6 +67,13 @@ public class ControlStateManager : MonoBehaviour
                 UpgradeStatsPanel.GetComponent<UpgradeStatsPanel>().SetPanel();
                 UpgradeStatsPanel.SetActive(true);
                 return;
+            }
+
+            if(AttachedPotion != null)
+            {
+                var Status = GetComponent<StatusManager_Character>();
+                Status.Heal(Mathf.RoundToInt(Status.CurrentMaxHP * AttachedPotion.GetComponent<HealingPotion>().Proportion/100.0f));
+                Destroy(AttachedPotion);
             }
         }
 

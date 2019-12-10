@@ -111,6 +111,16 @@ public class SpeedManager : MonoBehaviour
         BodyHeight = BodySize.y;
         GetComponent<BoxCollider2D>().offset = Offset;
         GetComponent<BoxCollider2D>().size = BodySize;
+
+        if (GetComponent<OuterForceFieldManager>())
+        {
+            GameObject OuterForceField = GetComponent<OuterForceFieldManager>().OuterForceField;
+            float Width = GetComponent<OuterForceFieldManager>().OuterWidth;
+
+            OuterForceField.GetComponent<BoxCollider2D>().offset = Offset;
+            OuterForceField.GetComponent<BoxCollider2D>().size = BodySize + new Vector2(1,0)*Width*2;
+
+        }
     }
     
 
@@ -600,7 +610,7 @@ public class SpeedManager : MonoBehaviour
                             MinForceFieldDis = Dis;
                             ForceFieldHit = HitList[i];
                         }
-                        else if (!Info.TopPassable)
+                        else if (!Info.TopPassable || !CompareTag("Player"))
                         {
                             MinDis = Dis;
                             Hit = HitList[i];

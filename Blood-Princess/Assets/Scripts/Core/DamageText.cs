@@ -1,31 +1,47 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DG.Tweening;
+using TMPro;
 
 public class DamageText : MonoBehaviour
 {
-    public float DisappearTime;
-    public Vector2 TravelVector;
+    public float ShakeTime;
+    public float StartScale;
+    public float EndScale;
+    public AnimationCurve Curve;
+
+    public float StayTime;
 
     private float TimeCount;
-    private Vector2 OriPos;
+
+    private int Value;
+
     // Start is called before the first frame update
     void Start()
     {
-        OriPos = GetComponent<RectTransform>().localPosition;
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        Travel();
+        CheckTime();
     }
 
-    private void Travel()
+    public void ActivateSelf(int damage)
+    {
+        TimeCount = 0;
+        Value += damage;
+        GetComponent<TextMeshProUGUI>().text = Value.ToString();
+        transform.localScale = Vector3.one * StartScale;
+        transform.DOScale(EndScale, ShakeTime).SetEase(Curve);
+    }
+
+    private void CheckTime()
     {
         TimeCount += Time.deltaTime;
-        GetComponent<RectTransform>().localPosition = Vector2.Lerp(OriPos, OriPos + TravelVector,TimeCount/DisappearTime);
-        if (TimeCount >= DisappearTime)
+        if(TimeCount >= StayTime)
         {
             Destroy(gameObject);
         }

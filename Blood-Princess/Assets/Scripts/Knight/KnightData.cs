@@ -6,6 +6,9 @@ public class KnightData : MonoBehaviour
 {
     public int MaxHP;
 
+    public int DisEngageHPRecovery;
+    public float DisEngageHPRecoveryInterval;
+
     public float NormalMoveSpeed;
     public float KeepDisMoveSpeed;
     public float AttackStepForwardSpeed;

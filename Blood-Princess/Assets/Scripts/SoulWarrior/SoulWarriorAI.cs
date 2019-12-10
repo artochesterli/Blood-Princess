@@ -90,7 +90,7 @@ public abstract class SoulWarriorBehavior : FSM<SoulWarriorAI>.State
     public override void OnEnter()
     {
         base.OnEnter();
-        Debug.Log(this.GetType().Name);
+        //Debug.Log(this.GetType().Name);
     }
 
     protected void SetSoulWarrior(Sprite S, Vector2 Offset, Vector2 Size)
