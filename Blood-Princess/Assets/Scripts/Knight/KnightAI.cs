@@ -200,6 +200,8 @@ public class KnightPatron : KnightBehavior
 
     private bool Initilized;
 
+    private float DisEngageTimeCount;
+
     public override void Init()
     {
         base.Init();
@@ -210,6 +212,8 @@ public class KnightPatron : KnightBehavior
     {
         base.OnEnter();
         Context.CurrentState = KnightState.Patron;
+
+        DisEngageTimeCount = 0;
 
         var Data = Entity.GetComponent<KnightData>();
         var PatronData = Entity.GetComponent<PatronData>();
@@ -249,6 +253,9 @@ public class KnightPatron : KnightBehavior
             TransitionTo<KnightEngage>();
             return;
         }
+
+        CheckDisEngageTime();
+
         Patron();
     }
 
@@ -269,9 +276,6 @@ public class KnightPatron : KnightBehavior
         var Data = Entity.GetComponent<KnightData>();
         var PatronData = Entity.GetComponent<PatronData>();
 
-
-
-
         if (Moving)
         {
             AIUtility.PatronCheckSelfPos(Entity, Context.PatronRightX, Context.PatronLeftX, ref Moving, ref MovingRight);
@@ -280,8 +284,17 @@ public class KnightPatron : KnightBehavior
         {
             AIUtility.CheckPatronStayTime(Entity, ref TimeCount, PatronData.PatronStayTime, ref Moving, ref MovingRight, Data.NormalMoveSpeed);
         }
+    }
 
-
+    private void CheckDisEngageTime()
+    {
+        var Data = Entity.GetComponent<KnightData>();
+        DisEngageTimeCount += Time.deltaTime;
+        if(DisEngageTimeCount >= Data.DisEngageHPRecoveryInterval)
+        {
+            DisEngageTimeCount -= Data.DisEngageHPRecoveryInterval;
+            Entity.GetComponent<StatusManager_Knight>().Heal(Data.DisEngageHPRecovery);
+        }
     }
 }
 
@@ -361,6 +374,8 @@ public class KnightBlinkPrepare : KnightBehavior
         var SelfSpeedManager = Entity.GetComponent<SpeedManager>();
         var PlayerSpeedManager = Context.Player.GetComponent<SpeedManager>();
 
+        GameObject.Instantiate(Data.BlinkEffect, SelfSpeedManager.GetTruePos(), Quaternion.Euler(0, 0, 0));
+
         bool RightAvailable = true;
         bool LeftAvailable = true;
 
@@ -403,6 +418,8 @@ public class KnightBlinkPrepare : KnightBehavior
             SelfSpeedManager.MoveToPoint(new Vector2(BlinkLeftPosX, SelfSpeedManager.GetTruePos().y));
         }
 
+
+        GameObject.Instantiate(Data.BlinkEffect, SelfSpeedManager.GetTruePos(), Quaternion.Euler(0, 0, 0));
     }
 }
 

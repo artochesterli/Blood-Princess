@@ -110,10 +110,10 @@ public class AbilityObject : MonoBehaviour
     public void SetSelf()
     {
         GetComponent<SpriteRenderer>().sprite = Ability.Icon;
-        Text.GetComponent<Text>().text = Ability.name;
-        if(Ability.GetType() == typeof(BattleArt))
+        Text.GetComponent<Text>().text = "LB: Pick up\n" + Ability.name;
+        if(Ability.GetType().BaseType == typeof(BattleArt))
         {
-            Text.GetComponent<Text>().text += "(" + Ability.Level + ")";
+            Text.GetComponent<Text>().text += "(Lv" + Ability.Level + ")";
         }
     }
 
@@ -125,10 +125,9 @@ public class AbilityObject : MonoBehaviour
 
         if(Hit.collider != null)
         {
-            Text.SetActive(true);
-
-            if (Hit.collider.gameObject.GetComponent<ControlStateManager>().AttachedAbilityObject == null)
+            if (Hit.collider.gameObject.GetComponent<ControlStateManager>().AttachedAbilityObject == null || Hit.collider.gameObject.GetComponent<ControlStateManager>().AttachedAbilityObject == gameObject)
             {
+                Text.SetActive(true);
                 Hit.collider.gameObject.GetComponent<ControlStateManager>().AttachedAbilityObject = gameObject;
 
                 if (Ability.GetType().BaseType == typeof(BattleArt))
@@ -140,9 +139,18 @@ public class AbilityObject : MonoBehaviour
                     Hit.collider.gameObject.GetComponent<ControlStateManager>().PassiveAbilityManagerPanel.GetComponent<PassiveAbilityManagePanel>().UpdatePassiveAbility = (PassiveAbility)Ability;
                 }
             }
+            else
+            {
+                Text.SetActive(false);
+            }
         }
         else
         {
+            if(CharacterOpenInfo.Self.GetComponent<ControlStateManager>().AttachedAbilityObject == gameObject)
+            {
+                CharacterOpenInfo.Self.GetComponent<ControlStateManager>().AttachedAbilityObject = null;
+            }
+
             Text.SetActive(false);
         }
     }

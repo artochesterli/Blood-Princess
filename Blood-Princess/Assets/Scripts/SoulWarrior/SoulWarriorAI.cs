@@ -22,8 +22,6 @@ public class SoulWarriorAI : MonoBehaviour
     public GameObject Player;
     public LayerMask PlayerLayer;
 
-    public GameObject Magic;
-
     public GameObject PatronLeftMark;
     public GameObject PatronRightMark;
     public GameObject DetectLeftMark;
@@ -40,6 +38,8 @@ public class SoulWarriorAI : MonoBehaviour
 
     public SoulWarriorState LastState;
     public SoulWarriorState CurrentState;
+
+    public Vector2 MagicPos;
 
     private FSM<SoulWarriorAI> SoulWarriorAIFSM;
 
@@ -90,7 +90,7 @@ public abstract class SoulWarriorBehavior : FSM<SoulWarriorAI>.State
     public override void OnEnter()
     {
         base.OnEnter();
-        Debug.Log(this.GetType().Name);
+        //Debug.Log(this.GetType().Name);
     }
 
     protected void SetSoulWarrior(Sprite S, Vector2 Offset, Vector2 Size)
@@ -122,11 +122,11 @@ public abstract class SoulWarriorBehavior : FSM<SoulWarriorAI>.State
         return new EnemyAttackInfo(Entity, dir, Data.SlashDamage, Data.SlashDamage, Data.SlashOffset, Data.SlashHitBoxSize);
     }
 
-    protected EnemyAttackInfo GetMagicInfo(GameObject Magic)
+    protected EnemyAttackInfo GetMagicInfo()
     {
         var Data = Entity.GetComponent<SoulWarriorData>();
 
-        return new EnemyAttackInfo(Magic, Direction.None, Data.MagicDamage, Data.MagicDamage, Vector2.zero , Data.MagicHitBoxSize);
+        return new EnemyAttackInfo(Entity, Direction.None, Data.MagicDamage, Data.MagicDamage, Vector2.zero , Data.MagicHitBoxSize);
     }
 
     protected void SetKnockedBack(bool b, CharacterAttackInfo Attack = null)
@@ -195,6 +195,7 @@ public class SoulWarriorPatron : SoulWarriorBehavior
         base.Update();
 
         var PatronData = Entity.GetComponent<PatronData>();
+        var Data = Entity.GetComponent<SoulWarriorData>();
 
         if (CheckOffBalance())
         {
@@ -208,7 +209,7 @@ public class SoulWarriorPatron : SoulWarriorBehavior
             return;
         }
 
-        if (AIUtility.PlayerInDetectRange(Entity, Context.Player, Context.DetectRightX, Context.DetectLeftX, PatronData.DetectHeight, PatronData.DetectLayer, true))
+        if (AIUtility.PlayerInDetectRange(Entity, Context.Player, Context.DetectRightX + Data.MagicUseableDis, Context.DetectLeftX - Data.MagicUseableDis, PatronData.DetectHeight, PatronData.DetectLayer, true))
         {
             TransitionTo<SoulWarriorEngage>();
             return;
@@ -274,6 +275,7 @@ public class SoulWarriorEngage : SoulWarriorBehavior
         base.Update();
 
         var PatronData = Entity.GetComponent<PatronData>();
+        var Data = Entity.GetComponent<SoulWarriorData>();
 
         if (CheckOffBalance())
         {
@@ -287,7 +289,7 @@ public class SoulWarriorEngage : SoulWarriorBehavior
             return;
         }
 
-        if (!AIUtility.PlayerInDetectRange(Entity, Context.Player, Context.DetectRightX, Context.DetectLeftX, PatronData.DetectHeight, PatronData.DetectLayer, false))
+        if (!AIUtility.PlayerInDetectRange(Entity, Context.Player, Context.DetectRightX + Data.MagicUseableDis, Context.DetectLeftX - Data.MagicUseableDis, PatronData.DetectHeight, PatronData.DetectLayer, false))
         {
             TransitionTo<SoulWarriorPatron>();
             return;
@@ -590,6 +592,8 @@ public class SoulWarriorMagicAnticipation : SoulWarriorBehavior
     private float TimeCount;
     private float StateTime;
 
+    private GameObject MagicPrepare;
+
     public override void OnEnter()
     {
         base.OnEnter();
@@ -626,6 +630,8 @@ public class SoulWarriorMagicAnticipation : SoulWarriorBehavior
     {
         base.OnExit();
 
+        GameObject.Destroy(MagicPrepare);
+
         Context.LastState = SoulWarriorState.MagicAnticipation;
 
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
@@ -650,7 +656,9 @@ public class SoulWarriorMagicAnticipation : SoulWarriorBehavior
             OffsetDis = -Data.MagicPredictionDis;
         }
 
-        Context.Magic = GameObject.Instantiate(Data.MagicPrefab, PlayerSpeedManager.GetTruePos() + Vector2.right * OffsetDis, Quaternion.Euler(0, 0, 0));
+        Context.MagicPos = PlayerSpeedManager.GetTruePos() + Vector2.right * OffsetDis;
+
+        MagicPrepare = GameObject.Instantiate(Data.MagicPrepare, Context.MagicPos , Quaternion.Euler(0, 0, 0));
 
         Context.AttackCoolDownTimeCount = Data.AttackCoolDown;
     }
@@ -678,6 +686,7 @@ public class SoulWarriorMagicStrike : SoulWarriorBehavior
     private float StateTime;
 
     private EnemyAttackInfo MagicAttack;
+    private GameObject Magic;
 
     private bool AttackHit;
 
@@ -709,7 +718,9 @@ public class SoulWarriorMagicStrike : SoulWarriorBehavior
 
         TimeCount = 0;
         StateTime = Data.MagicStrikeTime;
-        MagicAttack = GetMagicInfo(Context.Magic);
+        MagicAttack = GetMagicInfo();
+        Magic = GameObject.Instantiate(Data.Magic, Context.MagicPos, Quaternion.Euler(0, 0, 0));
+
         AttackHit = false;
     }
 
@@ -724,12 +735,9 @@ public class SoulWarriorMagicStrike : SoulWarriorBehavior
         var Data = Entity.GetComponent<SoulWarriorData>();
 
         TimeCount += Time.deltaTime;
-        Context.Magic.transform.localScale = Vector3.one * Mathf.Lerp(1, Data.MagicHitBoxSize.x, TimeCount / StateTime);
-        Color color = Context.Magic.GetComponent<SpriteRenderer>().color;
-        Context.Magic.GetComponent<SpriteRenderer>().color = new Color(color.r, color.g, color.b, Mathf.Lerp(1, 0, TimeCount / StateTime));
+
         if (TimeCount >= StateTime)
         {
-            GameObject.Destroy(Context.Magic);
             TransitionTo<SoulWarriorMagicRecovery>();
             return;
         }
@@ -739,7 +747,7 @@ public class SoulWarriorMagicStrike : SoulWarriorBehavior
     {
         if (!AttackHit)
         {
-            if(AIUtility.HitPlayer(Context.Magic.transform.position, MagicAttack, Context.PlayerLayer))
+            if(AIUtility.HitPlayer(Magic.transform.position, MagicAttack, Context.PlayerLayer))
             {
                 AttackHit = true;
             }
@@ -844,8 +852,9 @@ public class SoulWarriorBlink : SoulWarriorBehavior
 
 
         var PatronData = Entity.GetComponent<PatronData>();
+        var Data = Entity.GetComponent<SoulWarriorData>();
 
-        if(!AIUtility.PlayerInDetectRange(Entity, Context.Player, Context.DetectRightX, Context.DetectLeftX, PatronData.DetectHeight, PatronData.DetectLayer, false))
+        if(!AIUtility.PlayerInDetectRange(Entity, Context.Player, Context.DetectRightX + Data.MagicUseableDis, Context.DetectLeftX -Data.MagicUseableDis, PatronData.DetectHeight, PatronData.DetectLayer, false))
         {
             TransitionTo<SoulWarriorPatron>();
         }
@@ -892,6 +901,8 @@ public class SoulWarriorBlink : SoulWarriorBehavior
         var SelfSpeedManager = Entity.GetComponent<SpeedManager>();
         var PlayerSpeedManager = Context.Player.GetComponent<SpeedManager>();
 
+        GameObject.Instantiate(Data.BlinkEffect, SelfSpeedManager.GetTruePos(), Quaternion.Euler(0, 0, 0));
+
         bool BlinkToRight;
 
         if (AIUtility.GetXDiff(Context.Player, Entity) < 0)
@@ -930,6 +941,8 @@ public class SoulWarriorBlink : SoulWarriorBehavior
         }
 
         SelfSpeedManager.MoveToPoint(new Vector2(BlinkPosX, SelfSpeedManager.GetTruePos().y));
+
+        GameObject.Instantiate(Data.BlinkEffect, SelfSpeedManager.GetTruePos(), Quaternion.Euler(0, 0, 0));
     }
 }
 

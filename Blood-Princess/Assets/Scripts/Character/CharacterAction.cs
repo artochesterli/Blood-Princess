@@ -360,6 +360,10 @@ public class CharacterAction : MonoBehaviour
 
     }
 
+    private void OnDestroy()
+    {
+        CharacterActionFSM.CurrentState.CleanUp();
+    }
 
     // <summary>
     /// return if player is in those states
@@ -472,7 +476,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         Vector2 Offset = Attack.HitBoxOffset;
         Offset.x = Entity.transform.right.x * Offset.x;
 
-        RaycastHit2D[] AllHits = Physics2D.BoxCastAll(Entity.transform.position + (Vector3)Offset, Attack.HitBoxSize, 0, Entity.transform.right, 0, Data.EnemyLayer);
+        RaycastHit2D[] AllHits = Physics2D.BoxCastAll(Entity.transform.position + (Vector3)Offset, Attack.HitBoxSize, 0, Entity.transform.right, 0, Data.EnemyLayer | Data.DoorLayer);
         if (AllHits.Length > 0)
         {
             for (int i = 0; i < AllHits.Length; i++)
@@ -1214,7 +1218,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         ChangeDirection(Info);
         SpeedManager.SelfSpeed.y = Data.JumpSpeed;
 
-        TransitionTo<Air>();
+        TransitionTo<JumpHolding>();
     }
 
     protected void PerformParry(InputInfo Info)
@@ -1483,6 +1487,70 @@ public class GroundMove : CharacterActionState
     }
 }
 
+public class JumpHolding : CharacterActionState
+{
+    private float TimeCount;
+
+    public override void OnEnter()
+    {
+        base.OnEnter();
+        SetUp();
+        SetAppearance();
+    }
+
+    public override void Update()
+    {
+        base.Update();
+
+        CheckCharacterMove(false);
+
+        if (CheckGetInterrupted())
+        {
+            TransitionTo<GetInterrupted>();
+            return;
+        }
+
+        if (Utility.InputNormalSlash())
+        {
+            TransitionTo<SlashAnticipation>();
+            return;
+        }
+
+        CheckTime();
+    }
+
+    private void SetUp()
+    {
+        Context.CurrentGravity = 0;
+        TimeCount = 0;
+    }
+
+    private void SetAppearance()
+    {
+        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
+        CurrentSpriteSeries = SpriteData.IdleSeries;
+
+        SetCharacterSprite();
+        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
+    }
+
+    private void CheckTime()
+    {
+        var Data = Entity.GetComponent<CharacterData>();
+
+        TimeCount += Time.deltaTime;
+        if(TimeCount >= Data.JumpHoldingTime)
+        {
+            Entity.GetComponent<SpeedManager>().SelfSpeed.y = Data.OverJumpSpeed;
+            TransitionTo<Air>();
+        }
+        else if (!Utility.InputJumpHold())
+        {
+            TransitionTo<Air>();
+        }
+    }
+}
+
 public class Air : CharacterActionState
 {
     private List<InputInfo> SavedInputList;
@@ -1619,6 +1687,8 @@ public class SlashAnticipation : CharacterActionState
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
         var Data = Entity.GetComponent<CharacterData>();
 
+        Context.CurrentGravity = Data.NormalGravity;
+
         Direction dir;
         if(Entity.transform.right.x > 0)
         {
@@ -1698,9 +1768,6 @@ public class SlashStrike : CharacterActionState
     private Vector2 Offset;
     private Vector2 HitBoxSize;
 
-    private Vector2 CurrentOffset;
-    private Vector2 CurrentHitBoxSize;
-
     private float TimeCount;
     private bool Grounded;
 
@@ -1733,6 +1800,9 @@ public class SlashStrike : CharacterActionState
         }
 
         CheckTime();
+
+        Utility.SetAttackHitBox(Context.CurrentAttack, Offset, HitBoxSize, TimeCount);
+
         HitEnemy(Context.CurrentAttack, Context.HitEnemies);
 
     }
@@ -1743,6 +1813,12 @@ public class SlashStrike : CharacterActionState
         var SpeedManager = Entity.GetComponent<SpeedManager>();
         SpeedManager.AttackStepSpeed.x = 0;
         EventManager.instance.Fire(new PlayerEndAttackStrike(Context.CurrentAttack, Context.HitEnemies));
+
+    }
+
+    public override void CleanUp()
+    {
+        base.CleanUp();
     }
 
     private void SetUp()
@@ -1760,10 +1836,10 @@ public class SlashStrike : CharacterActionState
 
         Offset = AbilityData.SlashOffset;
         HitBoxSize = AbilityData.SlashHitBoxSize;
-        CurrentOffset = Offset;
-        CurrentOffset.x = 0;
-        CurrentHitBoxSize = HitBoxSize;
-        CurrentHitBoxSize.x = 0;
+
+        Context.CurrentAttack.HitBoxOffset.x = Offset.x - HitBoxSize.x / 2;
+        Context.CurrentAttack.HitBoxSize.x = 0;
+
 
         if (CheckGrounded())
         {
@@ -1808,20 +1884,13 @@ public class SlashStrike : CharacterActionState
     private void CheckTime()
     {
         TimeCount += Time.deltaTime;
-        SetAttackHitBox();
+
+
         if (TimeCount > Context.CurrentAttack.StrikeTime)
         {
             TransitionTo<SlashRecovery>();
             return;
         }
-    }
-
-    private void SetAttackHitBox()
-    {
-        CurrentHitBoxSize.x = Mathf.Lerp(0, HitBoxSize.x, TimeCount / Context.CurrentAttack.StrikeTime);
-        CurrentOffset.x = Offset.x- HitBoxSize.x/2 + CurrentHitBoxSize.x / 2;
-        Context.CurrentAttack.HitBoxSize = CurrentHitBoxSize;
-        Context.CurrentAttack.HitBoxOffset = CurrentOffset;
     }
 
 }
@@ -1993,7 +2062,16 @@ public class CrossSlashAnticipation : CharacterActionState
 
         Status.SetCrossSlashParameter();
 
-        SetAttribute(AbilityData.CrossSlashAnticipationTime, AbilityData.CrossSlashStrikeTime, AbilityData.CrossSlashRecoveryTime, Status.CurrentPower, crossSlash.CurrentPotency, AbilityData.CrossSlashInterruptLevel, AbilityData.CrossSlashOffset, AbilityData.CrossSlashHitBoxSize);
+        if(Context.EquipedBattleArt.Level == 3)
+        {
+            SetAttribute(AbilityData.CrossSlashAnticipationTime, AbilityData.CrossSlashStrikeTime, AbilityData.CrossSlashRecoveryTime, Status.CurrentPower, crossSlash.CurrentPotency, AbilityData.CrossSlashInterruptLevel, AbilityData.CrossSlashOffset_Upgrade, AbilityData.CrossSlashHitBoxSize_Upgrade);
+        }
+        else
+        {
+            SetAttribute(AbilityData.CrossSlashAnticipationTime, AbilityData.CrossSlashStrikeTime, AbilityData.CrossSlashRecoveryTime, Status.CurrentPower, crossSlash.CurrentPotency, AbilityData.CrossSlashInterruptLevel, AbilityData.CrossSlashOffset, AbilityData.CrossSlashHitBoxSize);
+        }
+
+        
 
         Context.HitEnemies = new List<GameObject>();
 
@@ -2053,6 +2131,8 @@ public class CrossSlashStrike : CharacterActionState
 
     private CrossSlash crossSlash;
     private float TimeCount;
+    private Vector2 Offset;
+    private Vector2 HitBoxSize;
 
     public override void OnEnter()
     {
@@ -2073,8 +2153,12 @@ public class CrossSlashStrike : CharacterActionState
             return;
         }
 
-        HitEnemy(Context.CurrentAttack, Context.HitEnemies);
         CheckTime();
+
+        Utility.SetAttackHitBox(Context.CurrentAttack, Offset, HitBoxSize, TimeCount);
+
+        HitEnemy(Context.CurrentAttack, Context.HitEnemies);
+
     }
 
     public override void OnExit()
@@ -2092,7 +2176,18 @@ public class CrossSlashStrike : CharacterActionState
 
         TimeCount = 0;
 
-        SlashEffect = AbilityData.CrossSlashEffect;
+        if (Context.EquipedBattleArt.Level == 3)
+        {
+            SlashEffect = AbilityData.CrossSlashEffect_Upgrade;
+            Offset = AbilityData.CrossSlashEffectOffset_Upgrade;
+            HitBoxSize = AbilityData.CrossSlashHitBoxSize_Upgrade;
+        }
+        else
+        {
+            SlashEffect = AbilityData.CrossSlashEffect;
+            Offset = AbilityData.CrossSlashOffset;
+            HitBoxSize = AbilityData.CrossSlashHitBoxSize;
+        }
         GenerateSlashEffect(SlashEffect, Context.CurrentAttack);
 
         SpeedManager.AttackStepSpeed.x = AbilityData.CrossSlashStepForwardSpeed * Entity.transform.right.x;
@@ -2116,7 +2211,18 @@ public class CrossSlashStrike : CharacterActionState
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
 
         float EulerAngle = 0;
-        Vector2 Offset = AbilityData.CrossSlashEffectOffset;
+
+
+        Vector2 Offset;
+
+        if(Context.EquipedBattleArt.Level == 3)
+        {
+            Offset = AbilityData.CrossSlashEffectOffset_Upgrade;
+        }
+        else
+        {
+            Offset = AbilityData.CrossSlashEffectOffset;
+        }
 
         if (Attack.Dir == Direction.Left)
         {
@@ -2342,6 +2448,8 @@ public class PowerSlashStrike : CharacterActionState
     private GameObject SlashEffect;
 
     private float TimeCount;
+    private Vector2 Offset;
+    private Vector2 HitBoxSize;
 
     public override void OnEnter()
     {
@@ -2360,8 +2468,12 @@ public class PowerSlashStrike : CharacterActionState
             return;
         }
 
-        HitEnemy(Context.CurrentAttack, Context.HitEnemies);
         CheckTime();
+
+        Utility.SetAttackHitBox(Context.CurrentAttack, Offset, HitBoxSize, TimeCount);
+
+        HitEnemy(Context.CurrentAttack, Context.HitEnemies);
+
     }
 
     public override void OnExit()
@@ -2377,6 +2489,8 @@ public class PowerSlashStrike : CharacterActionState
         var AbilityData = Entity.GetComponent<CharacterAbilityData>();
 
         TimeCount = 0;
+        Offset = AbilityData.PowerSlashOffset;
+        HitBoxSize = AbilityData.PowerSlashHitBoxSize;
 
         SlashEffect = AbilityData.PowerSlashEffect;
         GenerateSlashEffect(SlashEffect, Context.CurrentAttack);
@@ -3036,7 +3150,9 @@ public class ClimbLadder : CharacterActionState
 
         float Thickness = 0.01f;
 
-        RaycastHit2D Hit = Physics2D.BoxCast(SpeedManager.GetTruePos() + (SpeedManager.BodyHeight/2 + Thickness/2) * Vector2.up, new Vector2(SpeedManager.BodyWidth, Thickness), 0, Vector2.up, 0, Data.LadderLayer);
+        //RaycastHit2D Hit = Physics2D.BoxCast(SpeedManager.GetTruePos() + (SpeedManager.BodyHeight/2 + Thickness/2) * Vector2.up, new Vector2(SpeedManager.BodyWidth, Thickness), 0, Vector2.up, 0, Data.LadderLayer);
+
+        RaycastHit2D Hit = Physics2D.BoxCast(SpeedManager.GetTruePos(), new Vector2(SpeedManager.BodyWidth, SpeedManager.BodyHeight), 0, Vector2.up, 0, Data.LadderLayer);
 
         if (Hit && Hit.collider.gameObject == Context.AttachedLadder)
         {

@@ -21,6 +21,7 @@ public class SoulWarriorData : MonoBehaviour
     public int MagicDamage;
 
     public float BlinkPrepareTime;
+    public GameObject BlinkEffect;
 
     public float SlashAvailableHitBoxPercentage;
     public Vector2 SlashOffset;
@@ -30,7 +31,9 @@ public class SoulWarriorData : MonoBehaviour
     public float MagicUseableDis;
     public float MagicPredictionDis;
     public Vector2 MagicHitBoxSize;
-    public GameObject MagicPrefab;
+
+    public GameObject MagicPrepare;
+    public GameObject Magic;
 
     public float KnockedBackTime;
     public float KnockedBackSpeed;

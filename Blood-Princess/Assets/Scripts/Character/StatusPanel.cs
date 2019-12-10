@@ -40,8 +40,8 @@ public class StatusPanel : MonoBehaviour
 
         var Info = Player.GetComponent<CharacterAbilitiesInfo>();
 
-        HPInfo.GetComponent<Text>().text = Player.GetComponent<StatusManager_Character>().CurrentHP.ToString() + "/" + Player.GetComponent<StatusManager_Character>().CurrentMaxHP.ToString();
-        PowerInfo.GetComponent<Text>().text = Player.GetComponent<StatusManager_Character>().CurrentPower.ToString();
+        HPInfo.GetComponent<Text>().text = "HP: " + Player.GetComponent<StatusManager_Character>().CurrentHP.ToString() + "/" + Player.GetComponent<StatusManager_Character>().CurrentMaxHP.ToString();
+        PowerInfo.GetComponent<Text>().text = "Power: " +Player.GetComponent<StatusManager_Character>().CurrentPower.ToString();
 
         GameObject BattleArtSlot = BattleArtInfo.transform.GetChild(0).gameObject;
 
@@ -49,7 +49,7 @@ public class StatusPanel : MonoBehaviour
 
         if (battleArt != null)
         {
-            BattleArtSlot.GetComponent<Text>().text = battleArt.name + "(" + battleArt.Level + ")";
+            BattleArtSlot.GetComponent<Text>().text = battleArt.name + "(Lv" + battleArt.Level + ")";
             BattleArtSlot.transform.Find("Icon").GetComponent<Image>().sprite = battleArt.Icon;
 
             for(int i = 1; i <= battleArt.Level; i++)

@@ -1,8 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System.IO;
 using PCG;
+using DG.Tweening;
+using TMPro;
 
 public class Utility
 {
@@ -25,37 +28,29 @@ public class Utility
         return Ans;
     }
 
-    public static void KnockedBack(GameObject obj, ref float TimeCount, float TotalTime, float Speed, bool Right)
+    public static void ObjectFollow(GameObject Target, GameObject Follower, Vector2 Offset)
     {
-        TimeCount += Time.deltaTime;
+        Vector2 TargetPos;
 
-        if(TimeCount >= TotalTime)
+        if (Target.GetComponent<SpeedManager>())
         {
-            obj.GetComponent<SpeedManager>().SelfSpeed.x = 0;
-        }
-        else if(TimeCount >= TotalTime/2)
-        {
-            if (Right)
-            {
-                obj.GetComponent<SpeedManager>().SelfSpeed.x = -Speed;
-            }
-            else
-            {
-                obj.GetComponent<SpeedManager>().SelfSpeed.x = Speed;
-            }
+            TargetPos = Target.GetComponent<SpeedManager>().GetTruePos();
         }
         else
         {
-            if (Right)
-            {
-                obj.GetComponent<SpeedManager>().SelfSpeed.x = Speed;
-            }
-            else
-            {
-                obj.GetComponent<SpeedManager>().SelfSpeed.x = -Speed;
-            }
+            TargetPos = Target.transform.position;
+        }
+
+        if (Follower.GetComponent<SpeedManager>())
+        {
+            Follower.GetComponent<SpeedManager>().MoveToPoint(TargetPos + Offset);
+        }
+        else
+        {
+            Follower.transform.position = TargetPos + Offset;
         }
     }
+
 
     public static void TurnAround(GameObject obj)
     {
@@ -72,9 +67,18 @@ public class Utility
         obj.GetComponent<SpeedManager>().MoveToPoint(TruePos);
     }
 
+    public static void SetAttackHitBox(CharacterAttackInfo Attack, Vector2 Offset, Vector2 HitBoxSize, float TimeCount)
+    {
+        float CurrentSizeX = Mathf.Lerp(0, HitBoxSize.x, TimeCount / Attack.StrikeTime);
+        float CurrentOffsetX = Offset.x - HitBoxSize.x / 2 + CurrentSizeX / 2;
+
+        Attack.HitBoxSize = new Vector2(CurrentSizeX, HitBoxSize.y);
+        Attack.HitBoxOffset = new Vector2(CurrentOffsetX, Offset.y);
+    }
+
     public static int GetEffectValue(int Power, int Potency)
     {
-        return Mathf.CeilToInt(Power * Potency/100.0f);
+        return Mathf.RoundToInt(Power * Potency/100.0f);
     }
 
 

@@ -6,10 +6,11 @@ using UnityEngine;
 [RequireComponent(typeof(GravityManager))]
 [RequireComponent(typeof(Collider2D))]
 [RequireComponent(typeof(ColliderInfo))]
-[RequireComponent(typeof(SpriteRenderer))]
-//[RequireComponent(typeof(TrailRenderer))]
+[RequireComponent(typeof(TrailRenderer))]
 public class CoinBehavior : MonoBehaviour
 {
+    public int Value;
+
 	public Vector2 XSpeedRange = new Vector2(-6f, -6f);
 	public Vector2 YSpeedRange = new Vector2(5f, 15f);
 	public float InIdleStateDuration = 0.6f;
@@ -20,9 +21,7 @@ public class CoinBehavior : MonoBehaviour
 	private SpeedManager m_SpeedManager;
 	private GravityManager m_GravityManager;
 	private Collider2D m_Collider2D;
-	//private TrailRenderer m_TrailRenderer;
-	private GameObject m_CoinTrail;
-	private SpriteRenderer m_SpriteRenderer;
+	private TrailRenderer m_TrailRenderer;
 
 	private void Awake()
 	{
@@ -30,9 +29,7 @@ public class CoinBehavior : MonoBehaviour
 		m_SpeedManager = GetComponent<SpeedManager>();
 		m_GravityManager = GetComponent<GravityManager>();
 		m_Collider2D = GetComponent<Collider2D>();
-		//m_TrailRenderer = GetComponent<TrailRenderer>();
-		m_CoinTrail = transform.Find("CoinTrail").gameObject;
-		m_SpriteRenderer = GetComponent<SpriteRenderer>();
+		m_TrailRenderer = GetComponent<TrailRenderer>();
 	}
 
 	private void Start()
@@ -57,8 +54,7 @@ public class CoinBehavior : MonoBehaviour
 			base.OnEnter();
 			Context.m_SpeedManager.SelfSpeed = new Vector2(Random.Range(Context.XSpeedRange.x, Context.XSpeedRange.y), Random.Range(Context.YSpeedRange.x, Context.YSpeedRange.y));
 			m_Timer = Time.timeSinceLevelLoad + Context.InIdleStateDuration;
-			//Context.m_TrailRenderer.enabled = false;
-			Context.m_CoinTrail.SetActive(false);
+			Context.m_TrailRenderer.enabled = false;
 		}
 
 		public override void Update()
@@ -71,8 +67,7 @@ public class CoinBehavior : MonoBehaviour
 			}
 			if (Context.m_SpeedManager.HitGround)
 			{
-				Context.m_SpeedManager.SelfSpeed.x *= 0.7f;
-				Context.m_SpeedManager.SelfSpeed.y *= -4f;
+				Context.m_SpeedManager.SelfSpeed.x = 0f;
 			}
 		}
 	}
@@ -91,7 +86,7 @@ public class CoinBehavior : MonoBehaviour
 			m_PlayerEnterRange();
 			if (Context.m_SpeedManager.HitGround)
 			{
-				Context.m_SpeedManager.SelfSpeed.x = 0f; 
+				Context.m_SpeedManager.SelfSpeed.x = 0f;
 			}
 		}
 
@@ -109,48 +104,25 @@ public class CoinBehavior : MonoBehaviour
 	{
 		private GameObject Player;
 		private float FollowSpeed;
-		private bool isStop;
 		public override void OnEnter()
 		{
 			base.OnEnter();
 			Context.m_GravityManager.Gravity = 0f;
 			Player = GameObject.FindGameObjectWithTag("Player");
 			FollowSpeed = Random.Range(Context.FollowSpeed.x, Context.FollowSpeed.y);
-			//Context.m_TrailRenderer.enabled = true;
-			Context.m_CoinTrail.SetActive(true);
+			Context.m_TrailRenderer.enabled = true;
 		}
 
 		public override void Update()
 		{
-			float playerDistance = Vector2.Distance(Player.transform.position, Context.transform.position);
 			base.Update();
-			if (!isStop)
+			Context.transform.position = Vector3.Lerp(Context.transform.position, Player.transform.position, FollowSpeed);
+			if (Vector2.Distance(Player.transform.position, Context.transform.position) < 0.4f)
 			{
-				Context.transform.position = Vector3.Lerp(Context.transform.position, Player.transform.position, FollowSpeed);
-				FollowSpeed *= 1.1f;
-			}
-
-
-			if (playerDistance < 0.2f)
-			{
-				Destroy(Context.gameObject, 0.3f);
-				if (!isStop)
-				{
-					GameObject getCoinParticles = GameObject.Instantiate(
-						Resources.Load("Prefabs/Particles/GetCoinParticle") as GameObject, Context.transform.position,
-						Quaternion.identity);
-					getCoinParticles.transform.parent = Context.transform;
-				}
-				
-				Context.m_SpriteRenderer.enabled = false;
-				Context.m_SpeedManager.SelfSpeed = Vector2.zero;
-				//Context.transform.position = Player.transform.position;
-				isStop = true;
+                EventManager.instance.Fire(new PlayerGetMoney(Context.Value));
+				Destroy(Context.gameObject);
 				return;
 			}
-			
-			
-
 		}
 	}
 }

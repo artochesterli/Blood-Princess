@@ -26,7 +26,11 @@ public class StatusManager_SoulWarrior : StatusManagerBase, IHittable
     // Update is called once per frame
     void Update()
     {
-        
+        Canvas.transform.eulerAngles = Vector3.zero;
+        if (DamageText != null)
+        {
+            Utility.ObjectFollow(gameObject, DamageText, Vector2.zero);
+        }
     }
 
     public override bool OnHit(AttackInfo Attack)
@@ -55,30 +59,28 @@ public class StatusManager_SoulWarrior : StatusManagerBase, IHittable
             OffBalance = false;
         }
 
-        DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
-
         int Damage = Utility.GetEffectValue(CurrentTakenAttack.Power, CurrentTakenAttack.Potency);
 
         CurrentHP -= Damage;
 
         SetHPFill((float)CurrentHP / Data.MaxHP);
 
-        if (CurrentTakenAttack.Dir == Direction.Right)
-        {
-            DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 0);
-        }
-        else
-        {
-            DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 0);
-        }
-        DamageText.GetComponent<Text>().text = Damage.ToString();
-        DamageText.transform.parent = Canvas.transform;
 
-        DamageText.GetComponent<Text>().color = Color.white;
+        if (DamageText == null)
+        {
+            DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
+        }
+
+        DamageText.GetComponent<DamageText>().ActivateSelf(Damage);
+
+        DamageText.transform.SetParent(Canvas.transform);
 
         if (CurrentHP <= 0)
         {
-            DamageText.transform.parent = SharedCanvas.transform;
+            if(DamageText != null)
+            {
+                DamageText.transform.SetParent(SharedCanvas.transform);
+            }
             Destroy(gameObject);
             return true;
         }

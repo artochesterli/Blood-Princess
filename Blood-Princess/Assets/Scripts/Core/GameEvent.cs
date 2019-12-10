@@ -153,6 +153,15 @@ public class PlayerDied : GameEvent
     }
 }
 
+public class PlayerGetMoney : GameEvent
+{
+    public int Value;
+    public PlayerGetMoney(int value)
+    {
+        Value = value;
+    }
+}
+
 public class PlayerPickUpAbility : GameEvent
 {
     public CharacterAbility Ability;
