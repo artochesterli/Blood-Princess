@@ -13,12 +13,16 @@ public class Game : MonoBehaviour
 
 	private void Awake()
 	{
+		DontDestroyOnLoad(gameObject);
+
 		Services.AudioManager = new AudioManager(AudioData);
 		Services.GameFeelManager = new GameFeelManager(GameFeelData);
 		Services.VisualEffectManager = new VFXManager(VFXData);
 		Services.GameStateManager = new GameStateManager();
 		Services.LootManager = new LootManager(Database, LootData);
 		Services.CoinManager = new CoinManager(LootData);
+		Services.StorageManager = new StorageManager();
+		Services.HomeManager = new HomeManager();
 	}
 
 	// Update is called once per frame
@@ -46,5 +50,11 @@ public class Game : MonoBehaviour
 
 		Services.CoinManager.Destroy();
 		Services.CoinManager = null;
+
+		Services.StorageManager.Destroy();
+		Services.StorageManager = null;
+
+		Services.HomeManager.Destroy();
+		Services.HomeManager = null;
 	}
 }

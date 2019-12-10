@@ -20,6 +20,15 @@ namespace Clinic
 			m_CraftingTable.OnCloseUI();
 		}
 
+		protected override void OnEnterZone()
+		{
+			return;
+		}
+
+		protected override void OnExitZone()
+		{
+		}
+
 		protected override void OnInteract()
 		{
 			m_CraftingTable.OnOpenUI();

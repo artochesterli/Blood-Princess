@@ -28,6 +28,10 @@ namespace Clinic
 
 		protected abstract void OnCancelInteract();
 
+		protected abstract void OnEnterZone();
+
+		protected abstract void OnExitZone();
+
 		protected void Update()
 		{
 			m_InteractableFSM.Update();
@@ -58,6 +62,7 @@ namespace Clinic
 
 		protected class InteractableIdleState : InteractableState
 		{
+
 			public override void Update()
 			{
 				base.Update();
@@ -71,6 +76,12 @@ namespace Clinic
 
 		protected class InteractableActivateState : InteractableState
 		{
+			public override void OnEnter()
+			{
+				base.OnEnter();
+				Context.OnEnterZone();
+			}
+
 			public override void Update()
 			{
 				base.Update();
@@ -85,6 +96,12 @@ namespace Clinic
 					TransitionTo<InteractableIdleState>();
 					return;
 				}
+			}
+
+			public override void OnExit()
+			{
+				base.OnExit();
+				Context.OnExitZone();
 			}
 		}
 

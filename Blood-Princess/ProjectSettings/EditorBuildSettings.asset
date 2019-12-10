@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/ClinicScene.unity
+    guid: cd7b259f240aef741ba6aa2bda66aaea
+  - enabled: 1
     path: Assets/Scenes/Procedural Generation.unity
     guid: 974e0b8a1b2990746be737c0cc3214f0
   m_configObjects: {}

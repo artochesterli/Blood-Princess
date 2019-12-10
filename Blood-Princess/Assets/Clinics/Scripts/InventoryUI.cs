@@ -18,14 +18,12 @@ namespace Clinic
 		private int m_CurrentSelectionIndex;
 
 		private FSM<InventoryUI> m_InventoryFSM;
+		private GameObject m_CurrentInstantiatedObject;
 
 		private void Awake()
 		{
 			m_Inventory = GetComponent<Inventory>();
-			for (int i = 0; i < m_Inventory.MaxSlots; i++)
-			{
-				Instantiate(Resources.Load("Slot") as GameObject, InventoryPanel);
-			}
+			m_SelectionCursor = Instantiate(Resources.Load("SelectionFrame") as GameObject, InventoryPanel.parent);
 			m_InventoryFSM = new FSM<InventoryUI>(this);
 			m_InventoryFSM.TransitionTo<InventoryClosedState>();
 		}
@@ -35,30 +33,36 @@ namespace Clinic
 			m_InventoryFSM.Update();
 		}
 
-		public void OnAddItem(Item item, int index, int num = 1)
+		/// <summary>
+		/// Read Item from disk to UI
+		/// </summary>
+		public void ReadItem()
 		{
-			InventoryPanel.GetChild(index).GetChild(1).GetComponent<Image>().sprite = item.Sprite;
-			InventoryPanel.GetChild(index).GetChild(1).GetComponent<Image>().color = Color.white;
-			if (num > 1)
-				InventoryPanel.GetChild(index).GetChild(2).GetComponent<TextMeshProUGUI>().text = num.ToString();
-			else
-				InventoryPanel.GetChild(index).GetChild(2).GetComponent<TextMeshProUGUI>().text = "";
-		}
-
-		public void OnRemoveItem(Item item, int index, int num, bool toEmpty)
-		{
-			if (toEmpty)
+			List<Item> items = Services.StorageManager.LoadItem();
+			for (int i = 0; i < items.Count; i++)
 			{
-				InventoryPanel.GetChild(index).GetChild(1).GetComponent<Image>().sprite = null;
-				InventoryPanel.GetChild(index).GetChild(1).GetComponent<Image>().color = new Color(1, 1, 1, 0);
-				InventoryPanel.GetChild(index).GetChild(2).GetComponent<TextMeshProUGUI>().text = "";
-			}
-			else
-			{
-				if (num > 1)
-					InventoryPanel.GetChild(index).GetChild(2).GetComponent<TextMeshProUGUI>().text = num.ToString();
+				Item curitem = items[i];
+				Transform curPanel = InventoryPanel.GetChild(i);
+				if (!curitem.GetType().Equals(typeof(EmptyItem)))
+				{
+					curPanel.GetChild(1).GetComponent<Image>().sprite = curitem.GetID().Sprite;
+					curPanel.GetChild(1).GetComponent<Image>().color = Color.white;
+					if (curitem.Number > 1)
+					{
+						curPanel.GetChild(2).GetComponent<TextMeshProUGUI>().text = curitem.Number.ToString();
+					}
+					else
+					{
+						curPanel.GetChild(2).GetComponent<TextMeshProUGUI>().text = "";
+					}
+				}
 				else
-					InventoryPanel.GetChild(index).GetChild(2).GetComponent<TextMeshProUGUI>().text = "";
+				{
+					curPanel.GetChild(1).GetComponent<Image>().sprite = null;
+					curPanel.GetChild(1).GetComponent<Image>().color = new Color(1, 1, 1, 0);
+					curPanel.GetChild(2).GetComponent<TextMeshProUGUI>().text = "";
+				}
+
 			}
 		}
 
@@ -93,8 +97,7 @@ namespace Clinic
 			{
 				base.OnEnter();
 				Context.InventoryPanel.gameObject.SetActive(false);
-				Destroy(Context.m_SelectionCursor);
-				Context.m_SelectionCursor = null;
+				Context.m_SelectionCursor.SetActive(false);
 			}
 		}
 
@@ -105,8 +108,9 @@ namespace Clinic
 			public override void OnEnter()
 			{
 				base.OnEnter();
+				Context.ReadItem();
 				Context.InventoryPanel.gameObject.SetActive(true);
-				Context.m_SelectionCursor = Instantiate(Resources.Load("SelectionFrame") as GameObject, Context.InventoryPanel.parent);
+				Context.m_SelectionCursor.SetActive(true);
 				m_MoveCursorToIndex(0);
 				m_CurrentSelectionIndex = 0;
 				m_FirstFrameSkip = false;
@@ -125,7 +129,7 @@ namespace Clinic
 
 			private void m_MoveCursorToIndex(int index)
 			{
-				Context.m_SelectionCursor.GetComponent<RectTransform>().anchoredPosition = Context.InventoryPanel.GetChild(index).GetComponent<RectTransform>().localPosition;
+				Context.m_SelectionCursor.GetComponent<RectTransform>().localPosition = Context.InventoryPanel.GetChild(index).GetComponent<RectTransform>().localPosition;
 			}
 
 			private void m_MoveCursor()
@@ -141,7 +145,7 @@ namespace Clinic
 
 				if (Input.GetKeyDown(KeyCode.RightArrow))
 				{
-					if (m_CurrentSelectionIndex + 1 < Context.m_Inventory.MaxSlots)
+					if (m_CurrentSelectionIndex + 1 < Services.StorageManager.MaxSlots)
 					{
 						m_CurrentSelectionIndex++;
 						m_MoveCursorToIndex(m_CurrentSelectionIndex);
@@ -150,7 +154,15 @@ namespace Clinic
 
 				if (Input.GetKeyDown(KeyCode.J))
 				{
-					Context.m_Inventory.m_Items[m_CurrentSelectionIndex].OnSelect(Context.gameObject);
+					Item curItem = Services.StorageManager.LoadItem()[m_CurrentSelectionIndex];
+					if (curItem.GetType().IsSubclassOf(typeof(DecorationItem)))
+					{
+						Context.m_CurrentInstantiatedObject = ((DecorationItem)curItem).OnSelectObject(Context.gameObject);
+					}
+					else
+					{
+						curItem.OnSelect(Context.gameObject);
+					}
 				}
 			}
 		}
@@ -165,15 +177,15 @@ namespace Clinic
 			{
 				base.OnEnter();
 				Context.InventoryPanel.gameObject.SetActive(false);
-				Destroy(Context.m_SelectionCursor);
-				Context.m_SelectionCursor = null;
+				Context.m_SelectionCursor.SetActive(false);
+
 				Context.ClinicGrid.SetActive(true);
 				BuildPosition = new Vector2Int();
 				BaseBuildingGrid = Context.ClinicGrid.GetComponent<BaseBuildingGrid>();
 				DecorationItem = Context.m_DecorationItem;
 				m_FitPosition(BuildPosition);
 				// Make Camera Follow this 
-				Camera.main.GetComponent<CameraManager>().Character = DecorationItem.ItemInstance;
+				Camera.main.GetComponent<CameraManager>().Character = Context.m_CurrentInstantiatedObject;
 			}
 
 			public override void Update()
@@ -217,8 +229,9 @@ namespace Clinic
 					if (m_CanPlace(BuildPosition, DecorationItem, BaseBuildingGrid))
 					{
 						m_Place(BuildPosition, DecorationItem, BaseBuildingGrid);
-						GameObject.Instantiate(DecorationItem.ItemInstance);
-						Context.m_Inventory.OnRemoveItem(DecorationItem);
+						GameObject.Instantiate(Context.m_CurrentInstantiatedObject);
+						Services.StorageManager.SaveItem(DecorationItem, -1);
+						Services.HomeManager.OnSave(BuildPosition, DecorationItem);
 						TransitionTo<InventoryClosedState>();
 						return;
 					}
@@ -238,14 +251,14 @@ namespace Clinic
 				{
 					for (int j = 0; j < BaseBuildingGrid.Grids.GetLength(1); j++)
 					{
-						if (BaseBuildingGrid.Grids[i, j].gameObject.GetComponent<SpriteRenderer>().color != Color.black)
+						if (BaseBuildingGrid.Grids[i, j].GridState != GridState.Occupied)
 						{
-							BaseBuildingGrid.Grids[i, j].gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+							BaseBuildingGrid.Grids[i, j].GridState = GridState.Empty;
 						}
 					}
 				}
 				// First Fit the actual gameObject's upper left corner to the grids upper left corner
-				DecorationItem.ItemInstance.transform.position = BaseBuildingGrid.Grids[Pos.x, Pos.y].gameObject.transform.position;
+				Context.m_CurrentInstantiatedObject.transform.position = BaseBuildingGrid.Grids[Pos.x, Pos.y].gameObject.transform.position;
 
 				// Check grid availability and pre change grid's color to cater to the avaiability
 				int row = DecorationItem.OccupySize.GetLength(0);
@@ -259,44 +272,21 @@ namespace Clinic
 						Grid targetGrid = BaseBuildingGrid.Grids[Pos.x + i, Pos.y + j];
 						// If the Grid was pre-occupied(i.e black), continue and do not change color
 						// If the Grid was the same type as required, then green, other wise, red
-						if (targetGrid.gameObject.GetComponent<SpriteRenderer>().color == Color.black)
+						if (targetGrid.GridState == GridState.Occupied)
 						{
 							continue;
 						}
 
 						if (targetGrid.GridName == DecorationItem.OccupySize[i, j] && canPlace)
 						{
-							targetGrid.gameObject.GetComponent<SpriteRenderer>().color = Color.green;
+							targetGrid.GridState = GridState.CanPlace;
 						}
 						else
 						{
-							targetGrid.gameObject.GetComponent<SpriteRenderer>().color = Color.red;
+							targetGrid.GridState = GridState.CannotPlace;
 						}
 					}
 				}
-				//for (int i = 0; i < row; i++)
-				//{
-				//	for (int j = 0; j < column; j++)
-				//	{
-				//		Grid targetGrid = BaseBuildingGrid.Grids[Pos.x + i, Pos.y + j];
-				//		// If the Grid was pre-occupied(i.e black), continue and do not change color
-				//		// If the Grid was the same type as required, then green, other wise, red
-				//		if (targetGrid.gameObject.GetComponent<SpriteRenderer>().color == Color.black)
-				//		{
-				//			continue;
-				//		}
-
-				//		if (targetGrid.GridName == DecorationItem.OccupySize[i, j])
-				//		{
-				//			targetGrid.gameObject.GetComponent<SpriteRenderer>().color = Color.green;
-				//		}
-				//		else
-				//		{
-				//			targetGrid.gameObject.GetComponent<SpriteRenderer>().color = Color.red;
-				//		}
-				//	}
-				//}
-
 			}
 
 			private void m_Place(Vector2Int Pos, DecorationItem di, BaseBuildingGrid bbg)
@@ -308,7 +298,7 @@ namespace Clinic
 				{
 					for (int j = 0; j < column; j++)
 					{
-						bbg.Grids[Pos.x + i, Pos.y + j].gameObject.GetComponent<SpriteRenderer>().color = Color.black;
+						bbg.Grids[Pos.x + i, Pos.y + j].GridState = GridState.Occupied;
 					}
 				}
 			}
@@ -329,8 +319,8 @@ namespace Clinic
 				{
 					for (int j = 0; j < column; j++)
 					{
-						if (bbg.Grids[Pos.x + i, Pos.y + j].gameObject.GetComponent<SpriteRenderer>().color != Color.green &&
-							bbg.Grids[Pos.x + i, Pos.y + j].gameObject.GetComponent<SpriteRenderer>().color != Color.white)
+						if (bbg.Grids[Pos.x + i, Pos.y + j].GridState != GridState.CanPlace &&
+							bbg.Grids[Pos.x + i, Pos.y + j].GridState != GridState.Empty)
 							return false;
 					}
 				}
@@ -369,8 +359,7 @@ namespace Clinic
 			{
 				base.OnExit();
 				Camera.main.GetComponent<CameraManager>().Character = GameObject.FindGameObjectWithTag("Player");
-				GameObject.Destroy(DecorationItem.ItemInstance);
-				DecorationItem.ItemInstance = null;
+				GameObject.Destroy(Context.m_CurrentInstantiatedObject);
 				Context.ClinicGrid.SetActive(false);
 			}
 		}

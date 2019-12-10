@@ -149,7 +149,7 @@ namespace PCG
         }
 
         /// <summary>
-		/// Find a room using roomtype in PCG/Expandable/roomType
+        /// Find a room using roomtype in PCG/Expandable/roomType
         /// place a room using roomType, find it in PCG/Expandable
         /// </summary>
         /// <param name="roomType"></param>
@@ -257,17 +257,9 @@ namespace PCG
         {
             entireRoomFile = _getRandomRoomFromPath("/PCG/RoomType" + _roomType.ToString());
 
-            _room = new GameObject("Room" + _roomType.ToString() + "-");
+            _room = new GameObject("Room" + _roomType.ToString());
             _room.transform.parent = _boardGameObject.transform;
-            //str = "";
-            //for (int i = 0; i < entireRoomFile.Length; i++)
-            //{
-            //	for (int j = 0; j < entireRoomFile[i].Length; j++)
-            //	{
-            //		str += entireRoomFile[i][j];
-            //	}
-            //	str += "\n";
-            //}
+
         }
 
         /// <summary>
@@ -287,6 +279,25 @@ namespace PCG
                     }
                 }
             }
+        }
+
+
+        /// <summary>
+        /// Print the Room
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            string str = "";
+            for (int i = 0; i < entireRoomFile.Length; i++)
+            {
+                for (int j = 0; j < entireRoomFile[i].Length; j++)
+                {
+                    str += entireRoomFile[i][j];
+                }
+                str += "\n";
+            }
+            return str;
         }
     }
 

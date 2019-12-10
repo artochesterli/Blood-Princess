@@ -21,7 +21,8 @@ namespace Clinic
 		{
 			get
 			{
-				return Inventories.m_Items;
+				//return Inventories.m_Items;
+				return Services.StorageManager.LoadItem();
 			}
 		}
 
@@ -131,10 +132,12 @@ namespace Clinic
 				// Remove Items required from storage
 				foreach (var craftMaterial in m_CurrentCraftMaterialsNeeded)
 				{
-					Context.Inventories.OnRemoveItem(Utility.NewItemFromString(craftMaterial.Name), craftMaterial.Amount);
+					//Context.Inventories.OnRemoveItem(Utility.NewItemFromString(craftMaterial.Name), craftMaterial.Amount);
+					Services.StorageManager.SaveItem(Utility.NewItemFromString(craftMaterial.Name), -craftMaterial.Amount);
 				}
 				// Add items to storage
-				Context.Inventories.OnAddItem(Utility.NewItemFromString(Context.CraftingPanel.transform.GetChild(m_SelectionIndex).GetComponent<TextMeshProUGUI>().text));
+				//Context.Inventories.OnAddItem(Utility.NewItemFromString(Context.CraftingPanel.transform.GetChild(m_SelectionIndex).GetComponent<TextMeshProUGUI>().text));
+				Services.StorageManager.SaveItem(Utility.NewItemFromString(Context.CraftingPanel.transform.GetChild(m_SelectionIndex).GetComponent<TextMeshProUGUI>().text));
 			}
 
 			private void m_SetSelectionCursor(int index)
