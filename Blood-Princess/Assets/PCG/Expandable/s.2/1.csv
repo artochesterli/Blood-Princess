@@ -7,6 +7,7 @@
 0;TB,0;TB,4;BR|0;TB,0;TB,0;TB,0;TB,0;TB,4;BR|0;TB,2;T|0;TB,0
 0;TB,0;TB,6;R|0;TB,0;TB,0;TB,0;TB,0;TB,0;TB,0;TB,0
 0;TB,0;TB,6;R|0;TB,0;TB,0;TB,0;TB,0;TB,0;TB,0;TB,0
-2;T|0;TB,2;T|0;TB,2;T|0;TB,0;TB,0;TB,M-F|0;TB,0;TB,0;TB,0;TB,0
-0;TB,1;T,1;T,1;T,1;T,1;T,1;T,1;T,1;T,1;F
-0;TB,1;T,*,*,*,*,*,*,*,*
+2;T|0;TB,2;T|0;TB,4;BR|0;TB,0;TB,0;TB,M-F|0;TB,0;TB,0;TB,0;TB,0
+0;TB,0;TB,1;T|4;BR,1;T,1;T,1;T,1;T,1;T,1;T,1;F
+0;TB,0;TB,4;BR|0;TB,*,*,*,*,*,*,*
+1;T,1;T,1;T,*,*,*,*,*,*,*

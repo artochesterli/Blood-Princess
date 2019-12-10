@@ -48,7 +48,7 @@ namespace PCG
         private void _setupBoard(int length)
         {
             IntVector2 startPosition = new IntVector2(1, _height / 2);
-            Room entrance = new Room(startPosition, "L", _seed, 0, ref _board, _boardGameObject);
+            Room entrance = new Room(startPosition, "L", _seed, 5, ref _board, _boardGameObject);
             startPosition = entrance.RoomExit.BoardPosition;
             startPosition.x += 1;
             for (int i = 0; i < length; i++)
@@ -230,7 +230,6 @@ namespace PCG
             return Utility.RandomFromArray<string>(new string[] { "8", "11" }, m_Rand);
         }
 
-        // TODO: Wrong Right edge
         private string _FR0Placement(IntVector2 boardPosition, string curCharacterType)
         {
             string leftChar = _board[boardPosition.x - 1, boardPosition.y];
@@ -477,6 +476,9 @@ namespace PCG
                         {
                             instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + "1"));
                         }
+                        break;
+                    case "p":
+                        instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Character", typeof(GameObject))) as GameObject;
                         break;
                 }
 

@@ -12,9 +12,10 @@ GameObject:
   - component: {fileID: 815148393709818330}
   - component: {fileID: -4626984335417063057}
   - component: {fileID: 7206675973562887445}
-  m_Layer: 0
+  - component: {fileID: 2172955986173109792}
+  m_Layer: 11
   m_Name: 3
-  m_TagString: Untagged
+  m_TagString: PassablePlatform
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -121,7 +122,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Type: 0
-  LeftPassable: 0
-  RightPassable: 0
+  LeftPassable: 1
+  RightPassable: 1
   TopPassable: 0
-  BottomPassable: 0
+  BottomPassable: 1
+--- !u!114 &2172955986173109792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 815148393709818309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 22d352d6d8b918a4892849b000797df2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Player: {fileID: 0}
+  PlayerLayer:
+    serializedVersion: 2
+    m_Bits: 256
