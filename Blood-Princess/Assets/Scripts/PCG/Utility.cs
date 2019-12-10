@@ -78,6 +78,50 @@ namespace PCG
             return 0;
         }
 
+        public static bool ContainsCharacter(string str, string character)
+        {
+            string[] split1 = str.Split('|');
+            HashSet<string> characterHashSet = new HashSet<string>();
+            for (int i = 0; i < split1.Length; i++)
+            {
+                characterHashSet.Add(split1[i].Split(';')[0]);
+            }
+            // Debug.Log(str + " contains " + character + " " + characterHashSet.Contains(character).ToString());
+            return characterHashSet.Contains(character);
+        }
+
+        public static bool IsEmptyZero(string str)
+        {
+            return str == "0";
+        }
+
+        public static bool ContainsCharacterAndType(string str, string characterAndType)
+        {
+            string[] split1 = str.Split('|');
+            HashSet<string> characterHashSet = new HashSet<string>();
+            for (int i = 0; i < split1.Length; i++)
+            {
+                characterHashSet.Add(split1[i]);
+
+            }
+            return characterHashSet.Contains(characterAndType);
+        }
+
+        public static bool ContainsCharacterType(string str, string characterType)
+        {
+            string[] split1 = str.Split('|');
+            HashSet<string> characterHashSet = new HashSet<string>();
+            for (int i = 0; i < split1.Length; i++)
+            {
+                string[] split2 = split1[i].Split(';');
+                if (split2.Length > 1)
+                {
+                    characterHashSet.Add(split2[1]);
+                }
+            }
+            return characterHashSet.Contains(characterType);
+        }
+
         public static string LoadPath(string currentChar, string charType)
         {
             Debug.Assert(currentChar != "", "Current Character cannot be empty");

@@ -86,22 +86,23 @@ namespace PCG
         /// <returns></returns>
         private string _TG0Placement(IntVector2 boardPosition)
         {
-            string[] leftChar = _board[boardPosition.x - 1, boardPosition.y].Split(';');
-            string[] rightChar = _board[boardPosition.x + 1, boardPosition.y].Split(';');
-            string[] upChar = _board[boardPosition.x, boardPosition.y + 1].Split(';');
-            string[] downChar = _board[boardPosition.x, boardPosition.y - 1].Split(';');
+            string leftChar = _board[boardPosition.x - 1, boardPosition.y];
+            string rightChar = _board[boardPosition.x + 1, boardPosition.y];
+            string upChar = _board[boardPosition.x, boardPosition.y + 1];
+            string downChar = _board[boardPosition.x, boardPosition.y - 1];
+            string curChar = _board[boardPosition.x, boardPosition.y];
 
             // Check Upper Part
-            if (upChar.Length < 2 || upChar[0] != "0")
+            if (Utility.IsEmptyZero(upChar) || !Utility.ContainsCharacter(upChar, "0"))
             {
                 // Check upper left corner
-                if (leftChar.Length < 2 || leftChar[0] != "0")
+                if (Utility.IsEmptyZero(leftChar) || !Utility.ContainsCharacter(leftChar, "0"))
                 {
                     return "1";
                 }
 
                 // Check upper right corner
-                if (rightChar.Length < 2 || rightChar[0] != "0")
+                if (Utility.IsEmptyZero(rightChar) || !Utility.ContainsCharacter(rightChar, "0"))
                 {
                     return "4";
                 }
@@ -111,16 +112,16 @@ namespace PCG
             }
 
             // Check Lower Part
-            if (downChar.Length < 2 || downChar[0] != "0")
+            if (Utility.IsEmptyZero(downChar) || !Utility.ContainsCharacter(downChar, "0"))
             {
                 // Check Down Left Corner
-                if (leftChar.Length < 2 || leftChar[0] != "0")
+                if (Utility.IsEmptyZero(leftChar) || !Utility.ContainsCharacter(leftChar, "0"))
                 {
                     return "17";
                 }
 
                 // check down right corner
-                if (rightChar.Length < 2 || rightChar[0] != "0")
+                if (Utility.IsEmptyZero(rightChar) || !Utility.ContainsCharacter(rightChar, "0"))
                 {
                     return "20";
                 }
@@ -130,15 +131,28 @@ namespace PCG
             }
 
             // Check for left
-            if (leftChar.Length < 2 || leftChar[0] != "0")
+            if (Utility.IsEmptyZero(leftChar) || !Utility.ContainsCharacter(leftChar, "0"))
             {
+                if (Utility.ContainsCharacter(curChar, "2"))
+                {
+                    return "5";
+                }
                 return Utility.RandomFromArray<string>(new string[] { "9", "13" }, m_Rand);
             }
 
             // Check for right
-            if (rightChar.Length < 2 || rightChar[0] != "0")
+            if (Utility.IsEmptyZero(rightChar) || !Utility.ContainsCharacter(rightChar, "0"))
             {
+                if (Utility.ContainsCharacter(curChar, "2"))
+                {
+                    return "8";
+                }
                 return Utility.RandomFromArray<string>(new string[] { "12", "16" }, m_Rand);
+            }
+
+            if (Utility.ContainsCharacter(curChar, "2"))
+            {
+                return Utility.RandomFromArray<string>(new string[] { "6", "7" }, m_Rand);
             }
 
             // Only Center can be left now
@@ -153,22 +167,23 @@ namespace PCG
         /// <returns></returns>
         private string _TB0Placement(IntVector2 boardPosition)
         {
-            string[] leftChar = _board[boardPosition.x - 1, boardPosition.y].Split(';');
-            string[] rightChar = _board[boardPosition.x + 1, boardPosition.y].Split(';');
-            string[] upChar = _board[boardPosition.x, boardPosition.y + 1].Split(';');
-            string[] downChar = _board[boardPosition.x, boardPosition.y - 1].Split(';');
+            string leftChar = _board[boardPosition.x - 1, boardPosition.y];
+            string rightChar = _board[boardPosition.x + 1, boardPosition.y];
+            string upChar = _board[boardPosition.x, boardPosition.y + 1];
+            string downChar = _board[boardPosition.x, boardPosition.y - 1];
+            string curChar = _board[boardPosition.x, boardPosition.y];
 
             // Check Upper Part
-            if (upChar.Length < 2 || upChar[0] != "0")
+            if (Utility.IsEmptyZero(upChar) || !Utility.ContainsCharacter(upChar, "0"))
             {
                 // Check upper left corner
-                if (leftChar.Length < 2 || leftChar[0] != "0")
+                if (Utility.IsEmptyZero(leftChar) || !Utility.ContainsCharacter(leftChar, "0"))
                 {
                     return "1";
                 }
 
                 // Check upper right corner
-                if (rightChar.Length < 2 || rightChar[0] != "0")
+                if (Utility.IsEmptyZero(rightChar) || !Utility.ContainsCharacter(rightChar, "0"))
                 {
                     return "3";
                 }
@@ -178,16 +193,16 @@ namespace PCG
             }
 
             // Check Lower Part
-            if (downChar.Length < 2 || downChar[0] != "0")
+            if (Utility.IsEmptyZero(downChar) || !Utility.ContainsCharacter(downChar, "0"))
             {
                 // Check Down Left Corner
-                if (leftChar.Length < 2 || leftChar[0] != "0")
+                if (Utility.IsEmptyZero(leftChar) || !Utility.ContainsCharacter(leftChar, "0"))
                 {
                     return "13";
                 }
 
                 // check down right corner
-                if (rightChar.Length < 2 || rightChar[0] != "0")
+                if (Utility.IsEmptyZero(rightChar) || !Utility.ContainsCharacter(rightChar, "0"))
                 {
                     return "15";
                 }
@@ -197,39 +212,43 @@ namespace PCG
             }
 
             // Check for left
-            if (leftChar.Length < 2 || leftChar[0] != "0")
+            if (Utility.IsEmptyZero(leftChar) || !Utility.ContainsCharacter(leftChar, "0"))
             {
+                if (Utility.ContainsCharacter(curChar, "2")) return "4";
                 return Utility.RandomFromArray<string>(new string[] { "7", "10" }, m_Rand);
             }
 
             // Check for right
-            if (rightChar.Length < 2 || rightChar[0] != "0")
+            if (Utility.IsEmptyZero(rightChar) || !Utility.ContainsCharacter(rightChar, "0"))
             {
+                if (Utility.ContainsCharacter(curChar, "2")) return "6";
                 return Utility.RandomFromArray<string>(new string[] { "12", "9" }, m_Rand);
             }
+            if (Utility.ContainsCharacter(curChar, "2")) return "5";
 
             // Only Center can be left now
             return Utility.RandomFromArray<string>(new string[] { "8", "11" }, m_Rand);
         }
 
-        private string _FR0Placement(IntVector2 boardPosition)
+        // TODO: Wrong Right edge
+        private string _FR0Placement(IntVector2 boardPosition, string curCharacterType)
         {
-            string[] leftChar = _board[boardPosition.x - 1, boardPosition.y].Split(';');
-            string[] rightChar = _board[boardPosition.x + 1, boardPosition.y].Split(';');
-            string[] upChar = _board[boardPosition.x, boardPosition.y + 1].Split(';');
-            string[] downChar = _board[boardPosition.x, boardPosition.y - 1].Split(';');
+            string leftChar = _board[boardPosition.x - 1, boardPosition.y];
+            string rightChar = _board[boardPosition.x + 1, boardPosition.y];
+            string upChar = _board[boardPosition.x, boardPosition.y + 1];
+            string downChar = _board[boardPosition.x, boardPosition.y - 1];
 
             // Check Lower Part
-            if (downChar.Length < 2 || downChar[0] != "0")
+            if (Utility.IsEmptyZero(downChar) || !Utility.ContainsCharacterAndType(downChar, "0;" + curCharacterType))
             {
                 // Check Down Left Corner
-                if (leftChar.Length < 2 || leftChar[0] != "0")
+                if (Utility.IsEmptyZero(leftChar) || !Utility.ContainsCharacterAndType(leftChar, "0;" + curCharacterType))
                 {
                     return "7";
                 }
 
                 // check down right corner
-                if (rightChar.Length < 2 || rightChar[0] != "0")
+                if (Utility.IsEmptyZero(rightChar) || !Utility.ContainsCharacterAndType(rightChar, "0;" + curCharacterType))
                 {
                     return "9";
                 }
@@ -239,13 +258,13 @@ namespace PCG
             }
 
             // Check for left
-            if (leftChar.Length < 2 || leftChar[0] != "0")
+            if (Utility.IsEmptyZero(leftChar) || !Utility.ContainsCharacterAndType(leftChar, "0;" + curCharacterType))
             {
                 return "4";
             }
 
             // Check for right
-            if (rightChar.Length < 2 || rightChar[0] != "0")
+            if (Utility.IsEmptyZero(rightChar) || !Utility.ContainsCharacterAndType(rightChar, "0;" + curCharacterType))
             {
                 return "6";
             }
@@ -254,45 +273,92 @@ namespace PCG
             return "5";
         }
 
-        private string _T1Placement(IntVector2 boardPosition)
+        private string _TF1Placement(IntVector2 boardPosition)
         {
-            string[] leftChar = _board[boardPosition.x - 1, boardPosition.y].Split(';');
-            string[] rightChar = _board[boardPosition.x + 1, boardPosition.y].Split(';');
-            if (leftChar[0] == "1" && leftChar[1] == "F")
+            string leftChar = _board[boardPosition.x - 1, boardPosition.y];
+            string rightChar = _board[boardPosition.x + 1, boardPosition.y];
+            string upChar = _board[boardPosition.x, boardPosition.y + 1];
+            string downChar = _board[boardPosition.x, boardPosition.y - 1];
+            string upRightChar = _board[boardPosition.x + 1, boardPosition.y + 1];
+            string leftDownChar = _board[boardPosition.x - 1, boardPosition.y - 1];
+            string leftUpChar = _board[boardPosition.x - 1, boardPosition.y + 1];
+            string downRightChar = _board[boardPosition.x + 1, boardPosition.y - 1];
+            string curChar = _board[boardPosition.x, boardPosition.y];
+
+            // Check for upper left corner
+            if (Utility.ContainsCharacter(downChar, "1") && Utility.ContainsCharacter(rightChar, "1"))
             {
-                return "2";
+                return "1";
             }
-            if (rightChar[0] == "1" && rightChar[1] == "F")
+
+            // Check for upper right corner
+            if (Utility.ContainsCharacter(downChar, "1") && Utility.ContainsCharacter(leftChar, "1"))
+            {
+                return "3";
+            }
+
+            // Check for down left corner
+            if (Utility.ContainsCharacter(upChar, "1") && Utility.ContainsCharacter(rightChar, "1"))
+            {
+                return "6";
+            }
+
+            // Check for down right corner
+            if (Utility.ContainsCharacter(upChar, "1") && Utility.ContainsCharacter(leftChar, "1"))
+            {
+                return "7";
+            }
+
+            // Check for left edge
+            if (Utility.ContainsCharacter(upRightChar, "1") && Utility.ContainsCharacter(leftDownChar, "1"))
             {
                 return "4";
             }
-            return "3";
+            // Check for right edge
+            if (Utility.ContainsCharacter(leftUpChar, "1") && Utility.ContainsCharacter(downRightChar, "1"))
+            {
+                return "5";
+            }
+
+            // Only 2 left, check for temple/Forest Transition
+            if (Utility.ContainsCharacterAndType(curChar, "1;T") && Utility.ContainsCharacterAndType(leftChar, "1;F"))
+            {
+                return "8";
+            }
+
+            if (Utility.ContainsCharacterAndType(curChar, "1;T") && Utility.ContainsCharacterAndType(rightChar, "1;F"))
+            {
+                return "9";
+            }
+            return "2";
         }
 
         private string _T2Placement(IntVector2 boardPosition)
         {
-            string[] leftChar = _board[boardPosition.x - 1, boardPosition.y].Split(';');
-            string[] rightChar = _board[boardPosition.x + 1, boardPosition.y].Split(';');
-            if (leftChar[0] != "2")
+            string leftChar = _board[boardPosition.x - 1, boardPosition.y];
+            string rightChar = _board[boardPosition.x + 1, boardPosition.y];
+
+            if (!Utility.ContainsCharacter(leftChar, "2"))
             {
                 return "3";
             }
-            if (rightChar[0] != "2")
+            if (!Utility.ContainsCharacter(rightChar, "2"))
             {
                 return "2";
             }
             return "1";
         }
 
-        private string _FR2Placement(IntVector2 boardPosition)
+        private string _FR2Placement(IntVector2 boardPosition, string curCharacterType)
         {
-            string[] leftChar = _board[boardPosition.x - 1, boardPosition.y].Split(';');
-            string[] rightChar = _board[boardPosition.x + 1, boardPosition.y].Split(';');
-            if (leftChar[0] != "2")
+            string leftChar = _board[boardPosition.x - 1, boardPosition.y];
+            string rightChar = _board[boardPosition.x + 1, boardPosition.y];
+
+            if (!Utility.ContainsCharacterAndType(leftChar, "2;" + curCharacterType))
             {
                 return "1";
             }
-            if (rightChar[0] != "2")
+            if (!Utility.ContainsCharacterAndType(rightChar, "2;" + curCharacterType))
             {
                 return "3";
             }
@@ -301,13 +367,14 @@ namespace PCG
 
         private string _BW4Placement(IntVector2 boardPosition)
         {
-            string[] upChar = _board[boardPosition.x, boardPosition.y + 1].Split(';');
-            string[] downChar = _board[boardPosition.x, boardPosition.y - 1].Split(';');
-            if (upChar[0] != "4")
+            string upChar = _board[boardPosition.x, boardPosition.y + 1];
+            string downChar = _board[boardPosition.x, boardPosition.y - 1];
+
+            if (!Utility.ContainsCharacter(upChar, "4"))
             {
                 return "1";
             }
-            if (downChar[0] != "4")
+            if (!Utility.ContainsCharacter(downChar, "4"))
             {
                 return "5";
             }
@@ -317,9 +384,10 @@ namespace PCG
 
         private string _L5Placement(IntVector2 boardPosition)
         {
-            string[] upChar = _board[boardPosition.x, boardPosition.y + 1].Split(';');
-            string[] downChar = _board[boardPosition.x, boardPosition.y - 1].Split(';');
-            if (downChar[0] != "5")
+            string upChar = _board[boardPosition.x, boardPosition.y + 1];
+            string downChar = _board[boardPosition.x, boardPosition.y - 1];
+
+            if (!Utility.ContainsCharacter(downChar, "5"))
             {
                 return "3";
             }
@@ -328,8 +396,9 @@ namespace PCG
 
         private bool _D6Placement(IntVector2 boardPosition)
         {
-            string[] upChar = _board[boardPosition.x, boardPosition.y + 1].Split(';');
-            if (upChar[0] != "6")
+            string upChar = _board[boardPosition.x, boardPosition.y + 1];
+
+            if (!Utility.ContainsCharacter(upChar, "6"))
             {
                 return false;
             }
@@ -343,68 +412,89 @@ namespace PCG
                 new Vector2(worldPosition.x * Utility.TileSize().x, worldPosition.y * Utility.TileSize().y);
 
             GameObject instantiatedObject = null;
-            string curCharacter = curChar;
-            if (Utility.IgnorePlacingStrHashSet.Contains(curCharacter)) return;
-            string curCharType = "";
-            string[] splitChar = curChar.Split(';');
-            curCharacter = splitChar[0];
-            if (splitChar.Length > 1)
+            if (Utility.IgnorePlacingStrHashSet.Contains(curChar)) return;
+
+            string[] splitChar = curChar.Split('|');
+
+
+            for (int i = 0; i < splitChar.Length; i++)
             {
-                curCharType = splitChar[1];
-            }
-            string loadPath = Utility.LoadPath(curCharacter, curCharType);
-            switch (curCharacter)
-            {
-                case "0":
-                    if (curCharType == "TG")
-                    {
-                        instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + _TG0Placement(worldPosition)));
-                    }
-                    else if (curCharType == "TB")
-                    {
-                        instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + _TB0Placement(worldPosition)));
-                    }
-                    else if (curCharType == "FRB" || curCharType == "FRF")
-                    {
-                        instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + _FR0Placement(worldPosition)));
-                    }
-                    break;
-                case "1":
-                    if (curCharType == "F")
-                    {
+                string[] split2 = splitChar[i].Split(';');
+                string curCharType = "";
+                string curCharacter = split2[0];
+                if (split2.Length > 1)
+                {
+                    curCharType = split2[1];
+                }
+                string loadPath = Utility.LoadPath(curCharacter, curCharType);
+                switch (curCharacter)
+                {
+                    case "0":
+                        if (curCharType == "TG")
+                        {
+                            instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + _TG0Placement(worldPosition)));
+                        }
+                        else if (curCharType == "TB")
+                        {
+                            instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + _TB0Placement(worldPosition)));
+                        }
+                        else if (curCharType == "FRB" || curCharType == "FRF")
+                        {
+                            instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + _FR0Placement(worldPosition, curCharType)));
+                        }
+                        break;
+                    case "1":
+                        if (curCharType == "F")
+                        {
+                            instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + _TF1Placement(worldPosition)));
+                        }
+                        else if (curCharType == "T")
+                        {
+                            instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + _TF1Placement(worldPosition)));
+                        }
+                        break;
+                    case "2":
+                        if (curCharType == "T")
+                        {
+                            instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + _T2Placement(worldPosition)));
+                        }
+                        else if (curCharType == "FRB" || curCharType == "FRF")
+                        {
+                            instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + _FR2Placement(worldPosition, curCharType)));
+                        }
+                        break;
+                    case "3":
                         instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + "1"));
-                    }
-                    else if (curCharType == "T")
-                    {
-                        instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + _T2Placement(worldPosition)));
-                    }
-                    break;
-                case "2":
-                    if (curCharType == "T")
-                    {
-                        instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + _T2Placement(worldPosition)));
-                    }
-                    else if (curCharType == "FRB" || curCharType == "FRF")
-                    {
-                        instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + _FR2Placement(worldPosition)));
-                    }
-                    break;
-                case "3":
-                    instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + "1"));
-                    break;
-                case "4":
-                    instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + _BW4Placement(worldPosition)));
-                    break;
-                case "5":
-                    instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + _L5Placement(worldPosition)));
-                    break;
-                case "6":
-                    if (_D6Placement(worldPosition))
-                    {
-                        instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + "1"));
-                    }
-                    break;
+                        break;
+                    case "4":
+                        instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + _BW4Placement(worldPosition)));
+                        break;
+                    case "5":
+                        instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + _L5Placement(worldPosition)));
+                        break;
+                    case "6":
+                        if (_D6Placement(worldPosition))
+                        {
+                            instantiatedObject = GameObject.Instantiate(Resources.Load<GameObject>(loadPath + "1"));
+                        }
+                        break;
+                }
+
+                if (instantiatedObject != null)
+                {
+                    instantiatedObject.transform.parent = _boardGameObject.transform;
+                    instantiatedObject.transform.position = curTileWorldPosition;
+                    if (instantiatedObject.name.Contains("Knight"))
+                        instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.2f;
+                    else if (instantiatedObject.name.Contains("Enemy1"))
+                        instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.8f;
+                    else if (instantiatedObject.name.Contains("Passable"))
+                        instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.4f;
+                    else if (instantiatedObject.name.Contains("Enemy2"))
+                        instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.8f;
+                }
             }
+
 
             // if (curCharacter == "1" || curCharacter == "3")
             // {
@@ -471,19 +561,6 @@ namespace PCG
             //     instantiatedObject = GameObject.Instantiate(Resources.Load(Utility.LoadPath(curRoomType) + "Door", typeof(GameObject))) as GameObject;
             // }
 
-            if (instantiatedObject != null)
-            {
-                instantiatedObject.transform.parent = _boardGameObject.transform;
-                instantiatedObject.transform.position = curTileWorldPosition;
-                if (instantiatedObject.name.Contains("Knight"))
-                    instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.2f;
-                else if (instantiatedObject.name.Contains("Enemy1"))
-                    instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.8f;
-                else if (instantiatedObject.name.Contains("Passable"))
-                    instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.4f;
-                else if (instantiatedObject.name.Contains("Enemy2"))
-                    instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.8f;
-            }
         }
 
         private void _initializeAI(GameObject AI, IntVector2 worldPosition)
