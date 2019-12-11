@@ -5,56 +5,67 @@ using Loot;
 
 public class Game : MonoBehaviour
 {
-	public AudioScriptableObject AudioData;
-	public VFXScriptableObject VFXData;
-	public GameFeelScriptableObject GameFeelData;
-	public LootScriptableObject LootData;
-	public TextAsset Database;
+    public AudioScriptableObject AudioData;
+    public VFXScriptableObject VFXData;
+    public GameFeelScriptableObject GameFeelData;
+    public LootScriptableObject LootData;
+    public TextAsset Database;
+    public static Game instance;
 
-	private void Awake()
-	{
-		DontDestroyOnLoad(gameObject);
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        DontDestroyOnLoad(gameObject);
 
-		Services.AudioManager = new AudioManager(AudioData);
-		Services.GameFeelManager = new GameFeelManager(GameFeelData);
-		Services.VisualEffectManager = new VFXManager(VFXData);
-		Services.GameStateManager = new GameStateManager();
-		Services.LootManager = new LootManager(Database, LootData);
-		Services.CoinManager = new CoinManager(LootData);
-		Services.StorageManager = new StorageManager();
-		Services.HomeManager = new HomeManager();
-	}
+        Services.AudioManager = new AudioManager(AudioData);
+        Services.GameFeelManager = new GameFeelManager(GameFeelData);
+        Services.VisualEffectManager = new VFXManager(VFXData);
+        Services.GameStateManager = new GameStateManager();
+        Services.LootManager = new LootManager(Database, LootData);
+        Services.CoinManager = new CoinManager(LootData);
+        Services.StorageManager = new StorageManager();
+        Services.HomeManager = new HomeManager();
+    }
 
-	// Update is called once per frame
-	void Update()
-	{
-		Services.GameStateManager.Update();
-	}
+    // Update is called once per frame
+    void Update()
+    {
+        Services.GameStateManager.Update();
+    }
 
-	private void OnDestroy()
-	{
-		Services.AudioManager.Destroy();
-		Services.AudioManager = null;
+    private void OnDestroy()
+    {
+        if (Game.instance != this) return;
+        Services.AudioManager.Destroy();
+        Services.AudioManager = null;
 
-		Services.GameFeelManager.Destroy();
-		Services.GameFeelManager = null;
+        Services.GameFeelManager.Destroy();
+        Services.GameFeelManager = null;
 
-		Services.VisualEffectManager.Destroy();
-		Services.VisualEffectManager = null;
+        Services.VisualEffectManager.Destroy();
+        Services.VisualEffectManager = null;
 
-		Services.GameStateManager.Destroy();
-		Services.GameStateManager = null;
+        Services.GameStateManager.Destroy();
+        Services.GameStateManager = null;
 
-		Services.LootManager.Destroy();
-		Services.LootManager = null;
+        Services.LootManager.Destroy();
+        Services.LootManager = null;
 
-		Services.CoinManager.Destroy();
-		Services.CoinManager = null;
+        Services.CoinManager.Destroy();
+        Services.CoinManager = null;
 
-		Services.StorageManager.Destroy();
-		Services.StorageManager = null;
+        Services.StorageManager.Destroy();
+        Services.StorageManager = null;
 
-		Services.HomeManager.Destroy();
-		Services.HomeManager = null;
-	}
+        Services.HomeManager.Destroy();
+        Services.HomeManager = null;
+    }
 }

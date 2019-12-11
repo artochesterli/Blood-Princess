@@ -41,10 +41,10 @@ public class StatusManager_SoulWarrior : StatusManagerBase, IHittable
 
         CurrentTakenAttack = (CharacterAttackInfo)Attack;
 
-        if(CurrentTakenAttack.InterruptLevel > 0&& GetComponent<SoulWarriorAI>().CurrentState != SoulWarriorState.SlashStrike && GetComponent<SoulWarriorAI>().CurrentState != SoulWarriorState.MagicStrike)
+        if (CurrentTakenAttack.InterruptLevel > 0 && GetComponent<SoulWarriorAI>().CurrentState != SoulWarriorState.SlashStrike && GetComponent<SoulWarriorAI>().CurrentState != SoulWarriorState.MagicStrike)
         {
             Interrupted = true;
-            if(CurrentTakenAttack.InterruptLevel >= Data.OffBalanceInterruptLevel || CurrentTakenAttack.Dir == Direction.Right && transform.right.x > 0 || CurrentTakenAttack.Dir == Direction.Left && transform.right.x < 0)
+            if (CurrentTakenAttack.InterruptLevel >= Data.OffBalanceInterruptLevel || CurrentTakenAttack.Dir == Direction.Right && transform.right.x > 0 || CurrentTakenAttack.Dir == Direction.Left && transform.right.x < 0)
             {
                 OffBalance = true;
             }
@@ -77,10 +77,11 @@ public class StatusManager_SoulWarrior : StatusManagerBase, IHittable
 
         if (CurrentHP <= 0)
         {
-            if(DamageText != null)
+            if (DamageText != null)
             {
                 DamageText.transform.SetParent(SharedCanvas.transform);
             }
+            EventManager.instance.Fire(new PlayerKillEnemy(CurrentTakenAttack, gameObject));
             Destroy(gameObject);
             return true;
         }

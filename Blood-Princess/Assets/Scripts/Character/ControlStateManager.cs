@@ -61,7 +61,7 @@ public class ControlStateManager : MonoBehaviour
                 return;
             }
 
-            if(AttachedAltar != null)
+            if (AttachedAltar != null)
             {
                 CurrentControlState = ControlState.UpgradeStats;
                 UpgradeStatsPanel.GetComponent<UpgradeStatsPanel>().SetPanel();
@@ -69,10 +69,10 @@ public class ControlStateManager : MonoBehaviour
                 return;
             }
 
-            if(AttachedPotion != null)
+            if (AttachedPotion != null)
             {
                 var Status = GetComponent<StatusManager_Character>();
-                Status.Heal(Mathf.RoundToInt(Status.CurrentMaxHP * AttachedPotion.GetComponent<HealingPotion>().Proportion/100.0f));
+                Status.Heal(Mathf.RoundToInt(Status.CurrentMaxHP * AttachedPotion.GetComponent<HealingPotion>().Proportion / 100.0f));
                 Destroy(AttachedPotion);
             }
         }

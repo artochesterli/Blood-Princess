@@ -4805,7 +4805,7 @@ MonoBehaviour:
     m_Bits: 1024
   DoorLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 16384
   BattleArtTypeNumber: 2
   PassiveAbilityTypeNumber: 7
 --- !u!114 &4954734968556382945

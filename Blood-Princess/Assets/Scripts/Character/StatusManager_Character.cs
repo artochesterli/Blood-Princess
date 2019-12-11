@@ -155,7 +155,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     public int GetCurrentSealSpot()
     {
         int ans = 0;
-        while(ans < CurrentSealState.Count)
+        while (ans < CurrentSealState.Count)
         {
             if (CurrentSealState[ans])
             {
@@ -175,7 +175,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         CurrentHP = Data.MaxHP;
         CurrentMaxEnergy = Data.SealSpotEnergyCap[0];
         CurrentSealState = new List<bool>();
-        for(int i = 0; i < Data.SealSpotEnergyCap.Count; i++)
+        for (int i = 0; i < Data.SealSpotEnergyCap.Count; i++)
         {
             CurrentSealState.Add(true);
         }
@@ -195,7 +195,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         EnergyFill.GetComponent<Image>().fillAmount = (float)CurrentEnergy / Data.MaxEnergy;
 
-        if(GetCurrentSealSpot() == Data.SealSpotEnergyCap.Count)
+        if (GetCurrentSealSpot() == Data.SealSpotEnergyCap.Count)
         {
             SealFill.GetComponent<Image>().fillAmount = 0;
         }
@@ -206,7 +206,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
 
 
-        for(int i = 0; i < CurrentSealState.Count; i++)
+        for (int i = 0; i < CurrentSealState.Count; i++)
         {
             SealMarks.transform.GetChild(i).gameObject.SetActive(CurrentSealState[i]);
         }
@@ -225,7 +225,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         bool IsInvulnerable = Invulnerable();
 
-        EventManager.instance.Fire(new PlayerGetHit(CurrentTakenAttack,InRollInvulnerability));
+        EventManager.instance.Fire(new PlayerGetHit(CurrentTakenAttack, InRollInvulnerability));
 
         if (!IsInvulnerable)
         {
@@ -283,7 +283,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Data = GetComponent<CharacterData>();
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        if(e.Attack.Type == CharacterAttackType.Slash)
+        if (e.Attack.Type == CharacterAttackType.Slash)
         {
             OneMindIncrementSlashPotency(e.Attack);
         }
@@ -340,7 +340,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
                 SpiritMasterEnergyGainBonus();
             }
-            else if(e.Attack.ThisBattleArt != null)
+            else if (e.Attack.ThisBattleArt != null)
             {
                 switch (Action.EquipedBattleArt.Type)
                 {
@@ -369,7 +369,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void EndStrikeBreakSeal()
     {
-        if(CrossSlashBattleArt != null)
+        if (CrossSlashBattleArt != null)
         {
             return;
         }
@@ -438,7 +438,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
 
         OneMindGainIncrement();
-        
+
     }
 
     private void GenerateHitEffect(PlayerHitEnemy e)
@@ -464,9 +464,9 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         }
 
 
-        RaycastHit2D hit = Physics2D.Raycast(AttackOrigin, Dir, e.UpdatedAttack.BaseHitBoxSize.x, Data.EnemyLayer);
-        RaycastHit2D TopHit = Physics2D.Raycast(AttackOrigin + Vector2.up * e.UpdatedAttack.HitBoxSize.y / 2, Dir, e.UpdatedAttack.BaseHitBoxSize.x, Data.EnemyLayer);
-        RaycastHit2D DownHit = Physics2D.Raycast(AttackOrigin + Vector2.down * e.UpdatedAttack.HitBoxSize.y / 2, Dir, e.UpdatedAttack.BaseHitBoxSize.x, Data.EnemyLayer);
+        RaycastHit2D hit = Physics2D.Raycast(AttackOrigin, Dir, e.UpdatedAttack.BaseHitBoxSize.x, Data.EnemyLayer | Data.DoorLayer);
+        RaycastHit2D TopHit = Physics2D.Raycast(AttackOrigin + Vector2.up * e.UpdatedAttack.HitBoxSize.y / 2, Dir, e.UpdatedAttack.BaseHitBoxSize.x, Data.EnemyLayer | Data.DoorLayer);
+        RaycastHit2D DownHit = Physics2D.Raycast(AttackOrigin + Vector2.down * e.UpdatedAttack.HitBoxSize.y / 2, Dir, e.UpdatedAttack.BaseHitBoxSize.x, Data.EnemyLayer | Data.DoorLayer);
 
         GameObject Effect = null;
 
@@ -526,13 +526,13 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     private void GainLoseEnergy(int amount)
     {
         var Data = GetComponent<CharacterData>();
-        if(amount >= CurrentMaxEnergy - CurrentEnergy)
+        if (amount >= CurrentMaxEnergy - CurrentEnergy)
         {
             CurrentEnergy = CurrentMaxEnergy;
             SetEnergyFull(true);
             return;
         }
-        else if(amount <= -CurrentEnergy)
+        else if (amount <= -CurrentEnergy)
         {
             CurrentEnergy = 0;
             return;
@@ -550,7 +550,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         {
             while (amount > 0)
             {
-                for (int i = CurrentSealState.Count-1; i >=0 ; i--)
+                for (int i = CurrentSealState.Count - 1; i >= 0; i--)
                 {
                     if (!CurrentSealState[i])
                     {
@@ -561,7 +561,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                 amount--;
             }
         }
-        else if(amount < 0)
+        else if (amount < 0)
         {
             while (amount < 0)
             {
@@ -577,7 +577,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             }
         }
 
-        if(GetCurrentSealSpot() == CurrentSealState.Count)
+        if (GetCurrentSealSpot() == CurrentSealState.Count)
         {
             SetAwaken(true);
         }
@@ -720,7 +720,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         }
     }
 
-   
+
     private void PowerSlashGainEnergy()
     {
         if (PowerSlashBattleArt == null)
@@ -749,10 +749,10 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     //Cross Slash
 
-    
+
     public void SetCrossSlashParameter()
     {
-        if(CrossSlashBattleArt == null || CrossSlashBattleArt.StrikeCount > 1)
+        if (CrossSlashBattleArt == null || CrossSlashBattleArt.StrikeCount > 1)
         {
             return;
         }
@@ -805,7 +805,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void SpiritMasterEnergyGainBonus()
     {
-        if(SpiritMasterPassiveAbility == null)
+        if (SpiritMasterPassiveAbility == null)
         {
             return;
         }
@@ -816,7 +816,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void SpiritMasterGainSeal()
     {
-        if(SpiritMasterPassiveAbility == null)
+        if (SpiritMasterPassiveAbility == null)
         {
             return;
         }
@@ -859,7 +859,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void CriticalEyeBonus(CharacterAttackInfo Attack)
     {
-        if(CriticalEyePassiveAbility == null)
+        if (CriticalEyePassiveAbility == null)
         {
             return;
         }
@@ -875,7 +875,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void BattleArtMasterBonus(CharacterAttackInfo Attack)
     {
-        if(BattleArtMasterPassiveAbility == null)
+        if (BattleArtMasterPassiveAbility == null)
         {
             return;
         }
@@ -888,7 +888,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void OneMindGainIncrement()
     {
-        if(OneMindPassiveAbility == null)
+        if (OneMindPassiveAbility == null)
         {
             return;
         }
@@ -896,7 +896,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var AbilityData = GetComponent<CharacterAbilityData>();
 
         OneMindPassiveAbility.IncrementCount++;
-        if(OneMindPassiveAbility.IncrementCount > AbilityData.OneMindMaxIncrement)
+        if (OneMindPassiveAbility.IncrementCount > AbilityData.OneMindMaxIncrement)
         {
             OneMindPassiveAbility.IncrementCount = AbilityData.OneMindMaxIncrement;
         }
@@ -939,7 +939,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var SpeedManager = GetComponent<SpeedManager>();
 
         Vector2 Dir = Vector2.right;
-        if(DancerPassiveAbility.DancerAttack.Dir == Direction.Left)
+        if (DancerPassiveAbility.DancerAttack.Dir == Direction.Left)
         {
             Dir = Vector2.left;
         }
@@ -966,7 +966,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void SetUpDancer()
     {
-        if(DancerPassiveAbility == null)
+        if (DancerPassiveAbility == null)
         {
             return;
         }
@@ -986,6 +986,6 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             dir = Direction.Left;
         }
 
-        DancerPassiveAbility.DancerAttack = new CharacterAttackInfo(gameObject, CharacterAttackType.Dancer, dir, CurrentPower,CurrentPower,AbilityData.DancerPotency,AbilityData.DancerPotency,AbilityData.DancerInterruptLevel,AbilityData.DancerInterruptLevel, SpeedManager.OriPos, SpeedManager.OriPos, AbilityData.DancerHitBoxSize, AbilityData.DancerHitBoxSize);
+        DancerPassiveAbility.DancerAttack = new CharacterAttackInfo(gameObject, CharacterAttackType.Dancer, dir, CurrentPower, CurrentPower, AbilityData.DancerPotency, AbilityData.DancerPotency, AbilityData.DancerInterruptLevel, AbilityData.DancerInterruptLevel, SpeedManager.OriPos, SpeedManager.OriPos, AbilityData.DancerHitBoxSize, AbilityData.DancerHitBoxSize);
     }
 }

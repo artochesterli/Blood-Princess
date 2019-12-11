@@ -66,7 +66,7 @@ public class SpeedManager : MonoBehaviour
         MoveExecuted = true;
     }
 
-    
+
 
     /*private void RectifySpeed()
     {
@@ -104,7 +104,7 @@ public class SpeedManager : MonoBehaviour
         transform.position = v - Offset;
     }
 
-    public void SetBodyInfo(Vector2 Offset,Vector2 BodySize)
+    public void SetBodyInfo(Vector2 Offset, Vector2 BodySize)
     {
         OriPos = Offset;
         BodyWidth = BodySize.x;
@@ -118,11 +118,11 @@ public class SpeedManager : MonoBehaviour
             float Width = GetComponent<OuterForceFieldManager>().OuterWidth;
 
             OuterForceField.GetComponent<BoxCollider2D>().offset = Offset;
-            OuterForceField.GetComponent<BoxCollider2D>().size = BodySize + new Vector2(1,0)*Width*2;
+            OuterForceField.GetComponent<BoxCollider2D>().size = BodySize + new Vector2(1, 0) * Width * 2;
 
         }
     }
-    
+
 
     private void CheckPushedOut()
     {
@@ -135,7 +135,7 @@ public class SpeedManager : MonoBehaviour
 
             if (temp.x > 0)
             {
-                if(RightForceFieldDis < temp.x * Time.deltaTime)
+                if (RightForceFieldDis < temp.x * Time.deltaTime)
                 {
                     if (RightForceFieldDis > 0)
                     {
@@ -148,11 +148,11 @@ public class SpeedManager : MonoBehaviour
                     AttackStepSpeed.x = 0;
                 }
             }
-            else if(temp.x < 0)
+            else if (temp.x < 0)
             {
                 if (LeftForceFieldDis < -temp.x * Time.deltaTime)
                 {
-                    if(LeftForceFieldDis > 0)
+                    if (LeftForceFieldDis > 0)
                     {
                         temp.x = LeftForceFieldDis / Time.deltaTime;
                     }
@@ -166,18 +166,18 @@ public class SpeedManager : MonoBehaviour
             }
 
             bool RightStuckForceField = false;
-            if(RightForceField && RightForceFieldDis < 0)
+            if (RightForceField && RightForceFieldDis < 0)
             {
                 RightStuckForceField = true;
             }
 
             bool LeftStuckForceField = false;
-            if(LeftForceField && LeftForceFieldDis < 0)
+            if (LeftForceField && LeftForceFieldDis < 0)
             {
                 LeftStuckForceField = true;
             }
 
-            if(!RightStuckForceField && !LeftStuckForceField)
+            if (!RightStuckForceField && !LeftStuckForceField)
             {
                 ForcedSpeed.x = 0;
                 return;
@@ -214,11 +214,11 @@ public class SpeedManager : MonoBehaviour
 
             ReferenceX /= count;
 
-            if(GetTruePos().x > ReferenceX && SelfSpeed.x <= 0 && LeftStuckForceField)
+            if (GetTruePos().x > ReferenceX && SelfSpeed.x <= 0 && LeftStuckForceField)
             {
                 ForcedSpeed.x = Data.PushedOutSpeed;
             }
-            else if(GetTruePos().x < ReferenceX && SelfSpeed.x >= 0 && RightStuckForceField)
+            else if (GetTruePos().x < ReferenceX && SelfSpeed.x >= 0 && RightStuckForceField)
             {
                 ForcedSpeed.x = -Data.PushedOutSpeed;
             }
@@ -337,7 +337,7 @@ public class SpeedManager : MonoBehaviour
         if (Top)
         {
             ColliderType Type = Top.GetComponent<ColliderInfo>().Type;
-            if(temp.y >= 0 && TopDis < temp.y * Time.deltaTime && TopDis > -Zero)
+            if (temp.y >= 0 && TopDis < temp.y * Time.deltaTime && TopDis > -Zero)
             {
                 temp.y = TopDis / Time.deltaTime;
                 HitTop = true;
@@ -365,9 +365,9 @@ public class SpeedManager : MonoBehaviour
             {
                 temp.y = -GroundDis / Time.deltaTime;
                 HitGround = true;
-                ResetSpeed(false,false);
+                ResetSpeed(false, false);
             }
-            else if(GroundDis < -Zero && Type == ColliderType.Solid)
+            else if (GroundDis < -Zero && Type == ColliderType.Solid)
             {
                 HitGround = true;
                 StuckInGround = true;
@@ -384,13 +384,13 @@ public class SpeedManager : MonoBehaviour
 
 
 
-        if(StuckInTop && StuckInGround)
+        if (StuckInTop && StuckInGround)
         {
             temp.y = 0;
             ResetSpeed(false, true);
             ResetSpeed(false, false);
         }
-        else if(StuckInTop && !StuckInGround)
+        else if (StuckInTop && !StuckInGround)
         {
             if (-TopDis < StuckPushOutSpeed * Time.deltaTime)
             {
@@ -402,7 +402,7 @@ public class SpeedManager : MonoBehaviour
             }
             ResetSpeed(false, true);
         }
-        else if(!StuckInTop && StuckInGround)
+        else if (!StuckInTop && StuckInGround)
         {
             if (-GroundDis < StuckPushOutSpeed * Time.deltaTime)
             {
@@ -418,17 +418,17 @@ public class SpeedManager : MonoBehaviour
 
 
 
-        transform.position += (Vector3)temp* Time.deltaTime;
+        transform.position += (Vector3)temp * Time.deltaTime;
     }
 
     public void CheckGroundDis()
     {
 
-        RaycastHit2D[] HitList= Physics2D.BoxCastAll(GetTruePos() + (BodyHeight / 2 + DetectDis / 2) * Vector2.down, new Vector2(BodyWidth - 2 * HitMargin, DetectDis), 0, Vector2.down, 0, ~IgnoredLayers);
+        RaycastHit2D[] HitList = Physics2D.BoxCastAll(GetTruePos() + (BodyHeight / 2 + DetectDis / 2) * Vector2.down, new Vector2(BodyWidth - 2 * HitMargin, DetectDis), 0, Vector2.down, 0, ~IgnoredLayers);
         RaycastHit2D hit = GetClosestHit(true, HitList, Direction.Down);
         RaycastHit2D forcefieldhit = GetClosestHit(false, HitList, Direction.Down);
 
-        if (hit.collider!=null)
+        if (hit.collider != null)
         {
             GroundDis = GetHitDis(hit, Direction.Down);
             Ground = hit.collider.gameObject;
@@ -439,7 +439,7 @@ public class SpeedManager : MonoBehaviour
             Ground = null;
         }
 
-        if(forcefieldhit.collider != null)
+        if (forcefieldhit.collider != null)
         {
             GroundForceFieldDis = GetHitDis(forcefieldhit, Direction.Down);
             GroundForceField = forcefieldhit.collider.gameObject;
@@ -455,11 +455,11 @@ public class SpeedManager : MonoBehaviour
     public void CheckTopDis()
     {
 
-        RaycastHit2D[] HitList= Physics2D.BoxCastAll(GetTruePos() + (DetectDis / 2 + BodyHeight / 2) * Vector2.up, new Vector2(BodyWidth - 2 * HitMargin, DetectDis), 0, Vector2.up, 0, ~IgnoredLayers);
+        RaycastHit2D[] HitList = Physics2D.BoxCastAll(GetTruePos() + (DetectDis / 2 + BodyHeight / 2) * Vector2.up, new Vector2(BodyWidth - 2 * HitMargin, DetectDis), 0, Vector2.up, 0, ~IgnoredLayers);
         RaycastHit2D hit = GetClosestHit(true, HitList, Direction.Up);
         RaycastHit2D forcefieldhit = GetClosestHit(false, HitList, Direction.Up);
 
-        if (hit.collider!=null)
+        if (hit.collider != null)
         {
             TopDis = GetHitDis(hit, Direction.Up);
             Top = hit.collider.gameObject;
@@ -485,11 +485,11 @@ public class SpeedManager : MonoBehaviour
     public void CheckLeftWallDis()
     {
 
-        RaycastHit2D[] HitList = Physics2D.BoxCastAll(GetTruePos() + (DetectDis/2 + BodyWidth / 2)*Vector2.left, new Vector2(DetectDis, BodyHeight - 2 * HitMargin), 0, Vector2.left, 0, ~IgnoredLayers);
+        RaycastHit2D[] HitList = Physics2D.BoxCastAll(GetTruePos() + (DetectDis / 2 + BodyWidth / 2) * Vector2.left, new Vector2(DetectDis, BodyHeight - 2 * HitMargin), 0, Vector2.left, 0, ~IgnoredLayers);
         RaycastHit2D hit = GetClosestHit(true, HitList, Direction.Left);
         RaycastHit2D forcefieldhit = GetClosestHit(false, HitList, Direction.Left);
 
-        if (hit.collider!=null)
+        if (hit.collider != null)
         {
             LeftDis = GetHitDis(hit, Direction.Left);
             Left = hit.collider.gameObject;
@@ -521,7 +521,7 @@ public class SpeedManager : MonoBehaviour
 
 
 
-        if (hit.collider!=null)
+        if (hit.collider != null)
         {
 
 
@@ -546,32 +546,35 @@ public class SpeedManager : MonoBehaviour
         }
     }
 
-    private RaycastHit2D GetClosestHit(bool ReturnSolid, RaycastHit2D[] HitList,Direction Dir)
+    private RaycastHit2D GetClosestHit(bool ReturnSolid, RaycastHit2D[] HitList, Direction Dir)
     {
         float MinDis = Mathf.Infinity;
         float MinForceFieldDis = Mathf.Infinity;
 
-        RaycastHit2D Hit=new RaycastHit2D();
+        RaycastHit2D Hit = new RaycastHit2D();
         RaycastHit2D ForceFieldHit = new RaycastHit2D();
 
-        for(int i = 0; i < HitList.Length; i++)
+        for (int i = 0; i < HitList.Length; i++)
         {
             float Dis = GetHitDis(HitList[i], Dir);
 
             if (Dis < MinDis)
             {
+
                 var Info = HitList[i].collider.gameObject.GetComponent<ColliderInfo>();
+                if (Info == null)
+                    Debug.Log(HitList[i].collider.GetComponent<SpriteRenderer>().sprite.name);
 
                 switch (Dir)
                 {
                     case Direction.Right:
 
-                        if(Info.Type == ColliderType.ForceField && !Info.LeftPassable)
+                        if (Info.Type == ColliderType.ForceField && !Info.LeftPassable)
                         {
                             MinForceFieldDis = Dis;
                             ForceFieldHit = HitList[i];
                         }
-                        else if(!Info.LeftPassable)
+                        else if (!Info.LeftPassable)
                         {
                             MinDis = Dis;
                             Hit = HitList[i];
@@ -580,7 +583,7 @@ public class SpeedManager : MonoBehaviour
                         break;
 
                     case Direction.Left:
-                        if(Info.Type == ColliderType.ForceField && !Info.RightPassable)
+                        if (Info.Type == ColliderType.ForceField && !Info.RightPassable)
                         {
                             MinForceFieldDis = Dis;
                             ForceFieldHit = HitList[i];
@@ -631,7 +634,7 @@ public class SpeedManager : MonoBehaviour
 
     }
 
-    private float GetHitDis(RaycastHit2D hit,Direction Dir)
+    private float GetHitDis(RaycastHit2D hit, Direction Dir)
     {
         float Dis = 0;
 
@@ -640,10 +643,10 @@ public class SpeedManager : MonoBehaviour
         switch (Dir)
         {
             case Direction.Right:
-                Dis = (Obj.transform.position.x + Obj.GetComponent<BoxCollider2D>().offset.x - Obj.GetComponent<BoxCollider2D>().size.x / 2 * Obj.transform.localScale.x) - (GetTruePos().x + BodyWidth / 2) ;
+                Dis = (Obj.transform.position.x + Obj.GetComponent<BoxCollider2D>().offset.x - Obj.GetComponent<BoxCollider2D>().size.x / 2 * Obj.transform.localScale.x) - (GetTruePos().x + BodyWidth / 2);
                 break;
             case Direction.Left:
-                Dis = (GetTruePos().x - BodyWidth / 2) - (Obj.transform.position.x + Obj.GetComponent<BoxCollider2D>().offset.x+ Obj.GetComponent<BoxCollider2D>().size.x / 2 * Obj.transform.localScale.x);
+                Dis = (GetTruePos().x - BodyWidth / 2) - (Obj.transform.position.x + Obj.GetComponent<BoxCollider2D>().offset.x + Obj.GetComponent<BoxCollider2D>().size.x / 2 * Obj.transform.localScale.x);
                 break;
             case Direction.Up:
                 Dis = (Obj.transform.position.y + Obj.GetComponent<BoxCollider2D>().offset.y - Obj.GetComponent<BoxCollider2D>().size.y / 2 * Obj.transform.localScale.y) - (GetTruePos().y + BodyHeight / 2);
@@ -653,7 +656,7 @@ public class SpeedManager : MonoBehaviour
                 break;
         }
 
-        if(hit.collider.gameObject.GetComponent<SpeedManager>() && !hit.collider.gameObject.GetComponent<SpeedManager>().MoveExecuted)
+        if (hit.collider.gameObject.GetComponent<SpeedManager>() && !hit.collider.gameObject.GetComponent<SpeedManager>().MoveExecuted)
         {
             switch (Dir)
             {
@@ -677,7 +680,7 @@ public class SpeedManager : MonoBehaviour
 
     private bool ConverseHit(GameObject Obj)
     {
-        if(Obj && Obj.GetComponent<SpeedManager>())
+        if (Obj && Obj.GetComponent<SpeedManager>())
         {
             return !(Obj.GetComponent<SpeedManager>().IgnoredLayers == (Obj.GetComponent<SpeedManager>().IgnoredLayers | (1 << gameObject.layer)));
         }
@@ -687,16 +690,16 @@ public class SpeedManager : MonoBehaviour
         }
     }
 
-    private void ResetSpeed(bool Setx,bool Positive)
+    private void ResetSpeed(bool Setx, bool Positive)
     {
         if (Setx)
         {
-            if(SelfSpeed.x > 0 && Positive || SelfSpeed.x <0 && !Positive)
+            if (SelfSpeed.x > 0 && Positive || SelfSpeed.x < 0 && !Positive)
             {
                 SelfSpeed.x = 0;
             }
 
-            if(AttackStepSpeed.x > 0 && Positive || AttackStepSpeed.x < 0 && !Positive)
+            if (AttackStepSpeed.x > 0 && Positive || AttackStepSpeed.x < 0 && !Positive)
             {
                 AttackStepSpeed.x = 0;
             }

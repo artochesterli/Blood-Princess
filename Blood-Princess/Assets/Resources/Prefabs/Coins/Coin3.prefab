@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5443885146747117293}
   - component: {fileID: -2855577400120519605}
   - component: {fileID: -4673958808956895912}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Coin3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -127,7 +127,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IgnoredLayers:
     serializedVersion: 2
-    m_Bits: 1792
+    m_Bits: 14080
   SelfSpeed: {x: 0, y: 0}
   ForcedSpeed: {x: 0, y: 0}
   AttackStepSpeed: {x: 0, y: 0}
@@ -180,6 +180,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94ed19df48e5930429516d268d1b6fc3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Value: 3
   XSpeedRange: {x: -8, y: 8}
   YSpeedRange: {x: 6, y: 16}
   InIdleStateDuration: 0.6
