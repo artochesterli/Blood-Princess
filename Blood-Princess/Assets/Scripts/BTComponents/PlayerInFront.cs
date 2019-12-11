@@ -9,6 +9,7 @@ public class PlayerInFront : Conditional
 {
     public SharedFloat Distance;
     public SharedFloat HalfAngle;
+    public SharedLayerMask ObstacleLayer;
     private SpeedManager m_SpeedManager;
     private SpeedManager m_PlayerSpeedManager;
     private GameObject m_Player;
@@ -34,7 +35,8 @@ public class PlayerInFront : Conditional
     private bool _isPlayerInSight()
     {
         if (Vector2.Distance(m_SpeedManager.GetTruePos(), m_PlayerSpeedManager.GetTruePos()) < Distance.Value &&
-            Vector3.Angle((m_PlayerSpeedManager.GetTruePos() - m_SpeedManager.GetTruePos()).normalized, Owner.transform.right) < HalfAngle.Value)
+            Vector3.Angle((m_PlayerSpeedManager.GetTruePos() - m_SpeedManager.GetTruePos()).normalized, Owner.transform.right) < HalfAngle.Value &&
+            !Physics2D.Linecast(m_SpeedManager.GetTruePos(), m_PlayerSpeedManager.GetTruePos(), ObstacleLayer.Value))
         {
             return true;
         }

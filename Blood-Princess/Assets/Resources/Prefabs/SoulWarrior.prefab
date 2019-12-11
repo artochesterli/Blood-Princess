@@ -338,7 +338,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Patron: 0
   PatronStayTime: 1.5
-  DetectHeight: 5
+  DetectHeight: 3.5
   DetectLayer:
     serializedVersion: 2
     m_Bits: 18689

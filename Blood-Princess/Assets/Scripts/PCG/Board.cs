@@ -539,14 +539,18 @@ namespace PCG
                 {
                     instantiatedObject.transform.parent = _boardGameObject.transform;
                     instantiatedObject.transform.position = curTileWorldPosition;
-                    if (instantiatedObject.name.Contains("Knight") || instantiatedObject.name.Contains("SoulWarrior"))
-                        instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.2f;
-                    else if (instantiatedObject.name.Contains("Enemy1"))
-                        instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.8f;
-                    else if (instantiatedObject.name.Contains("Passable"))
-                        instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.4f;
-                    else if (instantiatedObject.name.Contains("Enemy2"))
-                        instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.8f;
+                    if (instantiatedObject.layer == LayerMask.NameToLayer("Enemy"))
+                    {
+                        instantiatedObject.transform.position += (Vector3.up * (instantiatedObject.GetComponent<BoxCollider2D>().size.y / 2f - Utility.TileSize().y / 2f));
+                    }
+                    // if (instantiatedObject.name.Contains("Knight") || instantiatedObject.name.Contains("SoulWarrior"))
+                    //     instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.2f;
+                    // else if (instantiatedObject.name.Contains("Enemy1"))
+                    //     instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.8f;
+                    // else if (instantiatedObject.name.Contains("Passable"))
+                    //     instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.4f;
+                    // else if (instantiatedObject.name.Contains("Enemy2"))
+                    //     instantiatedObject.transform.position = curTileWorldPosition + Vector2.up * 0.8f;
                 }
             }
         }

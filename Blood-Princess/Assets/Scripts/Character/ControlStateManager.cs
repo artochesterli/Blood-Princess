@@ -23,6 +23,7 @@ public class ControlStateManager : MonoBehaviour
 
     public GameObject AttachedAbilityObject;
     public GameObject AttachedAltar;
+    public GameObject AttachedUpgradeMerchant;
     public GameObject AttachedPotion;
 
     // Start is called before the first frame update
@@ -61,7 +62,16 @@ public class ControlStateManager : MonoBehaviour
                 return;
             }
 
-            if (AttachedAltar != null)
+            if(AttachedUpgradeMerchant != null)
+            {
+                CurrentControlState = ControlState.ReplaceBattleArt;
+                BattleArtManagerPanel.GetComponent<BattleArtManagePanel>().UpdatedBattleArt = (BattleArt)(AttachedAbilityObject.GetComponent<AbilityObject>().Ability);
+
+                BattleArtManagerPanel.GetComponent<BattleArtManagePanel>().SetPanel();
+                BattleArtManagerPanel.SetActive(true);
+            }
+
+            if(AttachedAltar != null)
             {
                 CurrentControlState = ControlState.UpgradeStats;
                 UpgradeStatsPanel.GetComponent<UpgradeStatsPanel>().SetPanel();
@@ -69,10 +79,10 @@ public class ControlStateManager : MonoBehaviour
                 return;
             }
 
-            if (AttachedPotion != null)
+            if(AttachedPotion != null)
             {
                 var Status = GetComponent<StatusManager_Character>();
-                Status.Heal(Mathf.RoundToInt(Status.CurrentMaxHP * AttachedPotion.GetComponent<HealingPotion>().Proportion / 100.0f));
+                Status.Heal(Mathf.RoundToInt(Status.CurrentMaxHP * AttachedPotion.GetComponent<HealingPotion>().Proportion/100.0f));
                 Destroy(AttachedPotion);
             }
         }
