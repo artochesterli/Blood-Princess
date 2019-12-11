@@ -51,6 +51,10 @@ namespace Loot
                                 Debug.Assert(theLoot != null, "Loot: " + dropName + " is not in loot data");
                                 GameObject lootInstance = GameObject.Instantiate<GameObject>(theLoot, ev.Enemy.transform.position, Quaternion.identity);
                                 lootInstance.GetComponent<SpeedManager>().SelfSpeed = new Vector2(Random.Range(-3, 3), Random.Range(3, 5));
+                                if (dropName.ToLower().Contains("abilityobject"))
+                                {
+                                    lootInstance.GetComponent<AbilityObject>().PriceType = AbilityObjectPriceType.Drop;
+                                }
                             }
                         }
                     }

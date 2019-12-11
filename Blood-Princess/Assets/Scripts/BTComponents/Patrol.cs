@@ -86,7 +86,7 @@ public class Patrol : Action
     private bool _isOnLeftEdge()
     {
         Vector2 castOrigin = m_SpeedManager.GetTruePos();
-        castOrigin.x -= m_SpeedManager.BodyWidth / 2f - 0.2f;
+        castOrigin.x -= (m_SpeedManager.BodyWidth / 2f + 0.2f);
         castOrigin.y -= m_SpeedManager.BodyHeight / 2f;
         RaycastHit2D hit = Physics2D.BoxCast(castOrigin, new Vector2(0.1f, 0.1f), 0f, Vector2.zero);
 
@@ -96,7 +96,7 @@ public class Patrol : Action
     private bool _isOnRightEdge()
     {
         Vector2 castOrigin = m_SpeedManager.GetTruePos();
-        castOrigin.x += m_SpeedManager.BodyWidth / 2f + 0.2f;
+        castOrigin.x += (m_SpeedManager.BodyWidth / 2f + 0.2f);
         castOrigin.y -= m_SpeedManager.BodyHeight / 2f;
         RaycastHit2D hit = Physics2D.BoxCast(castOrigin, new Vector2(0.1f, 0.1f), 0f, Vector2.zero);
 
