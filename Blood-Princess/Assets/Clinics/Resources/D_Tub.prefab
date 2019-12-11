@@ -91,6 +91,8 @@ GameObject:
   - component: {fileID: 2938268967517017182}
   - component: {fileID: 2938268967517017169}
   - component: {fileID: 2938268967517017183}
+  - component: {fileID: 9027028235348512714}
+  - component: {fileID: 2236402341874502079}
   m_Layer: 0
   m_Name: D_Tub
   m_TagString: Untagged
@@ -106,7 +108,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2938268967517017168}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.71, y: -3.07, z: -0}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
   m_LocalScale: {x: 1.4454284, y: 1.4454284, z: 1.4454284}
   m_Children:
   - {fileID: 2938268966887670229}
@@ -175,10 +177,10 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.016628504, y: -0.166318}
+  m_Offset: {x: 0.016628504, y: -0.40290207}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
+    pivot: {x: 0.11075271, y: 0.061756857}
     oldSize: {x: 3.53, y: 2.08}
     newSize: {x: 3.53, y: 2.08}
     adaptiveTilingThreshold: 0.5
@@ -186,5 +188,64 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 3.064404, y: 1.7473639}
+  m_Size: {x: 3.064404, y: 0.6971706}
   m_EdgeRadius: 0
+--- !u!114 &9027028235348512714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2938268967517017168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5bc4b9220d2da742bb7a465f7b5f9c4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  IgnoredLayers:
+    serializedVersion: 2
+    m_Bits: 1793
+  SelfSpeed: {x: 0, y: 0}
+  ForcedSpeed: {x: 0, y: 0}
+  AttackStepSpeed: {x: 0, y: 0}
+  HitRight: 0
+  RightDis: 0
+  Right: {fileID: 0}
+  RightForceFieldDis: 0
+  RightForceField: {fileID: 0}
+  HitLeft: 0
+  LeftDis: 0
+  Left: {fileID: 0}
+  LeftForceFieldDis: 0
+  LeftForceField: {fileID: 0}
+  HitTop: 0
+  TopDis: 0
+  Top: {fileID: 0}
+  TopForceFieldDis: 0
+  TopForceField: {fileID: 0}
+  HitGround: 0
+  GroundDis: 0
+  Ground: {fileID: 0}
+  GroundForceFieldDis: 0
+  GroundForceField: {fileID: 0}
+  BodyWidth: 3.064404
+  BodyHeight: 0.6971706
+  OriPos: {x: 0.0166285, y: -0.4029021}
+  MoveExecuted: 0
+--- !u!114 &2236402341874502079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2938268967517017168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 803b2eb48b73189489fd658edfe0cde5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Type: 0
+  LeftPassable: 1
+  RightPassable: 1
+  TopPassable: 1
+  BottomPassable: 1

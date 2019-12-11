@@ -7,36 +7,35 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 {
 
     public GameObject Canvas;
-	public GameObject SharedCanvas;
-	public GameObject HPFill;
+    public GameObject SharedCanvas;
+    public GameObject HPFill;
 
     public CharacterAttackInfo CurrentTakenAttack;
+    public bool OffBalance;
 
-    public Color NormalColor;
-
-	private GameObject DamageText;
+    private GameObject DamageText;
 
 
-	// Start is called before the first frame update
-	void Start()
-	{
-		var Data = GetComponent<KnightData>();
+    // Start is called before the first frame update
+    void Start()
+    {
+        var Data = GetComponent<KnightData>();
         CurrentTakenAttack = null;
-        MaxHP = Data.MaxHP;
+        CurrentMaxHP = Data.MaxHP;
         CurrentHP = Data.MaxHP;
-		if (SharedCanvas == null)
-			SharedCanvas = GameObject.Find("SharedCanvas");
-	}
+        if (SharedCanvas == null)
+            SharedCanvas = GameObject.Find("SharedCanvas");
+    }
 
-	// Update is called once per frame
-	void Update()
-	{
+    // Update is called once per frame
+    void Update()
+    {
         Canvas.transform.eulerAngles = new Vector3(0, 0, 0);
-	}
+    }
 
-	public override bool OnHit(AttackInfo Attack)
-	{
-		base.OnHit(Attack);
+    public override bool OnHit(AttackInfo Attack)
+    {
+        base.OnHit(Attack);
 
         var Data = GetComponent<KnightData>();
 
@@ -44,27 +43,25 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 
         var AI = GetComponent<KnightAI>();
 
-        int Resistance;
-
-        if (AI.CurrentState != KnightState.Anticipation && AI.CurrentState != KnightState.Strike && AI.CurrentState != KnightState.BlinkPrepare)
-        {
-            Resistance = Data.NormalResistance;
-        }
-        else
-        {
-            Resistance = Data.AttackResistance;
-        }
-
-        if(CurrentTakenAttack.InterruptLevel >= Resistance)
+        if (AI.CurrentState != KnightState.Strike && CurrentTakenAttack.InterruptLevel > 0)
         {
             Interrupted = true;
+            ReceivedInterruptionLevel = CurrentTakenAttack.InterruptLevel;
+
+            if (Data.OffBalanceInterruptLevel <= CurrentTakenAttack.InterruptLevel || CurrentTakenAttack.Dir == Direction.Right && transform.right.x > 0 || CurrentTakenAttack.Dir == Direction.Left && transform.right.x < 0)
+            {
+                OffBalance = true;
+            }
+            else
+            {
+                OffBalance = false;
+            }
         }
         else
         {
             Interrupted = false;
+            OffBalance = false;
         }
-
-        DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
 
         int Damage = Utility.GetEffectValue(CurrentTakenAttack.Power, CurrentTakenAttack.Potency);
 
@@ -72,35 +69,47 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
 
         SetHPFill((float)CurrentHP / Data.MaxHP);
 
+        if (DamageText == null)
+        {
+            DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
+        }
 
-		if (CurrentTakenAttack.Dir == Direction.Right)
-		{
-			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 0);
-		}
-		else
-		{
-			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 0);
-		}
-		DamageText.GetComponent<Text>().text = Damage.ToString();
-		DamageText.transform.SetParent(Canvas.transform);
+        DamageText.GetComponent<DamageText>().ActivateSelf(Damage);
 
-		DamageText.GetComponent<Text>().color = Color.white;
-
-		if (CurrentHP <= 0)
-		{
-			DamageText.transform.parent = SharedCanvas.transform;
-			Destroy(gameObject);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
+        DamageText.transform.SetParent(Canvas.transform);
 
 
-	public void SetHPFill(float value)
-	{
+        if (CurrentHP <= 0)
+        {
+            if (DamageText != null)
+            {
+                DamageText.transform.SetParent(SharedCanvas.transform);
+            }
+            EventManager.instance.Fire(new PlayerKillEnemy(CurrentTakenAttack, gameObject));
+            Destroy(gameObject);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+
+    public void SetHPFill(float value)
+    {
         HPFill.GetComponent<Image>().fillAmount = value;
-	}
+    }
+
+    public void Heal(int amount)
+    {
+        if (amount > CurrentMaxHP - CurrentHP)
+        {
+            amount = CurrentMaxHP - CurrentHP;
+        }
+
+        CurrentHP += amount;
+
+        SetHPFill((float)CurrentHP / CurrentMaxHP);
+    }
 }

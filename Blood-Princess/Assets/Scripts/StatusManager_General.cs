@@ -35,16 +35,19 @@ public class StatusManager_General : StatusManagerBase, IHittable
 	void Update()
 	{
 		SetFill();
-	}
+        if (DamageText != null)
+        {
+            Utility.ObjectFollow(gameObject, DamageText, Vector2.zero);
+        }
+    }
 
 	public override bool OnHit(AttackInfo Attack)
 	{
 		base.OnHit(Attack);
-		DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
 
 		CharacterAttackInfo HitAttack = (CharacterAttackInfo)Attack;
 
-        int Damage = Utility.GetEffectValue(HitAttack.Power, HitAttack.Potency);
+		int Damage = Utility.GetEffectValue(HitAttack.Power, HitAttack.Potency);
 
 		CurrentHP -= Damage;
 
@@ -60,29 +63,18 @@ public class StatusManager_General : StatusManagerBase, IHittable
 		}
 
 
-		if (HitAttack.Dir == Direction.Right)
-		{
-			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 1);
-		}
-		else
-		{
-			DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 1);
-		}
-		DamageText.GetComponent<Text>().text = Damage.ToString();
-		DamageText.transform.parent = Canvas.transform;
-		if (HitAttack.Type == CharacterAttackType.Slash)
-		{
-			DamageText.GetComponent<Text>().color = Color.red;
-		}
-		else
-		{
-			DamageText.GetComponent<Text>().color = Color.white;
-		}
-		DamageText.GetComponent<Text>().color = Color.white;
+        if (DamageText == null)
+        {
+            DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
+        }
 
-		if (CurrentHP <= 0)
+        DamageText.GetComponent<DamageText>().ActivateSelf(Damage);
+
+        DamageText.transform.SetParent(Canvas.transform);
+
+        if (CurrentHP <= 0)
 		{
-			DamageText.transform.parent = SharedCanvas.transform;
+			EventManager.instance.Fire(new PlayerKillEnemy((CharacterAttackInfo)Attack, gameObject));
 			Destroy(gameObject);
 			return true;
 		}

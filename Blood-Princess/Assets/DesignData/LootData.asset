@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1d11d0ac74301841b309f15ddc1b3e1, type: 3}
+  m_Name: LootData
+  m_EditorClassIdentifier: 
+  Loots:
+  - Name: CoinOne
+    Prefab: {fileID: 8282815321369604252, guid: e05a898589bc3264c8fa91b1f14fc75f,
+      type: 3}
+  - Name: CoinThree
+    Prefab: {fileID: 5431325651825115576, guid: dfa2183b22c8f684c8274f2393b51862,
+      type: 3}
+  - Name: CoinTen
+    Prefab: {fileID: 7769454323396070113, guid: c01584cf5263d01479baf98a47132fdc,
+      type: 3}
+  - Name: AllAbilityObject
+    Prefab: {fileID: 8182478123285090896, guid: ec59d129ffa3b8041aa9c8848466d57c,
+      type: 3}
+  - Name: BattleArtAbilityObject
+    Prefab: {fileID: 3338345558971176495, guid: 4eb21ed5de84dc448acbe9f3290d013c,
+      type: 3}
+  - Name: PassiveAbilityObject
+    Prefab: {fileID: 8944402463850082443, guid: 1bab0cfdd610edc49b070dbfd046f848,
+      type: 3}
+  - Name: HealingPotion15
+    Prefab: {fileID: 1688469738932462658, guid: e95af427edfe990448aad4cfbdb7e231,
+      type: 3}
+  - Name: HealingPotion30
+    Prefab: {fileID: 9214142957417335127, guid: 73b59d07cd29d5c4ca29a440639e25d3,
+      type: 3}
+  - Name: HealingPotion100
+    Prefab: {fileID: 6153346309242847950, guid: 407012c177970a547873615327013ff4,
+      type: 3}
+  - Name: Charcoal
+    Prefab: {fileID: 0}
+  - Name: Cloth
+    Prefab: {fileID: 0}
+  - Name: Wood
+    Prefab: {fileID: 0}

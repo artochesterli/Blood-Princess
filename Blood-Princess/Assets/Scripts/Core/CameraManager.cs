@@ -62,6 +62,9 @@ public class CameraManager : MonoBehaviour
 			case CameraState.Follow:
 
                 Vector2 TruePos = Character.GetComponent<SpeedManager>().GetTruePos();
+
+                TruePos.y -= Character.GetComponent<SpeedManager>().BodyHeight / 2;
+
                 Vector3 Target = new Vector3(TruePos.x, TruePos.y, transform.position.z);
 				if (!CharacterOutofCamera())
 				{
@@ -77,8 +80,9 @@ public class CameraManager : MonoBehaviour
 	private bool CharacterOutofCamera()
 	{
         Vector2 TruePos = Character.GetComponent<SpeedManager>().GetTruePos();
+        TruePos.y -= Character.GetComponent<SpeedManager>().BodyHeight / 2;
 
-		return TruePos.x > transform.position.x + CameraViewWidth / 2 || TruePos.x < transform.position.x - CameraViewWidth / 2
+        return TruePos.x > transform.position.x + CameraViewWidth / 2 || TruePos.x < transform.position.x - CameraViewWidth / 2
 			|| TruePos.y > transform.position.y + CameraViewHeight / 2 || TruePos.y < transform.position.y - CameraViewHeight / 2;
 	}
 }

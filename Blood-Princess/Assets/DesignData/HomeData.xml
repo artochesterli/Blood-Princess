@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<HomeData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <BuildPositions>
+    <Vector2Int>
+      <x>3</x>
+      <y>3</y>
+    </Vector2Int>
+    <Vector2Int>
+      <x>3</x>
+      <y>7</y>
+    </Vector2Int>
+    <Vector2Int>
+      <x>0</x>
+      <y>11</y>
+    </Vector2Int>
+  </BuildPositions>
+  <DecorationItems>
+    <DecorationItem xsi:type="Tub">
+      <Name>Tub</Name>
+      <Number>0</Number>
+    </DecorationItem>
+    <DecorationItem xsi:type="Rug">
+      <Name>Rug</Name>
+      <Number>36</Number>
+    </DecorationItem>
+    <DecorationItem xsi:type="Scroll">
+      <Name>Scroll</Name>
+      <Number>35</Number>
+    </DecorationItem>
+  </DecorationItems>
+</HomeData>

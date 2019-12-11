@@ -13,8 +13,8 @@ public enum SoulWarriorState
     MagicStrike,
     MagicRecovery,
     BlinkPrepare,
-    Interrupted,
-    InterruptedRecovery
+    KnockedBack,
+    Offbalance
 }
 
 public class SoulWarriorAI : MonoBehaviour
@@ -22,12 +22,12 @@ public class SoulWarriorAI : MonoBehaviour
     public GameObject Player;
     public LayerMask PlayerLayer;
 
-    public GameObject Magic;
-
     public GameObject PatronLeftMark;
     public GameObject PatronRightMark;
     public GameObject DetectLeftMark;
     public GameObject DetectRightMark;
+
+    public GameObject BlinkMark;
 
     public float DetectLeftX;
     public float DetectRightX;
@@ -38,6 +38,8 @@ public class SoulWarriorAI : MonoBehaviour
 
     public SoulWarriorState LastState;
     public SoulWarriorState CurrentState;
+
+    public Vector2 MagicPos;
 
     private FSM<SoulWarriorAI> SoulWarriorAIFSM;
 
@@ -76,6 +78,9 @@ public abstract class SoulWarriorBehavior : FSM<SoulWarriorAI>.State
     protected GameObject Entity;
     protected GameObject SlashImage;
 
+    protected bool InKnockedBack;
+    protected float KnockedBackTimeCount;
+
     public override void Init()
     {
         base.Init();
@@ -85,7 +90,7 @@ public abstract class SoulWarriorBehavior : FSM<SoulWarriorAI>.State
     public override void OnEnter()
     {
         base.OnEnter();
-        Debug.Log(this.GetType().Name);
+        //Debug.Log(this.GetType().Name);
     }
 
     protected void SetSoulWarrior(Sprite S, Vector2 Offset, Vector2 Size)
@@ -96,29 +101,70 @@ public abstract class SoulWarriorBehavior : FSM<SoulWarriorAI>.State
 
     protected bool CheckGetInterrupted()
     {
-        if (Entity.GetComponent<IHittable>().Interrupted)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return Entity.GetComponent<IHittable>().Interrupted;
+    }
+
+    protected bool CheckOffBalance()
+    {
+        return Entity.GetComponent<StatusManager_SoulWarrior>().OffBalance;
     }
 
     protected EnemyAttackInfo GetSlashInfo()
     {
         var Data = Entity.GetComponent<SoulWarriorData>();
 
-        return new EnemyAttackInfo(Entity, Entity.transform.right.x > 0, Data.SlashDamage, Data.SlashDamage, Data.SlashOffset, Data.SlashHitBoxSize);
+        Direction dir = Direction.Right;
+        if(Entity.transform.right.x < 0)
+        {
+            dir = Direction.Left;
+        }
+
+        return new EnemyAttackInfo(Entity, dir, Data.SlashDamage, Data.SlashDamage, Data.SlashOffset, Data.SlashHitBoxSize);
     }
 
-    protected void GetMagicInfo(GameObject Magic, ref EnemyAttackInfo Left,ref EnemyAttackInfo Right)
+    protected EnemyAttackInfo GetMagicInfo()
     {
         var Data = Entity.GetComponent<SoulWarriorData>();
 
-        Left = new EnemyAttackInfo(Magic, false, Data.MagicDamage, Data.MagicDamage, Vector2.right * Data.MagicHalfHitBoxSize.x / 2 , Data.MagicHalfHitBoxSize);
-        Right = new EnemyAttackInfo(Magic, true, Data.MagicDamage, Data.MagicDamage, Vector2.right * Data.MagicHalfHitBoxSize.x / 2 , Data.MagicHalfHitBoxSize);
+        return new EnemyAttackInfo(Entity, Direction.None, Data.MagicDamage, Data.MagicDamage, Vector2.zero , Data.MagicHitBoxSize);
+    }
+
+    protected void SetKnockedBack(bool b, CharacterAttackInfo Attack = null)
+    {
+        var Data = Entity.GetComponent<SoulWarriorData>();
+        var Status = Entity.GetComponent<StatusManager_SoulWarrior>();
+
+        if (b)
+        {
+            Status.Interrupted = false;
+
+            InKnockedBack = true;
+            KnockedBackTimeCount = 0;
+            if (Attack.Dir == Direction.Right)
+            {
+                Entity.GetComponent<SpeedManager>().ForcedSpeed.x = Data.KnockedBackSpeed;
+            }
+            else if (Attack.Dir == Direction.Left)
+            {
+                Entity.GetComponent<SpeedManager>().ForcedSpeed.x = -Data.KnockedBackSpeed;
+            }
+        }
+        else
+        {
+            InKnockedBack = false;
+            Entity.GetComponent<SpeedManager>().ForcedSpeed.x = 0;
+        }
+    }
+
+    protected void KnockedBackProcess()
+    {
+        var Data = Entity.GetComponent<SoulWarriorData>();
+
+        KnockedBackTimeCount += Time.deltaTime;
+        if (KnockedBackTimeCount >= Data.KnockedBackTime)
+        {
+            SetKnockedBack(false);
+        }
     }
 }
 
@@ -149,13 +195,21 @@ public class SoulWarriorPatron : SoulWarriorBehavior
         base.Update();
 
         var PatronData = Entity.GetComponent<PatronData>();
+        var Data = Entity.GetComponent<SoulWarriorData>();
+
+        if (CheckOffBalance())
+        {
+            TransitionTo<SoulWarriorOffBalance>();
+            return;
+        }
 
         if (CheckGetInterrupted())
         {
-            TransitionTo<SoulWarriorGetInterrupted>();
+            TransitionTo<SoulWarriorKnockedBack>();
             return;
         }
-        if (AIUtility.PlayerInDetectRange(Entity, Context.Player, Context.DetectRightX, Context.DetectLeftX, PatronData.DetectHeight, PatronData.DetectLayer, true))
+
+        if (AIUtility.PlayerInDetectRange(Entity, Context.Player, Context.DetectRightX + Data.MagicUseableDis, Context.DetectLeftX - Data.MagicUseableDis, PatronData.DetectHeight, PatronData.DetectLayer, true))
         {
             TransitionTo<SoulWarriorEngage>();
             return;
@@ -221,13 +275,21 @@ public class SoulWarriorEngage : SoulWarriorBehavior
         base.Update();
 
         var PatronData = Entity.GetComponent<PatronData>();
+        var Data = Entity.GetComponent<SoulWarriorData>();
+
+        if (CheckOffBalance())
+        {
+            TransitionTo<SoulWarriorOffBalance>();
+            return;
+        }
 
         if (CheckGetInterrupted())
         {
-            TransitionTo<SoulWarriorGetInterrupted>();
+            TransitionTo<SoulWarriorKnockedBack>();
             return;
         }
-        if (!AIUtility.PlayerInDetectRange(Entity, Context.Player, Context.DetectRightX, Context.DetectLeftX, PatronData.DetectHeight, PatronData.DetectLayer, false))
+
+        if (!AIUtility.PlayerInDetectRange(Entity, Context.Player, Context.DetectRightX + Data.MagicUseableDis, Context.DetectLeftX - Data.MagicUseableDis, PatronData.DetectHeight, PatronData.DetectLayer, false))
         {
             TransitionTo<SoulWarriorPatron>();
             return;
@@ -312,6 +374,23 @@ public class SoulWarriorSlashAnticipation : SoulWarriorBehavior
     {
         base.Update();
 
+        if (CheckOffBalance())
+        {
+            TransitionTo<SoulWarriorOffBalance>();
+            return;
+        }
+
+        if (CheckGetInterrupted())
+        {
+            SetKnockedBack(true, Entity.GetComponent<StatusManager_SoulWarrior>().CurrentTakenAttack);
+            return;
+        }
+
+        if (InKnockedBack)
+        {
+            KnockedBackProcess();
+        }
+
         CheckTime();
 
     }
@@ -320,8 +399,6 @@ public class SoulWarriorSlashAnticipation : SoulWarriorBehavior
     {
         base.OnExit();
         var Status = Entity.GetComponent<StatusManager_SoulWarrior>();
-
-        Status.Interrupted = false;
 
         Context.LastState = SoulWarriorState.SlashAnticipation;
     }
@@ -333,6 +410,8 @@ public class SoulWarriorSlashAnticipation : SoulWarriorBehavior
         TimeCount = 0;
         StateTime = Data.SlashAnticipationTime;
         Context.AttackCoolDownTimeCount = Data.AttackCoolDown;
+
+        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
     }
 
     private void SetAppearance()
@@ -344,7 +423,7 @@ public class SoulWarriorSlashAnticipation : SoulWarriorBehavior
     private void CheckTime()
     {
         TimeCount += Time.deltaTime;
-        if (TimeCount >= StateTime)
+        if (TimeCount >= StateTime && !InKnockedBack)
         {
             TransitionTo<SoulWarriorSlashStrike>();
             return;
@@ -411,17 +490,13 @@ public class SoulWarriorSlashStrike : SoulWarriorBehavior
     {
         float EulerAngle = 0;
 
-        if (!Attack.Right)
-        {
-            EulerAngle = 180;
-        }
-
         var Data = Entity.GetComponent<SoulWarriorData>();
 
         Vector2 Offset = Data.SlashOffset;
-        if (!Attack.Right)
+        if (Attack.Dir == Direction.Left)
         {
             Offset.x = -Offset.x;
+            EulerAngle = 180;
         }
 
         SlashImage = GameObject.Instantiate(Data.SlashImage, (Vector2)Entity.transform.position + Offset, Quaternion.Euler(0, EulerAngle, 0));
@@ -465,9 +540,15 @@ public class SoulWarriorSlashRecovery : SoulWarriorBehavior
     public override void Update()
     {
         base.Update();
+        if (CheckOffBalance())
+        {
+            TransitionTo<SoulWarriorOffBalance>();
+            return;
+        }
+
         if (CheckGetInterrupted())
         {
-            TransitionTo<SoulWarriorGetInterrupted>();
+            TransitionTo<SoulWarriorKnockedBack>();
             return;
         }
         CheckTime();
@@ -511,6 +592,8 @@ public class SoulWarriorMagicAnticipation : SoulWarriorBehavior
     private float TimeCount;
     private float StateTime;
 
+    private GameObject MagicPrepare;
+
     public override void OnEnter()
     {
         base.OnEnter();
@@ -522,6 +605,24 @@ public class SoulWarriorMagicAnticipation : SoulWarriorBehavior
     public override void Update()
     {
         base.Update();
+
+        if (CheckOffBalance())
+        {
+            TransitionTo<SoulWarriorOffBalance>();
+            return;
+        }
+
+        if (CheckGetInterrupted())
+        {
+            SetKnockedBack(true, Entity.GetComponent<StatusManager_SoulWarrior>().CurrentTakenAttack);
+            return;
+        }
+
+        if (InKnockedBack)
+        {
+            KnockedBackProcess();
+        }
+
         CheckTime();
     }
 
@@ -529,9 +630,11 @@ public class SoulWarriorMagicAnticipation : SoulWarriorBehavior
     {
         base.OnExit();
 
-        Entity.GetComponent<StatusManager_SoulWarrior>().Interrupted = false;
+        GameObject.Destroy(MagicPrepare);
 
         Context.LastState = SoulWarriorState.MagicAnticipation;
+
+        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
     }
 
     private void SetUp()
@@ -553,7 +656,9 @@ public class SoulWarriorMagicAnticipation : SoulWarriorBehavior
             OffsetDis = -Data.MagicPredictionDis;
         }
 
-        Context.Magic = GameObject.Instantiate(Data.MagicPrefab, PlayerSpeedManager.GetTruePos() + Vector2.right * OffsetDis, Quaternion.Euler(0, 0, 0));
+        Context.MagicPos = PlayerSpeedManager.GetTruePos() + Vector2.right * OffsetDis;
+
+        MagicPrepare = GameObject.Instantiate(Data.MagicPrepare, Context.MagicPos , Quaternion.Euler(0, 0, 0));
 
         Context.AttackCoolDownTimeCount = Data.AttackCoolDown;
     }
@@ -567,7 +672,7 @@ public class SoulWarriorMagicAnticipation : SoulWarriorBehavior
     private void CheckTime()
     {
         TimeCount += Time.deltaTime;
-        if (TimeCount >= StateTime)
+        if (TimeCount >= StateTime && !InKnockedBack)
         {
             TransitionTo<SoulWarriorMagicStrike>();
             return;
@@ -580,8 +685,9 @@ public class SoulWarriorMagicStrike : SoulWarriorBehavior
     private float TimeCount;
     private float StateTime;
 
-    private EnemyAttackInfo Left;
-    private EnemyAttackInfo Right;
+    private EnemyAttackInfo MagicAttack;
+    private GameObject Magic;
+
     private bool AttackHit;
 
     public override void OnEnter()
@@ -595,11 +701,6 @@ public class SoulWarriorMagicStrike : SoulWarriorBehavior
     public override void Update()
     {
         base.Update();
-        if (CheckGetInterrupted())
-        {
-            TransitionTo<SoulWarriorGetInterrupted>();
-            return;
-        }
         CheckHitPlayer();
         CheckTime();
     }
@@ -617,7 +718,9 @@ public class SoulWarriorMagicStrike : SoulWarriorBehavior
 
         TimeCount = 0;
         StateTime = Data.MagicStrikeTime;
-        GetMagicInfo(Context.Magic, ref Left, ref Right);
+        MagicAttack = GetMagicInfo();
+        Magic = GameObject.Instantiate(Data.Magic, Context.MagicPos, Quaternion.Euler(0, 0, 0));
+
         AttackHit = false;
     }
 
@@ -632,12 +735,9 @@ public class SoulWarriorMagicStrike : SoulWarriorBehavior
         var Data = Entity.GetComponent<SoulWarriorData>();
 
         TimeCount += Time.deltaTime;
-        Context.Magic.transform.localScale = Vector3.one * Mathf.Lerp(1, Data.MagicHalfHitBoxSize.x * 2, TimeCount / StateTime);
-        Color color = Context.Magic.GetComponent<SpriteRenderer>().color;
-        Context.Magic.GetComponent<SpriteRenderer>().color = new Color(color.r, color.g, color.b, Mathf.Lerp(1, 0, TimeCount / StateTime));
+
         if (TimeCount >= StateTime)
         {
-            GameObject.Destroy(Context.Magic);
             TransitionTo<SoulWarriorMagicRecovery>();
             return;
         }
@@ -647,11 +747,7 @@ public class SoulWarriorMagicStrike : SoulWarriorBehavior
     {
         if (!AttackHit)
         {
-            if(AIUtility.HitPlayer(Context.Magic.transform.position, Left, Context.PlayerLayer))
-            {
-                AttackHit = true;
-            }
-            else if(AIUtility.HitPlayer(Context.Magic.transform.position, Right, Context.PlayerLayer))
+            if(AIUtility.HitPlayer(Magic.transform.position, MagicAttack, Context.PlayerLayer))
             {
                 AttackHit = true;
             }
@@ -674,11 +770,18 @@ public class SoulWarriorMagicRecovery : SoulWarriorBehavior
     public override void Update()
     {
         base.Update();
-        if (CheckGetInterrupted())
+        if (CheckOffBalance())
         {
-            TransitionTo<SoulWarriorGetInterrupted>();
+            TransitionTo<SoulWarriorOffBalance>();
             return;
         }
+
+        if (CheckGetInterrupted())
+        {
+            TransitionTo<SoulWarriorKnockedBack>();
+            return;
+        }
+
         CheckTime();
     }
 
@@ -693,6 +796,8 @@ public class SoulWarriorMagicRecovery : SoulWarriorBehavior
         var Data = Entity.GetComponent<SoulWarriorData>();
         TimeCount = 0;
         StateTime = Data.MagicRecoveryTime;
+
+        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
     }
 
     private void SetAppearance()
@@ -728,16 +833,30 @@ public class SoulWarriorBlink : SoulWarriorBehavior
     {
         base.Update();
 
-        var PatronData = Entity.GetComponent<PatronData>();
-
-        if(!AIUtility.PlayerInDetectRange(Entity, Context.Player, Context.DetectRightX, Context.DetectLeftX, PatronData.DetectHeight, PatronData.DetectLayer, false))
+        if (CheckOffBalance())
         {
-            TransitionTo<SoulWarriorPatron>();
+            TransitionTo<SoulWarriorOffBalance>();
+            return;
         }
+
         if (CheckGetInterrupted())
         {
-            TransitionTo<SoulWarriorGetInterrupted>();
+            SetKnockedBack(true, Entity.GetComponent<StatusManager_SoulWarrior>().CurrentTakenAttack);
             return;
+        }
+
+        if (InKnockedBack)
+        {
+            KnockedBackProcess();
+        }
+
+
+        var PatronData = Entity.GetComponent<PatronData>();
+        var Data = Entity.GetComponent<SoulWarriorData>();
+
+        if(!AIUtility.PlayerInDetectRange(Entity, Context.Player, Context.DetectRightX + Data.MagicUseableDis, Context.DetectLeftX -Data.MagicUseableDis, PatronData.DetectHeight, PatronData.DetectLayer, false))
+        {
+            TransitionTo<SoulWarriorPatron>();
         }
         CheckTime();
     }
@@ -745,6 +864,7 @@ public class SoulWarriorBlink : SoulWarriorBehavior
     public override void OnExit()
     {
         base.OnExit();
+        Context.BlinkMark.GetComponent<SpriteRenderer>().enabled = false;
         Context.LastState = SoulWarriorState.BlinkPrepare;
     }
 
@@ -755,6 +875,8 @@ public class SoulWarriorBlink : SoulWarriorBehavior
         StateTime = Data.BlinkPrepareTime;
 
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+
+        Context.BlinkMark.GetComponent<SpriteRenderer>().enabled = true;
     }
 
     private void SetAppearance()
@@ -766,7 +888,7 @@ public class SoulWarriorBlink : SoulWarriorBehavior
     private void CheckTime()
     {
         TimeCount += Time.deltaTime;
-        if (TimeCount >= StateTime)
+        if (TimeCount >= StateTime && !InKnockedBack)
         {
             Blink();
             TransitionTo<SoulWarriorSlashAnticipation>();
@@ -778,6 +900,8 @@ public class SoulWarriorBlink : SoulWarriorBehavior
         var Data = Entity.GetComponent<SoulWarriorData>();
         var SelfSpeedManager = Entity.GetComponent<SpeedManager>();
         var PlayerSpeedManager = Context.Player.GetComponent<SpeedManager>();
+
+        GameObject.Instantiate(Data.BlinkEffect, SelfSpeedManager.GetTruePos(), Quaternion.Euler(0, 0, 0));
 
         bool BlinkToRight;
 
@@ -817,19 +941,20 @@ public class SoulWarriorBlink : SoulWarriorBehavior
         }
 
         SelfSpeedManager.MoveToPoint(new Vector2(BlinkPosX, SelfSpeedManager.GetTruePos().y));
+
+        GameObject.Instantiate(Data.BlinkEffect, SelfSpeedManager.GetTruePos(), Quaternion.Euler(0, 0, 0));
     }
 }
 
-public class SoulWarriorGetInterrupted : SoulWarriorBehavior
+public class SoulWarriorKnockedBack : SoulWarriorBehavior
 {
     private float TimeCount;
     private float StateTime;
-    private bool GetHitOnBack;
 
     public override void OnEnter()
     {
         base.OnEnter();
-        Context.CurrentState = SoulWarriorState.Interrupted;
+        Context.CurrentState = SoulWarriorState.KnockedBack;
         SetUp();
         SetAppearance();
     }
@@ -837,98 +962,70 @@ public class SoulWarriorGetInterrupted : SoulWarriorBehavior
     public override void Update()
     {
         base.Update();
-
-        if (CheckGetInterrupted())
+        if (CheckOffBalance())
         {
-            TransitionTo<SoulWarriorGetInterrupted>();
+            TransitionTo<SoulWarriorOffBalance>();
             return;
         }
-
         CheckTime();
     }
 
     public override void OnExit()
     {
         base.OnExit();
-        Context.LastState = SoulWarriorState.Interrupted;
+        Context.LastState = SoulWarriorState.KnockedBack;
     }
 
     private void SetUp()
     {
-        CharacterAttackInfo Temp = Entity.GetComponent<StatusManager_SoulWarrior>().CurrentTakenAttack;
-
         var Data = Entity.GetComponent<SoulWarriorData>();
         var Status = Entity.GetComponent<StatusManager_SoulWarrior>();
 
         Status.Interrupted = false;
 
-        if (Temp.Dir == Direction.Right)
-        {
-            if (Entity.transform.right.x < 0)
-            {
-                GetHitOnBack = false;
-            }
-            else
-            {
-                GetHitOnBack = true;
-            }
+        StateTime = Data.KnockedBackTime;
+        TimeCount = 0;
 
+        Context.AttackCoolDownTimeCount = 0;
+
+        if (Status.CurrentTakenAttack.Dir == Direction.Right)
+        {
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = Data.KnockedBackSpeed;
         }
-        else if(Temp.Dir == Direction.Left)
+        else if (Status.CurrentTakenAttack.Dir == Direction.Left)
         {
-            if (Entity.transform.right.x > 0)
-            {
-                GetHitOnBack = false;
-            }
-            else
-            {
-                GetHitOnBack = true;
-            }
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = -Data.KnockedBackSpeed;
         }
-
-        TimeCount = 0;
-        StateTime = Data.KnockedBackTime;
     }
 
     private void SetAppearance()
     {
-        var SpriteData = Entity.GetComponent<SoulWarriorSpriteData>();
-        SetSoulWarrior(SpriteData.Hit, SpriteData.HitOffset, SpriteData.HitSize);
+        var SoulWarriorSpriteData = Entity.GetComponent<SoulWarriorSpriteData>();
+        SetSoulWarrior(SoulWarriorSpriteData.Idle, SoulWarriorSpriteData.IdleOffset, SoulWarriorSpriteData.IdleSize);
     }
 
     private void CheckTime()
     {
-        TimeCount += Time.deltaTime;
+        var Data = Entity.GetComponent<SoulWarriorData>();
 
+        TimeCount += Time.deltaTime;
         if (TimeCount >= StateTime)
         {
-            if (GetHitOnBack)
-            {
-                TransitionTo<SoulWarriorInterruptedRecovery>();
-            }
-            else
-            {
-                TransitionTo<SoulWarriorBlink>();
-            }
-
-            return;
+            TransitionTo<SoulWarriorBlink>();
         }
-
     }
 }
 
-public class SoulWarriorInterruptedRecovery : SoulWarriorBehavior
+public class SoulWarriorOffBalance : SoulWarriorBehavior
 {
     private float TimeCount;
-    private float StateTime;
-
+    private float BackTime;
+    private float StayTime;
 
     public override void OnEnter()
     {
         base.OnEnter();
-        Context.CurrentState = SoulWarriorState.InterruptedRecovery;
+        Context.CurrentState = SoulWarriorState.Offbalance;
         SetUp();
         SetAppearance();
     }
@@ -936,12 +1033,21 @@ public class SoulWarriorInterruptedRecovery : SoulWarriorBehavior
     public override void Update()
     {
         base.Update();
-        AIUtility.RectifyDirection(Context.Player, Entity);
+
+        if (CheckOffBalance())
+        {
+            TransitionTo<SoulWarriorOffBalance>();
+            return;
+        }
 
         if (CheckGetInterrupted())
         {
-            TransitionTo<SoulWarriorGetInterrupted>();
-            return;
+            SetKnockedBack(true, Entity.GetComponent<StatusManager_SoulWarrior>().CurrentTakenAttack);
+        }
+
+        if (InKnockedBack)
+        {
+            KnockedBackProcess();
         }
 
         CheckTime();
@@ -950,34 +1056,55 @@ public class SoulWarriorInterruptedRecovery : SoulWarriorBehavior
     public override void OnExit()
     {
         base.OnExit();
-        Context.LastState = SoulWarriorState.InterruptedRecovery;
+        Context.LastState = SoulWarriorState.Offbalance;
     }
 
     private void SetUp()
     {
         var Data = Entity.GetComponent<SoulWarriorData>();
+        var Status = Entity.GetComponent<StatusManager_SoulWarrior>();
+
+        Status.OffBalance = false;
+        Status.Interrupted = false;
+
+        BackTime = Data.OffBalanceBackTime;
+        StayTime = Data.OffBalanceStayTime;
+        TimeCount = 0;
+
+        Context.AttackCoolDownTimeCount = 0;
 
         AIUtility.RectifyDirection(Context.Player, Entity);
 
-        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+        if (Status.CurrentTakenAttack.Dir == Direction.Right)
+        {
+            Entity.GetComponent<SpeedManager>().SelfSpeed.x = Data.OffBalanceBackSpeed;
+        }
+        else if (Status.CurrentTakenAttack.Dir == Direction.Left)
+        {
+            Entity.GetComponent<SpeedManager>().SelfSpeed.x = -Data.OffBalanceBackSpeed;
+        }
 
-        TimeCount = 0;
-        StateTime = Data.InterruptedRecoveryTime;
+
     }
 
     private void SetAppearance()
     {
-        var SpriteData = Entity.GetComponent<SoulWarriorSpriteData>();
-        SetSoulWarrior(SpriteData.Idle, SpriteData.IdleOffset, SpriteData.IdleSize);
+        var SoulWarriorSpriteData = Entity.GetComponent<SoulWarriorSpriteData>();
+        SetSoulWarrior(SoulWarriorSpriteData.Hit, SoulWarriorSpriteData.HitOffset, SoulWarriorSpriteData.HitSize);
     }
 
     private void CheckTime()
     {
-        TimeCount += Time.deltaTime;
+        var Data = Entity.GetComponent<SoulWarriorData>();
 
-        if (TimeCount >= StateTime)
+        TimeCount += Time.deltaTime;
+        if (TimeCount >= BackTime + StayTime && !InKnockedBack)
         {
             TransitionTo<SoulWarriorBlink>();
+        }
+        else if (TimeCount >= BackTime)
+        {
+            Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
         }
     }
 }

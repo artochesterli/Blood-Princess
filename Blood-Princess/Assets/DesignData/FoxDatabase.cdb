@@ -1,0 +1,206 @@
+{
+	"sheets": [
+		{
+			"name": "MonsterDB",
+			"columns": [
+				{
+					"typeStr": "0",
+					"name": "id"
+				},
+				{
+					"typeStr": "3",
+					"name": "HitPoints"
+				},
+				{
+					"typeStr": "7",
+					"name": "Sprite",
+					"display": null
+				},
+				{
+					"typeStr": "8",
+					"name": "Drops",
+					"display": null
+				}
+			],
+			"lines": [
+				{
+					"HitPoints": 10,
+					"Sprite": "",
+					"Drops": [
+						{
+							"Weight": 1,
+							"Quantity": 30,
+							"Item": "MONEY"
+						},
+						{
+							"Weight": 0.05,
+							"Quantity": 1,
+							"Item": "HEALINGPOTION15"
+						},
+						{
+							"Item": "CHARCOAL",
+							"Weight": 0.01,
+							"Quantity": 1
+						}
+					],
+					"id": "Enemy1"
+				},
+				{
+					"id": "Knight",
+					"HitPoints": 200,
+					"Sprite": "",
+					"Drops": [
+						{
+							"Item": "ALLABILITYOBJECT",
+							"Weight": 0.5,
+							"Quantity": 1
+						},
+						{
+							"Item": "MONEY",
+							"Weight": 1,
+							"Quantity": 100
+						},
+						{
+							"Item": "CHARCOAL",
+							"Weight": 0.01,
+							"Quantity": 1
+						},
+						{
+							"Item": "CLOTH",
+							"Weight": 0.01,
+							"Quantity": 1
+						},
+						{
+							"Item": "HEALINGPOTION100",
+							"Weight": 0.5,
+							"Quantity": 1
+						}
+					]
+				},
+				{
+					"id": "SoulWarrior",
+					"HitPoints": 35,
+					"Sprite": "",
+					"Drops": [
+						{
+							"Item": "MONEY",
+							"Weight": 1,
+							"Quantity": 15
+						},
+						{
+							"Item": "WOOD",
+							"Weight": 0.01,
+							"Quantity": 1
+						}
+					]
+				},
+				{
+					"id": "Enemy2",
+					"HitPoints": 0,
+					"Sprite": "",
+					"Drops": [
+						{
+							"Item": "MONEY",
+							"Weight": 1,
+							"Quantity": 15
+						},
+						{
+							"Item": "HEALINGPOTION15",
+							"Weight": 0.02,
+							"Quantity": 1
+						},
+						{
+							"Item": "CLOTH",
+							"Weight": 0.01,
+							"Quantity": 1
+						}
+					]
+				}
+			],
+			"separators": [],
+			"props": {}
+		},
+		{
+			"name": "ItemDB",
+			"columns": [
+				{
+					"typeStr": "0",
+					"name": "id"
+				},
+				{
+					"typeStr": "3",
+					"name": "Price"
+				}
+			],
+			"lines": [
+				{
+					"Price": 30,
+					"id": "HEALINGPOTION15"
+				},
+				{
+					"Price": 0,
+					"id": "MONEY"
+				},
+				{
+					"id": "BATTLEARTABILITYOBJECT",
+					"Price": 500
+				},
+				{
+					"id": "PASSIVEABILITYOBJECT",
+					"Price": 400
+				},
+				{
+					"id": "ALLABILITYOBJECT",
+					"Price": 450
+				},
+				{
+					"id": "HEALINGPOTION30",
+					"Price": 80
+				},
+				{
+					"id": "HEALINGPOTION100",
+					"Price": 500
+				},
+				{
+					"id": "CHARCOAL",
+					"Price": 800
+				},
+				{
+					"id": "CLOTH",
+					"Price": 1000
+				},
+				{
+					"id": "WOOD",
+					"Price": 2000
+				}
+			],
+			"separators": [],
+			"props": {}
+		},
+		{
+			"name": "MonsterDB@Drops",
+			"props": {
+				"hide": true
+			},
+			"separators": [],
+			"lines": [],
+			"columns": [
+				{
+					"typeStr": "6:ItemDB",
+					"name": "Item"
+				},
+				{
+					"typeStr": "4",
+					"name": "Weight",
+					"display": 1
+				},
+				{
+					"typeStr": "3",
+					"name": "Quantity"
+				}
+			]
+		}
+	],
+	"customTypes": [],
+	"compress": false
+}

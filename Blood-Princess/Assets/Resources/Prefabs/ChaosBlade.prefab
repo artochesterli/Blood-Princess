@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 888127093672878742}
   - component: {fileID: 888127093672878743}
   - component: {fileID: 888127093672878741}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: ChaosBlade
   m_TagString: Untagged
   m_Icon: {fileID: 0}

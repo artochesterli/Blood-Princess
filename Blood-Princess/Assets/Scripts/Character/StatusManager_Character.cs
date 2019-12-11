@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 
 public class StatusManager_Character : StatusManagerBase, IHittable
@@ -11,6 +12,9 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     public int CurrentMaxEnergy;
     public int CurrentPower;
     public List<bool> CurrentSealState;
+
+    public int CoinAmount;
+    public GameObject CoinText;
 
     public EnemyAttackInfo CurrentTakenAttack;
 
@@ -64,9 +68,9 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         EventManager.instance.AddHandler<PlayerStartRoll>(OnPlayerStartRoll);
         EventManager.instance.AddHandler<PlayerEndRoll>(OnPlayerEndRoll);
         EventManager.instance.AddHandler<PlayerHitEnemy>(OnPlayerHitEnemy);
-        EventManager.instance.AddHandler<PlayerBreakEnemyShield>(OnPlayerBreakEnemyShield);
         EventManager.instance.AddHandler<PlayerKillEnemy>(OnPlayerKillEnemy);
         EventManager.instance.AddHandler<PlayerGetHit>(OnPlayerGetHit);
+        EventManager.instance.AddHandler<PlayerGetMoney>(OnPlayerGetMoney);
 
         EventManager.instance.AddHandler<PlayerEquipBattleArt>(OnEquipBattleArt);
         EventManager.instance.AddHandler<PlayerEquipPassiveAbility>(OnEquipPassiveAbility);
@@ -86,9 +90,9 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         EventManager.instance.RemoveHandler<PlayerStartRoll>(OnPlayerStartRoll);
         EventManager.instance.RemoveHandler<PlayerEndRoll>(OnPlayerEndRoll);
         EventManager.instance.RemoveHandler<PlayerHitEnemy>(OnPlayerHitEnemy);
-        EventManager.instance.RemoveHandler<PlayerBreakEnemyShield>(OnPlayerBreakEnemyShield);
         EventManager.instance.RemoveHandler<PlayerKillEnemy>(OnPlayerKillEnemy);
         EventManager.instance.RemoveHandler<PlayerGetHit>(OnPlayerGetHit);
+        EventManager.instance.RemoveHandler<PlayerGetMoney>(OnPlayerGetMoney);
 
         EventManager.instance.RemoveHandler<PlayerEquipBattleArt>(OnEquipBattleArt);
         EventManager.instance.RemoveHandler<PlayerEquipPassiveAbility>(OnEquipPassiveAbility);
@@ -101,6 +105,11 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     void Update()
     {
         SetFill();
+
+        if (DamageText != null)
+        {
+            Utility.ObjectFollow(gameObject, DamageText, Vector2.zero);
+        }
 
         var Action = GetComponent<CharacterAction>();
 
@@ -146,7 +155,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     public int GetCurrentSealSpot()
     {
         int ans = 0;
-        while(ans < CurrentSealState.Count)
+        while (ans < CurrentSealState.Count)
         {
             if (CurrentSealState[ans])
             {
@@ -162,10 +171,11 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Data = GetComponent<CharacterData>();
         var AbilityData = GetComponent<CharacterAbilityData>();
 
+        CurrentMaxHP = Data.MaxHP;
         CurrentHP = Data.MaxHP;
         CurrentMaxEnergy = Data.SealSpotEnergyCap[0];
         CurrentSealState = new List<bool>();
-        for(int i = 0; i < Data.SealSpotEnergyCap.Count; i++)
+        for (int i = 0; i < Data.SealSpotEnergyCap.Count; i++)
         {
             CurrentSealState.Add(true);
         }
@@ -173,17 +183,19 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         CurrentPower = AbilityData.BasePower;
         CurrentEnergy = 0;
 
+        CoinAmount = 0;
+        SetCoinText();
     }
 
     private void SetFill()
     {
         Canvas.GetComponent<RectTransform>().eulerAngles = Vector3.zero;
         var Data = GetComponent<CharacterData>();
-        HPFill.GetComponent<Image>().fillAmount = (float)CurrentHP / Data.MaxHP;
+        HPFill.GetComponent<Image>().fillAmount = (float)CurrentHP / CurrentMaxHP;
 
         EnergyFill.GetComponent<Image>().fillAmount = (float)CurrentEnergy / Data.MaxEnergy;
 
-        if(GetCurrentSealSpot() == Data.SealSpotEnergyCap.Count)
+        if (GetCurrentSealSpot() == Data.SealSpotEnergyCap.Count)
         {
             SealFill.GetComponent<Image>().fillAmount = 0;
         }
@@ -194,7 +206,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
 
 
-        for(int i = 0; i < CurrentSealState.Count; i++)
+        for (int i = 0; i < CurrentSealState.Count; i++)
         {
             SealMarks.transform.GetChild(i).gameObject.SetActive(CurrentSealState[i]);
         }
@@ -213,7 +225,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         bool IsInvulnerable = Invulnerable();
 
-        EventManager.instance.Fire(new PlayerGetHit(CurrentTakenAttack,InRollInvulnerability));
+        EventManager.instance.Fire(new PlayerGetHit(CurrentTakenAttack, InRollInvulnerability));
 
         if (!IsInvulnerable)
         {
@@ -230,32 +242,26 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             SetEnergyFull(false);
             SetAwaken(false);
 
-            DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
+            Interrupted = true;
 
             int Damage = CurrentTakenAttack.Damage;
 
-            Interrupted = true;
-
-
-            if (CurrentTakenAttack.Right)
+            if (DamageText == null)
             {
-                DamageText.GetComponent<DamageText>().TravelVector = new Vector2(1, 1);
+                DamageText = (GameObject)Instantiate(Resources.Load("Prefabs/DamageText"), transform.localPosition, Quaternion.Euler(0, 0, 0));
             }
-            else
-            {
-                DamageText.GetComponent<DamageText>().TravelVector = new Vector2(-1, 1);
-            }
-            DamageText.GetComponent<Text>().text = Damage.ToString();
-            DamageText.transform.parent = Canvas.transform;
 
-            DamageText.GetComponent<Text>().color = Color.white;
+            DamageText.GetComponent<DamageText>().ActivateSelf(Damage);
 
+            DamageText.transform.SetParent(Canvas.transform);
 
             CurrentHP -= Damage;
 
             if (CurrentHP <= 0)
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                EventManager.instance.Fire(new PlayerDied());
+
+                //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
                 return true;
             }
             else
@@ -277,7 +283,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Data = GetComponent<CharacterData>();
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        if(e.Attack.Type == CharacterAttackType.Slash)
+        if (e.Attack.Type == CharacterAttackType.Slash)
         {
             OneMindIncrementSlashPotency(e.Attack);
         }
@@ -334,7 +340,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
                 SpiritMasterEnergyGainBonus();
             }
-            else if(e.Attack.ThisBattleArt != null)
+            else if (e.Attack.ThisBattleArt != null)
             {
                 switch (Action.EquipedBattleArt.Type)
                 {
@@ -351,16 +357,21 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                 EndStrikeBreakSeal();
             }
         }
+
+        if (CrossSlashBattleArt != null)
+        {
+            if ((CrossSlashBattleArt.StrikeCount == CrossSlashBattleArt.CurrentStrikeNumber && CrossSlashBattleArt.StrikeHitCount >= 1))
+            {
+                GainLoseSeal(-1);
+            }
+        }
     }
 
     private void EndStrikeBreakSeal()
     {
-        if(CrossSlashBattleArt != null)
+        if (CrossSlashBattleArt != null)
         {
-            if(!(CrossSlashBattleArt.StrikeCount == CrossSlashBattleArt.CurrentStrikeNumber && CrossSlashBattleArt.StrikeHitCount >= 1))
-            {
-                return;
-            }
+            return;
         }
 
         GainLoseSeal(-1);
@@ -400,8 +411,17 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             GameObject.Instantiate(ParriedEffectPrefab, ParryShieldMark.transform.position, Quaternion.Euler(0, 0, 0));
             GainLoseEnergy(AbilityData.ParryEnergyGain);
         }
+    }
 
+    private void OnPlayerGetMoney(PlayerGetMoney e)
+    {
+        CoinAmount += e.Value;
+        SetCoinText();
+    }
 
+    private void SetCoinText()
+    {
+        CoinText.GetComponent<TextMeshProUGUI>().text = "Coins: " + CoinAmount.ToString();
     }
 
     private void OnPlayerKillEnemy(PlayerKillEnemy e)
@@ -414,17 +434,77 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Action = GetComponent<CharacterAction>();
         var AbilityData = GetComponent<CharacterAbilityData>();
 
+        GenerateHitEffect(e);
+
+
         OneMindGainIncrement();
-        
+
     }
 
-    private void OnPlayerBreakEnemyShield(PlayerBreakEnemyShield e)
+    private void GenerateHitEffect(PlayerHitEnemy e)
     {
+        var AbilityData = GetComponent<CharacterAbilityData>();
+        var Data = GetComponent<CharacterData>();
 
+        Vector2 AttackOrigin;
+        Vector2 Dir;
+        bool EffectRight;
+
+        if (e.UpdatedAttack.Dir == Direction.Right)
+        {
+            AttackOrigin = transform.position + e.UpdatedAttack.BaseHitBoxOffset.x * Vector3.right + e.UpdatedAttack.BaseHitBoxSize.x / 2 * Vector3.left;
+            Dir = Vector2.right;
+            EffectRight = false;
+        }
+        else
+        {
+            AttackOrigin = transform.position + e.UpdatedAttack.BaseHitBoxOffset.x * Vector3.left + e.UpdatedAttack.BaseHitBoxSize.x / 2 * Vector3.right;
+            Dir = Vector2.left;
+            EffectRight = true;
+        }
+
+
+        RaycastHit2D hit = Physics2D.Raycast(AttackOrigin, Dir, e.UpdatedAttack.BaseHitBoxSize.x, Data.EnemyLayer | Data.DoorLayer);
+        RaycastHit2D TopHit = Physics2D.Raycast(AttackOrigin + Vector2.up * e.UpdatedAttack.HitBoxSize.y / 2, Dir, e.UpdatedAttack.BaseHitBoxSize.x, Data.EnemyLayer | Data.DoorLayer);
+        RaycastHit2D DownHit = Physics2D.Raycast(AttackOrigin + Vector2.down * e.UpdatedAttack.HitBoxSize.y / 2, Dir, e.UpdatedAttack.BaseHitBoxSize.x, Data.EnemyLayer | Data.DoorLayer);
+
+        GameObject Effect = null;
+
+        switch (e.UpdatedAttack.Type)
+        {
+            case CharacterAttackType.Slash:
+                Effect = AbilityData.SlashHitEffect;
+                break;
+            case CharacterAttackType.PowerSlash:
+                Effect = AbilityData.PowerSlashHitEffect;
+                break;
+            case CharacterAttackType.CrossSlash:
+                Effect = AbilityData.CrossSlashHitEffect;
+                break;
+            case CharacterAttackType.Dancer:
+                Effect = AbilityData.DancerHitEffect;
+                break;
+        }
+
+        if (hit)
+        {
+            GameObject HitEffect = GameObject.Instantiate(Effect, hit.point, Quaternion.Euler(0, 0, 0));
+            e.Enemy.GetComponent<HitEffectManager>().AllInfo.Add(new HitEffectInfo(HitEffect, EffectRight));
+        }
+        else if (TopHit)
+        {
+            GameObject HitEffect = GameObject.Instantiate(Effect, TopHit.point, Quaternion.Euler(0, 0, 0));
+            e.Enemy.GetComponent<HitEffectManager>().AllInfo.Add(new HitEffectInfo(HitEffect, EffectRight));
+        }
+        else if (DownHit)
+        {
+            GameObject HitEffect = GameObject.Instantiate(Effect, DownHit.point, Quaternion.Euler(0, 0, 0));
+            e.Enemy.GetComponent<HitEffectManager>().AllInfo.Add(new HitEffectInfo(HitEffect, EffectRight));
+        }
     }
 
 
-    protected void Heal(int amount)
+    public void Heal(int amount)
     {
         var Data = GetComponent<CharacterData>();
         if (amount > Data.MaxHP - CurrentHP)
@@ -434,11 +514,11 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         if (amount > 0)
         {
-            GameObject DamageText = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/DamageText"), transform.position, Quaternion.Euler(0, 0, 0));
+            /*GameObject DamageText = (GameObject)GameObject.Instantiate(Resources.Load("Prefabs/DamageText"), transform.position, Quaternion.Euler(0, 0, 0));
             DamageText.GetComponent<DamageText>().TravelVector = Vector2.up;
             DamageText.GetComponent<Text>().color = Color.green;
             DamageText.transform.parent = Canvas.transform;
-            DamageText.GetComponent<Text>().text = amount.ToString();
+            DamageText.GetComponent<Text>().text = amount.ToString();*/
             CurrentHP += amount;
         }
     }
@@ -446,13 +526,13 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     private void GainLoseEnergy(int amount)
     {
         var Data = GetComponent<CharacterData>();
-        if(amount >= CurrentMaxEnergy - CurrentEnergy)
+        if (amount >= CurrentMaxEnergy - CurrentEnergy)
         {
             CurrentEnergy = CurrentMaxEnergy;
             SetEnergyFull(true);
             return;
         }
-        else if(amount <= -CurrentEnergy)
+        else if (amount <= -CurrentEnergy)
         {
             CurrentEnergy = 0;
             return;
@@ -470,7 +550,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         {
             while (amount > 0)
             {
-                for (int i = 0; i < CurrentSealState.Count; i++)
+                for (int i = CurrentSealState.Count - 1; i >= 0; i--)
                 {
                     if (!CurrentSealState[i])
                     {
@@ -481,7 +561,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                 amount--;
             }
         }
-        else if(amount < 0)
+        else if (amount < 0)
         {
             while (amount < 0)
             {
@@ -497,7 +577,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             }
         }
 
-        if(GetCurrentSealSpot() == CurrentSealState.Count)
+        if (GetCurrentSealSpot() == CurrentSealState.Count)
         {
             SetAwaken(true);
         }
@@ -640,7 +720,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         }
     }
 
-   
+
     private void PowerSlashGainEnergy()
     {
         if (PowerSlashBattleArt == null)
@@ -650,7 +730,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        if (PowerSlashBattleArt.Level == 3)
+        if (PowerSlashBattleArt.Level == 3 && Awaken)
         {
             GainLoseEnergy(AbilityData.PowerSlashEnergyGain);
         }
@@ -669,10 +749,10 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     //Cross Slash
 
-    
+
     public void SetCrossSlashParameter()
     {
-        if(CrossSlashBattleArt == null || CrossSlashBattleArt.StrikeCount > 1)
+        if (CrossSlashBattleArt == null || CrossSlashBattleArt.StrikeCount > 1)
         {
             return;
         }
@@ -725,7 +805,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void SpiritMasterEnergyGainBonus()
     {
-        if(SpiritMasterPassiveAbility == null)
+        if (SpiritMasterPassiveAbility == null)
         {
             return;
         }
@@ -736,7 +816,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void SpiritMasterGainSeal()
     {
-        if(SpiritMasterPassiveAbility == null)
+        if (SpiritMasterPassiveAbility == null)
         {
             return;
         }
@@ -779,7 +859,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void CriticalEyeBonus(CharacterAttackInfo Attack)
     {
-        if(CriticalEyePassiveAbility == null)
+        if (CriticalEyePassiveAbility == null)
         {
             return;
         }
@@ -795,7 +875,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void BattleArtMasterBonus(CharacterAttackInfo Attack)
     {
-        if(BattleArtMasterPassiveAbility == null)
+        if (BattleArtMasterPassiveAbility == null)
         {
             return;
         }
@@ -808,7 +888,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void OneMindGainIncrement()
     {
-        if(OneMindPassiveAbility == null)
+        if (OneMindPassiveAbility == null)
         {
             return;
         }
@@ -816,7 +896,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var AbilityData = GetComponent<CharacterAbilityData>();
 
         OneMindPassiveAbility.IncrementCount++;
-        if(OneMindPassiveAbility.IncrementCount > AbilityData.OneMindMaxIncrement)
+        if (OneMindPassiveAbility.IncrementCount > AbilityData.OneMindMaxIncrement)
         {
             OneMindPassiveAbility.IncrementCount = AbilityData.OneMindMaxIncrement;
         }
@@ -859,7 +939,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var SpeedManager = GetComponent<SpeedManager>();
 
         Vector2 Dir = Vector2.right;
-        if(DancerPassiveAbility.DancerAttack.Dir == Direction.Left)
+        if (DancerPassiveAbility.DancerAttack.Dir == Direction.Left)
         {
             Dir = Vector2.left;
         }
@@ -886,7 +966,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private void SetUpDancer()
     {
-        if(DancerPassiveAbility == null)
+        if (DancerPassiveAbility == null)
         {
             return;
         }
@@ -906,6 +986,6 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             dir = Direction.Left;
         }
 
-        DancerPassiveAbility.DancerAttack = new CharacterAttackInfo(gameObject, CharacterAttackType.Dancer, dir, CurrentPower,CurrentPower,AbilityData.DancerPotency,AbilityData.DancerPotency,AbilityData.DancerInterruptLevel,AbilityData.DancerInterruptLevel, SpeedManager.OriPos, SpeedManager.OriPos, AbilityData.DancerHitBoxSize, AbilityData.DancerHitBoxSize);
+        DancerPassiveAbility.DancerAttack = new CharacterAttackInfo(gameObject, CharacterAttackType.Dancer, dir, CurrentPower, CurrentPower, AbilityData.DancerPotency, AbilityData.DancerPotency, AbilityData.DancerInterruptLevel, AbilityData.DancerInterruptLevel, SpeedManager.OriPos, SpeedManager.OriPos, AbilityData.DancerHitBoxSize, AbilityData.DancerHitBoxSize);
     }
 }

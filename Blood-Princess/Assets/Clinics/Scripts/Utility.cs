@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Xml.Serialization;
 
 namespace Clinic
 {
@@ -41,7 +42,7 @@ namespace Clinic
 				case "rug":
 					return new Rug(Resources.Load<ItemData>("ItemData"));
 				case "tub":
-					return new Rug(Resources.Load<ItemData>("ItemData"));
+					return new Tub(Resources.Load<ItemData>("ItemData"));
 				case "scroll":
 					return new Scroll(Resources.Load<ItemData>("ItemData"));
 			}
@@ -76,29 +77,93 @@ namespace Clinic
 		public int Amount = 1;
 	}
 
+	[System.Serializable]
+	public class Vector2IntAndDecorationItemList
+	{
+		public List<Vector2Int> BuildPositions;
+		public List<DecorationItem> DecorationItems;
+
+		public Vector2IntAndDecorationItemList(List<Vector2Int> buildPositions, List<DecorationItem> decorationItems)
+		{
+			BuildPositions = buildPositions;
+			DecorationItems = decorationItems;
+		}
+	}
+
 	public abstract class Grid
 	{
 		public Vector2Int BoardPosition;
 		public Vector2 WorldPosition;
 		public GameObject gameObject;
 		public string GridName => GetType().Name;
+		public GridState GridState
+		{
+			get { return m_GridState; }
+			set
+			{
+				SpriteRenderer sr = gameObject.GetComponent<SpriteRenderer>();
+				switch (value)
+				{
+					case GridState.Empty:
+						sr.color = Color.white;
+						break;
+					case GridState.Occupied:
+						sr.color = Color.black;
+						break;
+					case GridState.CannotPlace:
+						sr.color = Color.red;
+						break;
+					case GridState.CanPlace:
+						sr.color = Color.green;
+						break;
+				}
+				m_GridState = value;
+			}
+		}
 
-		public Grid(Vector2Int boardPosition)
+		private GridState m_GridState;
+
+		public Grid(Vector2Int boardPosition, GameObject go)
 		{
 			BoardPosition = boardPosition;
+			gameObject = go;
+			GridState = GridState.Empty;
 		}
+
+		public Grid(Vector2Int boardPosition, GameObject go, GridState gridState)
+		{
+			BoardPosition = boardPosition;
+			gameObject = go;
+			GridState = gridState;
+		}
+	}
+
+	public enum GridState
+	{
+		Empty,
+		Occupied,
+		CannotPlace,
+		CanPlace,
 	}
 
 	public class WallGrid : Grid
 	{
-		public WallGrid(Vector2Int boardPosition) : base(boardPosition)
+		public WallGrid(Vector2Int boardPosition, GameObject go) : base(boardPosition, go)
+		{
+		}
+
+		public WallGrid(Vector2Int boardPosition, GameObject go, GridState gridState) : base(boardPosition, go, gridState)
 		{
 		}
 	}
 
 	public class GroundGrid : Grid
 	{
-		public GroundGrid(Vector2Int boardPosition) : base(boardPosition)
+		public GroundGrid(Vector2Int boardPosition, GameObject go) : base(boardPosition, go)
+		{
+		}
+
+		public GroundGrid(Vector2Int boardPosition, GameObject go, GridState gridState) : base(boardPosition, go, gridState)
 		{
 		}
 	}
