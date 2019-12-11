@@ -3,12 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum BattleArtPanelOpenMode
+{
+    PickUp,
+    Upgrade
+}
+
 public class BattleArtManagePanel : MonoBehaviour
 {
     public GameObject CurrentBattleArtInfo;
     public GameObject UpdateBattleArtInfo;
 
     public BattleArt UpdatedBattleArt;
+
+    public GameObject ConfirmGuide;
+
+    public BattleArtPanelOpenMode Mode;
+
+    private bool TransactionAvailable;
 
     // Start is called before the first frame update
     void Start()
@@ -24,9 +36,16 @@ public class BattleArtManagePanel : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Utility.InputComfirm(ControlState.ReplaceBattleArt))
+        if (Utility.InputComfirm(ControlState.ReplaceBattleArt) && TransactionAvailable)
         {
-            Equip();
+            if (Mode == BattleArtPanelOpenMode.PickUp)
+            {
+                Equip();
+            }
+            else
+            {
+                Upgrade();
+            }
             ControlStateManager.CurrentControlState = ControlState.Action;
             gameObject.SetActive(false);
         }
@@ -46,6 +65,7 @@ public class BattleArtManagePanel : MonoBehaviour
         if (Current != null)
         {
             Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().Ability = Current;
+            Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().PriceType = AbilityObjectPriceType.Drop;
             Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().SetSelf();
         }
         else
@@ -57,6 +77,14 @@ public class BattleArtManagePanel : MonoBehaviour
         EventManager.instance.Fire(new PlayerEquipBattleArt(UpdatedBattleArt));
     }
 
+    private void Upgrade()
+    {
+        GameObject Player = CharacterOpenInfo.Self;
+        BattleArt Current = Player.GetComponent<CharacterAction>().EquipedBattleArt;
+
+        Current.Level++;
+    }
+
     public void SetPanel()
     {
         GameObject Player = CharacterOpenInfo.Self;
@@ -65,6 +93,47 @@ public class BattleArtManagePanel : MonoBehaviour
 
         if (Current != null)
         {
+            if(Mode == BattleArtPanelOpenMode.PickUp)
+            {
+                ConfirmGuide.GetComponent<Text>().text = "Equip";
+                if (Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().PriceType == AbilityObjectPriceType.Purchase)
+                {
+                    ConfirmGuide.GetComponent<Text>().text += "(" + Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().Price + ")";
+                    if (Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().Price > Player.GetComponent<StatusManager_Character>().CoinAmount)
+                    {
+                        ConfirmGuide.GetComponent<Text>().color = Color.red;
+                        TransactionAvailable = false;
+                    }
+                    else
+                    {
+                        ConfirmGuide.GetComponent<Text>().color = Color.white;
+                        TransactionAvailable = true;
+                    }
+                }
+                else
+                {
+                    ConfirmGuide.GetComponent<Text>().color = Color.white;
+                    TransactionAvailable = true;
+                }
+            }
+            else
+            {
+                ConfirmGuide.GetComponent<Text>().text = "Upgrade" + "(" + Player.GetComponent<ControlStateManager>().AttachedUpgradeMerchant.GetComponent<UpgradeMerchant>().Price.ToString() + ")";
+                if(Player.GetComponent<ControlStateManager>().AttachedUpgradeMerchant.GetComponent<UpgradeMerchant>().Price > Player.GetComponent<StatusManager_Character>().CoinAmount)
+                {
+                    ConfirmGuide.GetComponent<Text>().color = Color.red;
+                    TransactionAvailable = false;
+                }
+                else
+                {
+                    ConfirmGuide.GetComponent<Text>().color = Color.white;
+                    TransactionAvailable = true;
+                }
+            }
+
+            ConfirmGuide.GetComponent<Text>().text += ":A";
+
+
             CurrentBattleArtInfo.GetComponent<Text>().text = Current.name + "(" + Current.Level.ToString() + ")";
             CurrentBattleArtInfo.transform.Find("Icon").GetComponent<Image>().sprite = Current.Icon;
 
@@ -81,6 +150,28 @@ public class BattleArtManagePanel : MonoBehaviour
         }
         else
         {
+            ConfirmGuide.GetComponent<Text>().text = "Equip";
+            if (Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().PriceType == AbilityObjectPriceType.Purchase)
+            {
+                ConfirmGuide.GetComponent<Text>().text += "(" + Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().Price + ")" + ":A";
+                if (Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().Price > Player.GetComponent<StatusManager_Character>().CoinAmount)
+                {
+                    ConfirmGuide.GetComponent<Text>().color = Color.red;
+                    TransactionAvailable = false;
+                }
+                else
+                {
+                    ConfirmGuide.GetComponent<Text>().color = Color.white;
+                    TransactionAvailable = true;
+                }
+            }
+            else
+            {
+                ConfirmGuide.GetComponent<Text>().text += ":A";
+                ConfirmGuide.GetComponent<Text>().color = Color.white;
+                TransactionAvailable = true;
+            }
+
             CurrentBattleArtInfo.GetComponent<Text>().text = "Empty";
             CurrentBattleArtInfo.transform.Find("Icon").GetComponent<Image>().sprite = null;
             CurrentBattleArtInfo.transform.Find("Description").GetComponent<Text>().text = "";

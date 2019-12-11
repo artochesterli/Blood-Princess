@@ -10,10 +10,14 @@ public class PassiveAbilityManagePanel : MonoBehaviour
 
     public PassiveAbility UpdatePassiveAbility;
 
+    public GameObject ConfirmGuide;
+
     public float BaseY;
     public float YInterval;
 
     private int CurrentSlot;
+
+    private bool TransactionAvailable;
 
     // Start is called before the first frame update
     void Start()
@@ -49,7 +53,7 @@ public class PassiveAbilityManagePanel : MonoBehaviour
             SetPanel();
         }
 
-        if (Utility.InputComfirm(ControlState.ReplacePassiveAbility))
+        if (Utility.InputComfirm(ControlState.ReplacePassiveAbility) && TransactionAvailable)
         {
             Equip();
             ControlStateManager.CurrentControlState = ControlState.Action;
@@ -85,6 +89,28 @@ public class PassiveAbilityManagePanel : MonoBehaviour
     public void SetPanel()
     {
         GameObject Player = CharacterOpenInfo.Self;
+
+        if(Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().PriceType == AbilityObjectPriceType.Purchase)
+        {
+            ConfirmGuide.GetComponent<Text>().text = "Equip" + "(" + Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().Price.ToString() + ")" + ":A";
+
+            if (Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().Price > Player.GetComponent<StatusManager_Character>().CoinAmount)
+            {
+                ConfirmGuide.GetComponent<Text>().color = Color.red;
+                TransactionAvailable = false;
+            }
+            else
+            {
+                ConfirmGuide.GetComponent<Text>().color = Color.white;
+                TransactionAvailable = true;
+            }
+        }
+        else
+        {
+            ConfirmGuide.GetComponent<Text>().text = "Equip:A";
+            ConfirmGuide.GetComponent<Text>().color = Color.white;
+            TransactionAvailable = true;
+        }
 
         for (int i = 0; i < CurrentPassiveAbilityInfo.transform.childCount; i++)
         {
