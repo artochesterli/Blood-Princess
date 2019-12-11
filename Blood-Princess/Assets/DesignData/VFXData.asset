@@ -12,3 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d57ca81cffe84704a95a6ccf5651b9d1, type: 3}
   m_Name: VFXData
   m_EditorClassIdentifier: 
+  EnemyDeathEffect: {fileID: 8315629356665934753, guid: 101543a28bfdc4c448c077d37695d311,
+    type: 3}

@@ -21,5 +21,10 @@ namespace BehaviorDesigner.Runtime
     {
         public static implicit operator SharedLayerMask(LayerMask value) { return new SharedLayerMask { mValue = value }; }
     }
+    [System.Serializable]
+    public class SharedIntList : SharedVariable<List<int>>
+    {
+        public static implicit operator SharedIntList(List<int> value) { return new SharedIntList { mValue = value }; }
+    }
 
 }

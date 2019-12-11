@@ -8,7 +8,7 @@ using BehaviorDesigner.Runtime;
 public class Anticipation : Action
 {
     public SharedFloat Duration;
-    public Sprite ChangedSprite;
+    public SharedSprite ChangedSprite;
 
     private SpriteRenderer m_SpriteRenderer;
     private float m_Timer;
@@ -23,7 +23,7 @@ public class Anticipation : Action
     public override void OnStart()
     {
         m_Timer = Time.timeSinceLevelLoad + Duration.Value;
-        m_SpriteRenderer.sprite = ChangedSprite;
+        m_SpriteRenderer.sprite = ChangedSprite.Value;
     }
 
     public override TaskStatus OnUpdate()

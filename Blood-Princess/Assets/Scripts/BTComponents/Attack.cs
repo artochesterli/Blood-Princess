@@ -14,7 +14,7 @@ public class Attack : Action
     public SharedVector2 HitBoxSize;
     public SharedFloat ForwardStep;
     public LayerMask PlayerLayer;
-    public Sprite AttackSprite;
+    public SharedSprite AttackSprite;
     public SharedBool AttackNonStop;
 
     private float m_Timer;
@@ -24,7 +24,7 @@ public class Attack : Action
     public override void OnStart()
     {
         m_Timer = Time.timeSinceLevelLoad + Duration.Value;
-        GetComponent<SpriteRenderer>().sprite = AttackSprite;
+        GetComponent<SpriteRenderer>().sprite = AttackSprite.Value;
         m_AttackHit = false;
         bool isRight = transform.eulerAngles.y == 0f;
         AttackInfo = new EnemyAttackInfo(Owner.gameObject, Direction.Right, Damage.Value, Damage.Value, HitBoxOffset.Value, HitBoxSize.Value);
@@ -60,10 +60,10 @@ public class Attack : Action
 
         if (Hit)
         {
-            Attack.Dir = Direction.Right;
+            Attack.Dir = Direction.Left;
             if (AIUtility.GetXDiff(Hit.collider.gameObject, Owner.gameObject) > 0)
             {
-                Attack.Dir = Direction.Left;
+                Attack.Dir = Direction.Right;
             }
 
             Hit.collider.gameObject.GetComponent<IHittable>().OnHit(Attack);

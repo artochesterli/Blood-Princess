@@ -16,6 +16,22 @@ public class HitReaction : MonoBehaviour
     private FSM<HitReaction> m_HitPoolFSM;
     private BehaviorTree m_BT;
 
+    private int m_CurrentDamageThreshold
+    {
+        get
+        {
+            if ((bool)m_BT.GetVariable("HasEntered2ndPhase").GetValue())
+            {
+                return MaxDamageThreshold + 15;
+            }
+            else if ((bool)m_BT.GetVariable("HasEntered3rdPhase").GetValue())
+            {
+                return MaxDamageThreshold + 20;
+            }
+            return MaxDamageThreshold;
+        }
+    }
+
     private void Awake()
     {
         m_HitPoolFSM = new FSM<HitReaction>(this);
@@ -32,7 +48,9 @@ public class HitReaction : MonoBehaviour
     {
         // transform.DOShakePosition(0.2f, new Vector3(0.4f, 0f), 50, 90).SetRelative(true);
         // Debug.Log("Shake");
-        if ((bool)m_BT.GetVariable("Staggering").GetValue())
+        if ((bool)m_BT.GetVariable("Staggering").GetValue() ||
+        (bool)m_BT.GetVariable("OneToTwoTransition").GetValue() ||
+        (bool)m_BT.GetVariable("TwoToThreeTransition").GetValue())
         {
             return;
         }
@@ -41,7 +59,6 @@ public class HitReaction : MonoBehaviour
         m_CurrentDamage += Utility.GetEffectValue(ev.UpdatedAttack.Power, ev.UpdatedAttack.Potency);
         if (m_CurrentDamage >= MaxDamageThreshold)
         {
-            Debug.Log("Send Stagger Event");
             m_BT.SendEvent("Stagger");
         }
     }

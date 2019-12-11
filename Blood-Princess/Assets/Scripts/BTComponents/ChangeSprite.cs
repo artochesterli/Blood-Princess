@@ -8,7 +8,7 @@ using BehaviorDesigner.Runtime;
 public class ChangeSprite : Action
 {
     public SharedFloat Duration;
-    public Sprite Sprite;
+    public SharedSprite Sprite;
     private SpriteRenderer m_SpriteRenderer;
     private float m_Timer;
 
@@ -22,7 +22,7 @@ public class ChangeSprite : Action
     {
         base.OnStart();
         m_Timer = Time.timeSinceLevelLoad + Duration.Value;
-        m_SpriteRenderer.sprite = Sprite;
+        m_SpriteRenderer.sprite = Sprite.Value;
     }
 
     public override TaskStatus OnUpdate()
