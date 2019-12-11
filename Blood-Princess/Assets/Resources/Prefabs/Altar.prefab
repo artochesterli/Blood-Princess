@@ -175,7 +175,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: '(LB: Upgrade)'
+  m_Text: 'LB: Meditation'
 --- !u!1 &4695268112433901700
 GameObject:
   m_ObjectHideFlags: 0

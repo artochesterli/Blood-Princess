@@ -49,7 +49,9 @@ public class SoulWarriorAI : MonoBehaviour
         GetPatronInfo();
         Player = CharacterOpenInfo.Self;
 
-        SoulWarriorAIFSM=new FSM<SoulWarriorAI>(this);
+        AttackCoolDownTimeCount = GetComponent<SoulWarriorData>().AttackCoolDown;
+
+        SoulWarriorAIFSM =new FSM<SoulWarriorAI>(this);
         SoulWarriorAIFSM.TransitionTo<SoulWarriorPatron>();
     }
 

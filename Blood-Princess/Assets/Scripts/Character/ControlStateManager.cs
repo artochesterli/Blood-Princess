@@ -50,6 +50,7 @@ public class ControlStateManager : MonoBehaviour
                     CurrentControlState = ControlState.ReplaceBattleArt;
                     BattleArtManagerPanel.GetComponent<BattleArtManagePanel>().UpdatedBattleArt = (BattleArt)(AttachedAbilityObject.GetComponent<AbilityObject>().Ability);
                     BattleArtManagerPanel.GetComponent<BattleArtManagePanel>().SetPanel();
+                    BattleArtManagerPanel.GetComponent<BattleArtManagePanel>().Mode = BattleArtPanelOpenMode.PickUp;
                     BattleArtManagerPanel.SetActive(true);
                 }
                 else
@@ -65,8 +66,8 @@ public class ControlStateManager : MonoBehaviour
             if(AttachedUpgradeMerchant != null)
             {
                 CurrentControlState = ControlState.ReplaceBattleArt;
-                BattleArtManagerPanel.GetComponent<BattleArtManagePanel>().UpdatedBattleArt = (BattleArt)(AttachedAbilityObject.GetComponent<AbilityObject>().Ability);
-
+                BattleArtManagerPanel.GetComponent<BattleArtManagePanel>().UpdatedBattleArt = (BattleArt)(GetComponent<CharacterAction>().EquipedBattleArt);
+                BattleArtManagerPanel.GetComponent<BattleArtManagePanel>().Mode = BattleArtPanelOpenMode.Upgrade;
                 BattleArtManagerPanel.GetComponent<BattleArtManagePanel>().SetPanel();
                 BattleArtManagerPanel.SetActive(true);
             }
