@@ -14,7 +14,6 @@ namespace Loot
 
         public LootManager(TextAsset m_CastleDBAsset, LootScriptableObject m_LootData)
         {
-            Debug.Log("Lootmanager ctor");
             this.m_CastleDBAsset = m_CastleDBAsset;
             this.m_LootData = m_LootData;
             m_DB = new CastleDB(m_CastleDBAsset);

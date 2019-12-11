@@ -9,6 +9,8 @@ public class Game : MonoBehaviour
     public VFXScriptableObject VFXData;
     public GameFeelScriptableObject GameFeelData;
     public LootScriptableObject LootData;
+    public MapGenerationScriptableObject MapGenerationConfigData;
+    public EnemyGenerationScriptableObject EnemyGenerationData;
     public TextAsset Database;
     public static Game instance;
 
@@ -33,6 +35,8 @@ public class Game : MonoBehaviour
         Services.CoinManager = new CoinManager(LootData);
         Services.StorageManager = new StorageManager();
         Services.HomeManager = new HomeManager();
+        Services.MapGenerationManager = new MapGenerationManager(MapGenerationConfigData);
+        Services.EnemyGenerationManager = new EnemyGenerationManager(EnemyGenerationData);
     }
 
     // Update is called once per frame
@@ -67,5 +71,11 @@ public class Game : MonoBehaviour
 
         Services.HomeManager.Destroy();
         Services.HomeManager = null;
+
+        Services.MapGenerationManager.Destroy();
+        Services.MapGenerationManager = null;
+
+        Services.EnemyGenerationManager.Destroy();
+        Services.EnemyGenerationManager = null;
     }
 }
