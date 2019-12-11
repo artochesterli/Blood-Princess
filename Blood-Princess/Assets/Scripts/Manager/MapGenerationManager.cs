@@ -72,7 +72,6 @@ public class MapGenerationManager
             middlepath = "/PCG/Expandable/";
         }
         string path = Application.dataPath + middlepath + _roomType.ToString();
-        var info = new DirectoryInfo(path);
         int file = 0;
         switch (_roomType)
         {

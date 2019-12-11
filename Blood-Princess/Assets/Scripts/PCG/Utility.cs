@@ -166,6 +166,18 @@ namespace PCG
         }
     }
 
+    public class EnemyInfo
+    {
+        public string EnemyType;
+        public IntVector2 EnemyPosition;
+
+        public EnemyInfo(string enemyType, IntVector2 enemyPosition)
+        {
+            EnemyType = enemyType;
+            EnemyPosition = enemyPosition;
+        }
+    }
+
     [Serializable]
     public struct IntVector2
     {
