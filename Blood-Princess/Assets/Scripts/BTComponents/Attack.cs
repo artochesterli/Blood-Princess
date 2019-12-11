@@ -15,6 +15,7 @@ public class Attack : Action
     public SharedFloat ForwardStep;
     public LayerMask PlayerLayer;
     public Sprite AttackSprite;
+    public SharedBool AttackNonStop;
 
     private float m_Timer;
     private EnemyAttackInfo AttackInfo;
@@ -45,7 +46,8 @@ public class Attack : Action
         if (!m_AttackHit && HitPlayer(AttackInfo))
         {
             m_AttackHit = true;
-            GetComponent<SpeedManager>().SelfSpeed.x = 0;
+            if (!AttackNonStop.Value)
+                GetComponent<SpeedManager>().SelfSpeed.x = 0;
         }
     }
 
