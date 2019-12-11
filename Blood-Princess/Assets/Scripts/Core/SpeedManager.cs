@@ -51,9 +51,7 @@ public class SpeedManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        OriPos = GetComponent<BoxCollider2D>().offset;
-        BodyWidth = GetComponent<BoxCollider2D>().size.x;
-        BodyHeight = GetComponent<BoxCollider2D>().size.y;
+        SetInitInfo();
     }
 
     // Update is called once per frame
@@ -66,7 +64,12 @@ public class SpeedManager : MonoBehaviour
         MoveExecuted = true;
     }
 
-    
+    public void SetInitInfo()
+    {
+        OriPos = GetComponent<BoxCollider2D>().offset;
+        BodyWidth = GetComponent<BoxCollider2D>().size.x;
+        BodyHeight = GetComponent<BoxCollider2D>().size.y;
+    }
 
     /*private void RectifySpeed()
     {

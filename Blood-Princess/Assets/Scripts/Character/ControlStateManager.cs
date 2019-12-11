@@ -23,6 +23,7 @@ public class ControlStateManager : MonoBehaviour
 
     public GameObject AttachedAbilityObject;
     public GameObject AttachedAltar;
+    public GameObject AttachedUpgradeMerchant;
     public GameObject AttachedPotion;
 
     // Start is called before the first frame update
@@ -59,6 +60,15 @@ public class ControlStateManager : MonoBehaviour
                     PassiveAbilityManagerPanel.SetActive(true);
                 }
                 return;
+            }
+
+            if(AttachedUpgradeMerchant != null)
+            {
+                CurrentControlState = ControlState.ReplaceBattleArt;
+                BattleArtManagerPanel.GetComponent<BattleArtManagePanel>().UpdatedBattleArt = (BattleArt)(AttachedAbilityObject.GetComponent<AbilityObject>().Ability);
+
+                BattleArtManagerPanel.GetComponent<BattleArtManagePanel>().SetPanel();
+                BattleArtManagerPanel.SetActive(true);
             }
 
             if(AttachedAltar != null)

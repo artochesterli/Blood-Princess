@@ -20,6 +20,7 @@ public class AbilityObject : MonoBehaviour
 {
     public AbilityObjectType Type;
     public AbilityObjectPriceType PriceType;
+    public int Price;
 
     public LayerMask PlayerLayer;
     public CharacterAbility Ability;
@@ -36,7 +37,10 @@ public class AbilityObject : MonoBehaviour
     void Update()
     {
         DetectPlayer();
-
+        if (GetComponent<SpeedManager>().HitGround)
+        {
+            GetComponent<SpeedManager>().SelfSpeed.y = 0;
+        }
     }
 
     private void RandomAbility()
@@ -110,7 +114,16 @@ public class AbilityObject : MonoBehaviour
     public void SetSelf()
     {
         GetComponent<SpriteRenderer>().sprite = Ability.Icon;
-        Text.GetComponent<Text>().text = "LB: Pick up\n" + Ability.name;
+
+        if (PriceType == AbilityObjectPriceType.Drop)
+        {
+            Text.GetComponent<Text>().text = "LB: Pick up\n" + Ability.name;
+        }
+        else
+        {
+            Text.GetComponent<Text>().text = "LB: Purchase\n" + Ability.name;
+        }
+
         if(Ability.GetType().BaseType == typeof(BattleArt))
         {
             Text.GetComponent<Text>().text += "(Lv" + Ability.Level + ")";

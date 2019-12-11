@@ -1094,6 +1094,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CurrentPassiveAbilityInfo: {fileID: 4744957354203237918}
   UpdatePassiveAbilityInfo: {fileID: 3394575872821713611}
+  ConfirmGuide: {fileID: 6188103535234221806}
   BaseY: 300
   YInterval: 200
 --- !u!1 &1446015582844935747
@@ -4954,6 +4955,7 @@ MonoBehaviour:
   UpgradeStatsPanel: {fileID: 4802468077578647746}
   AttachedAbilityObject: {fileID: 0}
   AttachedAltar: {fileID: 0}
+  AttachedUpgradeMerchant: {fileID: 0}
   AttachedPotion: {fileID: 0}
 --- !u!114 &6690340839763755833
 MonoBehaviour:
@@ -5176,7 +5178,7 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 4
     m_MaxSize: 80
-    m_Alignment: 4
+    m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
@@ -5718,13 +5720,13 @@ MonoBehaviour:
     m_BestFit: 0
     m_MinSize: 4
     m_MaxSize: 80
-    m_Alignment: 4
+    m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Comfirm: A'
+  m_Text: 'Equip: A'
 --- !u!1 &6232368089885559153
 GameObject:
   m_ObjectHideFlags: 0
@@ -6145,7 +6147,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 50, y: -350}
+  m_AnchoredPosition: {x: -50, y: -350}
   m_SizeDelta: {x: 400, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2735131658747759702
@@ -7688,6 +7690,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CurrentBattleArtInfo: {fileID: 6056394647928686825}
   UpdateBattleArtInfo: {fileID: 383026576554475373}
+  ConfirmGuide: {fileID: 5153102823074042303}
+  Mode: 0
 --- !u!1001 &4954734967629424818
 PrefabInstance:
   m_ObjectHideFlags: 0

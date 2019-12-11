@@ -19,6 +19,10 @@ public class HealingPotion : MonoBehaviour
     void Update()
     {
         DetectPlayer();
+        if (GetComponent<SpeedManager>().HitGround)
+        {
+            GetComponent<SpeedManager>().SelfSpeed.y = 0;
+        }
     }
 
     private void DetectPlayer()
