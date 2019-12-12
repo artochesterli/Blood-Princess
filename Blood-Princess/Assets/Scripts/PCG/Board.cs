@@ -58,6 +58,7 @@ namespace PCG
                 startPosition = newRoom.RoomExit.BoardPosition;
                 startPosition.x += 1;
             }
+            Room bossRoom = new Room(startPosition, "L", _seed, 6, ref _board, _boardGameObject);
         }
 
         /// <summary>
@@ -509,6 +510,9 @@ namespace PCG
                     case "D.R":
                         instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/BattleArtAbilityObject", typeof(GameObject))) as GameObject;
                         instantiatedObject.GetComponent<AbilityObject>().PriceType = AbilityObjectPriceType.Drop;
+                        break;
+                    case "h3":
+                        instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Potions/HealingPotion30", typeof(GameObject))) as GameObject;
                         break;
                     // case "M-F":
                     //     instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Enemy1", typeof(GameObject))) as GameObject;
