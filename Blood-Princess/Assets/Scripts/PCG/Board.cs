@@ -558,7 +558,7 @@ namespace PCG
                 {
                     instantiatedObject.transform.parent = _boardGameObject.transform;
                     instantiatedObject.transform.position = curTileWorldPosition;
-                    if (instantiatedObject.layer == LayerMask.NameToLayer("Enemy"))
+                    if (instantiatedObject.layer == LayerMask.NameToLayer("Enemy") || instantiatedObject.name.ToLower().Contains("merchant"))
                     {
                         instantiatedObject.GetComponent<SpeedManager>().SetInitInfo();
                         instantiatedObject.GetComponent<SpeedManager>().MoveToPoint(curTileWorldPosition + (Vector2.up * (instantiatedObject.GetComponent<BoxCollider2D>().size.y / 2f - Utility.TileSize().y / 2f)));

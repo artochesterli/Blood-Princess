@@ -25,7 +25,6 @@ namespace Clinic
         private void Start()
         {
             Services.StorageManager.SaveItem(new EmptyItem());
-            Services.StorageManager.SaveItem(new Rug());
         }
 
         protected override void OnCancelInteract()
