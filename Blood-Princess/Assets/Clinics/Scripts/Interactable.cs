@@ -13,6 +13,7 @@ namespace Clinic
         protected Collider2D m_Collider2D;
         protected Vector2 m_Collider2DSize;
         protected Vector2 m_Collider2DPosition;
+        private bool m_FirstTime;
 
         protected virtual void Awake()
         {
@@ -22,6 +23,7 @@ namespace Clinic
             m_Collider2DSize = m_Collider2D.bounds.size;
             m_Collider2DPosition = m_Collider2D.bounds.center;
             PlayerInside = false;
+            m_FirstTime = true;
         }
 
         public void OnTransitionToNonInteractable()
@@ -75,6 +77,11 @@ namespace Clinic
             public override void OnEnter()
             {
                 base.OnEnter();
+                if (Context.m_FirstTime)
+                {
+                    Context.m_FirstTime = false;
+                    return;
+                }
                 Context.OnCancelInteract();
 
             }

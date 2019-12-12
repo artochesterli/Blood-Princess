@@ -16,7 +16,6 @@ namespace Loot
 
         public void OnDropMoney(GameObject Obj, int amount)
         {
-            Debug.Log(amount);
             int minCoinNum = 6;
             int coinTenNum = amount / 10;
             int coinThreeNum = (amount % 10) / 3;
@@ -45,10 +44,6 @@ namespace Loot
                     curCoinNum = coinTenNum + coinThreeNum + coinOneNum;
                 }
             }
-            Debug.Log(amount);
-            Debug.Log(coinTenNum);
-            Debug.Log(coinThreeNum);
-            Debug.Log(coinOneNum);
 
             for (int i = 0; i < coinTenNum; i++)
             {
