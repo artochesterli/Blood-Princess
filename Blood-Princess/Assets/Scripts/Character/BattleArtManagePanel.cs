@@ -16,7 +16,9 @@ public class BattleArtManagePanel : MonoBehaviour
 
     public BattleArt UpdatedBattleArt;
 
+
     public GameObject ConfirmGuide;
+    public GameObject Title;
 
     public BattleArtPanelOpenMode Mode;
 
@@ -97,6 +99,15 @@ public class BattleArtManagePanel : MonoBehaviour
         GameObject Player = CharacterOpenInfo.Self;
 
         BattleArt Current = Player.GetComponent<CharacterAction>().EquipedBattleArt;
+
+        if(Mode == BattleArtPanelOpenMode.PickUp)
+        {
+            Title.GetComponent<Text>().text = "Equip Battle Art";
+        }
+        else
+        {
+            Title.GetComponent<Text>().text = "Upgrade Battle Art";
+        }
 
         if (Current != null)
         {

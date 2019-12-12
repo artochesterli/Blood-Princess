@@ -66,6 +66,7 @@ public class CameraManager : MonoBehaviour
                 TruePos.y -= Character.GetComponent<SpeedManager>().BodyHeight / 2;
 
                 Vector3 Target = new Vector3(TruePos.x, TruePos.y, transform.position.z);
+
 				if (!CharacterOutofCamera())
 				{
 					Target.x = Utility.GetConstraintValue(Target.x, MinX + CameraViewWidth / 2, MaxX - CameraViewWidth / 2);
