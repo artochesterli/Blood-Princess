@@ -51,6 +51,7 @@ public class EnemyGenerationManager
                 continue;
             }
         }
+        m_EnemyInfo.Clear();
     }
 
     private void m_GenerateEnemy(string type, IntVector2 boardPosition, string[,] board, GameObject _boardGameObject)

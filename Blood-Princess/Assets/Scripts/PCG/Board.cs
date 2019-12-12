@@ -506,6 +506,10 @@ namespace PCG
                     case "p":
                         instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Character", typeof(GameObject))) as GameObject;
                         break;
+                    case "D.R":
+                        instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/BattleArtAbilityObject", typeof(GameObject))) as GameObject;
+                        instantiatedObject.GetComponent<AbilityObject>().PriceType = AbilityObjectPriceType.Drop;
+                        break;
                     // case "M-F":
                     //     instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Enemy1", typeof(GameObject))) as GameObject;
                     //     _initializeAI(instantiatedObject, worldPosition);
@@ -541,11 +545,11 @@ namespace PCG
                 {
                     instantiatedObject.transform.parent = _boardGameObject.transform;
                     instantiatedObject.transform.position = curTileWorldPosition;
-                    // if (instantiatedObject.layer == LayerMask.NameToLayer("Enemy"))
-                    // {
-                    //     instantiatedObject.GetComponent<SpeedManager>().SetInitInfo();
-                    //     instantiatedObject.GetComponent<SpeedManager>().MoveToPoint(curTileWorldPosition + (Vector2.up * (instantiatedObject.GetComponent<BoxCollider2D>().size.y / 2f - Utility.TileSize().y / 2f)));
-                    // }
+                    if (instantiatedObject.layer == LayerMask.NameToLayer("Enemy"))
+                    {
+                        instantiatedObject.GetComponent<SpeedManager>().SetInitInfo();
+                        instantiatedObject.GetComponent<SpeedManager>().MoveToPoint(curTileWorldPosition + (Vector2.up * (instantiatedObject.GetComponent<BoxCollider2D>().size.y / 2f - Utility.TileSize().y / 2f)));
+                    }
                 }
             }
         }
