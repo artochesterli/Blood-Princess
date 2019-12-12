@@ -150,7 +150,7 @@ public class CrossSlash : BattleArt
     public int CurrentStrikeNumber;
     public int CurrentPotency;
 
-    public CrossSlash(int level = 1)
+    public CrossSlash(int level = 2)
     {
         name = "Cross Slash";
         Type = BattleArtType.CrossSlash;
@@ -2077,12 +2077,6 @@ public class CrossSlashAnticipation : CharacterActionState
 
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
 
-
-
-        if(crossSlash.StrikeCount > 1)
-        {
-            Power = Context.CurrentAttack.Power;
-        }
 
         Context.CurrentAttack = new CharacterAttackInfo(Entity, CharacterAttackType.CrossSlash, dir, Power, Power, Potency, Potency, InterruptLevel, InterruptLevel, Offset, Offset, Size, Size, Anticipation, Anticipation, Strike, Strike, Recovery, Recovery, Context.EquipedBattleArt);
     }
