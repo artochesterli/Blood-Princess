@@ -278,7 +278,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 0
   PriceType: 0
-  Price: 300
+  Price: 100
   PlayerLayer:
     serializedVersion: 2
     m_Bits: 256
