@@ -3303,7 +3303,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 0.14453125, y: 0.046875, z: 0.0390625, w: -0.046875}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -9559,10 +9559,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: BattleArtAbilityObject
       objectReference: {fileID: 0}
+    - target: {fileID: 3338345558971176495, guid: 4eb21ed5de84dc448acbe9f3290d013c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3338345558971176464, guid: 4eb21ed5de84dc448acbe9f3290d013c,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -8
+      value: -8.5
       objectReference: {fileID: 0}
     - target: {fileID: 3338345558971176464, guid: 4eb21ed5de84dc448acbe9f3290d013c,
         type: 3}
