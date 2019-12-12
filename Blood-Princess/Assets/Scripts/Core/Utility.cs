@@ -151,7 +151,7 @@ public class Utility
             return false;
         }
 
-        return Input.GetMouseButtonDown(1) || ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Roll");
+        return Input.GetKeyDown(KeyCode.LeftAlt) || ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Roll");
     }
 
     public static bool InputComfirm(ControlState Current)
@@ -161,7 +161,7 @@ public class Utility
             return false;
         }
 
-        return Input.GetMouseButtonDown(0) || ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Jump");
+        return Input.GetKeyDown(KeyCode.Space) || ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Jump");
     }
 
     public static bool InputSelectUp(ControlState Current)
@@ -295,7 +295,7 @@ public class Utility
         {
             return false;
         }
-        return Input.GetMouseButtonDown(0) && !Input.GetKey(KeyCode.LeftShift) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Slash"));
+        return Input.GetKeyDown(KeyCode.J) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Slash"));
     }
 
     public static bool InputBattleArt()
@@ -305,7 +305,7 @@ public class Utility
             return false;
         }
 
-        return Input.GetMouseButtonDown(0) && Input.GetKey(KeyCode.LeftShift) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("BattleArt"));
+        return Input.GetKeyDown(KeyCode.I)|| (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("BattleArt"));
 
     }
 
@@ -315,7 +315,7 @@ public class Utility
         {
             return false;
         }
-        return Input.GetMouseButtonDown(1) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Roll"));
+        return Input.GetKeyDown(KeyCode.L) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Roll"));
     }
 
     public static bool InputParry()

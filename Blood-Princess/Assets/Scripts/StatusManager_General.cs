@@ -70,10 +70,7 @@ public class StatusManager_General : StatusManagerBase, IHittable
         }
 
         DamageText.GetComponent<DamageText>().ActivateSelf(Damage);
-        if (gameObject.name.ToLower().Contains("boss"))
-        {
-            DamageText.GetComponent<TextMeshProUGUI>().color = Color.red;
-        }
+        DamageText.GetComponent<TextMeshProUGUI>().color = Color.red;
 
         DamageText.transform.SetParent(Canvas.transform);
 
