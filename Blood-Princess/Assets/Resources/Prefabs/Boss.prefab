@@ -926,7 +926,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   IgnoredLayers:
     serializedVersion: 2
-    m_Bits: 9984
+    m_Bits: 46848
   SelfSpeed: {x: 0, y: 0}
   ForcedSpeed: {x: 0, y: 0}
   AttackStepSpeed: {x: 0, y: 0}

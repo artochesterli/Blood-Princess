@@ -46,7 +46,7 @@ public class PassiveAbilityManagePanel : MonoBehaviour
         if (Utility.InputSelectDown(ControlState.ReplacePassiveAbility))
         {
             CurrentSlot++;
-            if(CurrentSlot >= CharacterOpenInfo.Self.GetComponent<CharacterAction>().EquipedPassiveAbility.Count)
+            if (CurrentSlot >= CharacterOpenInfo.Self.GetComponent<CharacterAction>().EquipedPassiveAbility.Count)
             {
                 CurrentSlot -= CharacterOpenInfo.Self.GetComponent<CharacterAction>().EquipedPassiveAbility.Count;
             }
@@ -89,14 +89,14 @@ public class PassiveAbilityManagePanel : MonoBehaviour
             Destroy(Player.GetComponent<ControlStateManager>().AttachedAbilityObject);
         }
 
-        EventManager.instance.Fire(new PlayerEquipPassiveAbility(UpdatePassiveAbility,CurrentSlot));
+        EventManager.instance.Fire(new PlayerEquipPassiveAbility(UpdatePassiveAbility, CurrentSlot));
     }
 
     public void SetPanel()
     {
         GameObject Player = CharacterOpenInfo.Self;
 
-        if(Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().PriceType == AbilityObjectPriceType.Purchase)
+        if (Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().PriceType == AbilityObjectPriceType.Purchase)
         {
             ConfirmGuide.GetComponent<Text>().text = "Equip" + "(" + Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().Price.ToString() + ")" + ":A";
 
@@ -120,9 +120,9 @@ public class PassiveAbilityManagePanel : MonoBehaviour
 
         bool HaveSame = false;
 
-        for(int i = 0; i < Player.GetComponent<CharacterAction>().EquipedPassiveAbility.Count; i++)
+        for (int i = 0; i < Player.GetComponent<CharacterAction>().EquipedPassiveAbility.Count; i++)
         {
-            if(UpdatePassiveAbility.Type == Player.GetComponent<CharacterAction>().EquipedPassiveAbility[i].Type)
+            if (Player.GetComponent<CharacterAction>().EquipedPassiveAbility[i] != null && UpdatePassiveAbility.Type == Player.GetComponent<CharacterAction>().EquipedPassiveAbility[i].Type)
             {
                 HaveSame = true;
             }
@@ -183,7 +183,7 @@ public class PassiveAbilityManagePanel : MonoBehaviour
 
             CurrentSlot = 0;
 
-            for(int i = 0; i < Player.GetComponent<CharacterAction>().EquipedPassiveAbility.Count; i++)
+            for (int i = 0; i < Player.GetComponent<CharacterAction>().EquipedPassiveAbility.Count; i++)
             {
                 if (Player.GetComponent<CharacterAction>().EquipedPassiveAbility[i] == null)
                 {
