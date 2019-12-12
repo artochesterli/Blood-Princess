@@ -36,11 +36,6 @@
 							"Weight": 0.05,
 							"Quantity": 1,
 							"Item": "HEALINGPOTION15"
-						},
-						{
-							"Item": "CHARCOAL",
-							"Weight": 0.01,
-							"Quantity": 1
 						}
 					],
 					"id": "Enemy1"
@@ -61,18 +56,8 @@
 							"Quantity": 100
 						},
 						{
-							"Item": "CHARCOAL",
-							"Weight": 0.01,
-							"Quantity": 1
-						},
-						{
-							"Item": "CLOTH",
-							"Weight": 0.01,
-							"Quantity": 1
-						},
-						{
 							"Item": "HEALINGPOTION100",
-							"Weight": 0.5,
+							"Weight": 0.75,
 							"Quantity": 1
 						}
 					]
@@ -86,11 +71,6 @@
 							"Item": "MONEY",
 							"Weight": 1,
 							"Quantity": 15
-						},
-						{
-							"Item": "WOOD",
-							"Weight": 0.01,
-							"Quantity": 1
 						}
 					]
 				},
@@ -107,11 +87,6 @@
 						{
 							"Item": "HEALINGPOTION15",
 							"Weight": 0.02,
-							"Quantity": 1
-						},
-						{
-							"Item": "CLOTH",
-							"Weight": 0.01,
 							"Quantity": 1
 						}
 					]
