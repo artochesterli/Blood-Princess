@@ -21,7 +21,7 @@ public class ChaosBlade : Action
         GameObject InstantiatedBlade = GameObject.Instantiate(Resources.Load("Prefabs/ChaosBlade"), Owner.transform.position, Owner.transform.rotation) as GameObject;
         InstantiatedBlade.GetComponent<ChaosBladeControl>().InitiatedBlade(Owner.gameObject, BladeDirection.Value,
         MaxDistance.Value, FlySpeed.Value, WaitTime.Value, Damage.Value, PlayerLayer);
-        m_Timer = Time.timeSinceLevelLoad + WaitTime.Value + 2f * MaxDistance.Value / FlySpeed.Value;
+        m_Timer = Time.timeSinceLevelLoad + WaitTime.Value + MaxDistance.Value / FlySpeed.Value;
     }
 
     public override TaskStatus OnUpdate()

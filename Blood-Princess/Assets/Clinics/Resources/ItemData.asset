@@ -15,25 +15,33 @@ MonoBehaviour:
   Items:
   - Name: Charcoal
     Sprite: {fileID: 21300000, guid: ff6a60d465a4c374c9889f164a6bb60c, type: 3}
+    Description: Blackened Material, used to craft useful items
   - Name: Cloth
     Sprite: {fileID: 21300000, guid: db864af744989ef43ad7d47419a2a2e7, type: 3}
+    Description: Soft Material, used to craft useful items
   - Name: Wood
     Sprite: {fileID: 21300000, guid: ae4dd07f45d63ee428c1dd88a8fbb81f, type: 3}
+    Description: Hard Material, used to craft useful items
   CraftableItems:
   - Name: Rug
     Sprite: {fileID: 21300000, guid: 34169511dc9a347478f30bb2754463a6, type: 3}
+    Description: Placing it in your room to increase max health 10% on a run
     CraftMaterials:
     - Name: Cloth
       Sprite: {fileID: 21300000, guid: db864af744989ef43ad7d47419a2a2e7, type: 3}
       Amount: 3
   - Name: Tub
     Sprite: {fileID: 21300000, guid: 9537b3cc927a7b346b4ad663a82fabb8, type: 3}
+    Description: Placing it in your room gives you hygenic body, increase max move
+      speed 5%
     CraftMaterials:
     - Name: Wood
       Sprite: {fileID: 21300000, guid: ae4dd07f45d63ee428c1dd88a8fbb81f, type: 3}
       Amount: 4
   - Name: Scroll
     Sprite: {fileID: 21300000, guid: e478856fd12f0f843a7814991fbd58fb, type: 3}
+    Description: A very strong dude looking at you, placing it in your room will increase
+      max Power 5%
     CraftMaterials:
     - Name: Cloth
       Sprite: {fileID: 21300000, guid: db864af744989ef43ad7d47419a2a2e7, type: 3}
@@ -44,5 +52,7 @@ MonoBehaviour:
   SeedItems:
   - Name: OakSeed
     Sprite: {fileID: 21300000, guid: ef568b0159fb962409434addb866fea6, type: 3}
+    Description: A seed, a reminant from an early farming protype
   - Name: AppleSeed
     Sprite: {fileID: 21300000, guid: e0f824bdd55db9a4f92f9ab2fee773e7, type: 3}
+    Description: An appleseed a day will do nothing

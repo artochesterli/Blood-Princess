@@ -14,7 +14,6 @@ namespace Loot
 
         public LootManager(TextAsset m_CastleDBAsset, LootScriptableObject m_LootData)
         {
-            Debug.Log("Lootmanager ctor");
             this.m_CastleDBAsset = m_CastleDBAsset;
             this.m_LootData = m_LootData;
             m_DB = new CastleDB(m_CastleDBAsset);
@@ -46,11 +45,14 @@ namespace Loot
                             else
                             {
                                 // Drop other stuff
-                                Debug.Log("Drop " + dropName);
                                 GameObject theLoot = m_LootData.GetPrefabFromName(dropName);
                                 Debug.Assert(theLoot != null, "Loot: " + dropName + " is not in loot data");
                                 GameObject lootInstance = GameObject.Instantiate<GameObject>(theLoot, ev.Enemy.transform.position, Quaternion.identity);
-                                lootInstance.GetComponent<SpeedManager>().SelfSpeed = new Vector2(Random.Range(-3, 3), Random.Range(3, 5));
+                                lootInstance.GetComponent<SpeedManager>().SelfSpeed = new Vector2(Random.Range(-1.5f, 1.5f), Random.Range(1f, 3f));
+                                if (dropName.ToLower().Contains("abilityobject"))
+                                {
+                                    lootInstance.GetComponent<AbilityObject>().PriceType = AbilityObjectPriceType.Drop;
+                                }
                             }
                         }
                     }

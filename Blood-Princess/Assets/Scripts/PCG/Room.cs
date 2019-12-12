@@ -143,7 +143,14 @@ namespace PCG
                     // Always Assumes Board zero position is world zero position
                     // add to board
                     if (!Utility.IgnorePlacingStrHashSet.Contains(curChar))
+                    {
                         m_CurrentBoard[curTileWorldPosition.x, curTileWorldPosition.y] = entireRoomFile[i][j];
+                        if (Utility.ContainsEnemy(curChar))
+                        {
+                            Services.EnemyGenerationManager.RecordNextEnemyInfo(Utility.GetEnemyType(curChar),
+                            curTileWorldPosition);
+                        }
+                    }
                 }
             }
         }
@@ -155,7 +162,8 @@ namespace PCG
         /// <param name="roomType"></param>
         private void _placeExpandableRoom(string roomType, IntVector2 startWorldPosition)
         {
-            string[][] expandableroom = _getRandomRoomFromPath("/PCG/Expandable/" + roomType);
+            // string[][] expandableroom = _getRandomRoomFromPath("/PCG/Expandable/" + roomType);
+            string[][] expandableroom = Services.MapGenerationManager.GetNextRoomFromRoomType(roomType);
             for (int i = 0; i < expandableroom.Length; i++)
             {
                 for (int j = 0; j < expandableroom[i].Length; j++)
@@ -170,6 +178,11 @@ namespace PCG
                     if (!Utility.IgnorePlacingStrHashSet.Contains(curChar))
                     {
                         m_CurrentBoard[curTileWorldPosition.x, curTileWorldPosition.y] = expandableroom[i][j];
+                        if (Utility.ContainsEnemy(curChar))
+                        {
+                            Services.EnemyGenerationManager.RecordNextEnemyInfo(Utility.GetEnemyType(curChar),
+                            curTileWorldPosition);
+                        }
                     }
                 }
             }
@@ -255,7 +268,8 @@ namespace PCG
         /// </summary>
         private void _findRandomRoom()
         {
-            entireRoomFile = _getRandomRoomFromPath("/PCG/RoomType" + _roomType.ToString());
+            // entireRoomFile = _getRandomRoomFromPath("/PCG/RoomType" + _roomType.ToString());
+            entireRoomFile = Services.MapGenerationManager.GetNextRoomFromRoomType(_roomType.ToString());
 
             _room = new GameObject("Room" + _roomType.ToString());
             _room.transform.parent = _boardGameObject.transform;

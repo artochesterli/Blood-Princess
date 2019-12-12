@@ -10,6 +10,7 @@ namespace Clinic
     public class InventoryUI : MonoBehaviour
     {
         public RectTransform InventoryPanel;
+        public RectTransform InventoryInfoPanel;
         public GameObject ClinicGrid;
 
         private Inventory m_Inventory;
@@ -62,7 +63,17 @@ namespace Clinic
                     curPanel.GetChild(1).GetComponent<Image>().color = new Color(1, 1, 1, 0);
                     curPanel.GetChild(2).GetComponent<TextMeshProUGUI>().text = "";
                 }
+            }
+        }
 
+        public void ReadItemDescriptionFromSibilingIndex(int index)
+        {
+            List<Item> items = Services.StorageManager.LoadItem();
+            Item i = items[index];
+            if (!i.GetType().Equals(typeof(EmptyItem)))
+            {
+                InventoryInfoPanel.GetChild(0).GetComponent<TextMeshProUGUI>().text = i.GetID().Description;
+                InventoryInfoPanel.GetChild(1).GetComponent<TextMeshProUGUI>().text = i.GetID().Name;
             }
         }
 
@@ -98,6 +109,7 @@ namespace Clinic
                 base.OnEnter();
                 Context.InventoryPanel.gameObject.SetActive(false);
                 Context.m_SelectionCursor.SetActive(false);
+                Context.InventoryInfoPanel.gameObject.SetActive(false);
             }
         }
 
@@ -111,6 +123,7 @@ namespace Clinic
                 Context.ReadItem();
                 Context.InventoryPanel.gameObject.SetActive(true);
                 Context.m_SelectionCursor.SetActive(true);
+                Context.InventoryInfoPanel.gameObject.SetActive(true);
                 m_MoveCursorToIndex(0);
                 m_CurrentSelectionIndex = 0;
                 m_FirstFrameSkip = false;
@@ -130,6 +143,7 @@ namespace Clinic
             private void m_MoveCursorToIndex(int index)
             {
                 Context.m_SelectionCursor.GetComponent<RectTransform>().localPosition = Context.InventoryPanel.GetChild(index).GetComponent<RectTransform>().localPosition;
+                Context.ReadItemDescriptionFromSibilingIndex(index);
             }
 
             private void m_MoveCursor()
@@ -178,6 +192,7 @@ namespace Clinic
                 base.OnEnter();
                 Context.InventoryPanel.gameObject.SetActive(false);
                 Context.m_SelectionCursor.SetActive(false);
+                Context.InventoryInfoPanel.gameObject.SetActive(false);
 
                 Context.ClinicGrid.SetActive(true);
                 BuildPosition = new Vector2Int();

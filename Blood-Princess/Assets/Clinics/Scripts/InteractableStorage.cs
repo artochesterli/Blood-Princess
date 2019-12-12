@@ -23,11 +23,6 @@ namespace Clinic
         private void Start()
         {
             Services.StorageManager.SaveItem(new EmptyItem());
-            Services.StorageManager.SaveItem(new Rug(m_ItemData), 1);
-            Services.StorageManager.SaveItem(new Wood(m_ItemData), 1);
-            Services.StorageManager.SaveItem(new Cloth(m_ItemData), 2);
-            Services.StorageManager.SaveItem(new OakSeed(m_ItemData), 1);
-            Services.StorageManager.SaveItem(new Scroll(m_ItemData), 1);
         }
 
         protected override void OnCancelInteract()

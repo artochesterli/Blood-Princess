@@ -51,6 +51,11 @@ namespace PCG
             "0", "", "\n", "*"
         };
 
+        public static readonly HashSet<string> RegularEnemyStrHashSet = new HashSet<string>()
+        {
+            "M-F", "M-M", "M-S", "M-1"
+        };
+
         public static Vector2 TileSize()
         {
             Sprite sampleTileSprite = (Resources.Load("SampleTile", typeof(GameObject)) as GameObject).GetComponent<SpriteRenderer>().sprite;
@@ -73,11 +78,6 @@ namespace PCG
             return 0;
         }
 
-        public static int MaxFileWidth()
-        {
-            return 0;
-        }
-
         public static bool ContainsCharacter(string str, string character)
         {
             string[] split1 = str.Split('|');
@@ -88,6 +88,29 @@ namespace PCG
             }
             // Debug.Log(str + " contains " + character + " " + characterHashSet.Contains(character).ToString());
             return characterHashSet.Contains(character);
+        }
+
+        public static bool ContainsEnemy(string str)
+        {
+            foreach (string s in RegularEnemyStrHashSet)
+            {
+                if (ContainsCharacter(str, s)) return true;
+            }
+
+            return false;
+        }
+
+        public static string GetEnemyType(string str)
+        {
+            string[] split1 = str.Split('|');
+            foreach (string s in split1)
+            {
+                string t = s.Split(';')[0];
+                if (RegularEnemyStrHashSet.Contains(t)) return t;
+            }
+
+            Debug.Assert(false, "Should not really reach here");
+            return "";
         }
 
         public static bool IsEmptyZero(string str)
@@ -149,6 +172,18 @@ namespace PCG
         public static Vector2 BoardPositionToWorldPosition(IntVector2 boardPosition)
         {
             return new Vector2(boardPosition.x * TileSize().x, boardPosition.y * TileSize().y);
+        }
+    }
+
+    public class EnemyInfo
+    {
+        public string EnemyType;
+        public IntVector2 EnemyPosition;
+
+        public EnemyInfo(string enemyType, IntVector2 enemyPosition)
+        {
+            EnemyType = enemyType;
+            EnemyPosition = enemyPosition;
         }
     }
 
