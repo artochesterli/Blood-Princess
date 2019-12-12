@@ -183,7 +183,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         CurrentPower = AbilityData.BasePower;
         CurrentEnergy = 0;
 
-        CoinAmount = 4000;
+        CoinAmount = 0;
         SetCoinText();
     }
 
