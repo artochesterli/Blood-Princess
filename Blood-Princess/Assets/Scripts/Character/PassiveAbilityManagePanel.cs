@@ -118,6 +118,22 @@ public class PassiveAbilityManagePanel : MonoBehaviour
             TransactionAvailable = true;
         }
 
+        bool HaveSame = false;
+
+        for(int i = 0; i < Player.GetComponent<CharacterAction>().EquipedPassiveAbility.Count; i++)
+        {
+            if(UpdatePassiveAbility.Type == Player.GetComponent<CharacterAction>().EquipedPassiveAbility[i].Type)
+            {
+                HaveSame = true;
+            }
+        }
+
+        if (HaveSame)
+        {
+            ConfirmGuide.GetComponent<Text>().color = Color.red;
+            TransactionAvailable = false;
+        }
+
         for (int i = 0; i < CurrentPassiveAbilityInfo.transform.childCount; i++)
         {
             GameObject PassiveAbilitySlot = CurrentPassiveAbilityInfo.transform.GetChild(i).gameObject;

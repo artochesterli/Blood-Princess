@@ -286,6 +286,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         if (e.Attack.Type == CharacterAttackType.Slash)
         {
             OneMindIncrementSlashPotency(e.Attack);
+            UltimateAwakeningBonus(e.Attack);
         }
         else if (e.Attack.ThisBattleArt != null)
         {
@@ -856,7 +857,6 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Data = GetComponent<CharacterData>();
         GainLoseSeal(Data.SealSpotEnergyCap.Count);
     }
-
 
 
     //CriticalEye
