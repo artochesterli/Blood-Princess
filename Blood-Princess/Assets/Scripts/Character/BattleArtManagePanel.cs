@@ -54,6 +54,8 @@ public class BattleArtManagePanel : MonoBehaviour
 
         if (Utility.InputCancel(ControlState.ReplaceBattleArt))
         {
+            CharacterOpenInfo.Self.GetComponent<ControlStateManager>().AttachedUpgradeMerchant = null;
+            UpdatedBattleArt = null;
             ControlStateManager.CurrentControlState = ControlState.Action;
             gameObject.SetActive(false);
         }
@@ -159,6 +161,8 @@ public class BattleArtManagePanel : MonoBehaviour
 
             for (int i = 1; i <= Current.Level; i++)
             {
+
+
                 CurrentBattleArtInfo.transform.Find("Description").GetComponent<Text>().text += "-" + Current.Description[i - 1];
                 if (i < Current.Level - 1)
                 {
@@ -212,7 +216,7 @@ public class BattleArtManagePanel : MonoBehaviour
         for (int i = 1; i <= UpdatedBattleArt.Level; i++)
         {
             UpdateBattleArtInfo.transform.Find("Description").GetComponent<Text>().text += "-" + UpdatedBattleArt.Description[i - 1];
-            if(i<UpdatedBattleArt.Level - 1)
+            if(i<UpdatedBattleArt.Level)
             {
                 UpdateBattleArtInfo.transform.Find("Description").GetComponent<Text>().text += "\n";
 

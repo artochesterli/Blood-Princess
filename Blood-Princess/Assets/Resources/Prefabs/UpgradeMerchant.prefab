@@ -170,7 +170,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f08b9a04460c99d488e1c255d6946f68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Price: 400
+  Price: 150
   Text: {fileID: 1929799106962818935}
   PlayerLayer:
     serializedVersion: 2

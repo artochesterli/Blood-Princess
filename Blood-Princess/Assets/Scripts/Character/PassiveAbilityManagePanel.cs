@@ -62,6 +62,7 @@ public class PassiveAbilityManagePanel : MonoBehaviour
 
         if (Utility.InputCancel(ControlState.ReplacePassiveAbility))
         {
+            UpdatePassiveAbility = null;
             ControlStateManager.CurrentControlState = ControlState.Action;
             gameObject.SetActive(false);
         }
