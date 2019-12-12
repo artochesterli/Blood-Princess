@@ -52,7 +52,9 @@ public class StatusPanel : MonoBehaviour
             BattleArtSlot.GetComponent<Text>().text = battleArt.name + "(Lv" + battleArt.Level + ")";
             BattleArtSlot.transform.Find("Icon").GetComponent<Image>().sprite = battleArt.Icon;
 
-            for(int i = 1; i <= battleArt.Level; i++)
+            BattleArtSlot.transform.Find("Description").GetComponent<Text>().text = "";
+
+            for (int i = 1; i <= battleArt.Level; i++)
             {
                 BattleArtSlot.transform.Find("Description").GetComponent<Text>().text += "-" + battleArt.Description[i - 1];
                 if(i < battleArt.Level - 1)
