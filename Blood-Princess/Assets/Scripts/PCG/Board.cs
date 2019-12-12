@@ -77,6 +77,8 @@ namespace PCG
                     _placeTile(curChar, curTileRelativePosition);
                 }
             }
+            // Generate Enemy Afterwards
+            Services.EnemyGenerationManager.GenerateEnemies(_board, _boardGameObject);
         }
 
         /// <summary>
@@ -504,28 +506,28 @@ namespace PCG
                     case "p":
                         instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Character", typeof(GameObject))) as GameObject;
                         break;
-                    case "M-F":
-                        instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Enemy1", typeof(GameObject))) as GameObject;
-                        _initializeAI(instantiatedObject, worldPosition);
-                        break;
-                    case "M-M":
-                        instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Enemy2", typeof(GameObject))) as GameObject;
-                        _initializeAI(instantiatedObject, worldPosition);
-                        break;
-                    case "M-S":
-                        instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/SoulWarrior", typeof(GameObject))) as GameObject;
-                        _initializeAI(instantiatedObject, worldPosition);
-                        break;
-                    case "M-1":
-                        int randInt = m_Rand.Next(1, 101);
-                        if (randInt < 30)
-                            instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Enemy1", typeof(GameObject))) as GameObject;
-                        else if (randInt < 65)
-                            instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Enemy2", typeof(GameObject))) as GameObject;
-                        else if (randInt < 101)
-                            instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/SoulWarrior", typeof(GameObject))) as GameObject;
-                        _initializeAI(instantiatedObject, worldPosition);
-                        break;
+                    // case "M-F":
+                    //     instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Enemy1", typeof(GameObject))) as GameObject;
+                    //     _initializeAI(instantiatedObject, worldPosition);
+                    //     break;
+                    // case "M-M":
+                    //     instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Enemy2", typeof(GameObject))) as GameObject;
+                    //     _initializeAI(instantiatedObject, worldPosition);
+                    //     break;
+                    // case "M-S":
+                    //     instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/SoulWarrior", typeof(GameObject))) as GameObject;
+                    //     _initializeAI(instantiatedObject, worldPosition);
+                    //     break;
+                    // case "M-1":
+                    //     int randInt = m_Rand.Next(1, 101);
+                    //     if (randInt < 30)
+                    //         instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Enemy1", typeof(GameObject))) as GameObject;
+                    //     else if (randInt < 65)
+                    //         instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Enemy2", typeof(GameObject))) as GameObject;
+                    //     else if (randInt < 101)
+                    //         instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/SoulWarrior", typeof(GameObject))) as GameObject;
+                    //     _initializeAI(instantiatedObject, worldPosition);
+                    //     break;
                     case "M-EL":
                         instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Knight", typeof(GameObject))) as GameObject;
                         _initializeAI(instantiatedObject, worldPosition);
@@ -539,11 +541,11 @@ namespace PCG
                 {
                     instantiatedObject.transform.parent = _boardGameObject.transform;
                     instantiatedObject.transform.position = curTileWorldPosition;
-                    if (instantiatedObject.layer == LayerMask.NameToLayer("Enemy"))
-                    {
-                        instantiatedObject.GetComponent<SpeedManager>().SetInitInfo();
-                        instantiatedObject.GetComponent<SpeedManager>().MoveToPoint(curTileWorldPosition + (Vector2.up * (instantiatedObject.GetComponent<BoxCollider2D>().size.y / 2f - Utility.TileSize().y / 2f)));
-                    }
+                    // if (instantiatedObject.layer == LayerMask.NameToLayer("Enemy"))
+                    // {
+                    //     instantiatedObject.GetComponent<SpeedManager>().SetInitInfo();
+                    //     instantiatedObject.GetComponent<SpeedManager>().MoveToPoint(curTileWorldPosition + (Vector2.up * (instantiatedObject.GetComponent<BoxCollider2D>().size.y / 2f - Utility.TileSize().y / 2f)));
+                    // }
                 }
             }
         }

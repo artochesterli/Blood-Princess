@@ -45,7 +45,6 @@ namespace Loot
                             else
                             {
                                 // Drop other stuff
-                                Debug.Log("Drop " + dropName);
                                 GameObject theLoot = m_LootData.GetPrefabFromName(dropName);
                                 Debug.Assert(theLoot != null, "Loot: " + dropName + " is not in loot data");
                                 GameObject lootInstance = GameObject.Instantiate<GameObject>(theLoot, ev.Enemy.transform.position, Quaternion.identity);

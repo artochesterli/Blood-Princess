@@ -143,7 +143,14 @@ namespace PCG
                     // Always Assumes Board zero position is world zero position
                     // add to board
                     if (!Utility.IgnorePlacingStrHashSet.Contains(curChar))
+                    {
                         m_CurrentBoard[curTileWorldPosition.x, curTileWorldPosition.y] = entireRoomFile[i][j];
+                        if (Utility.ContainsEnemy(curChar))
+                        {
+                            Services.EnemyGenerationManager.RecordNextEnemyInfo(Utility.GetEnemyType(curChar),
+                            curTileWorldPosition);
+                        }
+                    }
                 }
             }
         }
@@ -171,6 +178,11 @@ namespace PCG
                     if (!Utility.IgnorePlacingStrHashSet.Contains(curChar))
                     {
                         m_CurrentBoard[curTileWorldPosition.x, curTileWorldPosition.y] = expandableroom[i][j];
+                        if (Utility.ContainsEnemy(curChar))
+                        {
+                            Services.EnemyGenerationManager.RecordNextEnemyInfo(Utility.GetEnemyType(curChar),
+                            curTileWorldPosition);
+                        }
                     }
                 }
             }
