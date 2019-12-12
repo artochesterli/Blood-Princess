@@ -150,7 +150,7 @@ public class CrossSlash : BattleArt
     public int CurrentStrikeNumber;
     public int CurrentPotency;
 
-    public CrossSlash(int level = 2)
+    public CrossSlash(int level = 1)
     {
         name = "Cross Slash";
         Type = BattleArtType.CrossSlash;
