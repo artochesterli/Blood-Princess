@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <StorageData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <ItemList>
-    <Item xsi:type="EmptyItem">
-      <Name />
-      <Number>7</Number>
+    <Item xsi:type="Rug">
+      <Name>Rug</Name>
+      <Number>12</Number>
     </Item>
     <Item xsi:type="EmptyItem">
       <Name />
-      <Number>1</Number>
+      <Number>13</Number>
     </Item>
     <Item xsi:type="EmptyItem">
       <Name />

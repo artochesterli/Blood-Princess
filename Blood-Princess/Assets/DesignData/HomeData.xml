@@ -1,5 +1,15 @@
 <?xml version="1.0"?>
 <HomeData xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <BuildPositions />
-  <DecorationItems />
+  <BuildPositions>
+    <Vector2Int>
+      <x>3</x>
+      <y>4</y>
+    </Vector2Int>
+  </BuildPositions>
+  <DecorationItems>
+    <DecorationItem xsi:type="Rug">
+      <Name>Rug</Name>
+      <Number>2</Number>
+    </DecorationItem>
+  </DecorationItems>
 </HomeData>

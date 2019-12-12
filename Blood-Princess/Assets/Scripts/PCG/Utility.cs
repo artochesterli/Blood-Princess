@@ -145,6 +145,20 @@ namespace PCG
             return characterHashSet.Contains(characterType);
         }
 
+        public static bool OnlyContainsHashset(string str, HashSet<string> hset)
+        {
+            string[] split1 = str.Split('|');
+            HashSet<string> characterHashSet = new HashSet<string>();
+            for (int i = 0; i < split1.Length; i++)
+            {
+                if (!hset.Contains(split1[i].Split(';')[0]))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
         public static string LoadPath(string currentChar, string charType)
         {
             Debug.Assert(currentChar != "", "Current Character cannot be empty");

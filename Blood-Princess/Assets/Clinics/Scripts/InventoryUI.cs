@@ -193,6 +193,7 @@ namespace Clinic
                 Context.InventoryPanel.gameObject.SetActive(false);
                 Context.m_SelectionCursor.SetActive(false);
                 Context.InventoryInfoPanel.gameObject.SetActive(false);
+                Context.GetComponent<InteractableStorage>().OnTransitionToNonInteractable();
 
                 Context.ClinicGrid.SetActive(true);
                 BuildPosition = new Vector2Int();
@@ -254,6 +255,7 @@ namespace Clinic
 
                 if (global::Utility.InputCancel(ControlState.Storage))
                 {
+                    Debug.Log("Input cancel");
                     TransitionTo<InventoryClosedState>();
                     return;
                 }
@@ -373,6 +375,8 @@ namespace Clinic
             public override void OnExit()
             {
                 base.OnExit();
+                Debug.Log("Inventory Build State Exited");
+                Context.GetComponent<InteractableStorage>().OnTransitionToIdleState();
                 Camera.main.GetComponent<CameraManager>().Character = GameObject.FindGameObjectWithTag("Player");
                 GameObject.Destroy(Context.m_CurrentInstantiatedObject);
                 Context.ClinicGrid.SetActive(false);

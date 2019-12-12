@@ -24,6 +24,16 @@ namespace Clinic
             PlayerInside = false;
         }
 
+        public void OnTransitionToNonInteractable()
+        {
+            m_InteractableFSM.TransitionTo<InteractingNonCancelableState>();
+        }
+
+        public void OnTransitionToIdleState()
+        {
+            m_InteractableFSM.TransitionTo<InteractableIdleState>();
+        }
+
         protected abstract void OnInteract();
 
         protected abstract void OnCancelInteract();
@@ -62,7 +72,12 @@ namespace Clinic
 
         protected class InteractableIdleState : InteractableState
         {
+            public override void OnEnter()
+            {
+                base.OnEnter();
+                Context.OnCancelInteract();
 
+            }
             public override void Update()
             {
                 base.Update();
@@ -125,7 +140,14 @@ namespace Clinic
             public override void OnExit()
             {
                 base.OnExit();
-                Context.OnCancelInteract();
+            }
+        }
+
+        protected class InteractingNonCancelableState : InteractableState
+        {
+            public override void OnExit()
+            {
+                base.OnExit();
             }
         }
     }

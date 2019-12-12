@@ -106,19 +106,17 @@ public class EnemyGenerationManager
         while (!leftIsWall && !leftIsEdge)
         {
             string leftDownPos = _board[currentX - 1, worldPosition.y - 1];
-            leftDownPos = leftDownPos.Split(';')[0];
             string leftPos = _board[currentX - 1, worldPosition.y];
-            leftPos = leftPos.Split(';')[0];
             //leftIsWall = (leftPos != "" && leftPos != "0" && leftPos != "6" && leftPos != "e" && leftPos != "a" && leftPos != "b" && leftPos != "7");
-            leftIsWall = !PCG.Utility.EmptyStrHashSet.Contains(leftPos);
+            leftIsWall = !PCG.Utility.OnlyContainsHashset(leftPos, PCG.Utility.EmptyStrHashSet);
             //leftIsEdge = (leftPos == "" || leftPos == "0") && (leftDownPos == "" || leftDownPos == "0");
-            leftIsEdge = PCG.Utility.EmptyStrHashSet.Contains(leftPos) && PCG.Utility.EmptyStrHashSet.Contains(leftDownPos);
+            leftIsEdge = PCG.Utility.OnlyContainsHashset(leftPos, PCG.Utility.EmptyStrHashSet) && PCG.Utility.OnlyContainsHashset(leftDownPos, PCG.Utility.EmptyStrHashSet);
             currentX--;
         }
         if (AI.name.Contains("Knight") || AI.name.Contains("SoulWarrior"))
         {
             AI.transform.Find("PatronLeftMark").localPosition = PCG.Utility.BoardPositionToWorldPosition(new IntVector2(currentX + 2, worldPosition.y) - worldPosition);
-            AI.transform.Find("DetectLeftMark").localPosition = PCG.Utility.BoardPositionToWorldPosition(new IntVector2(currentX, worldPosition.y) - worldPosition);
+            AI.transform.Find("DetectLeftMark").localPosition = PCG.Utility.BoardPositionToWorldPosition(new IntVector2(currentX + 1, worldPosition.y) - worldPosition);
         }
         // Go Right and Check
         bool rightIsWall = false;
@@ -127,19 +125,17 @@ public class EnemyGenerationManager
         while (!rightIsWall && !RightIsEdge)
         {
             string rightDownPos = _board[currentX + 1, worldPosition.y - 1];
-            rightDownPos = rightDownPos.Split(';')[0];
             string rightPos = _board[currentX + 1, worldPosition.y];
-            rightPos = rightPos.Split(';')[0];
             //rightIsWall = (rightPos != "" && rightPos != "0" && rightPos != "6" && rightPos != "e" && rightPos != "a" && rightPos != "b" && rightPos != "7");
-            rightIsWall = !PCG.Utility.EmptyStrHashSet.Contains(rightPos);
+            rightIsWall = !PCG.Utility.OnlyContainsHashset(rightPos, PCG.Utility.EmptyStrHashSet);
             //RightIsEdge = (rightPos == "" || rightPos == "0") && (rightDownPos == "" || rightDownPos == "0");
-            RightIsEdge = PCG.Utility.EmptyStrHashSet.Contains(rightPos) && PCG.Utility.EmptyStrHashSet.Contains(rightDownPos);
+            RightIsEdge = PCG.Utility.OnlyContainsHashset(rightPos, PCG.Utility.EmptyStrHashSet) && PCG.Utility.OnlyContainsHashset(rightDownPos, PCG.Utility.EmptyStrHashSet);
             currentX++;
         }
         if (AI.name.Contains("Knight") || AI.name.Contains("SoulWarrior"))
         {
             AI.transform.Find("PatronRightMark").localPosition = PCG.Utility.BoardPositionToWorldPosition(new IntVector2(currentX - 2, worldPosition.y) - worldPosition);
-            AI.transform.Find("DetectRightMark").localPosition = PCG.Utility.BoardPositionToWorldPosition(new IntVector2(currentX, worldPosition.y) - worldPosition);
+            AI.transform.Find("DetectRightMark").localPosition = PCG.Utility.BoardPositionToWorldPosition(new IntVector2(currentX - 1, worldPosition.y) - worldPosition);
         }
     }
 

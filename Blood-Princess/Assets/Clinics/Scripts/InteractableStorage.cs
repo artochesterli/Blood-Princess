@@ -8,9 +8,11 @@ namespace Clinic
     [RequireComponent(typeof(InventoryUI))]
     public class InteractableStorage : Interactable
     {
+        public GameObject WorldCanvas;
         private Inventory m_Inventory;
         private InventoryUI m_InventoryUI;
         private ItemData m_ItemData;
+
 
         protected override void Awake()
         {
@@ -23,6 +25,7 @@ namespace Clinic
         private void Start()
         {
             Services.StorageManager.SaveItem(new EmptyItem());
+            Services.StorageManager.SaveItem(new Rug());
         }
 
         protected override void OnCancelInteract()
@@ -39,10 +42,12 @@ namespace Clinic
 
         protected override void OnEnterZone()
         {
+            WorldCanvas.SetActive(true);
         }
 
         protected override void OnExitZone()
         {
+            WorldCanvas.SetActive(false);
         }
     }
 

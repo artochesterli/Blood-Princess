@@ -7,6 +7,7 @@ namespace Clinic
     [RequireComponent(typeof(CraftingTable))]
     public class InteractableCraftingTable : Interactable
     {
+        public GameObject WorldCanvas;
         private CraftingTable m_CraftingTable;
 
         protected override void Awake()
@@ -23,11 +24,12 @@ namespace Clinic
 
         protected override void OnEnterZone()
         {
-            return;
+            WorldCanvas.SetActive(true);
         }
 
         protected override void OnExitZone()
         {
+            WorldCanvas.SetActive(false);
         }
 
         protected override void OnInteract()

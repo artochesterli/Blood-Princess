@@ -514,6 +514,15 @@ namespace PCG
                     case "h3":
                         instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Potions/HealingPotion30", typeof(GameObject))) as GameObject;
                         break;
+                    case "c":
+                        instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Altar", typeof(GameObject))) as GameObject;
+                        break;
+                    case "d":
+                        instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/AbilityMerchant", typeof(GameObject))) as GameObject;
+                        break;
+                    case "e":
+                        instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/UpgradeMerchant", typeof(GameObject))) as GameObject;
+                        break;
                     // case "M-F":
                     //     instantiatedObject = GameObject.Instantiate(Resources.Load("Prefabs/Enemy1", typeof(GameObject))) as GameObject;
                     //     _initializeAI(instantiatedObject, worldPosition);
@@ -567,19 +576,18 @@ namespace PCG
             while (!leftIsWall && !leftIsEdge)
             {
                 string leftDownPos = _board[currentX - 1, worldPosition.y - 1];
-                leftDownPos = leftDownPos.Split(';')[0];
                 string leftPos = _board[currentX - 1, worldPosition.y];
-                leftPos = leftPos.Split(';')[0];
                 //leftIsWall = (leftPos != "" && leftPos != "0" && leftPos != "6" && leftPos != "e" && leftPos != "a" && leftPos != "b" && leftPos != "7");
-                leftIsWall = !Utility.EmptyStrHashSet.Contains(leftPos);
+                leftIsWall = !Utility.OnlyContainsHashset(leftPos, Utility.EmptyStrHashSet);
                 //leftIsEdge = (leftPos == "" || leftPos == "0") && (leftDownPos == "" || leftDownPos == "0");
-                leftIsEdge = Utility.EmptyStrHashSet.Contains(leftPos) && Utility.EmptyStrHashSet.Contains(leftDownPos);
+                // leftIsEdge = Utility.EmptyStrHashSet.Contains(leftPos) && Utility.EmptyStrHashSet.Contains(leftDownPos);
+                leftIsEdge = Utility.OnlyContainsHashset(leftPos, Utility.EmptyStrHashSet) && Utility.OnlyContainsHashset(leftDownPos, Utility.EmptyStrHashSet);
                 currentX--;
             }
             if (AI.name.Contains("Knight") || AI.name.Contains("SoulWarrior"))
             {
                 AI.transform.Find("PatronLeftMark").localPosition = Utility.BoardPositionToWorldPosition(new IntVector2(currentX + 2, worldPosition.y) - worldPosition);
-                AI.transform.Find("DetectLeftMark").localPosition = Utility.BoardPositionToWorldPosition(new IntVector2(currentX, worldPosition.y) - worldPosition);
+                AI.transform.Find("DetectLeftMark").localPosition = Utility.BoardPositionToWorldPosition(new IntVector2(currentX + 1, worldPosition.y) - worldPosition);
             }
             // Go Right and Check
             bool rightIsWall = false;
@@ -588,19 +596,17 @@ namespace PCG
             while (!rightIsWall && !RightIsEdge)
             {
                 string rightDownPos = _board[currentX + 1, worldPosition.y - 1];
-                rightDownPos = rightDownPos.Split(';')[0];
                 string rightPos = _board[currentX + 1, worldPosition.y];
-                rightPos = rightPos.Split(';')[0];
                 //rightIsWall = (rightPos != "" && rightPos != "0" && rightPos != "6" && rightPos != "e" && rightPos != "a" && rightPos != "b" && rightPos != "7");
-                rightIsWall = !Utility.EmptyStrHashSet.Contains(rightPos);
+                rightIsWall = !Utility.OnlyContainsHashset(rightPos, Utility.EmptyStrHashSet);
                 //RightIsEdge = (rightPos == "" || rightPos == "0") && (rightDownPos == "" || rightDownPos == "0");
-                RightIsEdge = Utility.EmptyStrHashSet.Contains(rightPos) && Utility.EmptyStrHashSet.Contains(rightDownPos);
+                RightIsEdge = Utility.OnlyContainsHashset(rightPos, Utility.EmptyStrHashSet) && Utility.OnlyContainsHashset(rightDownPos, Utility.EmptyStrHashSet);
                 currentX++;
             }
             if (AI.name.Contains("Knight") || AI.name.Contains("SoulWarrior"))
             {
                 AI.transform.Find("PatronRightMark").localPosition = Utility.BoardPositionToWorldPosition(new IntVector2(currentX - 2, worldPosition.y) - worldPosition);
-                AI.transform.Find("DetectRightMark").localPosition = Utility.BoardPositionToWorldPosition(new IntVector2(currentX, worldPosition.y) - worldPosition);
+                AI.transform.Find("DetectRightMark").localPosition = Utility.BoardPositionToWorldPosition(new IntVector2(currentX - 1, worldPosition.y) - worldPosition);
             }
         }
 
