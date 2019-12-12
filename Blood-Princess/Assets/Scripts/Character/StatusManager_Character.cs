@@ -416,6 +416,10 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     private void OnPlayerGetMoney(PlayerGetMoney e)
     {
         CoinAmount += e.Value;
+        if (CoinAmount < 0)
+        {
+            CoinAmount = 0;
+        }
         SetCoinText();
     }
 

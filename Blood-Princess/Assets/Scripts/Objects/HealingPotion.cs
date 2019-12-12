@@ -21,7 +21,7 @@ public class HealingPotion : MonoBehaviour
         DetectPlayer();
         if (GetComponent<SpeedManager>().HitGround)
         {
-            GetComponent<SpeedManager>().SelfSpeed.y = 0;
+            GetComponent<SpeedManager>().SelfSpeed.x = 0;
         }
     }
 

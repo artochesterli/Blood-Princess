@@ -73,9 +73,15 @@ public class PassiveAbilityManagePanel : MonoBehaviour
 
         PassiveAbility Current = Player.GetComponent<CharacterAction>().EquipedPassiveAbility[CurrentSlot];
 
+        if (Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().PriceType == AbilityObjectPriceType.Purchase)
+        {
+            EventManager.instance.Fire(new PlayerGetMoney(-Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().Price));
+        }
+
         if (Current != null)
         {
             Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().Ability = Current;
+            Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().PriceType = AbilityObjectPriceType.Drop;
             Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().SetSelf();
         }
         else

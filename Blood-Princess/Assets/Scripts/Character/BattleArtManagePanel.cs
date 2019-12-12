@@ -62,6 +62,11 @@ public class BattleArtManagePanel : MonoBehaviour
         GameObject Player = CharacterOpenInfo.Self;
         BattleArt Current = Player.GetComponent<CharacterAction>().EquipedBattleArt;
 
+        if(Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().PriceType == AbilityObjectPriceType.Purchase)
+        {
+            EventManager.instance.Fire(new PlayerGetMoney(-Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().Price));
+        }
+
         if (Current != null)
         {
             Player.GetComponent<ControlStateManager>().AttachedAbilityObject.GetComponent<AbilityObject>().Ability = Current;
@@ -81,6 +86,8 @@ public class BattleArtManagePanel : MonoBehaviour
     {
         GameObject Player = CharacterOpenInfo.Self;
         BattleArt Current = Player.GetComponent<CharacterAction>().EquipedBattleArt;
+
+        EventManager.instance.Fire(new PlayerGetMoney(-Player.GetComponent<ControlStateManager>().AttachedUpgradeMerchant.GetComponent<UpgradeMerchant>().Price));
 
         Current.Level++;
     }
@@ -178,7 +185,14 @@ public class BattleArtManagePanel : MonoBehaviour
         }
 
 
-        UpdateBattleArtInfo.GetComponent<Text>().text = UpdatedBattleArt.name +"("+UpdatedBattleArt.Level.ToString()+")";
+        if (Mode == BattleArtPanelOpenMode.PickUp)
+        {
+            UpdateBattleArtInfo.GetComponent<Text>().text = UpdatedBattleArt.name + "(" + UpdatedBattleArt.Level.ToString() + ")";
+        }
+        else
+        {
+            UpdateBattleArtInfo.GetComponent<Text>().text = UpdatedBattleArt.name + "(" + (UpdatedBattleArt.Level + 1).ToString() + ")";
+        }
         UpdateBattleArtInfo.transform.Find("Icon").GetComponent<Image>().sprite = UpdatedBattleArt.Icon;
 
 
