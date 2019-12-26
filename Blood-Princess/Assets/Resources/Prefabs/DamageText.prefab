@@ -204,4 +204,4 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  StayTime: 1
+  StayTime: 0.5

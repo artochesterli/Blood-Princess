@@ -49,6 +49,7 @@ public class AbilityObject : MonoBehaviour
 
         int value;
 
+
         switch (Type)
         {
             case AbilityObjectType.OnlyBattleArt:
@@ -66,8 +67,11 @@ public class AbilityObject : MonoBehaviour
         }
 
 
+
+
         if (value < Data.BattleArtTypeNumber)
         {
+            value = 0;
             BattleArtType Type = (BattleArtType)value;
 
             switch (Type)

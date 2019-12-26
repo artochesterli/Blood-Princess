@@ -45,7 +45,7 @@ public class KnightAI : MonoBehaviour
     public KnightState CurrentState;
 
     public float AttackCoolDownTimeCount;
-
+    public int BlinkDecisionCoolDownCount;
 
     private FSM<KnightAI> KnightAIFSM;
     // Start is called before the first frame update
@@ -188,6 +188,28 @@ public abstract class KnightBehavior : FSM<KnightAI>.State
         if (KnockedBackTimeCount >= Data.KnockedBackTime)
         {
             SetKnockedBack(false);
+        }
+    }
+
+    protected void CounterDecision()
+    {
+        var Data = Entity.GetComponent<KnightData>();
+
+        if (Context.BlinkDecisionCoolDownCount <= 0)
+        {
+            float Chance = Random.Range(0.0f, 1.0f);
+            if (Chance < Data.BlinkChance)
+            {
+                TransitionTo<KnightBlinkPrepare>();
+            }
+            else
+            {
+                TransitionTo<KnightEngage>();
+            }
+        }
+        else
+        {
+            TransitionTo<KnightEngage>();
         }
     }
 }
@@ -343,6 +365,8 @@ public class KnightBlinkPrepare : KnightBehavior
     private void SetUp()
     {
         var Data = Entity.GetComponent<KnightData>();
+
+        Context.BlinkDecisionCoolDownCount = Data.BlinkDecisionCoolDown;
 
         TimeCount = 0;
         StateTime = Data.BlinkPrepareTime;
@@ -624,18 +648,25 @@ public class KnightAttackAnticipation : KnightBehavior
         {
             case KnightAttackMode.Single:
                 StateTime = Data.SingleAttackAnticipationTime;
+                Context.BlinkDecisionCoolDownCount--;
                 break;
             case KnightAttackMode.DoubleFirst:
                 StateTime = Data.DoubleAttackFirstAnticipationTime;
                 Context.DoubleAttackMark.GetComponent<SpriteRenderer>().enabled = true;
+
+                Context.BlinkDecisionCoolDownCount--;
+
                 break;
             case KnightAttackMode.DoubleSecond:
                 StateTime = Data.DoubleAttackSecondAnticipationTime;
                 break;
             case KnightAttackMode.Chase:
                 StateTime = Data.ChaseAttackAnticipationTime;
+                Context.BlinkDecisionCoolDownCount--;
                 break;
         }
+
+
 
         Context.AttackCoolDownTimeCount = Data.AttackCoolDown;
 
@@ -951,6 +982,8 @@ public class KnightKnockedBack : KnightBehavior
 
         Context.AttackCoolDownTimeCount = 0;
 
+        AIUtility.RectifyDirection(Context.Player, Entity);
+
         if (Status.CurrentTakenAttack.Dir == Direction.Right)
         {
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = Data.KnockedBackSpeed;
@@ -975,15 +1008,7 @@ public class KnightKnockedBack : KnightBehavior
         TimeCount += Time.deltaTime;
         if (TimeCount >= StateTime)
         {
-            float Chance = Random.Range(0.0f, 1.0f);
-            if (Chance < Data.BlinkChance)
-            {
-                TransitionTo<KnightBlinkPrepare>();
-            }
-            else
-            {
-                TransitionTo<KnightEngage>();
-            }
+            CounterDecision();
         }
     }
 }
@@ -1028,6 +1053,7 @@ public class KnightOffBalance : KnightBehavior
     public override void OnExit()
     {
         base.OnExit();
+
         Context.LastState = KnightState.Offbalance;
     }
 
@@ -1047,7 +1073,7 @@ public class KnightOffBalance : KnightBehavior
 
         AIUtility.RectifyDirection(Context.Player, Entity);
 
-        if(Status.CurrentTakenAttack.Dir == Direction.Right)
+        if (Status.CurrentTakenAttack.Dir == Direction.Right)
         {
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = Data.OffBalanceBackSpeed;
         }
@@ -1073,15 +1099,7 @@ public class KnightOffBalance : KnightBehavior
         TimeCount += Time.deltaTime;
         if(TimeCount >= BackTime + StayTime && !InKnockedBack)
         {
-            float Chance = Random.Range(0.0f, 1.0f);
-            if (Chance < Data.BlinkChance)
-            {
-                TransitionTo<KnightBlinkPrepare>();
-            }
-            else
-            {
-                TransitionTo<KnightEngage>();
-            }
+            CounterDecision();
         }
         else if(TimeCount >= BackTime)
         {

@@ -10,8 +10,15 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 {
     public int CurrentEnergy;
     public int CurrentMaxEnergy;
+
+    public int CurrentNormalMaxEnergy;
+    public int CurrentAwakenMaxEnergy;
+
     public int CurrentPower;
-    public List<bool> CurrentSealState;
+
+    public int CurrentOrb;
+    public int CurrentMaxOrb;
+
 
     public int CoinAmount;
     public GameObject CoinText;
@@ -22,24 +29,23 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     public GameObject HPFill;
     public GameObject EnergyFill;
     public GameObject EnergyFullMark;
-    public GameObject SealFill;
-    public GameObject SealMarks;
 
-    public GameObject ParryShieldMark;
-    public GameObject ParriedEffectPrefab;
+    public GameObject Marks_4;
+    public GameObject Marks_3;
 
-    public Sprite EnergyOrbEmptySprite;
-    public Sprite EnergyOrbFilledSprite;
+    public GameObject Orbs;
+    public Sprite OrbFill;
+    public Sprite OrbEmpty;
 
     private bool InRollInvulnerability;
-
-    private bool InParryInvulnerability;
 
     private bool EnergyFull;
     private bool Awaken;
 
-    private GameObject DamageText;
+    private GameObject CurrentNormalMarks;
+    private GameObject CurrentAwakenMarks;
 
+    private GameObject DamageText;
 
     private PowerSlash PowerSlashBattleArt;
     private CrossSlash CrossSlashBattleArt;
@@ -119,12 +125,6 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         }
     }
 
-    public void SetParryInvulnerability(bool value)
-    {
-        InParryInvulnerability = value;
-        ParryShieldMark.GetComponent<SpriteRenderer>().enabled = value;
-        ParryShieldMark.transform.position = GetComponent<SpeedManager>().GetTruePos();
-    }
 
     public void SetRollInvulnerability(bool value)
     {
@@ -150,20 +150,28 @@ public class StatusManager_Character : StatusManagerBase, IHittable
     private void SetAwaken(bool value)
     {
         Awaken = value;
+
+        SetEnergyPresent();
     }
 
-    public int GetCurrentSealSpot()
+    private void SetEnergyPresent()
     {
-        int ans = 0;
-        while (ans < CurrentSealState.Count)
+        var Data = GetComponent<CharacterData>();
+
+        if (Awaken)
         {
-            if (CurrentSealState[ans])
-            {
-                return ans;
-            }
-            ans++;
+            CurrentNormalMarks.SetActive(false);
+            CurrentAwakenMarks.SetActive(true);
+
+            CurrentMaxEnergy = CurrentAwakenMaxEnergy;
         }
-        return ans;
+        else
+        {
+            CurrentNormalMarks.SetActive(true);
+            CurrentAwakenMarks.SetActive(false);
+
+            CurrentMaxEnergy = CurrentNormalMaxEnergy;
+        }
     }
 
     private void Init()
@@ -173,12 +181,15 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
         CurrentMaxHP = Data.MaxHP;
         CurrentHP = Data.MaxHP;
-        CurrentMaxEnergy = Data.SealSpotEnergyCap[0];
-        CurrentSealState = new List<bool>();
-        for (int i = 0; i < Data.SealSpotEnergyCap.Count; i++)
-        {
-            CurrentSealState.Add(true);
-        }
+        CurrentMaxEnergy = Data.MaxEnergy;
+
+        CurrentOrb = 0;
+        CurrentMaxOrb = Data.MaxOrb;
+
+        CurrentNormalMaxEnergy = Data.MaxEnergy;
+        CurrentAwakenMaxEnergy = Data.AwakenMaxEnergy;
+        CurrentNormalMarks = Marks_4;
+        CurrentAwakenMarks = Marks_3;
 
         CurrentPower = AbilityData.BasePower;
         CurrentEnergy = 0;
@@ -193,28 +204,11 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Data = GetComponent<CharacterData>();
         HPFill.GetComponent<Image>().fillAmount = (float)CurrentHP / CurrentMaxHP;
 
-        EnergyFill.GetComponent<Image>().fillAmount = (float)CurrentEnergy / Data.MaxEnergy;
-
-        if (GetCurrentSealSpot() == Data.SealSpotEnergyCap.Count)
-        {
-            SealFill.GetComponent<Image>().fillAmount = 0;
-        }
-        else
-        {
-            SealFill.GetComponent<Image>().fillAmount = (float)(Data.MaxEnergy - Data.SealSpotEnergyCap[GetCurrentSealSpot()]) / Data.MaxEnergy;
-        }
-
-
-
-        for (int i = 0; i < CurrentSealState.Count; i++)
-        {
-            SealMarks.transform.GetChild(i).gameObject.SetActive(CurrentSealState[i]);
-        }
+        EnergyFill.GetComponent<Image>().fillAmount = (float)CurrentEnergy / CurrentMaxEnergy;
 
     }
 
-
-
+    
 
     public override bool OnHit(AttackInfo Attack)
     {
@@ -233,12 +227,14 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
             PowerSlashLoseIncrement();
 
-            SpiritMasterGainSeal();
-            UltimateAwakenGainSeal();
+            SpiritMasterLoseOrb();
+            UltimateAwakenLoseOrb();
             OneMindLoseIncrement();
 
             CurrentEnergy = 0;
-            GainLoseSeal(1);
+
+            GainLoseOrb(-1);
+
             SetEnergyFull(false);
             SetAwaken(false);
 
@@ -275,7 +271,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     private bool Invulnerable()
     {
-        return InRollInvulnerability || InParryInvulnerability;
+        return InRollInvulnerability;
     }
 
     private void OnPlayerStartAttackAnticipation(PlayerStartAttackAnticipation e)
@@ -292,6 +288,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         {
             CurrentEnergy = 0;
             SetEnergyFull(false);
+            GainLoseOrb(1);
 
             switch (e.Attack.ThisBattleArt.Type)
             {
@@ -330,16 +327,8 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         {
             if (e.Attack.Type == CharacterAttackType.Slash)
             {
-                if (Awaken)
-                {
-                    GainLoseEnergy(AbilityData.SlashEnergyAwakenGain);
-                }
-                else
-                {
-                    GainLoseEnergy(AbilityData.SlashEnergyGain);
-                }
+                GainLoseEnergy(AbilityData.SlashEnergyGain);
 
-                SpiritMasterEnergyGainBonus();
             }
             else if (e.Attack.ThisBattleArt != null)
             {
@@ -355,27 +344,9 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
                 HarmonyHeal();
 
-                EndStrikeBreakSeal();
             }
         }
 
-        if (CrossSlashBattleArt != null)
-        {
-            if ((CrossSlashBattleArt.StrikeCount == CrossSlashBattleArt.CurrentStrikeNumber && CrossSlashBattleArt.StrikeHitCount >= 1))
-            {
-                GainLoseSeal(-1);
-            }
-        }
-    }
-
-    private void EndStrikeBreakSeal()
-    {
-        if (CrossSlashBattleArt != null)
-        {
-            return;
-        }
-
-        GainLoseSeal(-1);
     }
 
     private void OnPlayerStartAttackRecovery(PlayerStartAttackRecovery e)
@@ -407,11 +378,6 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         var Data = GetComponent<CharacterData>();
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        if (InParryInvulnerability)
-        {
-            GameObject.Instantiate(ParriedEffectPrefab, ParryShieldMark.transform.position, Quaternion.Euler(0, 0, 0));
-            GainLoseEnergy(AbilityData.ParryEnergyGain);
-        }
     }
 
     private void OnPlayerGetMoney(PlayerGetMoney e)
@@ -546,43 +512,33 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         CurrentEnergy += amount;
     }
 
-    private void GainLoseSeal(int amount)
+    private void GainLoseOrb(int amount)
     {
         var Data = GetComponent<CharacterData>();
-        var AbilityData = GetComponent<CharacterAbilityData>();
 
-        if (amount > 0)
+        CurrentOrb += amount;
+        if(CurrentOrb > CurrentMaxOrb)
         {
-            while (amount > 0)
-            {
-                for (int i = CurrentSealState.Count - 1; i >= 0; i--)
-                {
-                    if (!CurrentSealState[i])
-                    {
-                        CurrentSealState[i] = true;
-                        break;
-                    }
-                }
-                amount--;
-            }
+            CurrentOrb = CurrentMaxOrb;
         }
-        else if (amount < 0)
+        else if(CurrentOrb < 0)
         {
-            while (amount < 0)
+            CurrentOrb = 0;
+        }
+
+        for (int i = 0; i < CurrentMaxOrb; i++)
+        {
+            if (i < CurrentOrb)
             {
-                for (int i = 0; i < CurrentSealState.Count; i++)
-                {
-                    if (CurrentSealState[i])
-                    {
-                        CurrentSealState[i] = false;
-                        break;
-                    }
-                }
-                amount++;
+                Orbs.transform.GetChild(i).gameObject.GetComponent<Image>().sprite = OrbFill;
+            }
+            else
+            {
+                Orbs.transform.GetChild(i).gameObject.GetComponent<Image>().sprite = OrbEmpty;
             }
         }
 
-        if (GetCurrentSealSpot() == CurrentSealState.Count)
+        if(CurrentOrb == CurrentMaxOrb)
         {
             SetAwaken(true);
         }
@@ -590,16 +546,8 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         {
             SetAwaken(false);
         }
-
-        if (Awaken)
-        {
-            CurrentMaxEnergy = Data.MaxEnergy;
-        }
-        else
-        {
-            CurrentMaxEnergy = Data.SealSpotEnergyCap[GetCurrentSealSpot()];
-        }
     }
+
 
     private void OnEquipBattleArt(PlayerEquipBattleArt e)
     {
@@ -647,6 +595,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                 break;
             case PassiveAbilityType.SpiritMaster:
                 SpiritMasterPassiveAbility = (SpiritMaster)e.ThisPassiveAbility;
+                SpiritMasterChangeMarks(true);
                 break;
             case PassiveAbilityType.UltimateAwakening:
                 UltimateAwakeningPassiveAbility = (UltimateAwakening)e.ThisPassiveAbility;
@@ -679,6 +628,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
                 break;
             case PassiveAbilityType.SpiritMaster:
                 SpiritMasterPassiveAbility = null;
+                SpiritMasterChangeMarks(false);
                 break;
             case PassiveAbilityType.UltimateAwakening:
                 UltimateAwakeningPassiveAbility = null;
@@ -780,7 +730,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
             CrossSlashBattleArt.CurrentStrikeNumber = AbilityData.CrossSlashStrikeNumber_Normal;
         }
 
-        CrossSlashBattleArt.CurrentPotency = AbilityData.CrossSlashPotencyList[GetCurrentSealSpot()];
+        
     }
 
     private void CrossSlashCountHit()
@@ -808,18 +758,36 @@ public class StatusManager_Character : StatusManagerBase, IHittable
 
     //SpiritMaster
 
-    private void SpiritMasterEnergyGainBonus()
+    private void SpiritMasterChangeMarks(bool Equip)
     {
-        if (SpiritMasterPassiveAbility == null)
+        var AbilityData = GetComponent<CharacterAbilityData>();
+        var Data = GetComponent<CharacterData>();
+
+        CurrentNormalMarks.SetActive(false);
+        CurrentAwakenMarks.SetActive(false);
+
+        if (Equip)
         {
-            return;
+            CurrentNormalMarks = Marks_3;
+            CurrentNormalMaxEnergy = AbilityData.SpiritMasterNormalMaxEnergy;
+        }
+        else
+        {
+            CurrentNormalMarks = Marks_4;
+
+            CurrentNormalMaxEnergy = Data.MaxEnergy;
         }
 
-        var AbilityData = GetComponent<CharacterAbilityData>();
-        GainLoseEnergy(AbilityData.SpiritMasterExtraEnergyGainListWithSeal[GetCurrentSealSpot()]);
+        SetEnergyPresent();
+
+        if(CurrentEnergy > CurrentMaxEnergy)
+        {
+            CurrentEnergy = CurrentMaxEnergy;
+        }
+
     }
 
-    private void SpiritMasterGainSeal()
+    private void SpiritMasterLoseOrb()
     {
         if (SpiritMasterPassiveAbility == null)
         {
@@ -827,7 +795,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         }
 
         var Data = GetComponent<CharacterData>();
-        GainLoseSeal(Data.SealSpotEnergyCap.Count);
+        GainLoseOrb(-CurrentMaxOrb);
     }
 
     //UltimateAwakening
@@ -847,7 +815,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         }
     }
 
-    private void UltimateAwakenGainSeal()
+    private void UltimateAwakenLoseOrb()
     {
         if (UltimateAwakeningPassiveAbility == null)
         {
@@ -855,7 +823,7 @@ public class StatusManager_Character : StatusManagerBase, IHittable
         }
 
         var Data = GetComponent<CharacterData>();
-        GainLoseSeal(Data.SealSpotEnergyCap.Count);
+        GainLoseOrb(-CurrentMaxOrb);
     }
 
 

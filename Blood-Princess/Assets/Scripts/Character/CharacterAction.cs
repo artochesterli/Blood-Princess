@@ -304,7 +304,6 @@ public enum InputType
     Slash,
     Roll,
     BattleArt,
-    Parry,
     FallPlatform
 
 }
@@ -720,11 +719,6 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             return;
         }
 
-        if (Utility.InputParry())
-        {
-            ImmediateInput = new InputInfo(InputType.Parry, WithDirection, Right);
-            return;
-        }
     }
 
     protected bool GroundStateActionTransitionCheck(InputInfo ImmediateInput)
@@ -786,9 +780,6 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
                 {
                     return false;
                 }
-            case InputType.Parry:
-                PerformParry(ImmediateInput);
-                return true;
         }
 
 
@@ -916,11 +907,6 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             SavedInputList.Add(new InputInfo(InputType.Jump, WithDirection, Right, Entity.GetComponent<CharacterData>().InputSaveTime));
         }
 
-        if (Utility.InputParry())
-        {
-            SavedInputList.Add(new InputInfo(InputType.Parry, WithDirection, Right, Entity.GetComponent<CharacterData>().InputSaveTime));
-        }
-
         if (Utility.InputBattleArt())
         {
             SavedInputList.Add(new InputInfo(InputType.BattleArt, WithDirection, Right, Entity.GetComponent<CharacterData>().InputSaveTime));
@@ -951,9 +937,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             case InputType.Jump:
                 PerformJump(Last);
                 break;
-            case InputType.Parry:
-                PerformParry(Last);
-                break;
+
             case InputType.Roll:
                 if (CheckPerformRoll(Last))
                 {
@@ -964,6 +948,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
                     return false;
                 }
                 break;
+
             case InputType.BattleArt:
                 if (CheckPerformBattleArt(Last))
                 {
@@ -1040,11 +1025,6 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         {
             SavedInputList.Add(new InputInfo(InputType.BattleArt, WithDirection, Right, Entity.GetComponent<CharacterData>().InputSaveTime));
         }
-
-        if (Utility.InputParry())
-        {
-            SavedInputList.Add(new InputInfo(InputType.Parry, WithDirection, Right, Entity.GetComponent<CharacterData>().InputSaveTime));
-        }
     }
 
     protected bool RecoveryEndTransitionCheck(List<InputInfo> SavedInputList, bool Grounded)
@@ -1089,16 +1069,11 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
                     return false;
                 }
                 break;
+
             case InputType.Slash:
                 PerformSlash(Last);
                 break;
-            case InputType.Parry:
-                if (!Grounded)
-                {
-                    return false;
-                }
-                PerformParry(Last);
-                break;
+
             case InputType.BattleArt:
                 if (CheckPerformBattleArt(Last))
                 {
@@ -1149,11 +1124,6 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         }
 
         return false;
-    }
-
-    protected bool CheckPerformParry(InputInfo Info)
-    {
-        return Info.Type == InputType.Parry;
     }
 
     protected bool CheckPerformRoll(InputInfo Info)
@@ -1218,13 +1188,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         ChangeDirection(Info);
         SpeedManager.SelfSpeed.y = Data.JumpSpeed;
 
-        TransitionTo<JumpHolding>();
-    }
-
-    protected void PerformParry(InputInfo Info)
-    {
-        ChangeDirection(Info);
-        TransitionTo<ParryAnticipation>();
+        TransitionTo<Air>();
     }
 
     protected bool CheckCharacterMove(bool Ground)
@@ -1487,70 +1451,6 @@ public class GroundMove : CharacterActionState
     }
 }
 
-public class JumpHolding : CharacterActionState
-{
-    private float TimeCount;
-
-    public override void OnEnter()
-    {
-        base.OnEnter();
-        SetUp();
-        SetAppearance();
-    }
-
-    public override void Update()
-    {
-        base.Update();
-
-        CheckCharacterMove(false);
-
-        if (CheckGetInterrupted())
-        {
-            TransitionTo<GetInterrupted>();
-            return;
-        }
-
-        if (Utility.InputNormalSlash())
-        {
-            TransitionTo<SlashAnticipation>();
-            return;
-        }
-
-        CheckTime();
-    }
-
-    private void SetUp()
-    {
-        Context.CurrentGravity = 0;
-        TimeCount = 0;
-    }
-
-    private void SetAppearance()
-    {
-        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
-        CurrentSpriteSeries = SpriteData.IdleSeries;
-
-        SetCharacterSprite();
-        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.IdleOffset, SpriteData.IdleSize);
-    }
-
-    private void CheckTime()
-    {
-        var Data = Entity.GetComponent<CharacterData>();
-
-        TimeCount += Time.deltaTime;
-        if(TimeCount >= Data.JumpHoldingTime)
-        {
-            Entity.GetComponent<SpeedManager>().SelfSpeed.y = Data.OverJumpSpeed;
-            TransitionTo<Air>();
-        }
-        else if (!Utility.InputJumpHold())
-        {
-            TransitionTo<Air>();
-        }
-    }
-}
-
 public class Air : CharacterActionState
 {
     private List<InputInfo> SavedInputList;
@@ -1699,7 +1599,12 @@ public class SlashAnticipation : CharacterActionState
             dir = Direction.Left;
         }
 
-        int Potency = AbilityData.SlashPotencyList[Status.GetCurrentSealSpot()];
+        int Potency = AbilityData.SlashPotency;
+
+        if (Status.IsAwaken())
+        {
+            Potency = AbilityData.SlashAwakenPotency;
+        }
 
         SetAttribute(AbilityData.SlashAnticipationTime, AbilityData.SlashStrikeTime, AbilityData.SlashRecoveryTime, Status.CurrentPower, Potency, AbilityData.SlashInterruptLevel, AbilityData.SlashOffset, AbilityData.SlashHitBoxSize);
 
@@ -2387,7 +2292,7 @@ public class PowerSlashAnticipation : CharacterActionState
             dir = Direction.Left;
         }
 
-        int Potency = AbilityData.PowerSlashPotencyList[Status.GetCurrentSealSpot()];
+        int Potency = AbilityData.PowerSlashPotency;
 
         SetAttribute(AbilityData.PowerSlashAnticipationTime, AbilityData.PowerSlashStrikeTime, AbilityData.PowerSlashRecoveryTime,Status.CurrentPower , Potency, AbilityData.PowerSlashInterruptLevel, AbilityData.PowerSlashOffset, AbilityData.PowerSlashHitBoxSize);
 
@@ -2601,176 +2506,6 @@ public class PowerSlashRecovery : CharacterActionState
         CurrentSpriteSeries = SpriteData.HeavyRecoverySeries;
         SetCharacterSprite();
         Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.HeavyRecoveryOffset, SpriteData.HeavyRecoverySize);
-    }
-}
-
-public class ParryAnticipation : CharacterActionState
-{
-    private float TimeCount;
-    private float StateTime;
-
-    public override void OnEnter()
-    {
-        base.OnEnter();
-        SetUp();
-        SetAppearance();
-    }
-
-    public override void Update()
-    {
-        base.Update();
-        if (CheckGetInterrupted())
-        {
-            TransitionTo<GetInterrupted>();
-            return;
-        }
-
-        CheckTime();
-    }
-
-    private void SetUp()
-    {
-        RectifyDirectionWithInput();
-
-        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
-        TimeCount = 0;
-        StateTime = AbilityData.ParryAnticipationTime;
-
-        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
-    }
-
-    private void SetAppearance()
-    {
-        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
-        CurrentSpriteSeries = SpriteData.LightAnticipationSeries;
-
-        SetCharacterSprite();
-        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightAnticipationOffset, SpriteData.LightAnticipationSize);
-    }
-
-    private void CheckTime()
-    {
-        TimeCount += Time.deltaTime;
-        if(TimeCount >= StateTime)
-        {
-            TransitionTo<Parry>();
-            return;
-        }
-    }
-}
-
-public class Parry : CharacterActionState
-{
-    private float TimeCount;
-    private float StateTime;
-
-    public override void OnEnter()
-    {
-        base.OnEnter();
-        SetUp();
-        SetAppearance();
-    }
-
-    public override void Update()
-    {
-        base.Update();
-        CheckTime();
-    }
-
-    public override void OnExit()
-    {
-        base.OnExit();
-        Entity.GetComponent<StatusManager_Character>().SetParryInvulnerability(false);
-    }
-
-    private void SetUp()
-    {
-        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
-        TimeCount = 0;
-        StateTime = AbilityData.ParryEffectTime;
-        Entity.GetComponent<StatusManager_Character>().SetParryInvulnerability(true);
-
-
-    }
-
-    private void SetAppearance()
-    {
-        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
-        CurrentSpriteSeries = SpriteData.LightAnticipationSeries;
-
-        SetCharacterSprite();
-        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightAnticipationOffset, SpriteData.LightAnticipationSize);
-    }
-
-    private void CheckTime()
-    {
-        TimeCount += Time.deltaTime;
-        if (TimeCount >= StateTime)
-        {
-            TransitionTo<ParryRecovery>();
-            return;
-        }
-    }
-
-}
-
-public class ParryRecovery : CharacterActionState
-{
-    private float TimeCount;
-    private float StateTime;
-    private List<InputInfo> SavedInputList;
-
-    public override void OnEnter()
-    {
-        base.OnEnter();
-        SetUp();
-        SetAppearance();
-        RecoveryStateReceiveSavedInput(SavedInputList);
-    }
-
-    public override void Update()
-    {
-        base.Update();
-        if (CheckGetInterrupted())
-        {
-            TransitionTo<GetInterrupted>();
-            return;
-        }
-
-        ManageSavedInputList(SavedInputList);
-        RecoveryStateReceiveSavedInput(SavedInputList);
-
-        CheckTime();
-    }
-
-    private void SetUp()
-    {
-        var AbilityData = Entity.GetComponent<CharacterAbilityData>();
-        TimeCount = 0;
-        StateTime = AbilityData.ParryRecoveryTime;
-
-        SavedInputList = new List<InputInfo>();
-    }
-
-    private void SetAppearance()
-    {
-        var SpriteData = Entity.GetComponent<CharacterSpriteData>();
-        CurrentSpriteSeries = SpriteData.LightAnticipationSeries;
-
-        SetCharacterSprite();
-        Entity.GetComponent<SpeedManager>().SetBodyInfo(SpriteData.LightAnticipationOffset, SpriteData.LightAnticipationSize);
-    }
-
-    private void CheckTime()
-    {
-        TimeCount += Time.deltaTime;
-        if (TimeCount >= StateTime)
-        {
-            if (!RecoveryEndTransitionCheck(SavedInputList,true))
-            {
-                TransitionTo<Stand>();
-            }
-        }
     }
 }
 

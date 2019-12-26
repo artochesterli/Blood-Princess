@@ -13,13 +13,12 @@ public class CharacterData : MonoBehaviour
     public float AirDeceleration;
     public float NormalGravity;
     public float JumpSpeed;
-    public float JumpHoldingTime;
-    public float OverJumpSpeed;
 
     public int MaxHP;
     public int MaxEnergy;
+    public int AwakenMaxEnergy;
 
-    public List<int> SealSpotEnergyCap;
+    public int MaxOrb;
 
     public float InterruptedTime;
     public float InterruptedSpeed;
@@ -47,6 +46,7 @@ public class CharacterData : MonoBehaviour
     public LayerMask DoorLayer;
 
     public int BattleArtTypeNumber;
+    public int RuneTypeNumber;
     public int PassiveAbilityTypeNumber;
 
     // Start is called before the first frame update

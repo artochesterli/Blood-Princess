@@ -13,11 +13,11 @@ public class CharacterAbilityData : MonoBehaviour
     public float SlashStrikeTime;
     public float SlashRecoveryTime;
     public float SlashStepForwardSpeed;
-    public List<int> SlashPotencyList;
+    public int SlashPotency;
+    public int SlashAwakenPotency;
     public int SlashInterruptLevel;
 
     public int SlashEnergyGain;
-    public int SlashEnergyAwakenGain;
 
     public GameObject SlashEffect;
     public GameObject SlashHitEffect;
@@ -26,16 +26,11 @@ public class CharacterAbilityData : MonoBehaviour
     public Vector2 SlashHitBoxSize;
     public Vector2 SlashEffectOffset;
 
-    public float ParryAnticipationTime;
-    public float ParryRecoveryTime;
-    public float ParryEffectTime;
-    public int ParryEnergyGain;
-
     public float PowerSlashAnticipationTime;
     public float PowerSlashStrikeTime;
     public float PowerSlashRecoveryTime;
     public float PowerSlashStepForwardSpeed;
-    public List<int> PowerSlashPotencyList;
+    public int PowerSlashPotency;
     public int PowerSlashInterruptLevel;
 
     public int PowerSlashAwakenPotencyBonus_Normal;
@@ -48,6 +43,9 @@ public class CharacterAbilityData : MonoBehaviour
     public Vector2 PowerSlashEffectOffset;
     public Vector2 PowerSlashOffset;
     public Vector2 PowerSlashHitBoxSize;
+
+
+
 
     public float CrossSlashAnticipationTime;
     public float CrossSlashStrikeTime;
@@ -75,7 +73,7 @@ public class CharacterAbilityData : MonoBehaviour
 
     public int HarmonyHealPotency;
 
-    public List<int> SpiritMasterExtraEnergyGainListWithSeal;
+    public int SpiritMasterNormalMaxEnergy;
 
     public int UltimateAwakeningExtraPotency;
 

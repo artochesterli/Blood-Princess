@@ -317,15 +317,4 @@ public class Utility
         }
         return Input.GetKeyDown(KeyCode.L) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Roll"));
     }
-
-    public static bool InputParry()
-    {
-        return false;
-
-        if (ControlStateManager.CurrentControlState != ControlState.Action)
-        {
-            return false;
-        }
-        return Input.GetKeyDown(KeyCode.Q) || (ControllerManager.CharacterJoystick != null && ControllerManager.Character.GetButtonDown("Parry"));
-    }
 }

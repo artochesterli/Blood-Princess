@@ -275,6 +275,7 @@ MonoBehaviour:
   LastState: 0
   CurrentState: 0
   AttackCoolDownTimeCount: 0
+  BlinkDecisionCoolDownCount: 0
 --- !u!114 &4305804637280515001
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -294,14 +295,14 @@ MonoBehaviour:
   KeepDisMoveSpeed: 1
   AttackStepForwardSpeed: 12
   SingleAttackAnticipationTime: 0.6
-  DoubleAttackFirstAnticipationTime: 0.6
+  DoubleAttackFirstAnticipationTime: 0.7
   DoubleAttackSecondAnticipationTime: 0.2
   ChaseAttackAnticipationTime: 0.8
-  ChaseAttackSpeed: 15
+  ChaseAttackSpeed: 10
   AttackTime: 0.1
   SingleAttackRecoveryTime: 0.5
   DoubleAttackFirstRecoveryTime: 0.2
-  DoubleAttackSecondRecoveryTime: 0.8
+  DoubleAttackSecondRecoveryTime: 0.9
   ChaseAttackRecoveryTime: 0.6
   Damage: 5
   AttackAvailableHitBoxPercentage: 0.5
@@ -326,12 +327,13 @@ MonoBehaviour:
   AttackCoolDown: 0.6
   MinChaseAttackChaseDistance: 2.5
   MaxChaseAttackChaseDistance: 5
-  SingleAttackChance: 0.5
-  DoubleAttackChance: 0.5
+  SingleAttackChance: 0.7
+  DoubleAttackChance: 0.3
+  BlinkDecisionCoolDown: 2
   BlinkEffect: {fileID: 4609852680319573600, guid: f03730094d17ae0449957fc891781dc8,
     type: 3}
   BlinkChance: 0.3
-  BlinkPrepareTime: 0.3
+  BlinkPrepareTime: 0.2
   BlinkForChaseAttackDis: 3
 --- !u!114 &4305804637280515000
 MonoBehaviour:
