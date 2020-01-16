@@ -5071,7 +5071,7 @@ MonoBehaviour:
   AirDeceleration: 25
   NormalGravity: 4
   JumpSpeed: 12
-  MaxHP: 30
+  MaxHP: 50
   MaxEnergy: 4
   AwakenMaxEnergy: 3
   MaxOrb: 3
