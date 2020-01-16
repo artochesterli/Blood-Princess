@@ -298,6 +298,13 @@ public enum CharacterAttackType
     CrossSlash
 }
 
+public enum CharacterMoveMode
+{
+    Normal,
+    NoDirChange,
+    NoInput
+}
+
 public enum InputType
 {
     Jump,
@@ -592,8 +599,6 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         {
             float PlayerLeft = SpeedManager.GetTruePos().x - SpeedManager.BodyWidth / 2;
             float PlayerRight = SpeedManager.GetTruePos().x + SpeedManager.BodyWidth / 2;
-            float GroundLeft = SpeedManager.Ground.transform.position.x + SpeedManager.Ground.transform.localScale.x * (SpeedManager.Ground.GetComponent<BoxCollider2D>().offset.x - SpeedManager.Ground.GetComponent<BoxCollider2D>().size.x / 2);
-            float GroundRight = SpeedManager.Ground.transform.position.x + SpeedManager.Ground.transform.localScale.x * (SpeedManager.Ground.GetComponent<BoxCollider2D>().offset.x + SpeedManager.Ground.GetComponent<BoxCollider2D>().size.x / 2);
 
             var Data = Entity.GetComponent<CharacterData>();
 
@@ -608,15 +613,6 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             {
                 Context.AttachedPassablePlatform = null;
             }
-
-            /*if (PlayerLeft >= GroundLeft && PlayerRight <= GroundRight)
-            {
-                Context.AttachedPassablePlatform = SpeedManager.Ground;
-            }
-            else
-            {
-                Context.AttachedPassablePlatform = null;
-            }*/
         }
         else
         {
@@ -719,6 +715,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             return;
         }
 
+        ImmediateInput = null;
     }
 
     protected bool GroundStateActionTransitionCheck(InputInfo ImmediateInput)
@@ -813,6 +810,12 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             Right = false;
         }
 
+        if (Utility.InputRoll())
+        {
+            ImmediateInput = new InputInfo(InputType.Roll, WithDirection, Right);
+            return;
+        }
+
         if (Utility.InputNormalSlash())
         {
             ImmediateInput = new InputInfo(InputType.Slash, WithDirection, Right);
@@ -824,6 +827,8 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
             ImmediateInput = new InputInfo(InputType.BattleArt, WithDirection, Right);
             return;
         }
+
+        ImmediateInput = null;
     }
 
     protected bool AirStateActionTransitionCheck(InputInfo ImmediateInput)
@@ -860,6 +865,16 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
                 {
                     return false;
                 }
+            case InputType.Roll:
+                if (CheckPerformRoll(ImmediateInput))
+                {
+                    PerformRoll(ImmediateInput);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
         }
 
         if (CharacterClimbPlatform())
@@ -890,11 +905,6 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         {
             WithDirection = true;
             Right = false;
-        }
-
-        if (Utility.InputRoll())
-        {
-            SavedInputList.Add(new InputInfo(InputType.Roll, WithDirection, Right, Entity.GetComponent<CharacterData>().InputSaveTime));
         }
 
         if(Utility.InputDown() && Utility.InputJump())
@@ -936,17 +946,6 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
                 break;
             case InputType.Jump:
                 PerformJump(Last);
-                break;
-
-            case InputType.Roll:
-                if (CheckPerformRoll(Last))
-                {
-                    PerformRoll(Last);
-                }
-                else
-                {
-                    return false;
-                }
                 break;
 
             case InputType.BattleArt:
@@ -1191,18 +1190,19 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         TransitionTo<Air>();
     }
 
-    protected bool CheckCharacterMove(bool Ground)
+    protected bool CheckCharacterMove(bool Ground, CharacterMoveMode Mode)
     {
         var Data = Entity.GetComponent<CharacterData>();
 
         var SpeedManager = Entity.GetComponent<SpeedManager>();
         Vector2Int MoveVector = Vector2Int.zero;
-        if (Utility.InputRight())
+
+        if (Utility.InputRight() && Mode!=CharacterMoveMode.NoInput)
         {
             MoveVector += Vector2Int.right;
         }
 
-        if (Utility.InputLeft())
+        if (Utility.InputLeft() && Mode != CharacterMoveMode.NoInput)
         {
             MoveVector += Vector2Int.left;
         }
@@ -1212,7 +1212,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
 
         if (MoveVector.x > 0)
         {
-            if (Entity.transform.right.x < 0)
+            if (Entity.transform.right.x < 0 && Mode!=CharacterMoveMode.NoDirChange)
             {
                 Utility.TurnAround(Entity);
             }
@@ -1247,7 +1247,7 @@ public abstract class CharacterActionState : FSM<CharacterAction>.State
         }
         else if (MoveVector.x < 0)
         {
-            if (Entity.transform.right.x > 0)
+            if (Entity.transform.right.x > 0 && Mode != CharacterMoveMode.NoDirChange)
             {
                 Utility.TurnAround(Entity);
             }
@@ -1332,9 +1332,11 @@ public class Stand : CharacterActionState
         SetUp();
         SetAppearance();
 
-        ImmediateInput = null;
+        if (ImmediateInput != null)
+        {
+            GroundStateReceiveImmediateInput(ref ImmediateInput);
+        }
 
-        GroundStateReceiveImmediateInput(ref ImmediateInput);
     }
 
     public override void Update()
@@ -1343,6 +1345,8 @@ public class Stand : CharacterActionState
         RunCheck();
         
     }
+
+
 
     private void RunCheck()
     {
@@ -1365,7 +1369,7 @@ public class Stand : CharacterActionState
         ImmediateInput = null;
         GroundStateReceiveImmediateInput(ref ImmediateInput);
 
-        if (CheckCharacterMove(true))
+        if (CheckCharacterMove(true,CharacterMoveMode.Normal))
         {
             TransitionTo<GroundMove>();
             return;
@@ -1397,8 +1401,10 @@ public class GroundMove : CharacterActionState
         SetUp();
         SetAppearance();
 
-        ImmediateInput = null;
-        GroundStateReceiveImmediateInput(ref ImmediateInput);
+        if (ImmediateInput != null)
+        {
+            GroundStateReceiveImmediateInput(ref ImmediateInput);
+        }
     }
 
     public override void Update()
@@ -1443,7 +1449,7 @@ public class GroundMove : CharacterActionState
         ImmediateInput = null;
         GroundStateReceiveImmediateInput(ref ImmediateInput);
 
-        if (!CheckCharacterMove(true))
+        if (!CheckCharacterMove(true,CharacterMoveMode.Normal))
         {
             TransitionTo<Stand>();
             return;
@@ -1490,7 +1496,7 @@ public class Air : CharacterActionState
 
     private void RunCheck()
     {
-        CheckCharacterMove(false);
+        CheckCharacterMove(false,CharacterMoveMode.Normal);
 
         if (CheckGetInterrupted())
         {
@@ -1507,12 +1513,15 @@ public class Air : CharacterActionState
             }
         }
 
-        AirStateReceiveImmediateInput(ref ImmediateInput);
-
         if (AirStateActionTransitionCheck(ImmediateInput))
         {
             return;
         }
+
+        ImmediateInput = null;
+        AirStateReceiveImmediateInput(ref ImmediateInput);
+
+
 
         ManageSavedInputList(SavedInputList);
         AirStateReceiveSavedInput(SavedInputList);
@@ -1559,7 +1568,7 @@ public class SlashAnticipation : CharacterActionState
 
         if (!Grounded)
         {
-            CheckCharacterMove(false);
+            CheckCharacterMove(false, CharacterMoveMode.NoInput);
             if (CheckGrounded())
             {
                 Grounded = true;
@@ -1613,7 +1622,12 @@ public class SlashAnticipation : CharacterActionState
         Context.HitEnemies = new List<GameObject>();
 
 
-        if (CheckGrounded())
+        //Entity.GetComponent<SpeedManager>().SelfSpeed.y = 0;
+        Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
+
+
+
+        /*if (CheckGrounded())
         {
             Grounded = true;
             Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
@@ -1621,7 +1635,7 @@ public class SlashAnticipation : CharacterActionState
         else
         {
             Grounded = false;
-        }
+        }*/
 
         SlashEffect = null;
 
@@ -1694,15 +1708,6 @@ public class SlashStrike : CharacterActionState
             return;
         }
 
-        if (!Grounded)
-        {
-            //CheckCharacterMove(false);
-            if (CheckGrounded())
-            {
-                Grounded = true;
-                Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
-            }
-        }
 
         CheckTime();
 
@@ -1737,7 +1742,7 @@ public class SlashStrike : CharacterActionState
 
         TimeCount = 0;
 
-        Context.CurrentGravity = Data.NormalGravity;
+        Context.CurrentGravity = 0;
 
         Offset = AbilityData.SlashOffset;
         HitBoxSize = AbilityData.SlashHitBoxSize;
@@ -1827,7 +1832,7 @@ public class SlashRecovery : CharacterActionState
 
         if (!Grounded)
         {
-            CheckCharacterMove(false);
+            CheckCharacterMove(false,CharacterMoveMode.NoDirChange);
             if (CheckGrounded())
             {
                 Grounded = true;
@@ -2540,20 +2545,7 @@ public class Roll: CharacterActionState
         ManageSavedInputList(SavedInputList);
         RecoveryStateReceiveSavedInput(SavedInputList);
 
-        if (HitWall())
-        {
-            if (!RecoveryEndTransitionCheck(SavedInputList,true))
-            {
-                TransitionTo<Stand>();
-                return;
-            }
-        }
 
-        if (!CheckGrounded())
-        {
-            TransitionTo<Air>();
-            return;
-        }
         CheckTime();
     }
 
@@ -2581,6 +2573,9 @@ public class Roll: CharacterActionState
     {
         var Data = Entity.GetComponent<CharacterData>();
         var SpeedManager = Entity.GetComponent<SpeedManager>();
+
+        Context.CurrentGravity = 0;
+        SpeedManager.SelfSpeed.y = 0;
 
         TimeCount = 0;
         StateTime = Data.RollTime;
@@ -2621,7 +2616,14 @@ public class Roll: CharacterActionState
         {
             if (!RecoveryEndTransitionCheck(SavedInputList,true))
             {
-                TransitionTo<Stand>();
+                if (CheckGrounded())
+                {
+                    TransitionTo<Stand>();
+                }
+                else
+                {
+                    TransitionTo<Air>();
+                }
             }
         }
     }
@@ -2729,8 +2731,9 @@ public class ClimbPlatform : CharacterActionState
         Entity.transform.position = new Vector2(Entity.transform.position.x, Mathf.Lerp(StartHeight, TargetHeight, TimeCount / StateTime));
         if(TimeCount > StateTime)
         {
-            Entity.GetComponent<SpeedManager>().SelfSpeed.y = Entity.GetComponent<CharacterData>().ClimbPlatformJumpOverSpeed;
-            TransitionTo<Air>();
+            //Entity.GetComponent<SpeedManager>().SelfSpeed.y = Entity.GetComponent<CharacterData>().ClimbPlatformJumpOverSpeed;
+            //TransitionTo<Air>();
+            TransitionTo<Stand>();
         }
     }
 
@@ -2955,6 +2958,7 @@ public class GetInterrupted : CharacterActionState
 
     private void SetUp()
     {
+        Context.CurrentGravity = 0;
         Context.RollCoolDownTimeCount = 0;
 
         TimeCount = 0;

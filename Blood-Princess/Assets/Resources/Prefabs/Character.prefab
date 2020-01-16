@@ -5068,7 +5068,7 @@ MonoBehaviour:
   GroundAcceleration: 50
   GroundDeceleration: 50
   AirAcceleration: 25
-  AirDeceleration: 50
+  AirDeceleration: 25
   NormalGravity: 4
   JumpSpeed: 12
   MaxHP: 30
@@ -5091,7 +5091,7 @@ MonoBehaviour:
   RollIgnoredLayers:
     serializedVersion: 2
     m_Bits: 5888
-  ClimbPlatformTime: 0.2
+  ClimbPlatformTime: 0.15
   ClimbPlatformJumpOverSpeed: 5
   PassablePlatformLayer:
     serializedVersion: 2

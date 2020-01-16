@@ -38,13 +38,14 @@ public class StatusManager_SoulWarrior : StatusManagerBase, IHittable
         base.OnHit(Attack);
 
         var Data = GetComponent<SoulWarriorData>();
+        var AI = GetComponent<SoulWarriorAI>();
 
         CurrentTakenAttack = (CharacterAttackInfo)Attack;
 
         if (CurrentTakenAttack.InterruptLevel > 0 && GetComponent<SoulWarriorAI>().CurrentState != SoulWarriorState.SlashStrike && GetComponent<SoulWarriorAI>().CurrentState != SoulWarriorState.MagicStrike)
         {
             Interrupted = true;
-            if (CurrentTakenAttack.InterruptLevel >= Data.OffBalanceInterruptLevel || CurrentTakenAttack.Dir == Direction.Right && transform.right.x > 0 || CurrentTakenAttack.Dir == Direction.Left && transform.right.x < 0)
+            if (Data.OffBalanceInterruptLevel <= CurrentTakenAttack.InterruptLevel || AI.CurrentState == SoulWarriorState.MagicRecovery || AI.CurrentState == SoulWarriorState.SlashRecovery)
             {
                 OffBalance = true;
             }

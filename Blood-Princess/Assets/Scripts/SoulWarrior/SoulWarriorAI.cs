@@ -34,6 +34,7 @@ public class SoulWarriorAI : MonoBehaviour
     public float PatronLeftX;
     public float PatronRightX;
 
+    public bool Blinked;
     public float AttackCoolDownTimeCount;
 
     public SoulWarriorState LastState;
@@ -1013,7 +1014,15 @@ public class SoulWarriorKnockedBack : SoulWarriorBehavior
         TimeCount += Time.deltaTime;
         if (TimeCount >= StateTime)
         {
-            TransitionTo<SoulWarriorBlink>();
+            if (!Context.Blinked)
+            {
+                Context.Blinked = true;
+                TransitionTo<SoulWarriorBlink>();
+            }
+            else
+            {
+                TransitionTo<SoulWarriorEngage>();
+            }
         }
     }
 }
@@ -1102,7 +1111,15 @@ public class SoulWarriorOffBalance : SoulWarriorBehavior
         TimeCount += Time.deltaTime;
         if (TimeCount >= BackTime + StayTime && !InKnockedBack)
         {
-            TransitionTo<SoulWarriorBlink>();
+            if (!Context.Blinked)
+            {
+                Context.Blinked = true;
+                TransitionTo<SoulWarriorBlink>();
+            }
+            else
+            {
+                TransitionTo<SoulWarriorEngage>();
+            }
         }
         else if (TimeCount >= BackTime)
         {
