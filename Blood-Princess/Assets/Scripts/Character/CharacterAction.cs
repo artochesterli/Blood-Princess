@@ -376,25 +376,13 @@ public class CharacterAction : MonoBehaviour
     /// </summary>
     /// <param name="StateName">Anticipation, Recovery, Strike</param>
     /// <returns></returns>
-    public bool InState(string StateName)
-    {
-        switch (StateName)
-        {
-            case "Anticipation":
-                return CharacterActionFSM.CurrentState.GetType().Equals(typeof(SlashAnticipation));
-            case "Recovery":
-                return CharacterActionFSM.CurrentState.GetType().Equals(typeof(SlashRecovery));
-            case "Strike":
-                return CharacterActionFSM.CurrentState.GetType().Equals(typeof(SlashStrike));
-        }
-        return false;
-    }
+
 
     private void SetUpAbility()
     {
         var AbilityData = GetComponent<CharacterAbilityData>();
 
-        EquipedBattleArt = null;
+        EquipedBattleArt = new PowerSlash();
 
         EquipedPassiveAbility = new List<PassiveAbility>();
 
@@ -2558,6 +2546,10 @@ public class Roll: CharacterActionState
         if (CheckGrounded())
         {
             SpeedManager.SelfSpeed.x = 0;
+        }
+        else
+        {
+            SpeedManager.SelfSpeed.x = Data.MaxSpeed*Entity.transform.right.x;
         }
 
         EventManager.instance.Fire(new PlayerEndRoll());

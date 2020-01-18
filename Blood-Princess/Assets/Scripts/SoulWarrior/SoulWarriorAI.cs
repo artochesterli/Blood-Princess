@@ -28,6 +28,7 @@ public class SoulWarriorAI : MonoBehaviour
     public GameObject DetectRightMark;
 
     public GameObject BlinkMark;
+    public GameObject SlashMark;
 
     public float DetectLeftX;
     public float DetectRightX;
@@ -377,11 +378,11 @@ public class SoulWarriorSlashAnticipation : SoulWarriorBehavior
     {
         base.Update();
 
-        if (CheckOffBalance())
+        /*if (CheckOffBalance())
         {
             TransitionTo<SoulWarriorOffBalance>();
             return;
-        }
+        }*/
 
         if (CheckGetInterrupted())
         {
@@ -403,6 +404,10 @@ public class SoulWarriorSlashAnticipation : SoulWarriorBehavior
         base.OnExit();
         var Status = Entity.GetComponent<StatusManager_SoulWarrior>();
 
+        Status.Interrupted = false;
+        Status.OffBalance = false;
+
+        Context.SlashMark.GetComponent<SpriteRenderer>().enabled = false;
         Context.LastState = SoulWarriorState.SlashAnticipation;
     }
 
@@ -413,6 +418,8 @@ public class SoulWarriorSlashAnticipation : SoulWarriorBehavior
         TimeCount = 0;
         StateTime = Data.SlashAnticipationTime;
         Context.AttackCoolDownTimeCount = Data.AttackCoolDown;
+
+        Context.SlashMark.GetComponent<SpriteRenderer>().enabled = true;
 
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
     }

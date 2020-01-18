@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4171422407079193418}
   - component: {fileID: 3103187316200277520}
   m_Layer: 0
-  m_Name: BlinkWarriorSlash
+  m_Name: SoulWarriorSlash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -71,7 +71,7 @@ SpriteRenderer:
   m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 3df489c969702cb439f859f24532ba00, type: 3}
-  m_Color: {r: 0.93327296, g: 1, b: 0, a: 1}
+  m_Color: {r: 0.9254902, g: 0.22352941, b: 0.78431374, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0

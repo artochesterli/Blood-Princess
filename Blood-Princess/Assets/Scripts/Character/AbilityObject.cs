@@ -94,7 +94,7 @@ public class AbilityObject : MonoBehaviour
                     Ability = new Harmony();
                     break;
                 case PassiveAbilityType.SpiritMaster:
-                    Ability = new SpiritMaster();
+                    Ability = new CriticalEye();
                     break;
                 case PassiveAbilityType.UltimateAwakening:
                     Ability = new UltimateAwakening();

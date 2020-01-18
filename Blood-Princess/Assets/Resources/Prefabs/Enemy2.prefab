@@ -502,7 +502,7 @@ MonoBehaviour:
         byteData: 
         byteDataArray: 
       Version: 1.6.3
-  gizmoViewMode: 2
+  gizmoViewMode: 0
   showBehaviorDesignerGizmo: 0
 --- !u!114 &4758744938258355052
 MonoBehaviour:

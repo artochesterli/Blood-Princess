@@ -45,7 +45,8 @@ public class StatusManager_SoulWarrior : StatusManagerBase, IHittable
         if (CurrentTakenAttack.InterruptLevel > 0 && GetComponent<SoulWarriorAI>().CurrentState != SoulWarriorState.SlashStrike && GetComponent<SoulWarriorAI>().CurrentState != SoulWarriorState.MagicStrike)
         {
             Interrupted = true;
-            if (Data.OffBalanceInterruptLevel <= CurrentTakenAttack.InterruptLevel || AI.CurrentState == SoulWarriorState.MagicRecovery || AI.CurrentState == SoulWarriorState.SlashRecovery)
+
+            if (Data.OffBalanceInterruptLevel <= CurrentTakenAttack.InterruptLevel || AI.CurrentState != SoulWarriorState.SlashAnticipation)
             {
                 OffBalance = true;
             }
@@ -53,6 +54,7 @@ public class StatusManager_SoulWarrior : StatusManagerBase, IHittable
             {
                 OffBalance = false;
             }
+
         }
         else
         {

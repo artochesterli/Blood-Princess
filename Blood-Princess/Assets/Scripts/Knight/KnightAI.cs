@@ -29,6 +29,7 @@ public class KnightAI : MonoBehaviour
 
     public GameObject DoubleAttackMark;
     public GameObject BlinkMark;
+    public GameObject ChargeMark;
 
     public GameObject PatronLeftMark;
     public GameObject PatronRightMark;
@@ -612,6 +613,7 @@ public class KnightAttackAnticipation : KnightBehavior
         Entity.GetComponent<SpeedManager>().SelfSpeed.x = 0;
         Context.LastState = KnightState.Anticipation;
         Context.DoubleAttackMark.GetComponent<SpriteRenderer>().enabled = false;
+        Context.ChargeMark.GetComponent<SpriteRenderer>().enabled = false;
     }
 
 
@@ -662,6 +664,7 @@ public class KnightAttackAnticipation : KnightBehavior
                 break;
             case KnightAttackMode.Chase:
                 StateTime = Data.ChaseAttackAnticipationTime;
+                Context.ChargeMark.GetComponent<SpriteRenderer>().enabled = true;
                 Context.BlinkDecisionCoolDownCount--;
                 break;
         }

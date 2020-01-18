@@ -48,7 +48,7 @@ public class StatusManager_Knight : StatusManagerBase, IHittable
             Interrupted = true;
             ReceivedInterruptionLevel = CurrentTakenAttack.InterruptLevel;
 
-            if (Data.OffBalanceInterruptLevel <= CurrentTakenAttack.InterruptLevel || AI.CurrentState == KnightState.Recovery)
+            if (Data.OffBalanceInterruptLevel <= CurrentTakenAttack.InterruptLevel || transform.right.x>0 && CurrentTakenAttack.Dir == Direction.Right || transform.right.x < 0 && CurrentTakenAttack.Dir == Direction.Left)
             {
                 OffBalance = true;
             }

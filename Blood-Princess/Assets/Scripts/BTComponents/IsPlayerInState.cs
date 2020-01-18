@@ -17,6 +17,8 @@ public class IsPlayerInState : Conditional
 
 	public override TaskStatus OnUpdate()
 	{
-		return m_Player.GetComponent<CharacterAction>().InState(StateName.Value) ? TaskStatus.Success : TaskStatus.Failure;
+        return TaskStatus.Failure;
+
+		//return m_Player.GetComponent<CharacterAction>().InState(StateName.Value) ? TaskStatus.Success : TaskStatus.Failure;
 	}
 }
